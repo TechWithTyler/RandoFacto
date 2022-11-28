@@ -88,6 +88,8 @@
 			dependencies = (
 			);
 			name = RandoFacto;
+			packageProductDependencies = (
+			);
 			productName = RandoFacto;
 			productReference = 8DA2C40E292C1E1100705A2F /* RandoFacto.app */;
 			productType = "com.apple.product-type.application";
@@ -116,6 +118,8 @@
 				Base,
 			);
 			mainGroup = 8DA2C405292C1E1100705A2F;
+			packageReferences = (
+			);
 			productRefGroup = 8DA2C40F292C1E1100705A2F /* Products */;
 			projectDirPath = "";
 			projectRoot = "";

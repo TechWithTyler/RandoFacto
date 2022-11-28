@@ -40,7 +40,9 @@ struct ContentView: View, FactGeneratorDelegate {
 			Text(factText)
 				.font(.largeTitle)
 			Button {
-				factGenerator.generateRandomFact()
+				Task {
+					await factGenerator.generateRandomFact()
+				}
 			} label: {
 				Text("Generate Random Fact")
 			}
@@ -54,12 +56,18 @@ struct ContentView: View, FactGeneratorDelegate {
 			}
 		})
 		.onAppear {
-			factGenerator.generateRandomFact()
+			Task {
+				await factGenerator.generateRandomFact()
+			}
 		}
     }
 
 	func factGeneratorWillGenerateFact(_ generator: FactGenerator) {
 		factText = "Generating Fact…"
+	}
+
+	func factGeneratorWillCheckForProfanity(_ generator: FactGenerator) {
+		factText = "Removing profanity…"
 	}
 
 	func factGeneratorDidGenerateFact(_ generator: FactGenerator, fact: String) {
