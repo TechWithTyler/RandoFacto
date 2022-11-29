@@ -75,8 +75,8 @@ struct ContentView: View, FactGeneratorDelegate {
 		factText = generatingString
 	}
 
-	func factGeneratorWillCheckForProfanity(_ generator: FactGenerator) {
-		factText = "Removing profanity…"
+	func factGeneratorWillRetry(_ generator: FactGenerator) {
+		factText = "Fact error. Trying another…"
 	}
 
 	func factGeneratorDidGenerateFact(_ generator: FactGenerator, fact: String) {
