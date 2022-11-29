@@ -10,6 +10,7 @@ import SwiftUI
 enum FactGeneratorError: LocalizedError {
 
 	case unknown
+	
 	case noInternet
 
 	var errorDescription: String? {
@@ -29,16 +30,21 @@ struct ContentView: View, FactGeneratorDelegate {
 		return FactGenerator(delegate: self)
 	}
 
+	private var generatingString = "Generating Fact…"
+
 	@State private var factText: String = "Fact Text"
 
 	@State private var errorToShow: FactGeneratorError?
 
 	@State private var showingError: Bool = false
 
+	@Environment(\.backgroundMaterial) var material
+
     var body: some View {
 		VStack {
 			Text(factText)
 				.font(.largeTitle)
+			Spacer()
 			Button {
 				Task {
 					await factGenerator.generateRandomFact()
@@ -46,7 +52,9 @@ struct ContentView: View, FactGeneratorDelegate {
 			} label: {
 				Text("Generate Random Fact")
 			}
+			.disabled(factText == generatingString)
 		}
+		.padding()
 		.alert(isPresented: $showingError, error: errorToShow, actions: {
 			Button {
 				showingError = false
@@ -60,10 +68,11 @@ struct ContentView: View, FactGeneratorDelegate {
 				await factGenerator.generateRandomFact()
 			}
 		}
+		.backgroundStyle(material!)
     }
 
 	func factGeneratorWillGenerateFact(_ generator: FactGenerator) {
-		factText = "Generating Fact…"
+		factText = generatingString
 	}
 
 	func factGeneratorWillCheckForProfanity(_ generator: FactGenerator) {
