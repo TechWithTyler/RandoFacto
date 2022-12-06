@@ -6,14 +6,18 @@
 //
 
 import SwiftUI
+import Firebase
 
 @main
 struct RandoFactoApp: App {
 
+	init() {
+		FirebaseApp.configure()
+	}
+
     var body: some Scene {
         WindowGroup {
             ContentView()
-				.environment(\.backgroundMaterial, .ultraThick)
 				.frame(minWidth: 400, minHeight: 300, alignment: .center)
 		}
     }
