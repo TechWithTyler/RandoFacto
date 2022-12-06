@@ -7,13 +7,13 @@
 
 import SwiftUI
 
-struct ContentView: View, FactGeneratorDelegate, FavoritesDelegate {
+struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	private var factGenerator: FactGenerator {
 		return FactGenerator(delegate: self)
 	}
 
-	@ObservedObject private var favoritesDatabase = FavoritesDatabase()
+	@ObservedObject private var randoFactoDatabase = RandoFactoDatabase()
 
 	private let generatingString = "Generating Fact…"
 
@@ -55,7 +55,7 @@ struct ContentView: View, FactGeneratorDelegate, FavoritesDelegate {
 		})
 		.alert("Delete user?", isPresented: $showingDeleteUser, actions: {
 			Button("Delete", role: .destructive) {
-				favoritesDatabase.deleteUser()
+				randoFactoDatabase.deleteUser()
 				showingDeleteUser = false
 			}
 			Button("Cancel", role: .cancel) {
@@ -74,7 +74,7 @@ struct ContentView: View, FactGeneratorDelegate, FavoritesDelegate {
 						.multilineTextAlignment(.center)
 					credentialFields
 					Button {
-						favoritesDatabase.signUp(email: email, password: password) { error in
+						randoFactoDatabase.signUp(email: email, password: password) { error in
 							if let error = error {
 								showError(error: error)
 							} else {
@@ -107,7 +107,7 @@ struct ContentView: View, FactGeneratorDelegate, FavoritesDelegate {
 						.multilineTextAlignment(.center)
 					credentialFields
 					Button {
-						favoritesDatabase.logIn(email: email, password: password) { error in
+						randoFactoDatabase.logIn(email: email, password: password) { error in
 							if let error = error {
 								showError(error: error)
 							} else {
@@ -133,7 +133,7 @@ struct ContentView: View, FactGeneratorDelegate, FavoritesDelegate {
 		.toolbar {
 			ToolbarItem(placement: .automatic) {
 				Menu {
-					if favoritesDatabase.firebaseAuth.currentUser == nil {
+					if randoFactoDatabase.firebaseAuth.currentUser == nil {
 						Button {
 							showingLogIn = true
 						} label: {
@@ -146,7 +146,7 @@ struct ContentView: View, FactGeneratorDelegate, FavoritesDelegate {
 						}
 					} else {
 						Button {
-							favoritesDatabase.logOut()
+							randoFactoDatabase.logOut()
 						} label: {
 							Text("Logout")
 						}
@@ -175,24 +175,24 @@ struct ContentView: View, FactGeneratorDelegate, FavoritesDelegate {
 			} label: {
 				Text("Generate Random Fact")
 			}
-			if favoritesDatabase.firebaseAuth.currentUser != nil && factText != factUnavailableString {
-				if !(favoritesDatabase.favorites.isEmpty) {
+			if randoFactoDatabase.firebaseAuth.currentUser != nil && factText != factUnavailableString {
+				if !(randoFactoDatabase.favorites.isEmpty) {
 					Button {
-						factText = favoritesDatabase.favorites.randomElement()!
+						factText = randoFactoDatabase.favorites.randomElement()!
 					} label: {
 						Text("Generate Random Favorite Fact")
 					}
 				}
-				if favoritesDatabase.favorites.contains(factText) {
+				if randoFactoDatabase.favorites.contains(factText) {
 					Button {
-						favoritesDatabase.deleteFromFavorites(fact: factText)
+						randoFactoDatabase.deleteFromFavorites(fact: factText)
 					} label: {
 						Image(systemName: "heart")
 						Text("Unfavorite")
 					}
 				} else {
 					Button {
-						favoritesDatabase.saveToFavorites(fact: factText)
+						randoFactoDatabase.saveToFavorites(fact: factText)
 					} label: {
 						Image(systemName: "heart.fill")
 						Text("Favorite")
@@ -218,8 +218,8 @@ struct ContentView: View, FactGeneratorDelegate, FavoritesDelegate {
 		email = String()
 		password = String()
 		Task {
-			favoritesDatabase.delegate = self
-			await favoritesDatabase.loadFavorites()
+			randoFactoDatabase.delegate = self
+			await randoFactoDatabase.loadFavorites()
 			await factGenerator.generateRandomFact()
 		}
 	}
@@ -281,31 +281,31 @@ extension ContentView {
 
 extension ContentView {
 
-	func favoritesDatabaseLoadingDidFail(_ database: FavoritesDatabase, error: Error) {
+	func randoFactoDatabaseLoadingDidFail(_ database: RandoFactoDatabase, error: Error) {
 		showError(error: error)
 	}
 
-	func favoritesDatabaseDidAddFavorite(_ database: FavoritesDatabase, fact: String) {
+	func randoFactoDatabaseDidAddFavorite(_ database: RandoFactoDatabase, fact: String) {
 
 	}
 
-	func favoritesDatabaseDidRemoveFavorite(_ database: FavoritesDatabase, fact: String) {
+	func randoFactoDatabaseDidRemoveFavorite(_ database: RandoFactoDatabase, fact: String) {
 
 	}
 
-	func favoritesDatabaseDidFailToAddFavorite(_ database: FavoritesDatabase, fact: String, error: Error) {
+	func randoFactoDatabaseDidFailToAddFavorite(_ database: RandoFactoDatabase, fact: String, error: Error) {
 		showError(error: error)
 	}
 
-	func favoritesDatabaseDidFailToRemoveFavorite(_ database: FavoritesDatabase, fact: String, error: Error) {
+	func randoFactoDatabaseDidFailToRemoveFavorite(_ database: RandoFactoDatabase, fact: String, error: Error) {
 		showError(error: error)
 	}
 
-	func favoritesDatabaseDidFailToDeleteUser(_ database: FavoritesDatabase, error: Error) {
+	func randoFactoDatabaseDidFailToDeleteUser(_ database: RandoFactoDatabase, error: Error) {
 		showError(error: error)
 	}
 
-	func favoritesDatabaseDidFailToLogOut(_ database: FavoritesDatabase, userEmail: String, error: Error) {
+	func randoFactoDatabaseDidFailToLogOut(_ database: RandoFactoDatabase, userEmail: String, error: Error) {
 		showError(error: error)
 	}
 }

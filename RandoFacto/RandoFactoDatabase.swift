@@ -1,5 +1,5 @@
 //
-//  FavoritesDatabase.swift
+//  RandoFactoDatabase.swift
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 11/29/22.
@@ -8,25 +8,25 @@
 import SwiftUI
 import Firebase
 
-protocol FavoritesDelegate {
+protocol RandoFactoDatabaseDelegate {
 
-	func favoritesDatabaseDidFailToAddFavorite(_ database: FavoritesDatabase, fact: String, error: Error)
+	func randoFactoDatabaseDidFailToAddFavorite(_ database: RandoFactoDatabase, fact: String, error: Error)
 
-	func favoritesDatabaseDidFailToRemoveFavorite(_ database: FavoritesDatabase, fact: String, error: Error)
+	func randoFactoDatabaseDidFailToRemoveFavorite(_ database: RandoFactoDatabase, fact: String, error: Error)
 
-	func favoritesDatabaseLoadingDidFail(_ database: FavoritesDatabase, error: Error)
+	func randoFactoDatabaseLoadingDidFail(_ database: RandoFactoDatabase, error: Error)
 
-	func favoritesDatabaseDidFailToLogOut(_ database: FavoritesDatabase, userEmail: String, error: Error)
+	func randoFactoDatabaseDidFailToLogOut(_ database: RandoFactoDatabase, userEmail: String, error: Error)
 
-	func favoritesDatabaseDidFailToDeleteUser(_ database: FavoritesDatabase, error: Error)
+	func randoFactoDatabaseDidFailToDeleteUser(_ database: RandoFactoDatabase, error: Error)
 
 }
 
-class FavoritesDatabase: ObservableObject {
+class RandoFactoDatabase: ObservableObject {
 
 	@Published var favorites: [String] = []
 
-	var delegate: FavoritesDelegate?
+	var delegate: RandoFactoDatabaseDelegate?
 
 	private let firestore = Firestore.firestore()
 
@@ -36,7 +36,7 @@ class FavoritesDatabase: ObservableObject {
 
 	private let factTextKeyName = "fact"
 
-	init(delegate: FavoritesDelegate? = nil) {
+	init(delegate: RandoFactoDatabaseDelegate? = nil) {
 		self.delegate = delegate
 	}
 
@@ -73,7 +73,7 @@ class FavoritesDatabase: ObservableObject {
 					try firebaseAuth.signOut()
 					favorites.removeAll()
 				} catch {
-					delegate?.favoritesDatabaseDidFailToLogOut(self, userEmail: userEmail, error: error)
+					delegate?.randoFactoDatabaseDidFailToLogOut(self, userEmail: userEmail, error: error)
 				}
 			}
 		}
@@ -85,7 +85,7 @@ class FavoritesDatabase: ObservableObject {
 				user.delete { [self]
 					error in
 					if let error = error {
-						delegate?.favoritesDatabaseDidFailToDeleteUser(self, error: error)
+						delegate?.randoFactoDatabaseDidFailToDeleteUser(self, error: error)
 					} else {
 						favorites.removeAll()
 					}
@@ -101,7 +101,7 @@ class FavoritesDatabase: ObservableObject {
 			favorites = []
 			firestore.collection(favoritesCollectionName).addSnapshotListener { [self] snapshot, error in
 				if let error = error {
-					delegate?.favoritesDatabaseLoadingDidFail(self, error: error)
+					delegate?.randoFactoDatabaseLoadingDidFail(self, error: error)
 				} else {
 					for favorite in (snapshot?.documents)! {
 						if let fact = favorite.data()[factTextKeyName] as? String {
@@ -109,7 +109,7 @@ class FavoritesDatabase: ObservableObject {
 							print(self.favorites)
 						} else {
 							let loadError = NSError(domain: "\(favorite) doesn't appear to contain fact text!", code: 423)
-							delegate?.favoritesDatabaseLoadingDidFail(self, error: loadError)
+							delegate?.randoFactoDatabaseLoadingDidFail(self, error: loadError)
 						}
 					}
 				}
@@ -122,7 +122,7 @@ class FavoritesDatabase: ObservableObject {
 			let data: [String : Any] = [factTextKeyName : fact]
 			firestore.collection(favoritesCollectionName).addDocument(data: data) { [self] error in
 				if let error = error {
-					delegate?.favoritesDatabaseDidFailToAddFavorite(self, fact: fact, error: error)
+					delegate?.randoFactoDatabaseDidFailToAddFavorite(self, fact: fact, error: error)
 				}
 			}
 		}
@@ -132,13 +132,13 @@ class FavoritesDatabase: ObservableObject {
 		DispatchQueue.main.async { [self] in
 			firestore.collection(favoritesCollectionName).whereField(factTextKeyName, isEqualTo: fact).getDocuments { [self] snapshot, error in
 				if let error = error {
-					delegate?.favoritesDatabaseDidFailToRemoveFavorite(self, fact: fact, error: error)
+					delegate?.randoFactoDatabaseDidFailToRemoveFavorite(self, fact: fact, error: error)
 				} else {
 					if let ref = snapshot?.documents.first {
 						firestore.collection(favoritesCollectionName).document(ref.documentID).delete { [self]
 							error in
 							if let error = error {
-								delegate?.favoritesDatabaseDidFailToRemoveFavorite(self, fact: fact, error: error)
+								delegate?.randoFactoDatabaseDidFailToRemoveFavorite(self, fact: fact, error: error)
 							} else {
 								self.favorites.removeAll { favorite in
 									return favorite == fact
