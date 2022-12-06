@@ -39,7 +39,7 @@ struct FactGenerator {
 
 	private var profanityFilterURLString = "https://www.purgomalum.com/service/json?text="
 
-	init(delegate: FactGeneratorDelegate?) {
+	init(delegate: FactGeneratorDelegate? = nil) {
 		self.delegate = delegate
 	}
 
