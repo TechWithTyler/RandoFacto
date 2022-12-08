@@ -34,6 +34,8 @@ class RandoFactoDatabase: ObservableObject {
 
 	private let favoritesCollectionName = "favoriteFacts"
 
+	private let userKeyName = "user"
+
 	private let factTextKeyName = "fact"
 
 	init(delegate: RandoFactoDatabaseDelegate? = nil) {
@@ -48,6 +50,9 @@ class RandoFactoDatabase: ObservableObject {
 				if let error = error {
 					completionHandler(error)
 				} else {
+					Task {
+						await self.loadFavorites()
+					}
 					completionHandler(nil)
 				}
 			}
@@ -60,6 +65,9 @@ class RandoFactoDatabase: ObservableObject {
 				if let error = error {
 					completionHandler(error)
 				} else {
+					Task {
+						await self.loadFavorites()
+					}
 					completionHandler(nil)
 				}
 			}
@@ -81,7 +89,24 @@ class RandoFactoDatabase: ObservableObject {
 
 	func deleteUser() {
 		DispatchQueue.main.async { [self] in
-			if let user = firebaseAuth.currentUser, let userEmail = user.email {
+			if let user = firebaseAuth.currentUser {
+				DispatchQueue.main.async { [self] in
+					firestore.collection(favoritesCollectionName).whereField(userKeyName, isEqualTo: user.email!).getDocuments { [self] snapshot, error in
+						if let error = error {
+							delegate?.randoFactoDatabaseDidFailToDeleteUser(self, error: error)
+						} else {
+							for ref in (snapshot?.documents)! {
+									firestore.collection(favoritesCollectionName).document(ref.documentID).delete { [self]
+										error in
+										if let error = error {
+											delegate?.randoFactoDatabaseDidFailToDeleteUser(self, error: error)
+											return
+										}
+								}
+							}
+						}
+					}
+				}
 				user.delete { [self]
 					error in
 					if let error = error {
@@ -99,7 +124,9 @@ class RandoFactoDatabase: ObservableObject {
 	func loadFavorites() async {
 		DispatchQueue.main.async { [self] in
 			favorites = []
-			firestore.collection(favoritesCollectionName).addSnapshotListener { [self] snapshot, error in
+			firestore.collection(favoritesCollectionName)
+				.whereField(userKeyName, isEqualTo: firebaseAuth.currentUser?.email!)
+				.addSnapshotListener { [self] snapshot, error in
 				if let error = error {
 					delegate?.randoFactoDatabaseLoadingDidFail(self, error: error)
 				} else {
@@ -119,7 +146,10 @@ class RandoFactoDatabase: ObservableObject {
 
 	func saveToFavorites(fact: String) {
 		DispatchQueue.main.async { [self] in
-			let data: [String : Any] = [factTextKeyName : fact]
+			let data: [String : Any] = [
+				factTextKeyName : fact,
+				userKeyName : (firebaseAuth.currentUser?.email)!
+			]
 			firestore.collection(favoritesCollectionName).addDocument(data: data) { [self] error in
 				if let error = error {
 					delegate?.randoFactoDatabaseDidFailToAddFavorite(self, fact: fact, error: error)
