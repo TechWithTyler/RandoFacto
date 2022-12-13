@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Firebase
+import Network
 
 protocol RandoFactoDatabaseDelegate {
 
@@ -28,6 +29,10 @@ class RandoFactoDatabase: ObservableObject {
 
 	var delegate: RandoFactoDatabaseDelegate?
 
+	private var networkPathMonitor = NWPathMonitor()
+
+	@Published var online: Bool = false
+
 	private let firestore = Firestore.firestore()
 
 	@Published var firebaseAuth = Auth.auth()
@@ -40,6 +45,20 @@ class RandoFactoDatabase: ObservableObject {
 
 	init(delegate: RandoFactoDatabaseDelegate? = nil) {
 		self.delegate = delegate
+		configureNetworkPathMonitor()
+	}
+
+	func configureNetworkPathMonitor() {
+		networkPathMonitor.pathUpdateHandler = {
+			path in
+			if path.status == .satisfied {
+				self.online = true
+			} else {
+				self.online = false
+			}
+		}
+		let dispatchQueue = DispatchQueue(label: "Network Monitor")
+		networkPathMonitor.start(queue: dispatchQueue)
 	}
 
 	// MARK: - Authentication

@@ -15,6 +15,8 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	@ObservedObject private var randoFactoDatabase = RandoFactoDatabase()
 
+	private var online: Bool = false
+
 	private let generatingString = "Generating Fact…"
 
 	private let errorString = "Fact error. Trying another…"
@@ -38,131 +40,133 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 	@State private var password: String = String()
 
 	var body: some View {
-		VStack {
-			Text(factText)
-				.font(.largeTitle)
-			Spacer()
-			buttons
-		}
-		.padding()
-		.alert(isPresented: $showingError, error: errorToShow, actions: {
-			Button {
-				showingError = false
-				errorToShow = nil
-			} label: {
-				Text("OK")
-			}
-		})
-		.alert("Delete user?", isPresented: $showingDeleteUser, actions: {
-			Button("Delete", role: .destructive) {
-				randoFactoDatabase.deleteUser()
-				showingDeleteUser = false
-			}
-			Button("Cancel", role: .cancel) {
-				showingDeleteUser = false
-			}
-		}, message: {
-			Text("Delete this user?")
-		})
-		.sheet(isPresented: $showingSignUp, onDismiss: {
-			dismissSignUp()
-		}, content: {
+		NavigationStack {
 			VStack {
-				Form {
-					Text("Register")
-						.font(.largeTitle)
-						.multilineTextAlignment(.center)
-					credentialFields
-					Button {
-						randoFactoDatabase.signUp(email: email, password: password) { error in
-							if let error = error {
-								showError(error: error)
-							} else {
-								dismissSignUp()
-							}
-						}
-					} label: {
+				Text(factText)
+					.font(.largeTitle)
+				Spacer()
+				buttons
+			}
+			.padding()
+			.alert(isPresented: $showingError, error: errorToShow, actions: {
+				Button {
+					showingError = false
+					errorToShow = nil
+				} label: {
+					Text("OK")
+				}
+			})
+			.alert("Delete user?", isPresented: $showingDeleteUser, actions: {
+				Button("Delete", role: .destructive) {
+					randoFactoDatabase.deleteUser()
+					showingDeleteUser = false
+				}
+				Button("Cancel", role: .cancel) {
+					showingDeleteUser = false
+				}
+			}, message: {
+				Text("Delete this user?")
+			})
+			.sheet(isPresented: $showingSignUp, onDismiss: {
+				dismissSignUp()
+			}, content: {
+				VStack {
+					Form {
 						Text("Register")
-					}
-				}
-			}
-			.frame(minWidth: 400, minHeight: 400)
-			.toolbar {
-				ToolbarItem(placement: .cancellationAction) {
-					Button {
-						dismissSignUp()
-					} label: {
-						Text("Cancel")
-					}
-				}
-			}
-		})
-		.sheet(isPresented: $showingLogIn, onDismiss: {
-			dismissLogIn()
-		}, content: {
-			VStack {
-				Form {
-					Text("Login")
-						.font(.largeTitle)
-						.multilineTextAlignment(.center)
-					credentialFields
-					Button {
-						randoFactoDatabase.logIn(email: email, password: password) { error in
-							if let error = error {
-								showError(error: error)
-							} else {
-								dismissLogIn()
+							.font(.largeTitle)
+							.multilineTextAlignment(.center)
+						credentialFields
+						Button {
+							randoFactoDatabase.signUp(email: email, password: password) { error in
+								if let error = error {
+									showError(error: error)
+								} else {
+									dismissSignUp()
+								}
 							}
-						}
-					} label: {
-						Text("Login")
-					}
-				}
-			}
-			.frame(minWidth: 400, minHeight: 400)
-			.toolbar {
-				ToolbarItem(placement: .cancellationAction) {
-					Button {
-						dismissLogIn()
-					} label: {
-						Text("Cancel")
-					}
-				}
-			}
-		})
-		.toolbar {
-			ToolbarItem(placement: .automatic) {
-				Menu {
-					if randoFactoDatabase.firebaseAuth.currentUser == nil {
-						Button {
-							showingLogIn = true
-						} label: {
-							Text("Login")
-						}
-						Button {
-							showingSignUp = true
 						} label: {
 							Text("Register")
 						}
-					} else {
+					}
+				}
+				.frame(minWidth: 400, minHeight: 400)
+				.toolbar {
+					ToolbarItem(placement: .cancellationAction) {
 						Button {
-							randoFactoDatabase.logOut()
+							dismissSignUp()
 						} label: {
-							Text("Logout")
-						}
-						Button {
-							showingDeleteUser = true
-						} label: {
-							Text("Delete User")
+							Text("Cancel")
 						}
 					}
-				} label: {
-					Image(systemName: "person.circle")
+				}
+			})
+			.sheet(isPresented: $showingLogIn, onDismiss: {
+				dismissLogIn()
+			}, content: {
+				VStack {
+					Form {
+						Text("Login")
+							.font(.largeTitle)
+							.multilineTextAlignment(.center)
+						credentialFields
+						Button {
+							randoFactoDatabase.logIn(email: email, password: password) { error in
+								if let error = error {
+									showError(error: error)
+								} else {
+									dismissLogIn()
+								}
+							}
+						} label: {
+							Text("Login")
+						}
+					}
+				}
+				.frame(minWidth: 400, minHeight: 400)
+				.toolbar {
+					ToolbarItem(placement: .cancellationAction) {
+						Button {
+							dismissLogIn()
+						} label: {
+							Text("Cancel")
+						}
+					}
+				}
+			})
+			.toolbar {
+				ToolbarItem(placement: .automatic) {
+					Menu {
+						if randoFactoDatabase.firebaseAuth.currentUser == nil {
+							Button {
+								showingLogIn = true
+							} label: {
+								Text("Login")
+							}
+							Button {
+								showingSignUp = true
+							} label: {
+								Text("Register")
+							}
+						} else {
+							Button {
+								randoFactoDatabase.logOut()
+							} label: {
+								Text("Logout")
+							}
+							Button {
+								showingDeleteUser = true
+							} label: {
+								Text("Delete User")
+							}
+						}
+					} label: {
+						Image(systemName: "person.circle")
+					}
 				}
 			}
-		}
-		.onAppear {
-			prepareView()
+			.onAppear {
+				prepareView()
+			}
 		}
 	}
 
@@ -175,7 +179,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 			} label: {
 				Text("Generate Random Fact")
 			}
-			if randoFactoDatabase.firebaseAuth.currentUser != nil && factText != factUnavailableString {
+			if randoFactoDatabase.firebaseAuth.currentUser != nil {
 				if !(randoFactoDatabase.favorites.isEmpty) {
 					Button {
 						factText = randoFactoDatabase.favorites.randomElement()!
@@ -183,19 +187,21 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 						Text("Generate Random Favorite Fact")
 					}
 				}
-				if randoFactoDatabase.favorites.contains(factText) {
-					Button {
-						randoFactoDatabase.deleteFromFavorites(fact: factText)
-					} label: {
-						Image(systemName: "heart")
-						Text("Unfavorite")
-					}
-				} else {
-					Button {
-						randoFactoDatabase.saveToFavorites(fact: factText)
-					} label: {
-						Image(systemName: "heart.fill")
-						Text("Favorite")
+				if factText != factUnavailableString && randoFactoDatabase.online {
+					if randoFactoDatabase.favorites.contains(factText) {
+						Button {
+							randoFactoDatabase.deleteFromFavorites(fact: factText)
+						} label: {
+							Image(systemName: "heart")
+							Text("Unfavorite")
+						}
+					} else {
+						Button {
+							randoFactoDatabase.saveToFavorites(fact: factText)
+						} label: {
+							Image(systemName: "heart.fill")
+							Text("Favorite")
+						}
 					}
 				}
 			}
