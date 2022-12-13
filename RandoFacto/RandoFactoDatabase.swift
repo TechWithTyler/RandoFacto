@@ -52,10 +52,8 @@ class RandoFactoDatabase: ObservableObject {
 		networkPathMonitor.pathUpdateHandler = {
 			path in
 			if path.status == .satisfied {
-				print("Online")
 				self.online = true
 			} else {
-				print("Offline")
 				self.online = false
 			}
 		}
