@@ -12,7 +12,7 @@ import Firebase
 struct RandoFactoApp: App {
 
 	init() {
-		FirebaseApp.configure()
+		configureFirebase()
 	}
 
     var body: some Scene {
@@ -21,5 +21,14 @@ struct RandoFactoApp: App {
 				.frame(minWidth: 400, minHeight: 300, alignment: .center)
 		}
     }
+
+	func configureFirebase() {
+		FirebaseApp.configure()
+		let settings = FirestoreSettings()
+		settings.isPersistenceEnabled = true
+		// Enable offline data persistence
+		let firestore = Firestore.firestore()
+		firestore.settings = settings
+	}
 
 }
