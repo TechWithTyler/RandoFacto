@@ -26,6 +26,7 @@ struct RandoFactoApp: App {
 		FirebaseApp.configure()
 		let settings = FirestoreSettings()
 		settings.isPersistenceEnabled = true
+		settings.cacheSizeBytes = FirestoreCacheSizeUnlimited
 		// Enable offline data persistence
 		let firestore = Firestore.firestore()
 		firestore.settings = settings
