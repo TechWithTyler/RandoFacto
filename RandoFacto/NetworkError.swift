@@ -9,7 +9,7 @@ import Foundation
 
 enum NetworkError: LocalizedError {
 
-	case unknown
+	case unknown(reason: String)
 
 	case noInternet
 
@@ -39,8 +39,8 @@ enum NetworkError: LocalizedError {
 				return "User registration failed."
 			case let .userDeletionFailed(reason):
 				return "User deletion failed: \(reason)"
-			default:
-				return "Unknown error."
+			case let .unknown(reason):
+				return reason
 		}
 	}
 

@@ -178,30 +178,30 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 				}
 			} label: {
 				Text("Generate Random Fact")
-			}
+			}.padding()
 			if randoFactoDatabase.firebaseAuth.currentUser != nil {
 				if !(randoFactoDatabase.favorites.isEmpty) {
 					Button {
 						factText = randoFactoDatabase.favorites.randomElement()!
 					} label: {
 						Text("Generate Random Favorite Fact")
-					}
+					}.padding()
 				}
-				if factText != factUnavailableString && randoFactoDatabase.online {
+				if factText != factUnavailableString {
 					if randoFactoDatabase.favorites.contains(factText) {
 						Button {
 							randoFactoDatabase.deleteFromFavorites(fact: factText)
 						} label: {
-							Image(systemName: "heart")
+							Image(systemName: "heart.slash")
 							Text("Unfavorite")
-						}
+						}.padding()
 					} else {
 						Button {
 							randoFactoDatabase.saveToFavorites(fact: factText)
 						} label: {
 							Image(systemName: "heart.fill")
 							Text("Favorite")
-						}
+						}.padding()
 					}
 				}
 			}
@@ -243,8 +243,8 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 	}
 
 	func showError(error: Error) {
-		print(error)
 		let nsError = error as NSError
+		print("\(nsError), \(nsError.code), \(nsError.userInfo)")
 		switch nsError.code {
 			case -1009:
 				errorToShow = .noInternet
@@ -257,7 +257,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 			case 17014:
 				errorToShow = .userDeletionFailed(reason: "This operation requires that you have logged in recently. Please log out and back in and try again.")
 			default:
-				errorToShow = .unknown
+				errorToShow = .unknown(reason: "\(nsError)")
 		}
 		showingError = true
 	}

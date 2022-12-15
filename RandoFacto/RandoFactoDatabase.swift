@@ -31,8 +31,6 @@ class RandoFactoDatabase: ObservableObject {
 
 	private var networkPathMonitor = NWPathMonitor()
 
-	@Published var online: Bool = false
-
 	private let firestore = Firestore.firestore()
 
 	@Published var firebaseAuth = Auth.auth()
@@ -50,11 +48,23 @@ class RandoFactoDatabase: ObservableObject {
 
 	func configureNetworkPathMonitor() {
 		networkPathMonitor.pathUpdateHandler = {
-			path in
+			[self] path in
 			if path.status == .satisfied {
-				self.online = true
+				print("Online")
+				firestore.enableNetwork {
+					error in
+					if let error = error {
+						print("Error enabling network: \(error)")
+					}
+				}
 			} else {
-				self.online = false
+				print("Offline")
+				firestore.disableNetwork {
+					error in
+					if let error = error {
+						print("Error disabling network: \(error)")
+					}
+				}
 			}
 		}
 		let dispatchQueue = DispatchQueue(label: "Network Monitor")
@@ -144,15 +154,14 @@ class RandoFactoDatabase: ObservableObject {
 		DispatchQueue.main.async { [self] in
 			favorites = []
 			firestore.collection(favoritesCollectionName)
-				.whereField(userKeyName, isEqualTo: firebaseAuth.currentUser?.email!)
-				.addSnapshotListener { [self] snapshot, error in
+				.whereField(userKeyName, isEqualTo: (firebaseAuth.currentUser?.email)!)
+				.addSnapshotListener(includeMetadataChanges: true) { [self] snapshot, error in
 				if let error = error {
 					delegate?.randoFactoDatabaseLoadingDidFail(self, error: error)
 				} else {
 					for favorite in (snapshot?.documents)! {
 						if let fact = favorite.data()[factTextKeyName] as? String {
 							self.favorites.append(fact)
-							print(self.favorites)
 						} else {
 							let loadError = NSError(domain: "\(favorite) doesn't appear to contain fact text!", code: 423)
 							delegate?.randoFactoDatabaseLoadingDidFail(self, error: loadError)
@@ -179,7 +188,7 @@ class RandoFactoDatabase: ObservableObject {
 
 	func deleteFromFavorites(fact: String) {
 		DispatchQueue.main.async { [self] in
-			firestore.collection(favoritesCollectionName).whereField(factTextKeyName, isEqualTo: fact).getDocuments { [self] snapshot, error in
+			firestore.collection(favoritesCollectionName).whereField(factTextKeyName, isEqualTo: fact).getDocuments(source: .cache) { [self] snapshot, error in
 				if let error = error {
 					delegate?.randoFactoDatabaseDidFailToRemoveFavorite(self, fact: fact, error: error)
 				} else {
@@ -192,8 +201,12 @@ class RandoFactoDatabase: ObservableObject {
 								self.favorites.removeAll { favorite in
 									return favorite == fact
 								}
+								print("Favorite removed")
 							}
 						}
+					} else {
+						let refError = NSError(domain: "Favorite reference not found", code: 144)
+						delegate?.randoFactoDatabaseDidFailToRemoveFavorite(self, fact: fact, error: refError)
 					}
 				}
 			}
