@@ -35,6 +35,8 @@ class RandoFactoDatabase: ObservableObject {
 
 	@Published var firebaseAuth = Auth.auth()
 
+	@Published var online = false
+
 	private let favoritesCollectionName = "favoriteFacts"
 
 	private let userKeyName = "user"
@@ -51,6 +53,9 @@ class RandoFactoDatabase: ObservableObject {
 			[self] path in
 			if path.status == .satisfied {
 				print("Online")
+				DispatchQueue.main.async { [self] in
+					online = true
+				}
 				firestore.enableNetwork {
 					error in
 					if let error = error {
@@ -59,6 +64,9 @@ class RandoFactoDatabase: ObservableObject {
 				}
 			} else {
 				print("Offline")
+				DispatchQueue.main.async { [self] in
+					online = false
+				}
 				firestore.disableNetwork {
 					error in
 					if let error = error {
@@ -151,23 +159,25 @@ class RandoFactoDatabase: ObservableObject {
 	// MARK: - Favorites Management
 
 	func loadFavorites() async {
-		DispatchQueue.main.async { [self] in
-			favorites = []
-			firestore.collection(favoritesCollectionName)
-				.whereField(userKeyName, isEqualTo: (firebaseAuth.currentUser?.email)!)
-				.addSnapshotListener(includeMetadataChanges: true) { [self] snapshot, error in
-				if let error = error {
-					delegate?.randoFactoDatabaseLoadingDidFail(self, error: error)
-				} else {
-					for favorite in (snapshot?.documents)! {
-						if let fact = favorite.data()[factTextKeyName] as? String {
-							self.favorites.append(fact)
+		if firebaseAuth.currentUser != nil {
+			DispatchQueue.main.async { [self] in
+				favorites = []
+				firestore.collection(favoritesCollectionName)
+					.whereField(userKeyName, isEqualTo: (firebaseAuth.currentUser?.email)!)
+					.addSnapshotListener(includeMetadataChanges: true) { [self] snapshot, error in
+						if let error = error {
+							delegate?.randoFactoDatabaseLoadingDidFail(self, error: error)
 						} else {
-							let loadError = NSError(domain: "\(favorite) doesn't appear to contain fact text!", code: 423)
-							delegate?.randoFactoDatabaseLoadingDidFail(self, error: loadError)
+							for favorite in (snapshot?.documents)! {
+								if let fact = favorite.data()[factTextKeyName] as? String {
+									self.favorites.append(fact)
+								} else {
+									let loadError = NSError(domain: "\(favorite) doesn't appear to contain fact text!", code: 423)
+									delegate?.randoFactoDatabaseLoadingDidFail(self, error: loadError)
+								}
+							}
 						}
 					}
-				}
 			}
 		}
 	}

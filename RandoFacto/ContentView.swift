@@ -15,8 +15,6 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	@ObservedObject private var randoFactoDatabase = RandoFactoDatabase()
 
-	private var online: Bool = false
-
 	private let generatingString = "Generating Fact…"
 
 	private let errorString = "Fact error. Trying another…"
@@ -187,7 +185,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 						Text("Generate Random Favorite Fact")
 					}.padding()
 				}
-				if factText != factUnavailableString {
+				if factText != factUnavailableString && randoFactoDatabase.online {
 					if randoFactoDatabase.favorites.contains(factText) {
 						Button {
 							randoFactoDatabase.deleteFromFavorites(fact: factText)
