@@ -132,6 +132,26 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 				}
 			})
 			.toolbar {
+				let userLoggedIn = randoFactoDatabase.firebaseAuth.currentUser != nil
+				if factText != factUnavailableString && randoFactoDatabase.online && userLoggedIn {
+				ToolbarItem(placement: .automatic) {
+						if randoFactoDatabase.favorites.contains(factText) {
+							Button {
+								randoFactoDatabase.deleteFromFavorites(fact: factText)
+							} label: {
+								Image(systemName: "heart.fill")
+							}.padding()
+								.help("Unfavorite")
+						} else {
+							Button {
+								randoFactoDatabase.saveToFavorites(fact: factText)
+							} label: {
+								Image(systemName: "heart")
+							}.padding()
+								.help("Favorite")
+						}
+					}
+				}
 				ToolbarItem(placement: .automatic) {
 					Menu {
 						if randoFactoDatabase.firebaseAuth.currentUser == nil {
@@ -184,23 +204,6 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 					} label: {
 						Text("Generate Random Favorite Fact")
 					}.padding()
-				}
-				if factText != factUnavailableString && randoFactoDatabase.online {
-					if randoFactoDatabase.favorites.contains(factText) {
-						Button {
-							randoFactoDatabase.deleteFromFavorites(fact: factText)
-						} label: {
-							Image(systemName: "heart.slash")
-							Text("Unfavorite")
-						}.padding()
-					} else {
-						Button {
-							randoFactoDatabase.saveToFavorites(fact: factText)
-						} label: {
-							Image(systemName: "heart.fill")
-							Text("Favorite")
-						}.padding()
-					}
 				}
 			}
 		}
