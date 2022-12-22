@@ -68,11 +68,8 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 			.sheet(isPresented: $showingSignUp, onDismiss: {
 				dismissSignUp()
 			}, content: {
-				VStack {
+				NavigationStack {
 					Form {
-						Text("Register")
-							.font(.largeTitle)
-							.multilineTextAlignment(.center)
 						credentialFields
 						Button {
 							randoFactoDatabase.signUp(email: email, password: password) { error in
@@ -86,14 +83,18 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 							Text("Register")
 						}
 					}
-				}
-				.frame(minWidth: 400, minHeight: 400)
-				.toolbar {
-					ToolbarItem(placement: .cancellationAction) {
-						Button {
-							dismissSignUp()
-						} label: {
-							Text("Cancel")
+					.navigationTitle("Register")
+					#if os(iOS)
+					.navigationBarTitleDisplayMode(.inline)
+					#endif
+					.frame(minWidth: 400, minHeight: 400)
+					.toolbar {
+						ToolbarItem(placement: .cancellationAction) {
+							Button {
+								dismissSignUp()
+							} label: {
+								Text("Cancel")
+							}
 						}
 					}
 				}
@@ -101,11 +102,8 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 			.sheet(isPresented: $showingLogIn, onDismiss: {
 				dismissLogIn()
 			}, content: {
-				VStack {
+				NavigationStack {
 					Form {
-						Text("Login")
-							.font(.largeTitle)
-							.multilineTextAlignment(.center)
 						credentialFields
 						Button {
 							randoFactoDatabase.logIn(email: email, password: password) { error in
@@ -119,14 +117,19 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 							Text("Login")
 						}
 					}
-				}
-				.frame(minWidth: 400, minHeight: 400)
-				.toolbar {
-					ToolbarItem(placement: .cancellationAction) {
-						Button {
-							dismissLogIn()
-						} label: {
-							Text("Cancel")
+					.padding(.horizontal)
+					.navigationTitle("Login")
+					#if os(iOS)
+					.navigationBarTitleDisplayMode(.inline)
+					#endif
+					.frame(minWidth: 400, minHeight: 400)
+					.toolbar {
+						ToolbarItem(placement: .cancellationAction) {
+							Button {
+								dismissLogIn()
+							} label: {
+								Text("Cancel")
+							}
 						}
 					}
 				}
@@ -211,7 +214,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 	}
 
 	var credentialFields: some View {
-		VStack {
+		Section {
 			HStack {
 				TextField("Email", text: $email)
 			}
