@@ -259,9 +259,11 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 			case 524:
 				errorToShow = .filteredDataError
 			case 17014:
-				errorToShow = .userDeletionFailed(reason: "This operation requires that you have logged in recently. Please log out and back in and try again.")
+				errorToShow = .userDeletionFailed(reason: "For security, you must log back in and try again.")
+				randoFactoDatabase.logOut()
+				showingLogIn = true
 			default:
-				errorToShow = .unknown(reason: "\(nsError)")
+				errorToShow = .unknown(reason: "\(nsError.userInfo[NSLocalizedDescriptionKey] ?? "Unknown error")")
 		}
 		showingError = true
 	}
@@ -293,14 +295,6 @@ extension ContentView {
 
 	func randoFactoDatabaseLoadingDidFail(_ database: RandoFactoDatabase, error: Error) {
 		showError(error: error)
-	}
-
-	func randoFactoDatabaseDidAddFavorite(_ database: RandoFactoDatabase, fact: String) {
-
-	}
-
-	func randoFactoDatabaseDidRemoveFavorite(_ database: RandoFactoDatabase, fact: String) {
-
 	}
 
 	func randoFactoDatabaseDidFailToAddFavorite(_ database: RandoFactoDatabase, fact: String, error: Error) {
