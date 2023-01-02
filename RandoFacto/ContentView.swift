@@ -33,6 +33,8 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	@State private var showingDeleteUser: Bool = false
 
+	@State private var showingDeleteAllFavorites: Bool = false
+
 	@State private var email: String = String()
 
 	@State private var password: String = String()
@@ -54,6 +56,21 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 					Text("OK")
 				}
 			})
+			.alert("Delete all favorite facts?", isPresented: $showingDeleteAllFavorites, actions: {
+				Button("Delete", role: .destructive) {
+					randoFactoDatabase.deleteAllFavorites { error in
+						if let error = error {
+							showError(error: error)
+						} else {
+							print("All favorites deletion successful")
+						}
+						showingDeleteAllFavorites = false
+					}
+				}
+				Button("Cancel", role: .cancel) {
+					showingDeleteAllFavorites = false
+				}
+			})
 			.alert("Delete user?", isPresented: $showingDeleteUser, actions: {
 				Button("Delete", role: .destructive) {
 					randoFactoDatabase.deleteUser()
@@ -62,8 +79,6 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 				Button("Cancel", role: .cancel) {
 					showingDeleteUser = false
 				}
-			}, message: {
-				Text("Delete this user?")
 			})
 			.sheet(isPresented: $showingSignUp, onDismiss: {
 				dismissSignUp()
@@ -136,6 +151,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 			})
 			.toolbar {
 				let userLoggedIn = randoFactoDatabase.firebaseAuth.currentUser != nil
+				let notDisplayingFact = factText == generatingString || factText == errorString || factText == factUnavailableString
 				if factText != factUnavailableString && randoFactoDatabase.online && userLoggedIn {
 				ToolbarItem(placement: .automatic) {
 						if randoFactoDatabase.favorites.contains(factText) {
@@ -145,6 +161,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 								Image(systemName: "heart.fill")
 							}.padding()
 								.help("Unfavorite")
+								.disabled(notDisplayingFact)
 						} else {
 							Button {
 								randoFactoDatabase.saveToFavorites(fact: factText)
@@ -152,23 +169,21 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 								Image(systemName: "heart")
 							}.padding()
 								.help("Favorite")
+								.disabled(notDisplayingFact)
 						}
-					}
+				}
 				}
 				ToolbarItem(placement: .automatic) {
 					Menu {
-						if randoFactoDatabase.firebaseAuth.currentUser == nil {
-							Button {
-								showingLogIn = true
-							} label: {
-								Text("Login")
+						if userLoggedIn {
+							if randoFactoDatabase.online {
+								Button {
+									showingDeleteAllFavorites = true
+								} label: {
+									Text("Delete All Favorite Facts…")
+								}
+//								Divider()
 							}
-							Button {
-								showingSignUp = true
-							} label: {
-								Text("Register")
-							}
-						} else {
 							Button {
 								randoFactoDatabase.logOut()
 							} label: {
@@ -179,10 +194,22 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 							} label: {
 								Text("Delete User")
 							}
+						} else {
+							Button {
+								showingLogIn = true
+							} label: {
+								Text("Login")
+							}
+							Button {
+								showingSignUp = true
+							} label: {
+								Text("Register")
+							}
 						}
 					} label: {
 						Image(systemName: "person.circle")
 					}
+					.disabled(notDisplayingFact)
 				}
 			}
 			.onAppear {
