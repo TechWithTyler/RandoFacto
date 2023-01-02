@@ -151,6 +151,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 			})
 			.toolbar {
 				let userLoggedIn = randoFactoDatabase.firebaseAuth.currentUser != nil
+				let notDisplayingFact = factText == generatingString || factText == errorString || factText == factUnavailableString
 				if factText != factUnavailableString && randoFactoDatabase.online && userLoggedIn {
 				ToolbarItem(placement: .automatic) {
 						if randoFactoDatabase.favorites.contains(factText) {
@@ -160,6 +161,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 								Image(systemName: "heart.fill")
 							}.padding()
 								.help("Unfavorite")
+								.disabled(notDisplayingFact)
 						} else {
 							Button {
 								randoFactoDatabase.saveToFavorites(fact: factText)
@@ -167,8 +169,9 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 								Image(systemName: "heart")
 							}.padding()
 								.help("Favorite")
+								.disabled(notDisplayingFact)
 						}
-					}
+				}
 				}
 				ToolbarItem(placement: .automatic) {
 					Menu {
@@ -206,6 +209,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 					} label: {
 						Image(systemName: "person.circle")
 					}
+					.disabled(notDisplayingFact)
 				}
 			}
 			.onAppear {
