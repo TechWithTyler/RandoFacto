@@ -43,6 +43,8 @@ class RandoFactoDatabase: ObservableObject {
 
 	private let factTextKeyName = "fact"
 
+	private let refError = NSError(domain: "Favorite reference not found", code: 144)
+
 	init(delegate: RandoFactoDatabaseDelegate? = nil) {
 		self.delegate = delegate
 		configureNetworkPathMonitor()
@@ -211,16 +213,43 @@ class RandoFactoDatabase: ObservableObject {
 								self.favorites.removeAll { favorite in
 									return favorite == fact
 								}
-								print("Favorite removed")
 							}
 						}
 					} else {
-						let refError = NSError(domain: "Favorite reference not found", code: 144)
 						delegate?.randoFactoDatabaseDidFailToRemoveFavorite(self, fact: fact, error: refError)
 					}
 				}
 			}
 		}
+	}
+
+	func deleteAllFavorites(completionHandler: @escaping ((Error?) -> Void)) {
+		Task {
+		for fact in favorites {
+				DispatchQueue.main.async { [self] in
+					firestore.collection(favoritesCollectionName).whereField(factTextKeyName, isEqualTo: fact).getDocuments(source: .cache) { [self] snapshot, error in
+						if let error = error {
+							completionHandler(error)
+							return
+						} else {
+							if let ref = snapshot?.documents.first {
+								firestore.collection(favoritesCollectionName).document(ref.documentID).delete {
+									error in
+									if let error = error {
+										completionHandler(error)
+										return
+									}
+								}
+							} else {
+								completionHandler(refError)
+								return
+							}
+						}
+					}
+				}
+			}
+		}
+		favorites.removeAll()
 	}
 
 }

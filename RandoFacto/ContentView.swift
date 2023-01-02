@@ -33,6 +33,8 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	@State private var showingDeleteUser: Bool = false
 
+	@State private var showingDeleteAllFavorites: Bool = false
+
 	@State private var email: String = String()
 
 	@State private var password: String = String()
@@ -54,6 +56,21 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 					Text("OK")
 				}
 			})
+			.alert("Delete all favorite facts?", isPresented: $showingDeleteAllFavorites, actions: {
+				Button("Delete", role: .destructive) {
+					randoFactoDatabase.deleteAllFavorites { error in
+						if let error = error {
+							showError(error: error)
+						} else {
+							print("All favorites deletion successful")
+						}
+						showingDeleteAllFavorites = false
+					}
+				}
+				Button("Cancel", role: .cancel) {
+					showingDeleteAllFavorites = false
+				}
+			})
 			.alert("Delete user?", isPresented: $showingDeleteUser, actions: {
 				Button("Delete", role: .destructive) {
 					randoFactoDatabase.deleteUser()
@@ -62,8 +79,6 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 				Button("Cancel", role: .cancel) {
 					showingDeleteUser = false
 				}
-			}, message: {
-				Text("Delete this user?")
 			})
 			.sheet(isPresented: $showingSignUp, onDismiss: {
 				dismissSignUp()
@@ -157,18 +172,15 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 				}
 				ToolbarItem(placement: .automatic) {
 					Menu {
-						if randoFactoDatabase.firebaseAuth.currentUser == nil {
-							Button {
-								showingLogIn = true
-							} label: {
-								Text("Login")
+						if userLoggedIn {
+							if randoFactoDatabase.online {
+								Button {
+									showingDeleteAllFavorites = true
+								} label: {
+									Text("Delete All Favorite Facts…")
+								}
+//								Divider()
 							}
-							Button {
-								showingSignUp = true
-							} label: {
-								Text("Register")
-							}
-						} else {
 							Button {
 								randoFactoDatabase.logOut()
 							} label: {
@@ -178,6 +190,17 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 								showingDeleteUser = true
 							} label: {
 								Text("Delete User")
+							}
+						} else {
+							Button {
+								showingLogIn = true
+							} label: {
+								Text("Login")
+							}
+							Button {
+								showingSignUp = true
+							} label: {
+								Text("Register")
 							}
 						}
 					} label: {
