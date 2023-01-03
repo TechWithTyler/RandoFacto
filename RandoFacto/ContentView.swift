@@ -42,8 +42,10 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 	var body: some View {
 		NavigationStack {
 			VStack {
-				Text(factText)
-					.font(.largeTitle)
+				ScrollView {
+					Text(factText)
+						.font(.largeTitle)
+				}
 				Spacer()
 				buttons
 			}
