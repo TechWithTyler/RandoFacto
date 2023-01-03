@@ -158,16 +158,26 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 							Button {
 								randoFactoDatabase.deleteFromFavorites(fact: factText)
 							} label: {
-								Image(systemName: "heart.fill")
+								Label {
+									Text("\(randoFactoDatabase.favorites.count)")
+								} icon: {
+									Image(systemName: "heart.fill")
+								}
 							}.padding()
+								.labelStyle(.titleAndIcon)
 								.help("Unfavorite")
 								.disabled(notDisplayingFact || factText == factUnavailableString)
 						} else {
 							Button {
 								randoFactoDatabase.saveToFavorites(fact: factText)
 							} label: {
-								Image(systemName: "heart")
+								Label {
+									Text("\(randoFactoDatabase.favorites.count)")
+								} icon: {
+									Image(systemName: "heart")
+								}
 							}.padding()
+								.labelStyle(.titleAndIcon)
 								.help("Favorite")
 								.disabled(notDisplayingFact || factText == factUnavailableString)
 						}
