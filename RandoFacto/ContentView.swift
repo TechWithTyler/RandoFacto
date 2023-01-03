@@ -151,8 +151,8 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 			})
 			.toolbar {
 				let userLoggedIn = randoFactoDatabase.firebaseAuth.currentUser != nil
-				let notDisplayingFact = factText == generatingString || factText == errorString || factText == factUnavailableString
-				if factText != factUnavailableString && randoFactoDatabase.online && userLoggedIn {
+				let notDisplayingFact = factText == generatingString || factText == errorString
+				if factText != factUnavailableString && userLoggedIn {
 				ToolbarItem(placement: .automatic) {
 						if randoFactoDatabase.favorites.contains(factText) {
 							Button {
@@ -161,7 +161,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 								Image(systemName: "heart.fill")
 							}.padding()
 								.help("Unfavorite")
-								.disabled(notDisplayingFact)
+								.disabled(notDisplayingFact || factText == factUnavailableString)
 						} else {
 							Button {
 								randoFactoDatabase.saveToFavorites(fact: factText)
@@ -169,41 +169,43 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 								Image(systemName: "heart")
 							}.padding()
 								.help("Favorite")
-								.disabled(notDisplayingFact)
+								.disabled(notDisplayingFact || factText == factUnavailableString)
 						}
 				}
 				}
 				ToolbarItem(placement: .automatic) {
 					Menu {
 						if userLoggedIn {
-							if randoFactoDatabase.online {
 								Button {
 									showingDeleteAllFavorites = true
 								} label: {
 									Text("Delete All Favorite Facts…")
 								}
 //								Divider()
-							}
 							Button {
 								randoFactoDatabase.logOut()
 							} label: {
 								Text("Logout")
 							}
-							Button {
-								showingDeleteUser = true
-							} label: {
-								Text("Delete User")
+							if randoFactoDatabase.online {
+								Button {
+									showingDeleteUser = true
+								} label: {
+									Text("Delete User")
+								}
 							}
 						} else {
-							Button {
-								showingLogIn = true
-							} label: {
-								Text("Login")
-							}
-							Button {
-								showingSignUp = true
-							} label: {
-								Text("Register")
+							if randoFactoDatabase.online {
+								Button {
+									showingLogIn = true
+								} label: {
+									Text("Login")
+								}
+								Button {
+									showingSignUp = true
+								} label: {
+									Text("Register")
+								}
 							}
 						}
 					} label: {
@@ -220,13 +222,15 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	var buttons: some View {
 		VStack {
-			Button {
-				Task {
-					await factGenerator.generateRandomFact()
-				}
-			} label: {
-				Text("Generate Random Fact")
-			}.padding()
+			if randoFactoDatabase.online {
+				Button {
+					Task {
+						await factGenerator.generateRandomFact()
+					}
+				} label: {
+					Text("Generate Random Fact")
+				}.padding()
+			}
 			if randoFactoDatabase.firebaseAuth.currentUser != nil {
 				if !(randoFactoDatabase.favorites.isEmpty) {
 					Button {

@@ -163,13 +163,13 @@ class RandoFactoDatabase: ObservableObject {
 	func loadFavorites() async {
 		if firebaseAuth.currentUser != nil {
 			DispatchQueue.main.async { [self] in
-				favorites = []
 				firestore.collection(favoritesCollectionName)
 					.whereField(userKeyName, isEqualTo: (firebaseAuth.currentUser?.email)!)
 					.addSnapshotListener(includeMetadataChanges: true) { [self] snapshot, error in
 						if let error = error {
 							delegate?.randoFactoDatabaseLoadingDidFail(self, error: error)
 						} else {
+							favorites = []
 							for favorite in (snapshot?.documents)! {
 								if let fact = favorite.data()[factTextKeyName] as? String {
 									self.favorites.append(fact)
@@ -209,10 +209,6 @@ class RandoFactoDatabase: ObservableObject {
 							error in
 							if let error = error {
 								delegate?.randoFactoDatabaseDidFailToRemoveFavorite(self, fact: fact, error: error)
-							} else {
-								self.favorites.removeAll { favorite in
-									return favorite == fact
-								}
 							}
 						}
 					} else {
@@ -249,7 +245,6 @@ class RandoFactoDatabase: ObservableObject {
 				}
 			}
 		}
-		favorites.removeAll()
 	}
 
 }
