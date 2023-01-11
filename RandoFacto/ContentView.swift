@@ -120,6 +120,9 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 				dismissLogIn()
 			}, content: {
 				NavigationStack {
+					if randoFactoDatabase.firebaseAuth.currentUser != nil {
+						Text("For security, please log in again.")
+					}
 					Form {
 						credentialFields
 						Button {
@@ -302,8 +305,6 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 			case 524:
 				errorToShow = .filteredDataError
 			case 17014:
-				errorToShow = .userDeletionFailed(reason: "For security, you must log back in and try again.")
-				randoFactoDatabase.logOut()
 				showingLogIn = true
 			default:
 				errorToShow = .unknown(reason: "\(nsError.userInfo[NSLocalizedDescriptionKey] ?? "Unknown error")")

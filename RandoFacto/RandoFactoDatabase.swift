@@ -170,6 +170,15 @@ class RandoFactoDatabase: ObservableObject {
 							delegate?.randoFactoDatabaseLoadingDidFail(self, error: error)
 						} else {
 							favorites = []
+							firebaseAuth.currentUser?.getIDTokenForcingRefresh(true) { [self] token, error in
+								if let error = error {
+									delegate?.randoFactoDatabaseLoadingDidFail(self, error: error)
+								} else {
+									if token == nil {
+										logOut()
+									}
+								}
+							}
 							for favorite in (snapshot?.documents)! {
 								if let fact = favorite.data()[factTextKeyName] as? String {
 									self.favorites.append(fact)
