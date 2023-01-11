@@ -17,7 +17,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	private let generatingString = "Generating Fact…"
 
-	private let errorString = "Fact error. Trying another…"
+	private let errorString = "Fact contains profanity. Trying another…"
 
 	private let factUnavailableString = "Fact unavailable"
 
