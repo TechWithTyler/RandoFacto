@@ -12,6 +12,7 @@
 		8DA2C416292C1E1200705A2F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8DA2C415292C1E1200705A2F /* Assets.xcassets */; };
 		8DA2C41A292C1E1200705A2F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8DA2C419292C1E1200705A2F /* Preview Assets.xcassets */; };
 		8DA2C421292C1E6000705A2F /* FactGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA2C420292C1E6000705A2F /* FactGenerator.swift */; };
+		8DA2F331296E36B30068F761 /* VisualEffectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA2F330296E36B30068F761 /* VisualEffectView.swift */; };
 		8DF48E2F2936A62A00152681 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8DF48E2E2936A62900152681 /* GoogleService-Info.plist */; };
 		8DF48E312936A80700152681 /* RandoFactoDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF48E302936A80700152681 /* RandoFactoDatabase.swift */; };
 		8DF48E352936A9E000152681 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 8DF48E342936A9E000152681 /* FirebaseAuth */; };
@@ -27,6 +28,7 @@
 		8DA2C417292C1E1200705A2F /* RandoFacto.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RandoFacto.entitlements; sourceTree = "<group>"; };
 		8DA2C419292C1E1200705A2F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		8DA2C420292C1E6000705A2F /* FactGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactGenerator.swift; sourceTree = "<group>"; };
+		8DA2F330296E36B30068F761 /* VisualEffectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualEffectView.swift; sourceTree = "<group>"; };
 		8DF48E2E2936A62900152681 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		8DF48E302936A80700152681 /* RandoFactoDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandoFactoDatabase.swift; sourceTree = "<group>"; };
 		8DF48E382936B02900152681 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
@@ -66,10 +68,8 @@
 			isa = PBXGroup;
 			children = (
 				8DA2C411292C1E1100705A2F /* RandoFactoApp.swift */,
-				8DA2C413292C1E1100705A2F /* ContentView.swift */,
-				8DA2C420292C1E6000705A2F /* FactGenerator.swift */,
-				8DF48E302936A80700152681 /* RandoFactoDatabase.swift */,
-				8DF48E382936B02900152681 /* NetworkError.swift */,
+				8DA2F332296E38AA0068F761 /* Views */,
+				8DA2F333296E38C40068F761 /* Model */,
 				8DA2C415292C1E1200705A2F /* Assets.xcassets */,
 				8DA2C417292C1E1200705A2F /* RandoFacto.entitlements */,
 				8DF48E2E2936A62900152681 /* GoogleService-Info.plist */,
@@ -84,6 +84,25 @@
 				8DA2C419292C1E1200705A2F /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		8DA2F332296E38AA0068F761 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				8DA2F330296E36B30068F761 /* VisualEffectView.swift */,
+				8DA2C413292C1E1100705A2F /* ContentView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		8DA2F333296E38C40068F761 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				8DA2C420292C1E6000705A2F /* FactGenerator.swift */,
+				8DF48E302936A80700152681 /* RandoFactoDatabase.swift */,
+				8DF48E382936B02900152681 /* NetworkError.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 		8DF48E332936A9E000152681 /* Frameworks */ = {
@@ -176,6 +195,7 @@
 				8DA2C414292C1E1100705A2F /* ContentView.swift in Sources */,
 				8DF48E312936A80700152681 /* RandoFactoDatabase.swift in Sources */,
 				8DA2C412292C1E1100705A2F /* RandoFactoApp.swift in Sources */,
+				8DA2F331296E36B30068F761 /* VisualEffectView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
