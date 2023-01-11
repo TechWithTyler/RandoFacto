@@ -23,6 +23,8 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	@State private var factText: String = "Fact Text"
 
+	@State private var credentialErrorText: String? = nil
+
 	@State private var errorToShow: NetworkError?
 
 	@State private var showingError: Bool = false
@@ -91,9 +93,20 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 				}, content: {
 					NavigationStack {
 						Form {
+							if let errorText = credentialErrorText {
+								HStack {
+									Image(systemName: "exclamationmark.triangle")
+									Text(errorText)
+										.font(.system(size: 18))
+										.lineLimit(2)
+										.multilineTextAlignment(.center)
+										.padding()
+								}
+									.foregroundColor(.red)
+							}
 							credentialFields
 							Button {
-								randoFactoDatabase.signUp(email: email, password: password) { error in
+								randoFactoDatabase.logIn(email: email, password: password) { error in
 									if let error = error {
 										showError(error: error)
 									} else {
@@ -104,6 +117,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 								Text("Register")
 							}
 						}
+						.padding(.horizontal)
 						.navigationTitle("Register")
 #if os(iOS)
 						.navigationBarTitleDisplayMode(.inline)
@@ -124,10 +138,18 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 					dismissLogIn()
 				}, content: {
 					NavigationStack {
-						if randoFactoDatabase.firebaseAuth.currentUser != nil {
-							Text("For security, please log in again.")
-						}
 						Form {
+							if let errorText = credentialErrorText {
+								HStack {
+									Image(systemName: "exclamationmark.triangle")
+									Text(errorText)
+										.font(.system(size: 18))
+										.lineLimit(2)
+										.multilineTextAlignment(.center)
+										.padding()
+								}
+								.foregroundColor(.red)
+							}
 							credentialFields
 							Button {
 								randoFactoDatabase.logIn(email: email, password: password) { error in
@@ -289,12 +311,14 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 		showingSignUp = false
 		email = String()
 		password = String()
+		credentialErrorText = nil
 	}
 
 	func dismissLogIn() {
 		showingLogIn = false
 		email = String()
 		password = String()
+		credentialErrorText = nil
 	}
 
 	func showError(error: Error) {
@@ -311,10 +335,15 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 				errorToShow = .filteredDataError
 			case 17014:
 				showingLogIn = true
+				errorToShow = .userDeletionFailed(reason: "It's been too long since you last logged in. Please log in again and try deleting your account again.")
 			default:
 				errorToShow = .unknown(reason: "\(nsError.userInfo[NSLocalizedDescriptionKey] ?? "Unknown error")")
 		}
-		showingError = true
+		if showingLogIn || showingSignUp {
+			credentialErrorText = errorToShow?.errorDescription
+		} else {
+			showingError = true
+		}
 	}
 
 }
