@@ -290,6 +290,9 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 		Section {
 			HStack {
 				TextField("Email", text: $email)
+				#if os(iOS)
+					.keyboardType(.emailAddress)
+				#endif
 			}
 			HStack {
 				SecureField("Password", text: $password)
