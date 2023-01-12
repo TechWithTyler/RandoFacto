@@ -55,7 +55,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 					}
 					Spacer()
 					buttons
-					Spacer()
+					Divider()
 					Text("Facts provided by [uselessfacts.jsph.pl](https://uselessfacts.jsph.pl)")
 						.font(.footnote)
 						.foregroundColor(.secondary)
@@ -223,44 +223,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 						}
 					}
 					ToolbarItem(placement: .automatic) {
-						Menu {
-							if userLoggedIn {
-								Button {
-									showingDeleteAllFavorites = true
-								} label: {
-									Text("Delete All Favorite Facts…")
-								}
-								//								Divider()
-								Button {
-									randoFactoDatabase.logOut()
-								} label: {
-									Text("Logout")
-								}
-								if randoFactoDatabase.online {
-									Button {
-										showingDeleteUser = true
-									} label: {
-										Text("Delete User")
-									}
-								}
-							} else {
-								if randoFactoDatabase.online {
-									Button {
-										showingLogIn = true
-									} label: {
-										Text("Login")
-									}
-									Button {
-										showingSignUp = true
-									} label: {
-										Text("Register")
-									}
-								}
-							}
-						} label: {
-							Image(systemName: "person.circle")
-						}
-						.disabled(notDisplayingFact)
+						accountMenu
 					}
 				}
 				.onAppear {
@@ -272,6 +235,18 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	var buttons: some View {
 		VStack {
+			if randoFactoDatabase.firebaseAuth.currentUser != nil {
+				if !(randoFactoDatabase.favorites.isEmpty) {
+					Button {
+						factText = randoFactoDatabase.favorites.randomElement()!
+					} label: {
+						Text("Generate Random Favorite Fact")
+					}
+#if os(iOS)
+					.padding()
+#endif
+				}
+			}
 			if randoFactoDatabase.online {
 				Button {
 					Task {
@@ -279,19 +254,56 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 					}
 				} label: {
 					Text("Generate Random Fact")
-				}.padding()
-			}
-			if randoFactoDatabase.firebaseAuth.currentUser != nil {
-				if !(randoFactoDatabase.favorites.isEmpty) {
-					Button {
-						factText = randoFactoDatabase.favorites.randomElement()!
-					} label: {
-						Text("Generate Random Favorite Fact")
-					}.padding()
 				}
+				#if os(iOS)
+				.padding()
+				#endif
 			}
 		}
 		.disabled(factText == generatingString || factText == errorString)
+	}
+
+	var accountMenu: some View {
+		let userLoggedIn = randoFactoDatabase.firebaseAuth.currentUser != nil
+		let notDisplayingFact = factText == generatingString || factText == errorString
+		return Menu {
+			if userLoggedIn {
+				Button {
+					showingDeleteAllFavorites = true
+				} label: {
+					Text("Delete All Favorite Facts…")
+				}
+				Divider()
+				Button {
+					randoFactoDatabase.logOut()
+				} label: {
+					Text("Logout")
+				}
+				if randoFactoDatabase.online {
+					Button {
+						showingDeleteUser = true
+					} label: {
+						Text("Delete User…")
+					}
+				}
+			} else {
+				if randoFactoDatabase.online {
+					Button {
+						showingLogIn = true
+					} label: {
+						Text("Login…")
+					}
+					Button {
+						showingSignUp = true
+					} label: {
+						Text("Register…")
+					}
+				}
+			}
+		} label: {
+			Image(systemName: "person.circle")
+		}
+		.disabled(notDisplayingFact)
 	}
 
 	var credentialFields: some View {
