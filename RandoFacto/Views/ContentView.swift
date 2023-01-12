@@ -51,14 +51,15 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 					ScrollView {
 						Text(factText)
 							.font(.largeTitle)
+							.textSelection(.enabled)
 					}
 					Spacer()
 					buttons
 					Spacer()
-					Text("Facts provided by uselessfacts.jsph.pl")
+					Text("Facts provided by [uselessfacts.jsph.pl](https://uselessfacts.jsph.pl)")
 						.font(.footnote)
 						.foregroundColor(.secondary)
-					Text("Facts checked for profanity by purgomalum.com")
+					Text("Facts checked for profanity by [purgomalum.com](https://www.purgomalum.com)")
 						.font(.footnote)
 						.foregroundColor(.secondary)
 				}
