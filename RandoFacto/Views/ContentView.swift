@@ -54,6 +54,13 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 					}
 					Spacer()
 					buttons
+					Spacer()
+					Text("Facts provided by uselessfacts.jsph.pl")
+						.font(.footnote)
+						.foregroundColor(.secondary)
+					Text("Facts checked for profanity by purgomalum.com")
+						.font(.footnote)
+						.foregroundColor(.secondary)
 				}
 				.padding()
 				.alert(isPresented: $showingError, error: errorToShow, actions: {
@@ -296,6 +303,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 			}
 			HStack {
 				SecureField("Password", text: $password)
+					.textContentType(.password)
 			}
 		}
 	}
