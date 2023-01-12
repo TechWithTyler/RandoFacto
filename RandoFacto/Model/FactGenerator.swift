@@ -7,6 +7,8 @@
 
 import Foundation
 
+// MARK: - Decodable Data
+
 struct FactData: Decodable {
 
 	let text: String
@@ -18,6 +20,8 @@ struct FilteredFactData: Decodable {
 	let result: String
 
 }
+
+// MARK: - Fact Generator Delegate
 
 protocol FactGeneratorDelegate {
 
@@ -33,15 +37,23 @@ protocol FactGeneratorDelegate {
 
 struct FactGenerator {
 
-	var delegate: FactGeneratorDelegate?
+	// MARK: - Properties - URLs
 
 	private let factURLString = "https://uselessfacts.jsph.pl/random.json?language=en"
 
 	private var profanityFilterURLString = "https://www.purgomalum.com/service/json?text="
 
+	// MARK: - Properties - Delegate
+
+	var delegate: FactGeneratorDelegate?
+
+	// MARK: - Initialization
+
 	init(delegate: FactGeneratorDelegate? = nil) {
 		self.delegate = delegate
 	}
+
+	// MARK: - Fact Generation
 
 	func generateRandomFact() async {
 		guard let url = URL(string: factURLString) else { return }
@@ -77,6 +89,8 @@ struct FactGenerator {
 			return nil
 		}
 	}
+
+	// MARK: - Profanity Check
 
 	func checkFactForProfanity(fact: String) async {
 		let urlString = "\(profanityFilterURLString)\(fact)"
@@ -123,6 +137,8 @@ struct FactGenerator {
 			return nil
 		}
 	}
+
+	// MARK: - Error Logging
 
 	func logFactDataError() {
 		let dataError = NSError(domain: "Failed to get fact data", code: 523)

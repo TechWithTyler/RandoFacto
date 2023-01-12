@@ -9,11 +9,15 @@ import SwiftUI
 
 struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
+	// MARK: - Properties - Objects
+
 	private var factGenerator: FactGenerator {
 		return FactGenerator(delegate: self)
 	}
 
 	@ObservedObject private var randoFactoDatabase = RandoFactoDatabase()
+
+	// MARK: - Properties - Strings
 
 	private let generatingString = "Generating Fact…"
 
@@ -25,9 +29,17 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	@State private var credentialErrorText: String? = nil
 
+	@State private var email: String = String()
+
+	@State private var password: String = String()
+
+	// MARK: - Properties - Network Error
+
 	@State private var errorToShow: NetworkError?
 
-	@State private var showingError: Bool = false
+	// MARK: - Properties - Booleans
+
+	@State private var showingErrorAlert: Bool = false
 
 	@State private var showingLogIn: Bool = false
 
@@ -37,16 +49,14 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	@State private var showingDeleteAllFavorites: Bool = false
 
-	@State private var email: String = String()
-
-	@State private var password: String = String()
+	// MARK: - View
 
 	var body: some View {
 		NavigationStack {
 			ZStack {
-				#if os(macOS)
+#if os(macOS)
 				VisualEffectView()
-				#endif
+#endif
 				VStack {
 					ScrollView {
 						Text(factText)
@@ -64,9 +74,9 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 						.foregroundColor(.secondary)
 				}
 				.padding()
-				.alert(isPresented: $showingError, error: errorToShow, actions: {
+				.alert(isPresented: $showingErrorAlert, error: errorToShow, actions: {
 					Button {
-						showingError = false
+						showingErrorAlert = false
 						errorToShow = nil
 					} label: {
 						Text("OK")
@@ -110,7 +120,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 										.multilineTextAlignment(.center)
 										.padding()
 								}
-									.foregroundColor(.red)
+								.foregroundColor(.red)
 							}
 							credentialFields
 							Button {
@@ -233,6 +243,8 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 		}
 	}
 
+	// MARK: - Buttons
+
 	var buttons: some View {
 		VStack {
 			if randoFactoDatabase.firebaseAuth.currentUser != nil {
@@ -255,13 +267,15 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 				} label: {
 					Text("Generate Random Fact")
 				}
-				#if os(iOS)
+#if os(iOS)
 				.padding()
-				#endif
+#endif
 			}
 		}
 		.disabled(factText == generatingString || factText == errorString)
 	}
+
+	// MARK: - Account Menu
 
 	var accountMenu: some View {
 		let userLoggedIn = randoFactoDatabase.firebaseAuth.currentUser != nil
@@ -306,13 +320,15 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 		.disabled(notDisplayingFact)
 	}
 
+	// MARK: - Credential Fields
+
 	var credentialFields: some View {
 		Section {
 			HStack {
 				TextField("Email", text: $email)
-				#if os(iOS)
+#if os(iOS)
 					.keyboardType(.emailAddress)
-				#endif
+#endif
 			}
 			HStack {
 				SecureField("Password", text: $password)
@@ -320,6 +336,8 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 			}
 		}
 	}
+
+	// MARK: - UI Methods
 
 	func prepareView() {
 		email = String()
@@ -344,6 +362,8 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 		password = String()
 		credentialErrorText = nil
 	}
+
+	// MARK: - Error Handling
 
 	func showError(error: Error) {
 		let nsError = error as NSError
@@ -372,13 +392,15 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 		if showingLogIn || showingSignUp {
 			credentialErrorText = errorToShow?.errorDescription
 		} else {
-			showingError = true
+			showingErrorAlert = true
 		}
 	}
 
 }
 
 extension ContentView {
+
+	// MARK: - Fact Generator Delegate
 
 	func factGeneratorWillGenerateFact(_ generator: FactGenerator) {
 		factText = generatingString
@@ -400,6 +422,8 @@ extension ContentView {
 }
 
 extension ContentView {
+
+	// MARK: - RandoFacto Database Delegate
 
 	func randoFactoDatabaseLoadingDidFail(_ database: RandoFactoDatabase, error: Error) {
 		showError(error: error)

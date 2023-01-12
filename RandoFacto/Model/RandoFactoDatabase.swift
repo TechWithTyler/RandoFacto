@@ -9,6 +9,8 @@ import SwiftUI
 import Firebase
 import Network
 
+// MARK: - RandoFacto Database Delegate
+
 protocol RandoFactoDatabaseDelegate {
 
 	func randoFactoDatabaseDidFailToAddFavorite(_ database: RandoFactoDatabase, fact: String, error: Error)
@@ -25,17 +27,27 @@ protocol RandoFactoDatabaseDelegate {
 
 class RandoFactoDatabase: ObservableObject {
 
+	// MARK: - Properties - Favorite Facts Array
+
 	@Published var favorites: [String] = []
+
+	// MARK: - Properties - Delegate
 
 	var delegate: RandoFactoDatabaseDelegate?
 
+	// MARK: - Properties - Network Monitor
+
 	private var networkPathMonitor = NWPathMonitor()
+
+	@Published var online = false
+
+	// MARK: - Properties - Firebase
 
 	private let firestore = Firestore.firestore()
 
 	@Published var firebaseAuth = Auth.auth()
 
-	@Published var online = false
+	// MARK: - Properties - Strings
 
 	private let favoritesCollectionName = "favoriteFacts"
 
@@ -43,12 +55,18 @@ class RandoFactoDatabase: ObservableObject {
 
 	private let factTextKeyName = "fact"
 
+	// MARK: - Properties - Errors
+
 	private let refError = NSError(domain: "Favorite reference not found", code: 144)
+
+	// MARK: - Initialization
 
 	init(delegate: RandoFactoDatabaseDelegate? = nil) {
 		self.delegate = delegate
 		configureNetworkPathMonitor()
 	}
+
+	// MARK: - Network Monitor Configuration
 
 	func configureNetworkPathMonitor() {
 		networkPathMonitor.pathUpdateHandler = {
@@ -126,6 +144,8 @@ class RandoFactoDatabase: ObservableObject {
 		}
 	}
 
+	// MARK: - Delete User
+
 	func deleteUser() {
 		DispatchQueue.main.async { [self] in
 			if let user = firebaseAuth.currentUser {
@@ -158,7 +178,7 @@ class RandoFactoDatabase: ObservableObject {
 		}
 	}
 
-	// MARK: - Favorites Management
+	// MARK: - Favorites Management - Loading
 
 	func loadFavorites() async {
 		if firebaseAuth.currentUser != nil {
@@ -192,6 +212,8 @@ class RandoFactoDatabase: ObservableObject {
 			}
 		}
 	}
+
+	// MARK: - Favorites Management - Saving/Deleting
 
 	func saveToFavorites(fact: String) {
 		DispatchQueue.main.async { [self] in

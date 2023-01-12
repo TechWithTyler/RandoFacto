@@ -11,9 +11,13 @@ import Firebase
 @main
 struct RandoFactoApp: App {
 
+	// MARK: - Initialization
+
 	init() {
 		configureFirebase()
 	}
+
+	// MARK: - Windows and Views
 
     var body: some Scene {
         WindowGroup {
@@ -22,13 +26,14 @@ struct RandoFactoApp: App {
 		}
     }
 
+	// MARK: - Firebase Configuration
+
 	func configureFirebase() {
-		FirebaseApp.configure()
 		let settings = FirestoreSettings()
+		let firestore = Firestore.firestore()
+		FirebaseApp.configure()
 		settings.isPersistenceEnabled = true
 		settings.cacheSizeBytes = FirestoreCacheSizeUnlimited
-		// Enable offline data persistence
-		let firestore = Firestore.firestore()
 		firestore.settings = settings
 	}
 

@@ -9,6 +9,8 @@ import Foundation
 
 enum NetworkError: LocalizedError {
 
+	// MARK: - Error Case Definitions
+
 	case unknown(reason: String)
 
 	case noInternet
@@ -20,6 +22,8 @@ enum NetworkError: LocalizedError {
 	case filteredDataError
 
 	case userDeletionFailed(reason: String)
+
+	// MARK: - Error Description
 
 	var errorDescription: String? {
 		switch self {
