@@ -19,24 +19,16 @@ enum NetworkError: LocalizedError {
 
 	case filteredDataError
 
-	case registrationFailed
-
-	case logInFailed
-
 	case userDeletionFailed(reason: String)
 
 	var errorDescription: String? {
 		switch self {
 			case .noInternet:
-				return "No internet connection."
+				return "No internet connection. Running in offline mode."
 			case .noText:
 				return "Generated fact doesn't appear to contain text."
 			case .dataError, .filteredDataError:
 				return "Fact data error."
-			case .logInFailed:
-				return "Login failed."
-			case .registrationFailed:
-				return "User registration failed."
 			case let .userDeletionFailed(reason):
 				return "User deletion failed: \(reason)"
 			case let .unknown(reason):

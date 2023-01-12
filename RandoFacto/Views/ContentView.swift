@@ -349,19 +349,23 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 		let nsError = error as NSError
 		print("\(nsError), \(nsError.code), \(nsError.userInfo)")
 		switch nsError.code {
+				// Network errors
 			case -1009:
 				errorToShow = .noInternet
-			case 17020:
-				return
+				// Fact data errors
 			case 423:
 				errorToShow = .noText
 			case 523:
 				errorToShow = .dataError
 			case 524:
 				errorToShow = .filteredDataError
+				// Database errors
 			case 17014:
 				showingLogIn = true
 				errorToShow = .userDeletionFailed(reason: "It's been too long since you last logged in. Please log in again and try deleting your account again.")
+			case 17020:
+				return
+				// Other errors
 			default:
 				errorToShow = .unknown(reason: "\(nsError.userInfo[NSLocalizedDescriptionKey] ?? "Unknown error")")
 		}
