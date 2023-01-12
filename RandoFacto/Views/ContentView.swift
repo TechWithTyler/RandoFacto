@@ -362,12 +362,12 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 				// Database errors
 			case 17014:
 				showingLogIn = true
-				errorToShow = .userDeletionFailed(reason: "It's been too long since you last logged in. Please log in again and try deleting your account again.")
+				errorToShow = .userDeletionFailed(reason: "It's been too long since you last logged in. Please log in and try deleting your account again.")
 			case 17020:
 				return
 				// Other errors
 			default:
-				errorToShow = .unknown(reason: "\(nsError.userInfo[NSLocalizedDescriptionKey] ?? "Unknown error")")
+				errorToShow = .unknown(reason: "\(nsError.userInfo[NSLocalizedDescriptionKey] ?? "Unknown error: Code \(nsError.code)")")
 		}
 		if showingLogIn || showingSignUp {
 			credentialErrorText = errorToShow?.errorDescription
