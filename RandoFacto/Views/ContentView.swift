@@ -351,6 +351,8 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 		switch nsError.code {
 			case -1009:
 				errorToShow = .noInternet
+			case 17020:
+				return
 			case 423:
 				errorToShow = .noText
 			case 523:
