@@ -88,8 +88,6 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 						randoFactoDatabase.deleteAllFavorites { error in
 							if let error = error {
 								showError(error: error)
-							} else {
-								print("All favorites deletion successful")
 							}
 							showingDeleteAllFavorites = false
 						}
@@ -370,7 +368,6 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	func showError(error: Error) {
 		let nsError = error as NSError
-		print("\(nsError), \(nsError.code), \(nsError.userInfo)")
 		switch nsError.code {
 				// Network errors
 			case -1009:
@@ -418,7 +415,6 @@ extension ContentView {
 	}
 
 	func factGeneratorDidFail(_ generator: FactGenerator, error: Error) {
-		print(error)
 		factText = factUnavailableString
 		showError(error: error)
 	}
@@ -427,6 +423,14 @@ extension ContentView {
 extension ContentView {
 
 	// MARK: - RandoFacto Database Delegate
+
+	func randoFactoDatabaseNetworkEnableDidFail(_ database: RandoFactoDatabase, error: Error) {
+		showError(error: error)
+	}
+
+	func randoFactoDatabaseNetworkDisableDidFail(_ database: RandoFactoDatabase, error: Error) {
+		showError(error: error)
+	}
 
 	func randoFactoDatabaseLoadingDidFail(_ database: RandoFactoDatabase, error: Error) {
 		showError(error: error)

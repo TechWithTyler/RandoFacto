@@ -89,8 +89,8 @@
 		8DA2F332296E38AA0068F761 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				8DA2F330296E36B30068F761 /* VisualEffectView.swift */,
 				8DA2C413292C1E1100705A2F /* ContentView.swift */,
+				8DA2F330296E36B30068F761 /* VisualEffectView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";

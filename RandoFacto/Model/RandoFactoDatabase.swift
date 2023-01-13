@@ -13,6 +13,10 @@ import Network
 
 protocol RandoFactoDatabaseDelegate {
 
+	func randoFactoDatabaseNetworkEnableDidFail(_ database: RandoFactoDatabase, error: Error)
+
+	func randoFactoDatabaseNetworkDisableDidFail(_ database: RandoFactoDatabase, error: Error)
+
 	func randoFactoDatabaseDidFailToAddFavorite(_ database: RandoFactoDatabase, fact: String, error: Error)
 
 	func randoFactoDatabaseDidFailToRemoveFavorite(_ database: RandoFactoDatabase, fact: String, error: Error)
@@ -72,25 +76,23 @@ class RandoFactoDatabase: ObservableObject {
 		networkPathMonitor.pathUpdateHandler = {
 			[self] path in
 			if path.status == .satisfied {
-				print("Online")
 				DispatchQueue.main.async { [self] in
 					online = true
 				}
 				firestore.enableNetwork {
-					error in
+					[self] error in
 					if let error = error {
-						print("Error enabling network: \(error)")
+						delegate?.randoFactoDatabaseNetworkEnableDidFail(self, error: error)
 					}
 				}
 			} else {
-				print("Offline")
 				DispatchQueue.main.async { [self] in
 					online = false
 				}
 				firestore.disableNetwork {
-					error in
+					[self] error in
 					if let error = error {
-						print("Error disabling network: \(error)")
+						delegate?.randoFactoDatabaseNetworkDisableDidFail(self, error: error)
 					}
 				}
 			}
