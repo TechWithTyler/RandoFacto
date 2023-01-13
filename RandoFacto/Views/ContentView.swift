@@ -62,6 +62,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 						Text(factText)
 							.font(.largeTitle)
 							.textSelection(.enabled)
+							.multilineTextAlignment(.center)
 					}
 					Spacer()
 					buttons
