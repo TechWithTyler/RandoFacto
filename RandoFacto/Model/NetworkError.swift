@@ -2,7 +2,7 @@
 //  NetworkError.swift
 //  RandoFacto
 //
-//  Created by Tyler Sheft on 11/29/22.
+//  Created by TechWithTyler on 11/29/22.
 //
 
 import Foundation
