@@ -29,9 +29,9 @@ struct RandoFactoApp: App {
 	// MARK: - Firebase Configuration
 
 	func configureFirebase() {
+		FirebaseApp.configure()
 		let settings = FirestoreSettings()
 		let firestore = Firestore.firestore()
-		FirebaseApp.configure()
 		settings.isPersistenceEnabled = true
 		settings.cacheSizeBytes = FirestoreCacheSizeUnlimited
 		firestore.settings = settings

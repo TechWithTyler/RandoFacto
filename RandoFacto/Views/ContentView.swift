@@ -136,6 +136,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 							}
 						}
 						.padding(.horizontal)
+						.keyboardShortcut(.defaultAction)
 						.navigationTitle("Register")
 #if os(iOS)
 						.navigationBarTitleDisplayMode(.inline)
@@ -181,6 +182,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 								Text("Login")
 							}
 						}
+						.keyboardShortcut(.defaultAction)
 						.padding(.horizontal)
 						.navigationTitle("Login")
 #if os(iOS)
