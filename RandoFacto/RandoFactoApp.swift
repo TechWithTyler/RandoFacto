@@ -8,8 +8,20 @@
 import SwiftUI
 import Firebase
 
+#if os(macOS)
+class AppDelegate: NSObject, NSApplicationDelegate {
+
+	func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+		return true
+	}
+
+}
+#endif
+
 @main
 struct RandoFactoApp: App {
+
+	@NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
 	// MARK: - Initialization
 
