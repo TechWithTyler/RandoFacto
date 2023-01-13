@@ -27,7 +27,7 @@ protocol FactGeneratorDelegate {
 
 	func factGeneratorWillGenerateFact(_ generator: FactGenerator)
 
-	func factGeneratorWillRetry(_ generator: FactGenerator)
+	func factGeneratorDidFindProfaneFact(_ generator: FactGenerator)
 
 	func factGeneratorDidGenerateFact(_ generator: FactGenerator, fact: String)
 
@@ -97,7 +97,7 @@ struct FactGenerator {
 		guard let url = URL(string: urlString.replacingOccurrences(of: " ", with: "%20").replacingOccurrences(of: "\n", with: "%0A")) else {
 			Task {
 				await generateRandomFact()
-				delegate?.factGeneratorWillRetry(self)
+				delegate?.factGeneratorDidFindProfaneFact(self)
 			}
 			return
 		}

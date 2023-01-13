@@ -406,7 +406,7 @@ extension ContentView {
 		factText = generatingString
 	}
 
-	func factGeneratorWillRetry(_ generator: FactGenerator) {
+	func factGeneratorDidFindProfaneFact(_ generator: FactGenerator) {
 		factText = errorString
 	}
 
