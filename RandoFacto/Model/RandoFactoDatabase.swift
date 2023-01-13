@@ -19,7 +19,7 @@ protocol RandoFactoDatabaseDelegate {
 
 	func randoFactoDatabaseDidFailToAddFavorite(_ database: RandoFactoDatabase, fact: String, error: Error)
 
-	func randoFactoDatabaseDidFailToRemoveFavorite(_ database: RandoFactoDatabase, fact: String, error: Error)
+	func randoFactoDatabaseDidFailToDeleteFavorite(_ database: RandoFactoDatabase, fact: String, error: Error)
 
 	func randoFactoDatabaseLoadingDidFail(_ database: RandoFactoDatabase, error: Error)
 
@@ -235,17 +235,17 @@ class RandoFactoDatabase: ObservableObject {
 		DispatchQueue.main.async { [self] in
 			firestore.collection(favoritesCollectionName).whereField(factTextKeyName, isEqualTo: fact).getDocuments(source: .cache) { [self] snapshot, error in
 				if let error = error {
-					delegate?.randoFactoDatabaseDidFailToRemoveFavorite(self, fact: fact, error: error)
+					delegate?.randoFactoDatabaseDidFailToDeleteFavorite(self, fact: fact, error: error)
 				} else {
 					if let ref = snapshot?.documents.first {
 						firestore.collection(favoritesCollectionName).document(ref.documentID).delete { [self]
 							error in
 							if let error = error {
-								delegate?.randoFactoDatabaseDidFailToRemoveFavorite(self, fact: fact, error: error)
+								delegate?.randoFactoDatabaseDidFailToDeleteFavorite(self, fact: fact, error: error)
 							}
 						}
 					} else {
-						delegate?.randoFactoDatabaseDidFailToRemoveFavorite(self, fact: fact, error: refError)
+						delegate?.randoFactoDatabaseDidFailToDeleteFavorite(self, fact: fact, error: refError)
 					}
 				}
 			}

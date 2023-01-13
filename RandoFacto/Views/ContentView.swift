@@ -440,7 +440,7 @@ extension ContentView {
 		showError(error: error)
 	}
 
-	func randoFactoDatabaseDidFailToRemoveFavorite(_ database: RandoFactoDatabase, fact: String, error: Error) {
+	func randoFactoDatabaseDidFailToDeleteFavorite(_ database: RandoFactoDatabase, fact: String, error: Error) {
 		showError(error: error)
 	}
 
