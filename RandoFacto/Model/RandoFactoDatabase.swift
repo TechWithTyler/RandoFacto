@@ -149,33 +149,33 @@ class RandoFactoDatabase: ObservableObject {
 	// MARK: - Delete User
 
 	func deleteUser() {
-		DispatchQueue.main.async { [self] in
-			if let user = firebaseAuth.currentUser {
-				DispatchQueue.main.async { [self] in
-					firestore.collection(favoritesCollectionName).whereField(userKeyName, isEqualTo: user.email!).getDocuments { [self] snapshot, error in
-						if let error = error {
-							delegate?.randoFactoDatabaseDidFailToDeleteUser(self, error: error)
-						} else {
-							for ref in (snapshot?.documents)! {
-									firestore.collection(favoritesCollectionName).document(ref.documentID).delete { [self]
-										error in
-										if let error = error {
-											delegate?.randoFactoDatabaseDidFailToDeleteUser(self, error: error)
-											return
-										}
-								}
+		guard let user = firebaseAuth.currentUser else { return }
+
+		firestore.collection(favoritesCollectionName)
+			.whereField(userKeyName, isEqualTo: user.email!)
+			.getDocuments { [self] snapshot, error in
+				if let error = error {
+					delegate?.randoFactoDatabaseDidFailToDeleteUser(self, error: error)
+					return
+				}
+				guard let snapshot = snapshot else { return }
+				for ref in snapshot.documents {
+					firestore.collection(favoritesCollectionName)
+						.document(ref.documentID)
+						.delete { [self] error in
+							if let error = error {
+								delegate?.randoFactoDatabaseDidFailToDeleteUser(self, error: error)
+								return
 							}
 						}
-					}
 				}
-				user.delete { [self]
-					error in
-					if let error = error {
-						delegate?.randoFactoDatabaseDidFailToDeleteUser(self, error: error)
-					} else {
-						favorites.removeAll()
-					}
-				}
+			}
+
+		user.delete { [self] error in
+			if let error = error {
+				delegate?.randoFactoDatabaseDidFailToDeleteUser(self, error: error)
+			} else {
+				favorites.removeAll()
 			}
 		}
 	}

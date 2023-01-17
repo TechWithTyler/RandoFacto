@@ -11,6 +11,8 @@ import Firebase
 #if os(macOS)
 class AppDelegate: NSObject, NSApplicationDelegate {
 
+	// MARK: - Quit When Last Window Closed
+
 	func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
 		return true
 	}
@@ -20,6 +22,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
 @main
 struct RandoFactoApp: App {
+
+	// MARK: - AppDelegate Adaptor
 
 	@NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
