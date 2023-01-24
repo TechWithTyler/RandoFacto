@@ -15,7 +15,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 		return FactGenerator(delegate: self)
 	}
 
-	@ObservedObject private var randoFactoDatabase = RandoFactoDatabase()
+	@ObservedObject var randoFactoDatabase = RandoFactoDatabase()
 
 	// MARK: - Properties - Strings
 
@@ -25,7 +25,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	private let factUnavailableString = "Fact unavailable"
 
-	@State private var factText: String = "Fact Text"
+	@State var factText: String = "Fact Text"
 
 	@State private var credentialErrorText: String? = nil
 
@@ -48,6 +48,8 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 	@State private var showingDeleteUser: Bool = false
 
 	@State private var showingDeleteAllFavorites: Bool = false
+
+	@State var showingFavoritesList: Bool = false
 
 	// MARK: - View
 
@@ -104,6 +106,11 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 					Button("Cancel", role: .cancel) {
 						showingDeleteUser = false
 					}
+				})
+				.sheet(isPresented: $showingFavoritesList, onDismiss: {
+					showingFavoritesList = false
+				}, content: {
+					FavoritesList(parent: self)
 				})
 				.sheet(isPresented: $showingSignUp, onDismiss: {
 					dismissSignUp()
@@ -283,6 +290,11 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 		let notDisplayingFact = factText == generatingString || factText == errorString
 		return Menu {
 			if userLoggedIn {
+				Button {
+					showingFavoritesList = true
+				} label: {
+					Text("Favorite Facts List…")
+				}
 				Button {
 					showingDeleteAllFavorites = true
 				} label: {

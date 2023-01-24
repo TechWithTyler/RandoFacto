@@ -25,7 +25,9 @@ struct RandoFactoApp: App {
 
 	// MARK: - AppDelegate Adaptor
 
+	#if os(macOS)
 	@NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+	#endif
 
 	// MARK: - Initialization
 
