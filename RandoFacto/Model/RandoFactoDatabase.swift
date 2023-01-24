@@ -218,6 +218,9 @@ class RandoFactoDatabase: ObservableObject {
 	// MARK: - Favorites Management - Saving/Deleting
 
 	func saveToFavorites(fact: String) {
+		if favorites.contains(fact) {
+			return
+		}
 		DispatchQueue.main.async { [self] in
 			let data: [String : Any] = [
 				factTextKeyName : fact,
