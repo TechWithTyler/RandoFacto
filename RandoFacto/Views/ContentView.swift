@@ -60,21 +60,11 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 				VisualEffectView()
 #endif
 				VStack {
-					ScrollView {
-						Text(factText)
-							.font(.largeTitle)
-							.textSelection(.enabled)
-							.multilineTextAlignment(.center)
-					}
+					factView
 					Spacer()
 					buttons
 					Divider()
-					Text("Facts provided by [uselessfacts.jsph.pl](https://uselessfacts.jsph.pl)")
-						.font(.footnote)
-						.foregroundColor(.secondary)
-					Text("Facts checked for profanity by [purgomalum.com](https://www.purgomalum.com)")
-						.font(.footnote)
-						.foregroundColor(.secondary)
+					footer
 				}
 				.padding()
 				.alert(isPresented: $showingErrorAlert, error: errorToShow, actions: {
@@ -209,6 +199,15 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 				.toolbar {
 					let userLoggedIn = randoFactoDatabase.firebaseAuth.currentUser != nil
 					let notDisplayingFact = factText == generatingString || factText == errorString
+					if factText.contains("…") {
+						ToolbarItem(placement: .automatic) {
+							ProgressView()
+								.progressViewStyle(.circular)
+							#if os(macOS)
+								.controlSize(.small)
+							#endif
+						}
+					}
 					if factText != factUnavailableString && userLoggedIn {
 						ToolbarItem(placement: .automatic) {
 							if randoFactoDatabase.favorites.contains(factText) {
@@ -248,6 +247,26 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 					prepareView()
 				}
 			}
+		}
+	}
+
+	var factView: some View {
+		ScrollView {
+			Text(factText)
+				.font(.largeTitle)
+				.textSelection(.enabled)
+				.multilineTextAlignment(.center)
+		}
+	}
+
+	var footer: some View {
+		VStack {
+			Text("Facts provided by [uselessfacts.jsph.pl](https://uselessfacts.jsph.pl)")
+				.font(.footnote)
+				.foregroundColor(.secondary)
+			Text("Facts checked for profanity by [purgomalum.com](https://www.purgomalum.com)")
+				.font(.footnote)
+				.foregroundColor(.secondary)
 		}
 	}
 
