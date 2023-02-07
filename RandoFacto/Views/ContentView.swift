@@ -199,7 +199,8 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 				.toolbar {
 					let userLoggedIn = randoFactoDatabase.firebaseAuth.currentUser != nil
 					let notDisplayingFact = factText == generatingString || factText == errorString
-					if factText.contains("…") {
+					let displayingLoadingMessage = factText.last == "…"
+					if displayingLoadingMessage {
 						ToolbarItem(placement: .automatic) {
 							ProgressView()
 								.progressViewStyle(.circular)
