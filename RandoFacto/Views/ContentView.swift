@@ -105,144 +105,15 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 				.sheet(isPresented: $showingSignUp, onDismiss: {
 					dismissSignUp()
 				}, content: {
-					NavigationStack {
-						Form {
-							if let errorText = credentialErrorText {
-								HStack {
-									Image(systemName: "exclamationmark.triangle")
-									Text(errorText)
-										.font(.system(size: 18))
-										.lineLimit(2)
-										.multilineTextAlignment(.center)
-										.padding()
-								}
-								.foregroundColor(.red)
-							}
-							credentialFields
-							Button {
-								randoFactoDatabase.logIn(email: email, password: password) { error in
-									if let error = error {
-										showError(error: error)
-									} else {
-										dismissSignUp()
-									}
-								}
-							} label: {
-								Text("Register")
-							}
-						}
-						.padding(.horizontal)
-						.keyboardShortcut(.defaultAction)
-						.navigationTitle("Register")
-#if os(iOS)
-						.navigationBarTitleDisplayMode(.inline)
-#endif
-						.frame(minWidth: 400, minHeight: 400)
-						.toolbar {
-							ToolbarItem(placement: .cancellationAction) {
-								Button {
-									dismissSignUp()
-								} label: {
-									Text("Cancel")
-								}
-							}
-						}
-					}
+					signUpForm
 				})
 				.sheet(isPresented: $showingLogIn, onDismiss: {
 					dismissLogIn()
 				}, content: {
-					NavigationStack {
-						Form {
-							if let errorText = credentialErrorText {
-								HStack {
-									Image(systemName: "exclamationmark.triangle")
-									Text(errorText)
-										.font(.system(size: 18))
-										.lineLimit(2)
-										.multilineTextAlignment(.center)
-										.padding()
-								}
-								.foregroundColor(.red)
-							}
-							credentialFields
-							Button {
-								randoFactoDatabase.logIn(email: email, password: password) { error in
-									if let error = error {
-										showError(error: error)
-									} else {
-										dismissLogIn()
-									}
-								}
-							} label: {
-								Text("Login")
-							}
-						}
-						.keyboardShortcut(.defaultAction)
-						.padding(.horizontal)
-						.navigationTitle("Login")
-#if os(iOS)
-						.navigationBarTitleDisplayMode(.inline)
-#endif
-						.frame(minWidth: 400, minHeight: 400)
-						.toolbar {
-							ToolbarItem(placement: .cancellationAction) {
-								Button {
-									dismissLogIn()
-								} label: {
-									Text("Cancel")
-								}
-							}
-						}
-					}
+					logInForm
 				})
 				.toolbar {
-					let userLoggedIn = randoFactoDatabase.firebaseAuth.currentUser != nil
-					let notDisplayingFact = factText == generatingString || factText == errorString
-					let displayingLoadingMessage = factText.last == "…"
-					if displayingLoadingMessage {
-						ToolbarItem(placement: .automatic) {
-							ProgressView()
-								.progressViewStyle(.circular)
-							#if os(macOS)
-								.controlSize(.small)
-							#endif
-						}
-					}
-					if factText != factUnavailableString && userLoggedIn {
-						ToolbarItem(placement: .automatic) {
-							if randoFactoDatabase.favorites.contains(factText) {
-								Button {
-									randoFactoDatabase.deleteFromFavorites(fact: factText)
-								} label: {
-									Label {
-										Text("\(randoFactoDatabase.favorites.count)")
-									} icon: {
-										Image(systemName: "heart.fill")
-									}
-								}.padding()
-									.labelStyle(.titleAndIcon)
-									.help("Unfavorite")
-									.disabled(notDisplayingFact || factText == factUnavailableString)
-							} else {
-								Button {
-									randoFactoDatabase.saveToFavorites(fact: factText)
-								} label: {
-									Label {
-										Text("\(randoFactoDatabase.favorites.count)")
-									} icon: {
-										Image(systemName: "heart")
-									}
-								}.padding()
-									.labelStyle(.titleAndIcon)
-									.help("Favorite")
-									.disabled(notDisplayingFact || factText == factUnavailableString)
-							}
-						}
-					}
-					ToolbarItem(placement: .automatic) {
-						accountMenu
-					}
+					toolbarContent
 				}
 				.onAppear {
 					prepareView()
@@ -303,6 +174,58 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 		.disabled(factText == generatingString || factText == errorString)
 	}
 
+	// MARK: - Toolbar
+
+	@ToolbarContentBuilder
+	var toolbarContent: some ToolbarContent {
+			let userLoggedIn = randoFactoDatabase.firebaseAuth.currentUser != nil
+			let notDisplayingFact = factText == generatingString || factText == errorString
+			let displayingLoadingMessage = factText.last == "…"
+			if displayingLoadingMessage {
+				ToolbarItem(placement: .automatic) {
+					ProgressView()
+						.progressViewStyle(.circular)
+#if os(macOS)
+						.controlSize(.small)
+#endif
+				}
+			}
+			if factText != factUnavailableString && userLoggedIn {
+				ToolbarItem(placement: .automatic) {
+					if randoFactoDatabase.favorites.contains(factText) {
+						Button {
+							randoFactoDatabase.deleteFromFavorites(fact: factText)
+						} label: {
+							Label {
+								Text("\(randoFactoDatabase.favorites.count)")
+							} icon: {
+								Image(systemName: "heart.fill")
+							}
+						}.padding()
+							.labelStyle(.titleAndIcon)
+							.help("Unfavorite")
+							.disabled(notDisplayingFact || factText == factUnavailableString)
+					} else {
+						Button {
+							randoFactoDatabase.saveToFavorites(fact: factText)
+						} label: {
+							Label {
+								Text("\(randoFactoDatabase.favorites.count)")
+							} icon: {
+								Image(systemName: "heart")
+							}
+						}.padding()
+							.labelStyle(.titleAndIcon)
+							.help("Favorite")
+							.disabled(notDisplayingFact || factText == factUnavailableString)
+					}
+				}
+			}
+			ToolbarItem(placement: .automatic) {
+				accountMenu
+			}
+	}
+
 	// MARK: - Account Menu
 
 	var accountMenu: some View {
@@ -351,6 +274,100 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 			Image(systemName: "person.circle")
 		}
 		.disabled(notDisplayingFact)
+	}
+
+	// MARK: - Forms
+
+	var signUpForm: some View {
+		NavigationStack {
+			Form {
+				if let errorText = credentialErrorText {
+					HStack {
+						Image(systemName: "exclamationmark.triangle")
+						Text(errorText)
+							.font(.system(size: 18))
+							.lineLimit(2)
+							.multilineTextAlignment(.center)
+							.padding()
+					}
+					.foregroundColor(.red)
+				}
+				credentialFields
+				Button {
+					randoFactoDatabase.logIn(email: email, password: password) { error in
+						if let error = error {
+							showError(error: error)
+						} else {
+							dismissSignUp()
+						}
+					}
+				} label: {
+					Text("Register")
+				}
+			}
+			.padding(.horizontal)
+			.keyboardShortcut(.defaultAction)
+			.navigationTitle("Register")
+#if os(iOS)
+			.navigationBarTitleDisplayMode(.inline)
+#endif
+			.frame(minWidth: 400, minHeight: 400)
+			.toolbar {
+				ToolbarItem(placement: .cancellationAction) {
+					Button {
+						dismissSignUp()
+					} label: {
+						Text("Cancel")
+					}
+				}
+			}
+		}
+	}
+
+	var logInForm: some View {
+		NavigationStack {
+			Form {
+				if let errorText = credentialErrorText {
+					HStack {
+						Image(systemName: "exclamationmark.triangle")
+						Text(errorText)
+							.font(.system(size: 18))
+							.lineLimit(2)
+							.multilineTextAlignment(.center)
+							.padding()
+					}
+					.foregroundColor(.red)
+				}
+				credentialFields
+				Button {
+					randoFactoDatabase.logIn(email: email, password: password) { error in
+						if let error = error {
+							showError(error: error)
+						} else {
+							dismissLogIn()
+						}
+					}
+				} label: {
+					Text("Login")
+				}
+			}
+			.keyboardShortcut(.defaultAction)
+			.padding(.horizontal)
+			.navigationTitle("Login")
+#if os(iOS)
+			.navigationBarTitleDisplayMode(.inline)
+#endif
+			.frame(minWidth: 400, minHeight: 400)
+			.toolbar {
+				ToolbarItem(placement: .cancellationAction) {
+					Button {
+						dismissLogIn()
+					} label: {
+						Text("Cancel")
+					}
+				}
+			}
+		}
 	}
 
 	// MARK: - Credential Fields
