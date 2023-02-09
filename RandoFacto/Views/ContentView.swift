@@ -160,9 +160,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 			}
 			if randoFactoDatabase.online {
 				Button {
-					Task {
-						await factGenerator.generateRandomFact()
-					}
+						factGenerator.generateRandomFact()
 				} label: {
 					Text("Generate Random Fact")
 				}
@@ -395,7 +393,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 		Task {
 			randoFactoDatabase.delegate = self
 			await randoFactoDatabase.loadFavorites()
-			await factGenerator.generateRandomFact()
+			factGenerator.generateRandomFact()
 		}
 	}
 

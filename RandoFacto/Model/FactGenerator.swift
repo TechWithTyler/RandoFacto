@@ -55,31 +55,28 @@ struct FactGenerator {
 
 	// MARK: - Fact Generation
 
-	func generateRandomFact() async {
+	func generateRandomFact() {
 		guard let url = URL(string: factURLString) else { return }
 		let urlSession = URLSession(configuration: .default)
-		let task = urlSession.dataTask(with: URLRequest(url: url)) { data, response, error in
-			if let error = error {
-				delegate?.factGeneratorDidFail(self, error: error)
-			} else {
-				if let data = data {
-					Task {
-						if let factData = await parseJSON(data: data) {
-								await checkFactForProfanity(fact: factData)
-						} else {
-							logFactDataError()
-						}
-					}
-				} else {
-					logFactDataError()
-				}
-			}
-		}
 		delegate?.factGeneratorWillGenerateFact(self)
-		task.resume()
+		urlSession.dataTask(with: URLRequest(url: url)) { [self] data, response, error in
+			if let error = error {
+				self.delegate?.factGeneratorDidFail(self, error: error)
+				return
+			}
+			guard let data = data else {
+				self.logFactDataError()
+				return
+			}
+				guard let factData = self.parseJSON(data: data) else {
+					self.logFactDataError()
+					return
+				}
+				self.checkFactForProfanity(fact: factData)
+		}.resume()
 	}
 
-	func parseJSON(data: Data) async -> String? {
+	func parseJSON(data: Data) -> String? {
 		let decoder = JSONDecoder()
 		do {
 			let factObject = try decoder.decode(FactData.self, from: data)
@@ -92,13 +89,11 @@ struct FactGenerator {
 
 	// MARK: - Profanity Check
 
-	func checkFactForProfanity(fact: String) async {
+	func checkFactForProfanity(fact: String) {
 		let urlString = "\(profanityFilterURLString)\(fact)"
 		guard let url = URL(string: urlString.replacingOccurrences(of: " ", with: "%20").replacingOccurrences(of: "\n", with: "%0A")) else {
-			Task {
-				await generateRandomFact()
+				generateRandomFact()
 				delegate?.factGeneratorDidFindProfaneFact(self)
-			}
 			return
 		}
 		let urlSession = URLSession(configuration: .default)
@@ -107,18 +102,16 @@ struct FactGenerator {
 				delegate?.factGeneratorDidFail(self, error: error)
 			} else {
 				if let data = data {
-					Task {
-						if let cleanFactData = await parseProfanityFilterJSON(data: data) {
+						if let cleanFactData = parseProfanityFilterJSON(data: data) {
 							let containsProfanity = cleanFactData.contains("*")
 							if containsProfanity || cleanFactData.isEmpty {
-								await generateRandomFact()
+								generateRandomFact()
 							} else {
 								delegate?.factGeneratorDidGenerateFact(self, fact: cleanFactData)
 							}
 						} else {
 							logFilteredFactDataError()
 						}
-					}
 				} else {
 					logFilteredFactDataError()
 				}
@@ -127,7 +120,7 @@ struct FactGenerator {
 		task.resume()
 	}
 
-	func parseProfanityFilterJSON(data: Data) async -> String? {
+	func parseProfanityFilterJSON(data: Data) -> String? {
 		let decoder = JSONDecoder()
 		do {
 			let filteredFactObject = try decoder.decode(FilteredFactData.self, from: data)
