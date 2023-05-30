@@ -41,7 +41,11 @@ struct RandoFactoApp: App {
         WindowGroup {
             ContentView()
 				.frame(minWidth: 400, minHeight: 300, alignment: .center)
+				.ignoresSafeArea(edges: .all)
 		}
+		#if os(macOS)
+		.windowStyle(.hiddenTitleBar)
+		#endif
     }
 
 	// MARK: - Firebase Configuration

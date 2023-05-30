@@ -66,7 +66,9 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 					Divider()
 					footer
 				}
-				.padding()
+				.padding(.top, 50)
+				.padding(.bottom)
+				.padding(.horizontal)
 				.alert(isPresented: $showingErrorAlert, error: errorToShow, actions: {
 					Button {
 						showingErrorAlert = false
@@ -415,6 +417,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	func showError(error: Error) {
 		let nsError = error as NSError
+		print("Error: \(nsError)")
 		switch nsError.code {
 				// Network errors
 			case -1009:
