@@ -233,6 +233,8 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 		let notDisplayingFact = factText == generatingString || factText == errorString
 		return Menu {
 			if userLoggedIn {
+					Text((randoFactoDatabase.firebaseAuth.currentUser?.email)!)
+						.font(.largeTitle)
 				Button {
 					showingFavoritesList = true
 				} label: {
