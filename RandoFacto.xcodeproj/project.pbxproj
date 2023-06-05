@@ -14,11 +14,12 @@
 		8DA2C421292C1E6000705A2F /* FactGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA2C420292C1E6000705A2F /* FactGenerator.swift */; };
 		8DA2F331296E36B30068F761 /* VisualEffectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA2F330296E36B30068F761 /* VisualEffectView.swift */; };
 		8DCF671F297F58B7006DE41E /* FavoritesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCF671E297F58B7006DE41E /* FavoritesList.swift */; };
-		8DF48E2F2936A62A00152681 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8DF48E2E2936A62900152681 /* GoogleService-Info.plist */; };
+		8DD7920F2A2E78F800C1B61C /* APIKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DD7920E2A2E78F800C1B61C /* APIKey.swift */; };
 		8DF48E312936A80700152681 /* RandoFactoDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF48E302936A80700152681 /* RandoFactoDatabase.swift */; };
 		8DF48E352936A9E000152681 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 8DF48E342936A9E000152681 /* FirebaseAuth */; };
 		8DF48E372936A9E000152681 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 8DF48E362936A9E000152681 /* FirebaseFirestore */; };
 		8DF48E392936B02900152681 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF48E382936B02900152681 /* NetworkError.swift */; };
+		8DF8D9DF2A27DDA700874AFC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8DF48E2E2936A62900152681 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +32,8 @@
 		8DA2C420292C1E6000705A2F /* FactGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactGenerator.swift; sourceTree = "<group>"; };
 		8DA2F330296E36B30068F761 /* VisualEffectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualEffectView.swift; sourceTree = "<group>"; };
 		8DCF671E297F58B7006DE41E /* FavoritesList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesList.swift; sourceTree = "<group>"; };
+		8DD7920E2A2E78F800C1B61C /* APIKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKey.swift; sourceTree = "<group>"; };
+		8DF361272A2930FF00E3707A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		8DF48E2E2936A62900152681 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		8DF48E302936A80700152681 /* RandoFactoDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandoFactoDatabase.swift; sourceTree = "<group>"; };
 		8DF48E382936B02900152681 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
@@ -69,6 +72,7 @@
 		8DA2C410292C1E1100705A2F /* RandoFacto */ = {
 			isa = PBXGroup;
 			children = (
+				8DF361272A2930FF00E3707A /* Info.plist */,
 				8DA2C411292C1E1100705A2F /* RandoFactoApp.swift */,
 				8DA2F332296E38AA0068F761 /* Views */,
 				8DA2F333296E38C40068F761 /* Model */,
@@ -76,6 +80,7 @@
 				8DA2C417292C1E1200705A2F /* RandoFacto.entitlements */,
 				8DF48E2E2936A62900152681 /* GoogleService-Info.plist */,
 				8DA2C418292C1E1200705A2F /* Preview Content */,
+				8DD7920E2A2E78F800C1B61C /* APIKey.swift */,
 			);
 			path = RandoFacto;
 			sourceTree = "<group>";
@@ -180,9 +185,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8DF8D9DF2A27DDA700874AFC /* GoogleService-Info.plist in Resources */,
 				8DA2C41A292C1E1200705A2F /* Preview Assets.xcassets in Resources */,
 				8DA2C416292C1E1200705A2F /* Assets.xcassets in Resources */,
-				8DF48E2F2936A62A00152681 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -195,6 +200,7 @@
 			files = (
 				8DA2C421292C1E6000705A2F /* FactGenerator.swift in Sources */,
 				8DF48E392936B02900152681 /* NetworkError.swift in Sources */,
+				8DD7920F2A2E78F800C1B61C /* APIKey.swift in Sources */,
 				8DA2C414292C1E1100705A2F /* ContentView.swift in Sources */,
 				8DF48E312936A80700152681 /* RandoFactoDatabase.swift in Sources */,
 				8DA2C412292C1E1100705A2F /* RandoFactoApp.swift in Sources */,
@@ -334,6 +340,7 @@
 				"ENABLE_HARDENED_RUNTIME[sdk=macosx*]" = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = RandoFacto/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -378,6 +385,7 @@
 				"ENABLE_HARDENED_RUNTIME[sdk=macosx*]" = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = RandoFacto/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;

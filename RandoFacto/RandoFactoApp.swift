@@ -51,12 +51,24 @@ struct RandoFactoApp: App {
 	// MARK: - Firebase Configuration
 
 	func configureFirebase() {
-		FirebaseApp.configure()
+		// Create a FirebaseAppOptions object with the API key
+		guard let googleServicePlist = Bundle.main.url(forResource: "GoogleService-Info", withExtension: "plist") else {
+			fatalError("Firebase configuration file not found")
+		}
+		guard let options = FirebaseOptions(contentsOfFile: googleServicePlist.path) else {
+			fatalError("Failed to load options from configuration file")
+		}
+		options.apiKey = apiKey
+
+		// Initialize Firebase with the custom options
+		FirebaseApp.configure(options: options)
+
 		let settings = FirestoreSettings()
 		let firestore = Firestore.firestore()
 		settings.isPersistenceEnabled = true
 		settings.cacheSizeBytes = FirestoreCacheSizeUnlimited
 		firestore.settings = settings
 	}
+
 
 }
