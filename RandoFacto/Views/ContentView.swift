@@ -55,72 +55,77 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	var body: some View {
 		NavigationStack {
-			ZStack {
 #if os(macOS)
-				VisualEffectView()
+			VisualEffectView {
+				content
+			}
+			#else
+			content
 #endif
-				VStack {
-					factView
-					Spacer()
-					buttons
-					Divider()
-					footer
-				}
-				.padding(.top, 50)
-				.padding(.bottom)
-				.padding(.horizontal)
-				.alert(isPresented: $showingErrorAlert, error: errorToShow, actions: {
-					Button {
-						showingErrorAlert = false
-						errorToShow = nil
-					} label: {
-						Text("OK")
+		}
+	}
+
+	var content: some View {
+		VStack {
+			factView
+			Spacer()
+			buttons
+			Divider()
+			footer
+		}
+		.padding(.top, 50)
+		.padding(.bottom)
+		.padding(.horizontal)
+		.alert(isPresented: $showingErrorAlert, error: errorToShow, actions: {
+			Button {
+				showingErrorAlert = false
+				errorToShow = nil
+			} label: {
+				Text("OK")
+			}
+		})
+		.alert("Delete all favorite facts?", isPresented: $showingDeleteAllFavorites, actions: {
+			Button("Delete", role: .destructive) {
+				randoFactoDatabase.deleteAllFavorites { error in
+					if let error = error {
+						showError(error: error)
 					}
-				})
-				.alert("Delete all favorite facts?", isPresented: $showingDeleteAllFavorites, actions: {
-					Button("Delete", role: .destructive) {
-						randoFactoDatabase.deleteAllFavorites { error in
-							if let error = error {
-								showError(error: error)
-							}
-							showingDeleteAllFavorites = false
-						}
-					}
-					Button("Cancel", role: .cancel) {
-						showingDeleteAllFavorites = false
-					}
-				})
-				.alert("Delete user?", isPresented: $showingDeleteUser, actions: {
-					Button("Delete", role: .destructive) {
-						randoFactoDatabase.deleteUser()
-						showingDeleteUser = false
-					}
-					Button("Cancel", role: .cancel) {
-						showingDeleteUser = false
-					}
-				})
-				.sheet(isPresented: $showingFavoritesList, onDismiss: {
-					showingFavoritesList = false
-				}, content: {
-					FavoritesList(parent: self)
-				})
-				.sheet(isPresented: $showingSignUp, onDismiss: {
-					dismissSignUp()
-				}, content: {
-					signUpForm
-				})
-				.sheet(isPresented: $showingLogIn, onDismiss: {
-					dismissLogIn()
-				}, content: {
-					logInForm
-				})
-				.toolbar {
-					toolbarContent
-				}
-				.onAppear {
-					prepareView()
+					showingDeleteAllFavorites = false
 				}
 			}
+			Button("Cancel", role: .cancel) {
+				showingDeleteAllFavorites = false
+			}
+		})
+		.alert("Delete user?", isPresented: $showingDeleteUser, actions: {
+			Button("Delete", role: .destructive) {
+				randoFactoDatabase.deleteUser()
+				showingDeleteUser = false
+			}
+			Button("Cancel", role: .cancel) {
+				showingDeleteUser = false
+			}
+		})
+		.sheet(isPresented: $showingFavoritesList, onDismiss: {
+			showingFavoritesList = false
+		}, content: {
+			FavoritesList(parent: self)
+		})
+		.sheet(isPresented: $showingSignUp, onDismiss: {
+			dismissSignUp()
+		}, content: {
+			signUpForm
+		})
+		.sheet(isPresented: $showingLogIn, onDismiss: {
+			dismissLogIn()
+		}, content: {
+			logInForm
+		})
+		.toolbar {
+			toolbarContent
+		}
+		.onAppear {
+			prepareView()
 		}
 	}
 
@@ -307,6 +312,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 					Text("Register")
 				}
 			}
+			.formStyle(.grouped)
 			.padding(.horizontal)
 			.keyboardShortcut(.defaultAction)
 			.navigationTitle("Register")
@@ -353,6 +359,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 					Text("Login")
 				}
 			}
+			.formStyle(.grouped)
 			.keyboardShortcut(.defaultAction)
 			.padding(.horizontal)
 			.navigationTitle("Login")
