@@ -427,6 +427,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 	func showError(error: Error) {
 		let nsError = error as NSError
 		print("Error: \(nsError)")
+		print(nsError.userInfo[NSLocalizedFailureReasonErrorKey]!)
 		switch nsError.code {
 				// Network errors
 			case -1009:
@@ -463,10 +464,6 @@ extension ContentView {
 
 	func factGeneratorWillGenerateFact(_ generator: FactGenerator) {
 		factText = generatingString
-	}
-
-	func factGeneratorDidFindProfaneFact(_ generator: FactGenerator) {
-		factText = errorString
 	}
 
 	func factGeneratorDidGenerateFact(_ generator: FactGenerator, fact: String) {

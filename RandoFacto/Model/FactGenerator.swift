@@ -27,8 +27,6 @@ protocol FactGeneratorDelegate {
 
 	func factGeneratorWillGenerateFact(_ generator: FactGenerator)
 
-	func factGeneratorDidFindProfaneFact(_ generator: FactGenerator)
-
 	func factGeneratorDidGenerateFact(_ generator: FactGenerator, fact: String)
 
 	func factGeneratorDidFail(_ generator: FactGenerator, error: Error)
@@ -91,9 +89,8 @@ struct FactGenerator {
 
 	func checkFactForProfanity(fact: String) {
 		let urlString = "\(profanityFilterURLString)\(fact)"
-		guard let url = URL(string: urlString.replacingOccurrences(of: " ", with: "%20").replacingOccurrences(of: "\n", with: "%0A")) else {
+		guard let url = URL(string: urlString) else {
 				generateRandomFact()
-				delegate?.factGeneratorDidFindProfaneFact(self)
 			return
 		}
 		let urlSession = URLSession(configuration: .default)
@@ -105,9 +102,10 @@ struct FactGenerator {
 						if let cleanFactData = parseProfanityFilterJSON(data: data) {
 							let containsProfanity = cleanFactData.contains("*")
 							if containsProfanity || cleanFactData.isEmpty {
+								fatalError("Profanity detected!")
 								generateRandomFact()
 							} else {
-								delegate?.factGeneratorDidGenerateFact(self, fact: cleanFactData)
+								delegate?.factGeneratorDidGenerateFact(self, fact: cleanFactData.replacingOccurrences(of: "`", with: "'"))
 							}
 						} else {
 							logFilteredFactDataError()
