@@ -140,10 +140,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	var footer: some View {
 		VStack {
-			Text("Facts provided by [uselessfacts.jsph.pl](https://uselessfacts.jsph.pl)")
-				.font(.footnote)
-				.foregroundColor(.secondary)
-			Text("Facts checked for profanity by [purgomalum.com](https://www.purgomalum.com)")
+			Text("Facts provided by [api-ninjas.com](https://api-ninjas.com)")
 				.font(.footnote)
 				.foregroundColor(.secondary)
 		}
@@ -427,7 +424,6 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 	func showError(error: Error) {
 		let nsError = error as NSError
 		print("Error: \(nsError)")
-		print(nsError.userInfo[NSLocalizedFailureReasonErrorKey]!)
 		switch nsError.code {
 				// Network errors
 			case -1009:

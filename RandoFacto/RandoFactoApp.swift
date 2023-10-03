@@ -58,7 +58,7 @@ struct RandoFactoApp: App {
 		guard let options = FirebaseOptions(contentsOfFile: googleServicePlist.path) else {
 			fatalError("Failed to load options from configuration file")
 		}
-		options.apiKey = apiKey
+		options.apiKey = firebaseApiKey
 
 		// Initialize Firebase with the custom options
 		FirebaseApp.configure(options: options)
