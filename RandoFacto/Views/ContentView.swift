@@ -234,30 +234,38 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 		let userLoggedIn = randoFactoDatabase.firebaseAuth.currentUser != nil
 		let notDisplayingFact = factText == generatingString || factText == errorString
 		return Menu {
+			if !randoFactoDatabase.online && !userLoggedIn {
+				Text("Offline")
+			}
 			if userLoggedIn {
-					Text((randoFactoDatabase.firebaseAuth.currentUser?.email)!)
-						.font(.largeTitle)
-				Button {
-					showingFavoritesList = true
-				} label: {
-					Text("Favorite Facts List…")
-				}
-				Button {
-					showingDeleteAllFavorites = true
-				} label: {
-					Text("Delete All Favorite Facts…")
-				}
-				Divider()
-				Button {
-					randoFactoDatabase.logOut()
-				} label: {
-					Text("Logout")
-				}
-				if randoFactoDatabase.online {
-					Button {
-						showingDeleteUser = true
-					} label: {
-						Text("Delete User…")
+				Section(header:
+				Text((randoFactoDatabase.firebaseAuth.currentUser?.email)!)
+				) {
+					Menu("Favorites List") {
+						Button {
+							showingFavoritesList = true
+						} label: {
+							Text("View…")
+						}
+						Button {
+							showingDeleteAllFavorites = true
+						} label: {
+							Text("Delete All…")
+						}
+					}
+					Menu("Account") {
+						Button {
+							randoFactoDatabase.logOut()
+						} label: {
+							Text("Logout")
+						}
+						if randoFactoDatabase.online {
+							Button {
+								showingDeleteUser = true
+							} label: {
+								Text("Delete User…")
+							}
+						}
 					}
 				}
 			} else {
