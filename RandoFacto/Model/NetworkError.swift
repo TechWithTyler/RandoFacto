@@ -19,7 +19,7 @@ enum NetworkError: LocalizedError {
 
 	case dataError
 
-	case filteredDataError
+	case quotaExceeded
 
 	case userDeletionFailed(reason: String)
 
@@ -31,8 +31,10 @@ enum NetworkError: LocalizedError {
 				return "No internet connection. Running in offline mode."
 			case .noText:
 				return "Generated fact doesn't appear to contain text."
-			case .dataError, .filteredDataError:
+			case .dataError:
 				return "Fact data error."
+			case .quotaExceeded:
+				return "Too many favorite facts database requests at once. Try again later."
 			case let .userDeletionFailed(reason):
 				return "User deletion failed: \(reason)"
 			case let .unknown(reason):

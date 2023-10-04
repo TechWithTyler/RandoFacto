@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8D7507832ACDF0D500382FE1 /* FactData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D7507822ACDF0D500382FE1 /* FactData.swift */; };
 		8DA2C412292C1E1100705A2F /* RandoFactoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA2C411292C1E1100705A2F /* RandoFactoApp.swift */; };
 		8DA2C414292C1E1100705A2F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA2C413292C1E1100705A2F /* ContentView.swift */; };
 		8DA2C416292C1E1200705A2F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8DA2C415292C1E1200705A2F /* Assets.xcassets */; };
@@ -31,6 +32,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8D7507822ACDF0D500382FE1 /* FactData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactData.swift; sourceTree = "<group>"; };
 		8DA2C40E292C1E1100705A2F /* RandoFacto.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RandoFacto.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8DA2C411292C1E1100705A2F /* RandoFactoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandoFactoApp.swift; sourceTree = "<group>"; };
 		8DA2C413292C1E1100705A2F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -123,6 +125,7 @@
 			isa = PBXGroup;
 			children = (
 				8DA2C420292C1E6000705A2F /* FactGenerator.swift */,
+				8D7507822ACDF0D500382FE1 /* FactData.swift */,
 				8DF48E302936A80700152681 /* RandoFactoDatabase.swift */,
 				8DF48E382936B02900152681 /* NetworkError.swift */,
 			);
@@ -227,6 +230,7 @@
 				8DD7920F2A2E78F800C1B61C /* APIKey.swift in Sources */,
 				8DA2C414292C1E1100705A2F /* ContentView.swift in Sources */,
 				8DF48E312936A80700152681 /* RandoFactoDatabase.swift in Sources */,
+				8D7507832ACDF0D500382FE1 /* FactData.swift in Sources */,
 				8DA2C412292C1E1100705A2F /* RandoFactoApp.swift in Sources */,
 				8DCF671F297F58B7006DE41E /* FavoritesList.swift in Sources */,
 				8DA2F331296E36B30068F761 /* VisualEffectView.swift in Sources */,

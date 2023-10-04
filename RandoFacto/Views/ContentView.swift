@@ -424,6 +424,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 	func showError(error: Error) {
 		let nsError = error as NSError
 		print("Error: \(nsError)")
+		// Check the error code to choose which error to show.
 		switch nsError.code {
 				// Network errors
 			case -1009:
@@ -433,18 +434,20 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 				errorToShow = .noText
 			case 523:
 				errorToShow = .dataError
-			case 524:
-				errorToShow = .filteredDataError
 				// Database errors
 			case 17014:
 				showingLogIn = true
 				errorToShow = .userDeletionFailed(reason: "It's been too long since you last logged in. Please log in and try deleting your account again.")
+			case 17052:
+				errorToShow = .quotaExceeded
+				// Database errors
 			case 17020:
 				return
 				// Other errors
 			default:
 				errorToShow = .unknown(reason: "\(nsError.userInfo[NSLocalizedDescriptionKey] ?? "Unknown error: Code \(nsError.code)")")
 		}
+		// Show the error in the log in/sign up dialog if they're open, otherwise show it as an alert.
 		if showingLogIn || showingSignUp {
 			credentialErrorText = errorToShow?.errorDescription
 		} else {

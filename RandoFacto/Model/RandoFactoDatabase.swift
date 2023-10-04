@@ -76,23 +76,25 @@ class RandoFactoDatabase: ObservableObject {
 		networkPathMonitor.pathUpdateHandler = {
 			[self] path in
 			if path.status == .satisfied {
-				DispatchQueue.main.async { [self] in
-					online = true
-				}
 				firestore.enableNetwork {
 					[self] error in
 					if let error = error {
 						delegate?.randoFactoDatabaseNetworkEnableDidFail(self, error: error)
+					} else {
+						DispatchQueue.main.async { [self] in
+							online = true
+						}
 					}
 				}
 			} else {
-				DispatchQueue.main.async { [self] in
-					online = false
-				}
 				firestore.disableNetwork {
 					[self] error in
 					if let error = error {
 						delegate?.randoFactoDatabaseNetworkDisableDidFail(self, error: error)
+					} else {
+						DispatchQueue.main.async { [self] in
+							online = false
+						}
 					}
 				}
 			}
@@ -150,7 +152,6 @@ class RandoFactoDatabase: ObservableObject {
 
 	func deleteUser() {
 		guard let user = firebaseAuth.currentUser else { return }
-
 		firestore.collection(favoritesCollectionName)
 			.whereField(userKeyName, isEqualTo: user.email!)
 			.getDocuments { [self] snapshot, error in
@@ -170,7 +171,6 @@ class RandoFactoDatabase: ObservableObject {
 						}
 				}
 			}
-
 		user.delete { [self] error in
 			if let error = error {
 				delegate?.randoFactoDatabaseDidFailToDeleteUser(self, error: error)
