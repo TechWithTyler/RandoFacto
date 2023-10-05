@@ -173,7 +173,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 #endif
 			}
 		}
-		.disabled(factText == generatingString || factText == errorString)
+		.disabled(factText == generatingString)
 	}
 
 	// MARK: - Toolbar
@@ -181,7 +181,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 	@ToolbarContentBuilder
 	var toolbarContent: some ToolbarContent {
 			let userLoggedIn = randoFactoDatabase.firebaseAuth.currentUser != nil
-			let notDisplayingFact = factText == generatingString || factText == errorString
+			let notDisplayingFact = factText == generatingString
 			let displayingLoadingMessage = factText.last == "…"
 			if displayingLoadingMessage {
 				ToolbarItem(placement: .automatic) {
@@ -224,7 +224,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	var accountMenu: some View {
 		let userLoggedIn = randoFactoDatabase.firebaseAuth.currentUser != nil
-		let notDisplayingFact = factText == generatingString || factText == errorString
+		let notDisplayingFact = factText == generatingString
 		return Menu {
 			if !randoFactoDatabase.online && !userLoggedIn {
 				Text("Offline")
