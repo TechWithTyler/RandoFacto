@@ -97,7 +97,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 				showingDeleteAllFavorites = false
 			}
 		})
-		.alert("Delete user?", isPresented: $showingDeleteUser, actions: {
+		.alert("Delete your account?", isPresented: $showingDeleteUser, actions: {
 			Button("Delete", role: .destructive) {
 				randoFactoDatabase.deleteUser()
 				showingDeleteUser = false
@@ -105,6 +105,8 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 			Button("Cancel", role: .cancel) {
 				showingDeleteUser = false
 			}
+		}, message: {
+			Text("You won't be able to save favorite facts to view offline!")
 		})
 		.sheet(isPresented: $showingFavoritesList, onDismiss: {
 			showingFavoritesList = false
@@ -198,27 +200,19 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 						Button {
 							randoFactoDatabase.deleteFromFavorites(fact: factText)
 						} label: {
-							Label {
-								Text("\(randoFactoDatabase.favorites.count)")
-							} icon: {
 								Image(systemName: "heart.fill")
-							}
 						}.padding()
-							.labelStyle(.titleAndIcon)
 							.help("Unfavorite")
+							.accessibilityLabel("Unfavorite")
 							.disabled(notDisplayingFact || factText == factUnavailableString)
 					} else {
 						Button {
 							randoFactoDatabase.saveToFavorites(fact: factText)
 						} label: {
-							Label {
-								Text("\(randoFactoDatabase.favorites.count)")
-							} icon: {
-								Image(systemName: "heart")
-							}
+							Image(systemName: "heart")
 						}.padding()
-							.labelStyle(.titleAndIcon)
 							.help("Favorite")
+							.accessibilityLabel("Favorite")
 							.disabled(notDisplayingFact || factText == factUnavailableString)
 					}
 				}
@@ -263,7 +257,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 							Button {
 								showingDeleteUser = true
 							} label: {
-								Text("Delete User…")
+								Text("Delete Account…")
 							}
 						}
 					}
@@ -278,7 +272,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 					Button {
 						showingSignUp = true
 					} label: {
-						Text("Register…")
+						Text("Sign Up…")
 					}
 				}
 			}
@@ -286,6 +280,8 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 			Image(systemName: "person.circle")
 		}
 		.disabled(notDisplayingFact)
+		.accessibilityLabel("Account")
+		.help("Account")
 	}
 
 	// MARK: - Forms
@@ -306,7 +302,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 				}
 				credentialFields
 				Button {
-					randoFactoDatabase.logIn(email: email, password: password) { error in
+					randoFactoDatabase.signUp(email: email, password: password) { error in
 						if let error = error {
 							showError(error: error)
 						} else {
@@ -314,13 +310,13 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 						}
 					}
 				} label: {
-					Text("Register")
+					Text("Sign Up")
 				}
 			}
 			.formStyle(.grouped)
 			.padding(.horizontal)
 			.keyboardShortcut(.defaultAction)
-			.navigationTitle("Register")
+			.navigationTitle("Sign Up")
 #if os(iOS)
 			.navigationBarTitleDisplayMode(.inline)
 #endif
@@ -390,6 +386,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 		Section {
 			HStack {
 				TextField("Email", text: $email)
+					.textContentType(.username)
 #if os(iOS)
 					.keyboardType(.emailAddress)
 #endif

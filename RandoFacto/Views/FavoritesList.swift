@@ -19,27 +19,35 @@ struct FavoritesList: View {
 						.font(.largeTitle)
 						.foregroundColor(.secondary)
 				} else {
-					List {
-						ForEach(parent.randoFactoDatabase.favorites, id: \.self) {
-							favorite in
-							Button {
-								parent.factText = favorite
-								parent.showingFavoritesList = false
-							} label: {
-								Text(favorite)
-									.lineLimit(nil)
-									.multilineTextAlignment(.leading)
-									.foregroundColor(.primary)
-							}
-							.buttonStyle(.borderless)
-							.contextMenu {
+					VStack {
+						Text("Favorite facts: \(parent.randoFactoDatabase.favorites.count)")
+							.multilineTextAlignment(.center)
+							.padding(10)
+						Text("Select a favorite fact to display it.")
+							.multilineTextAlignment(.center)
+							.padding(10)
+						List {
+							ForEach(parent.randoFactoDatabase.favorites, id: \.self) {
+								favorite in
 								Button {
-									parent.randoFactoDatabase.deleteFromFavorites(fact: favorite)
+									parent.factText = favorite
+									parent.showingFavoritesList = false
 								} label: {
-									Text("Delete")
+									Text(favorite)
+										.lineLimit(nil)
+										.multilineTextAlignment(.leading)
+										.foregroundColor(.primary)
 								}
-							}
-						}.onDelete(perform: delete(at:))
+								.buttonStyle(.borderless)
+								.contextMenu {
+									Button {
+										parent.randoFactoDatabase.deleteFromFavorites(fact: favorite)
+									} label: {
+										Text("Delete")
+									}
+								}
+							}.onDelete(perform: delete(at:))
+						}
 					}
 				}
 			}
@@ -53,6 +61,7 @@ struct FavoritesList: View {
 				}
 			}
 		}
+		.navigationTitle("Favorite Facts List")
 		.frame(minWidth: 300, minHeight: 300)
 	}
 
