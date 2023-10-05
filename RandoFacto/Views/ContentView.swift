@@ -21,11 +21,9 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	private let generatingString = "Generating Fact…"
 
-	private let errorString = "Fact contains profanity. Trying another…"
-
 	private let factUnavailableString = "Fact unavailable"
 
-	@State var factText: String = "Fact Text"
+	@State var factText: String = "Loading…"
 
 	@State private var credentialErrorText: String? = nil
 
@@ -411,17 +409,17 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 	}
 
 	func dismissSignUp() {
-		showingSignUp = false
 		email = String()
 		password = String()
 		credentialErrorText = nil
+		showingSignUp = false
 	}
 
 	func dismissLogIn() {
-		showingLogIn = false
 		email = String()
 		password = String()
 		credentialErrorText = nil
+		showingLogIn = false
 	}
 
 	// MARK: - Error Handling
