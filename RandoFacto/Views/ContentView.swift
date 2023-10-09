@@ -19,7 +19,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	// MARK: - Properties - Strings
 
-	private let generatingString = "Generating Fact…"
+	private let generatingString = "Generating random fact…"
 
 	private let factUnavailableString = "Fact unavailable"
 
@@ -437,18 +437,15 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 				errorToShow = .noText
 			case 523:
 				errorToShow = .dataError
-				// Database errors
 			case 17014:
+				// Database errors
 				showingLogIn = true
-				errorToShow = .userDeletionFailed(reason: "It's been too long since you last logged in. Please log in and try deleting your account again.")
+				errorToShow = .userDeletionFailed(reason: "It's been too long since you last logged in. Please re-log in and try deleting your account again.")
 			case 17052:
 				errorToShow = .quotaExceeded
-				// Database errors
-			case 17020:
-				return
 				// Other errors
 			default:
-				errorToShow = .unknown(reason: "\(nsError.userInfo[NSLocalizedDescriptionKey] ?? "Unknown error: Code \(nsError.code)")")
+				errorToShow = .unknown(reason: nsError.localizedDescription)
 		}
 		// Show the error in the log in/sign up dialog if they're open, otherwise show it as an alert.
 		if showingLogIn || showingSignUp {

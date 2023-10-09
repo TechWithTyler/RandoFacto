@@ -48,7 +48,7 @@ struct FactGenerator {
 				self.delegate?.factGeneratorDidFail(self, error: error)
 				return
 			}
-			guard let data = data, let factData = self.parseJSON(data: data) else {
+			guard let factData = self.parseJSON(data: data) else {
 				self.logFactDataError()
 				return
 			}
@@ -57,14 +57,16 @@ struct FactGenerator {
 		dataTask.resume()
 	}
 
-	func parseJSON(data: Data) -> String? {
+	func parseJSON(data: Data?) -> String? {
+		guard let data = data else {
+			return nil
+		}
 		let decoder = JSONDecoder()
 		do {
 			if let factObject = try decoder.decode([FactData].self, from: data).first {
 				let text = factObject.fact
 				return formattedFactText(for: text)
 			} else {
-				logDecodeError()
 				return nil
 			}
 		} catch {
