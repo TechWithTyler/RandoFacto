@@ -61,7 +61,12 @@ struct FactGenerator {
 		let decoder = JSONDecoder()
 		do {
 			if let factObject = try decoder.decode([FactData].self, from: data).first {
-				return factObject.fact + "."
+				let text = factObject.fact
+				if text.last == "." || text.last == "?" || text.last == "!" {
+					return text
+				} else {
+					return text + "."
+				}
 			} else {
 				logDecodeError()
 				return nil
