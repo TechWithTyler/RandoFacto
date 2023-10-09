@@ -62,11 +62,7 @@ struct FactGenerator {
 		do {
 			if let factObject = try decoder.decode([FactData].self, from: data).first {
 				let text = factObject.fact
-				if text.last == "." || text.last == "?" || text.last == "!" {
-					return text
-				} else {
-					return text + "."
-				}
+				return formattedFactText(for: text)
 			} else {
 				logDecodeError()
 				return nil
@@ -74,6 +70,14 @@ struct FactGenerator {
 		} catch {
 			delegate?.factGeneratorDidFail(self, error: error)
 			return nil
+		}
+	}
+
+	func formattedFactText(for fact: String) -> String {
+		if fact.last == "." || fact.last == "?" || fact.last == "!" || fact.hasSuffix(".\"") {
+			return fact
+		} else {
+			return fact + "."
 		}
 	}
 

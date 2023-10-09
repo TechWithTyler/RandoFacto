@@ -148,6 +148,18 @@ class RandoFactoDatabase: ObservableObject {
 		}
 	}
 
+	func logOutMissingUser() {
+		firebaseAuth.currentUser?.getIDTokenForcingRefresh(true) { [self] token, error in
+			if let error = error {
+				delegate?.randoFactoDatabaseLoadingDidFail(self, error: error)
+			} else {
+				if token == nil {
+					logOut()
+				}
+			}
+		}
+	}
+
 	// MARK: - Delete User
 
 	func deleteUser() {
@@ -192,15 +204,7 @@ class RandoFactoDatabase: ObservableObject {
 							delegate?.randoFactoDatabaseLoadingDidFail(self, error: error)
 						} else {
 							favorites = []
-								firebaseAuth.currentUser?.getIDTokenForcingRefresh(true) { [self] token, error in
-									if let error = error {
-										delegate?.randoFactoDatabaseLoadingDidFail(self, error: error)
-									} else {
-										if token == nil {
-											logOut()
-										}
-									}
-								}
+							logOutMissingUser()
 							for favorite in (snapshot?.documents)! {
 								if let fact = favorite.data()[factTextKeyName] as? String {
 									self.favorites.append(fact)
@@ -256,30 +260,30 @@ class RandoFactoDatabase: ObservableObject {
 	}
 
 	func deleteAllFavorites(completionHandler: @escaping ((Error?) -> Void)) {
-		Task {
+		let group = DispatchGroup()
 		for fact in favorites {
-				DispatchQueue.main.async { [self] in
-					firestore.collection(favoritesCollectionName).whereField(factTextKeyName, isEqualTo: fact).getDocuments(source: .cache) { [self] snapshot, error in
-						if let error = error {
-							completionHandler(error)
-							return
-						} else {
-							if let ref = snapshot?.documents.first {
-								firestore.collection(favoritesCollectionName).document(ref.documentID).delete {
-									error in
-									if let error = error {
-										completionHandler(error)
-										return
-									}
-								}
-							} else {
-								completionHandler(refError)
-								return
-							}
-						}
+			group.enter()
+			firestore.collection(favoritesCollectionName).whereField(factTextKeyName, isEqualTo: fact).getDocuments(source: .cache) { [self] snapshot, error in
+				defer {
+					group.leave()
+				}
+				if let error = error {
+					completionHandler(error)
+					return
+				}
+				guard let ref = snapshot?.documents.first else {
+					completionHandler(refError)
+					return
+				}
+				firestore.collection(favoritesCollectionName).document(ref.documentID).delete { error in
+					if let error = error {
+						completionHandler(error)
 					}
 				}
 			}
+		}
+		group.notify(queue: DispatchQueue.main) {
+			completionHandler(nil)
 		}
 	}
 
