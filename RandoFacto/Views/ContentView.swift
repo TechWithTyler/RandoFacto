@@ -150,7 +150,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 	// MARK: - Buttons
 
 	var buttons: some View {
-		VStack {
+		ConditionalHVStack {
 			if randoFactoDatabase.firebaseAuth.currentUser != nil {
 				if !(randoFactoDatabase.favorites.isEmpty) {
 					Button {
