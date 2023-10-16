@@ -2,10 +2,11 @@
 //  ContentView.swift
 //  RandoFacto
 //
-//  Created by TechWithTyler on 11/21/22.
+//  Created by Tyler Sheft on 11/21/22.
 //
 
 import SwiftUI
+import SheftAppsStylishUI
 
 struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
@@ -54,7 +55,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 	var body: some View {
 		NavigationStack {
 #if os(macOS)
-			VisualEffectView {
+			SAMVisualEffectViewSwiftUIRepresentable {
 				content
 			}
 			#else
@@ -149,7 +150,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 	// MARK: - Buttons
 
 	var buttons: some View {
-		VStack {
+		ConditionalHVStack {
 			if randoFactoDatabase.firebaseAuth.currentUser != nil {
 				if !(randoFactoDatabase.favorites.isEmpty) {
 					Button {
