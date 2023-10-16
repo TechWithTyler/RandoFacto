@@ -2,7 +2,7 @@
 //  FactData.swift
 //  RandoFacto
 //
-//  Created by TechWithTyler on 11/21/22.
+//  Created by Tyler Sheft on 11/21/22.
 //
 
 import Foundation

@@ -7,13 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8D0C38D42ADDC78900EBB03A /* RandoFactoButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0C38D32ADDC78900EBB03A /* RandoFactoButton.swift */; };
+		8D0C38D62ADDC9AB00EBB03A /* SheftAppsStylishUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D0C38D52ADDC9AB00EBB03A /* SheftAppsStylishUI.framework */; };
+		8D0C38D72ADDC9AB00EBB03A /* SheftAppsStylishUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8D0C38D52ADDC9AB00EBB03A /* SheftAppsStylishUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8D7507832ACDF0D500382FE1 /* FactData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D7507822ACDF0D500382FE1 /* FactData.swift */; };
 		8DA2C412292C1E1100705A2F /* RandoFactoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA2C411292C1E1100705A2F /* RandoFactoApp.swift */; };
 		8DA2C414292C1E1100705A2F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA2C413292C1E1100705A2F /* ContentView.swift */; };
 		8DA2C416292C1E1200705A2F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8DA2C415292C1E1200705A2F /* Assets.xcassets */; };
 		8DA2C41A292C1E1200705A2F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8DA2C419292C1E1200705A2F /* Preview Assets.xcassets */; };
 		8DA2C421292C1E6000705A2F /* FactGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA2C420292C1E6000705A2F /* FactGenerator.swift */; };
-		8DA2F331296E36B30068F761 /* VisualEffectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA2F330296E36B30068F761 /* VisualEffectView.swift */; };
 		8DCF671F297F58B7006DE41E /* FavoritesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCF671E297F58B7006DE41E /* FavoritesList.swift */; };
 		8DD72BC22AC60FFE0032AAB2 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 8DD72BC12AC60FFE0032AAB2 /* FirebaseAnalytics */; };
 		8DD72BC42AC60FFE0032AAB2 /* FirebaseAnalyticsOnDeviceConversion in Frameworks */ = {isa = PBXBuildFile; productRef = 8DD72BC32AC60FFE0032AAB2 /* FirebaseAnalyticsOnDeviceConversion */; };
@@ -31,7 +33,23 @@
 		8DF8D9DF2A27DDA700874AFC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8DF48E2E2936A62900152681 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		8D0C38D82ADDC9AB00EBB03A /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				8D0C38D72ADDC9AB00EBB03A /* SheftAppsStylishUI.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		8D0C38D32ADDC78900EBB03A /* RandoFactoButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandoFactoButton.swift; sourceTree = "<group>"; };
+		8D0C38D52ADDC9AB00EBB03A /* SheftAppsStylishUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SheftAppsStylishUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D7507822ACDF0D500382FE1 /* FactData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactData.swift; sourceTree = "<group>"; };
 		8DA2C40E292C1E1100705A2F /* RandoFacto.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RandoFacto.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8DA2C411292C1E1100705A2F /* RandoFactoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandoFactoApp.swift; sourceTree = "<group>"; };
@@ -40,7 +58,6 @@
 		8DA2C417292C1E1200705A2F /* RandoFacto.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RandoFacto.entitlements; sourceTree = "<group>"; };
 		8DA2C419292C1E1200705A2F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		8DA2C420292C1E6000705A2F /* FactGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactGenerator.swift; sourceTree = "<group>"; };
-		8DA2F330296E36B30068F761 /* VisualEffectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualEffectView.swift; sourceTree = "<group>"; };
 		8DCF671E297F58B7006DE41E /* FavoritesList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesList.swift; sourceTree = "<group>"; };
 		8DD7920E2A2E78F800C1B61C /* APIKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKeys.swift; sourceTree = "<group>"; };
 		8DF361272A2930FF00E3707A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -54,6 +71,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8D0C38D62ADDC9AB00EBB03A /* SheftAppsStylishUI.framework in Frameworks */,
 				8DD72BC62AC60FFE0032AAB2 /* FirebaseAnalyticsSwift in Frameworks */,
 				8DD72BC22AC60FFE0032AAB2 /* FirebaseAnalytics in Frameworks */,
 				8DD72BC42AC60FFE0032AAB2 /* FirebaseAnalyticsOnDeviceConversion in Frameworks */,
@@ -116,7 +134,7 @@
 			children = (
 				8DA2C413292C1E1100705A2F /* ContentView.swift */,
 				8DCF671E297F58B7006DE41E /* FavoritesList.swift */,
-				8DA2F330296E36B30068F761 /* VisualEffectView.swift */,
+				8D0C38D32ADDC78900EBB03A /* RandoFactoButton.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -135,6 +153,7 @@
 		8DF48E332936A9E000152681 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8D0C38D52ADDC9AB00EBB03A /* SheftAppsStylishUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -149,6 +168,7 @@
 				8DA2C40A292C1E1100705A2F /* Sources */,
 				8DA2C40B292C1E1100705A2F /* Frameworks */,
 				8DA2C40C292C1E1100705A2F /* Resources */,
+				8D0C38D82ADDC9AB00EBB03A /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -225,6 +245,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8D0C38D42ADDC78900EBB03A /* RandoFactoButton.swift in Sources */,
 				8DA2C421292C1E6000705A2F /* FactGenerator.swift in Sources */,
 				8DF48E392936B02900152681 /* NetworkError.swift in Sources */,
 				8DD7920F2A2E78F800C1B61C /* APIKeys.swift in Sources */,
@@ -233,7 +254,6 @@
 				8D7507832ACDF0D500382FE1 /* FactData.swift in Sources */,
 				8DA2C412292C1E1100705A2F /* RandoFactoApp.swift in Sources */,
 				8DCF671F297F58B7006DE41E /* FavoritesList.swift in Sources */,
-				8DA2F331296E36B30068F761 /* VisualEffectView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
