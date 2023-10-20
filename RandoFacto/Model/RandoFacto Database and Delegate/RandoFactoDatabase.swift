@@ -160,17 +160,19 @@ class RandoFactoDatabase: ObservableObject {
 							if let error = error {
 								delegate?.randoFactoDatabaseDidFailToDeleteUser(self, error: error)
 								return
+							} else {
+								user.delete { [self] error in
+									if let error = error {
+										delegate?.randoFactoDatabaseDidFailToDeleteUser(self, error: error)
+									} else {
+										favorites.removeAll()
+										logOut()
+									}
+								}
 							}
 						}
 				}
 			}
-		user.delete { [self] error in
-			if let error = error {
-				delegate?.randoFactoDatabaseDidFailToDeleteUser(self, error: error)
-			} else {
-				favorites.removeAll()
-			}
-		}
 	}
 
 	// MARK: - Favorites Management - Loading
@@ -184,9 +186,12 @@ class RandoFactoDatabase: ObservableObject {
 						if let error = error {
 							delegate?.randoFactoDatabaseLoadingDidFail(self, error: error)
 						} else {
+							guard let snapshot = snapshot else {
+								logOutMissingUser()
+								return
+							}
 							favorites = []
-							logOutMissingUser()
-							for favorite in (snapshot?.documents)! {
+							for favorite in snapshot.documents {
 								if let fact = favorite.data()[factTextKeyName] as? String {
 									self.favorites.append(fact)
 								} else {
@@ -223,7 +228,7 @@ class RandoFactoDatabase: ObservableObject {
 				if let error = error {
 					delegate?.randoFactoDatabaseDidFailToDeleteFavorite(self, fact: fact, error: error)
 				} else {
-					if let ref = snapshot?.documents.first {
+					if let snapshot = snapshot, let ref = snapshot.documents.first {
 						firestore.collection(favoritesCollectionName).document(ref.documentID).delete { [self]
 							error in
 							if let error = error {
@@ -250,7 +255,7 @@ class RandoFactoDatabase: ObservableObject {
 					completionHandler(error)
 					return
 				}
-				guard let ref = snapshot?.documents.first else {
+				guard let snapshot = snapshot, let ref = snapshot.documents.first else {
 					completionHandler(refError)
 					return
 				}
