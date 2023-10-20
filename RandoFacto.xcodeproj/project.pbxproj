@@ -10,6 +10,9 @@
 		8D0C38D62ADDC9AB00EBB03A /* SheftAppsStylishUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D0C38D52ADDC9AB00EBB03A /* SheftAppsStylishUI.framework */; };
 		8D0C38D72ADDC9AB00EBB03A /* SheftAppsStylishUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8D0C38D52ADDC9AB00EBB03A /* SheftAppsStylishUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8D7507832ACDF0D500382FE1 /* FactData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D7507822ACDF0D500382FE1 /* FactData.swift */; };
+		8DA01A2C2AE3193F0068A139 /* FactGeneratorDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA01A2B2AE3193F0068A139 /* FactGeneratorDelegate.swift */; };
+		8DA01A2E2AE319700068A139 /* RandoFactoDatabaseDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA01A2D2AE319700068A139 /* RandoFactoDatabaseDelegate.swift */; };
+		8DA01A322AE319F70068A139 /* FilteredWordsData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA01A312AE319F70068A139 /* FilteredWordsData.swift */; };
 		8DA2C412292C1E1100705A2F /* RandoFactoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA2C411292C1E1100705A2F /* RandoFactoApp.swift */; };
 		8DA2C414292C1E1100705A2F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA2C413292C1E1100705A2F /* ContentView.swift */; };
 		8DA2C416292C1E1200705A2F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8DA2C415292C1E1200705A2F /* Assets.xcassets */; };
@@ -49,6 +52,9 @@
 /* Begin PBXFileReference section */
 		8D0C38D52ADDC9AB00EBB03A /* SheftAppsStylishUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SheftAppsStylishUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D7507822ACDF0D500382FE1 /* FactData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactData.swift; sourceTree = "<group>"; };
+		8DA01A2B2AE3193F0068A139 /* FactGeneratorDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactGeneratorDelegate.swift; sourceTree = "<group>"; };
+		8DA01A2D2AE319700068A139 /* RandoFactoDatabaseDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandoFactoDatabaseDelegate.swift; sourceTree = "<group>"; };
+		8DA01A312AE319F70068A139 /* FilteredWordsData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilteredWordsData.swift; sourceTree = "<group>"; };
 		8DA2C40E292C1E1100705A2F /* RandoFacto.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RandoFacto.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8DA2C411292C1E1100705A2F /* RandoFactoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandoFactoApp.swift; sourceTree = "<group>"; };
 		8DA2C413292C1E1100705A2F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -58,7 +64,7 @@
 		8DA2C420292C1E6000705A2F /* FactGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactGenerator.swift; sourceTree = "<group>"; };
 		8DCF671E297F58B7006DE41E /* FavoritesList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesList.swift; sourceTree = "<group>"; };
 		8DD7920E2A2E78F800C1B61C /* APIKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKeys.swift; sourceTree = "<group>"; };
-		8DF361272A2930FF00E3707A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		8DF361272A2930FF00E3707A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8DF48E2E2936A62900152681 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		8DF48E302936A80700152681 /* RandoFactoDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandoFactoDatabase.swift; sourceTree = "<group>"; };
 		8DF48E382936B02900152681 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
@@ -89,9 +95,9 @@
 		8D91FEA02AE22C8C00ACB743 /* UI and Images */ = {
 			isa = PBXGroup;
 			children = (
+				8DA2F332296E38AA0068F761 /* Views */,
 				8DA2C418292C1E1200705A2F /* Preview Content */,
 				8DA2C415292C1E1200705A2F /* Assets.xcassets */,
-				8DA2F332296E38AA0068F761 /* Views */,
 			);
 			path = "UI and Images";
 			sourceTree = "<group>";
@@ -100,9 +106,37 @@
 			isa = PBXGroup;
 			children = (
 				8DA2C417292C1E1200705A2F /* RandoFacto.entitlements */,
+				8DF361272A2930FF00E3707A /* Info.plist */,
 				8DF48E2E2936A62900152681 /* GoogleService-Info.plist */,
 			);
 			path = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		8DA01A2F2AE3198A0068A139 /* Fact Generator and Delegate */ = {
+			isa = PBXGroup;
+			children = (
+				8DA2C420292C1E6000705A2F /* FactGenerator.swift */,
+				8DA01A2B2AE3193F0068A139 /* FactGeneratorDelegate.swift */,
+			);
+			path = "Fact Generator and Delegate";
+			sourceTree = "<group>";
+		};
+		8DA01A302AE319980068A139 /* RandoFacto Database and Delegate */ = {
+			isa = PBXGroup;
+			children = (
+				8DF48E302936A80700152681 /* RandoFactoDatabase.swift */,
+				8DA01A2D2AE319700068A139 /* RandoFactoDatabaseDelegate.swift */,
+			);
+			path = "RandoFacto Database and Delegate";
+			sourceTree = "<group>";
+		};
+		8DA01A332AE31A020068A139 /* Decodable Data */ = {
+			isa = PBXGroup;
+			children = (
+				8D7507822ACDF0D500382FE1 /* FactData.swift */,
+				8DA01A312AE319F70068A139 /* FilteredWordsData.swift */,
+			);
+			path = "Decodable Data";
 			sourceTree = "<group>";
 		};
 		8DA2C405292C1E1100705A2F = {
@@ -125,9 +159,8 @@
 		8DA2C410292C1E1100705A2F /* RandoFacto */ = {
 			isa = PBXGroup;
 			children = (
-				8D91FEA02AE22C8C00ACB743 /* UI and Images */,
-				8DF361272A2930FF00E3707A /* Info.plist */,
 				8DA2C411292C1E1100705A2F /* RandoFactoApp.swift */,
+				8D91FEA02AE22C8C00ACB743 /* UI and Images */,
 				8DA2F333296E38C40068F761 /* Model */,
 				8D91FEA12AE22CB600ACB743 /* Supporting Files */,
 				8DD7920E2A2E78F800C1B61C /* APIKeys.swift */,
@@ -155,9 +188,9 @@
 		8DA2F333296E38C40068F761 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				8DA2C420292C1E6000705A2F /* FactGenerator.swift */,
-				8D7507822ACDF0D500382FE1 /* FactData.swift */,
-				8DF48E302936A80700152681 /* RandoFactoDatabase.swift */,
+				8DA01A2F2AE3198A0068A139 /* Fact Generator and Delegate */,
+				8DA01A332AE31A020068A139 /* Decodable Data */,
+				8DA01A302AE319980068A139 /* RandoFacto Database and Delegate */,
 				8DF48E382936B02900152681 /* NetworkError.swift */,
 			);
 			path = Model;
@@ -260,10 +293,13 @@
 			files = (
 				8DA2C421292C1E6000705A2F /* FactGenerator.swift in Sources */,
 				8DF48E392936B02900152681 /* NetworkError.swift in Sources */,
+				8DA01A2C2AE3193F0068A139 /* FactGeneratorDelegate.swift in Sources */,
 				8DD7920F2A2E78F800C1B61C /* APIKeys.swift in Sources */,
+				8DA01A2E2AE319700068A139 /* RandoFactoDatabaseDelegate.swift in Sources */,
 				8DA2C414292C1E1100705A2F /* ContentView.swift in Sources */,
 				8DF48E312936A80700152681 /* RandoFactoDatabase.swift in Sources */,
 				8D7507832ACDF0D500382FE1 /* FactData.swift in Sources */,
+				8DA01A322AE319F70068A139 /* FilteredWordsData.swift in Sources */,
 				8DA2C412292C1E1100705A2F /* RandoFactoApp.swift in Sources */,
 				8DCF671F297F58B7006DE41E /* FavoritesList.swift in Sources */,
 			);
@@ -403,7 +439,8 @@
 				"ENABLE_HARDENED_RUNTIME[sdk=macosx*]" = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = RandoFacto/Info.plist;
+				INFOPLIST_FILE = "RandoFacto/Supporting Files/Info.plist";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022-2023 SheftApps. All rights reserved.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -449,7 +486,8 @@
 				"ENABLE_HARDENED_RUNTIME[sdk=macosx*]" = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = RandoFacto/Info.plist;
+				INFOPLIST_FILE = "RandoFacto/Supporting Files/Info.plist";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022-2023 SheftApps. All rights reserved.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;

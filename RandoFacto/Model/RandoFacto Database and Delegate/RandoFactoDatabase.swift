@@ -3,31 +3,12 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 11/29/22.
+//  Copyright © 2022-2023 SheftApps. All rights reserved.
 //
 
 import SwiftUI
 import Firebase
 import Network
-
-// MARK: - RandoFacto Database Delegate
-
-protocol RandoFactoDatabaseDelegate {
-
-	func randoFactoDatabaseNetworkEnableDidFail(_ database: RandoFactoDatabase, error: Error)
-
-	func randoFactoDatabaseNetworkDisableDidFail(_ database: RandoFactoDatabase, error: Error)
-
-	func randoFactoDatabaseDidFailToAddFavorite(_ database: RandoFactoDatabase, fact: String, error: Error)
-
-	func randoFactoDatabaseDidFailToDeleteFavorite(_ database: RandoFactoDatabase, fact: String, error: Error)
-
-	func randoFactoDatabaseLoadingDidFail(_ database: RandoFactoDatabase, error: Error)
-
-	func randoFactoDatabaseDidFailToLogOut(_ database: RandoFactoDatabase, userEmail: String, error: Error)
-
-	func randoFactoDatabaseDidFailToDeleteUser(_ database: RandoFactoDatabase, error: Error)
-
-}
 
 class RandoFactoDatabase: ObservableObject {
 

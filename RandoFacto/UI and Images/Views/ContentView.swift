@@ -3,6 +3,7 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 11/21/22.
+//  Copyright © 2022-2023 SheftApps. All rights reserved.
 //
 
 import SwiftUI
@@ -21,6 +22,8 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 	// MARK: - Properties - Strings
 
 	private let generatingString = "Generating random fact…"
+
+	private let screeningString = "Screening fact…"
 
 	private let factUnavailableString = "Fact unavailable"
 
@@ -141,7 +144,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	var footer: some View {
 		VStack {
-			Text("Facts provided by [api-ninjas.com](https://api-ninjas.com). Some facts may contain words not appropriate for all ages.")
+			Text("Facts provided by [api-ninjas.com](https://api-ninjas.com).")
 				.font(.footnote)
 				.foregroundColor(.secondary)
 		}
@@ -150,7 +153,8 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 	// MARK: - Buttons
 
 	var buttons: some View {
-		ConditionalHVStack {
+		let notDisplayingFact = factText == generatingString || factText == screeningString
+		return ConditionalHVStack {
 			if randoFactoDatabase.firebaseAuth.currentUser != nil {
 				if !(randoFactoDatabase.favorites.isEmpty) {
 					Button {
@@ -174,7 +178,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 #endif
 			}
 		}
-		.disabled(factText == generatingString)
+		.disabled(notDisplayingFact)
 	}
 
 	// MARK: - Toolbar
@@ -182,7 +186,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 	@ToolbarContentBuilder
 	var toolbarContent: some ToolbarContent {
 			let userLoggedIn = randoFactoDatabase.firebaseAuth.currentUser != nil
-			let notDisplayingFact = factText == generatingString
+			let notDisplayingFact = factText == generatingString || factText == screeningString
 			let displayingLoadingMessage = factText.last == "…"
 			if displayingLoadingMessage {
 				ToolbarItem(placement: .automatic) {
@@ -225,7 +229,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	var accountMenu: some View {
 		let userLoggedIn = randoFactoDatabase.firebaseAuth.currentUser != nil
-		let notDisplayingFact = factText == generatingString
+		let notDisplayingFact = factText == generatingString || factText == screeningString
 		return Menu {
 			if !randoFactoDatabase.online && !userLoggedIn {
 				Text("Offline")
@@ -467,7 +471,7 @@ extension ContentView {
 	}
 
 	func factGeneratorWillCheckFactForInappropriateWords(_ generator: FactGenerator) {
-		factText = "Screening fact…"
+		factText = screeningString
 	}
 
 	func factGeneratorDidGenerateFact(_ generator: FactGenerator, fact: String) {
@@ -482,7 +486,7 @@ extension ContentView {
 
 extension ContentView {
 
-	// MARK: - RandoFacto Database Delegate
+	// MARK: - RandoFacto Database Delegate - Network Enable/Disable
 
 	func randoFactoDatabaseNetworkEnableDidFail(_ database: RandoFactoDatabase, error: Error) {
 		showError(error: error)
@@ -492,9 +496,13 @@ extension ContentView {
 		showError(error: error)
 	}
 
+	// MARK: - RandoFacto Database Delegate - Favorites Loading
+
 	func randoFactoDatabaseLoadingDidFail(_ database: RandoFactoDatabase, error: Error) {
 		showError(error: error)
 	}
+
+	// MARK: - RandoFacto Database Delegate - Favorites Management
 
 	func randoFactoDatabaseDidFailToAddFavorite(_ database: RandoFactoDatabase, fact: String, error: Error) {
 		showError(error: error)
@@ -503,6 +511,8 @@ extension ContentView {
 	func randoFactoDatabaseDidFailToDeleteFavorite(_ database: RandoFactoDatabase, fact: String, error: Error) {
 		showError(error: error)
 	}
+
+	// MARK: - RandoFacto Database Delegate - Account
 
 	func randoFactoDatabaseDidFailToDeleteUser(_ database: RandoFactoDatabase, error: Error) {
 		showError(error: error)
@@ -513,8 +523,6 @@ extension ContentView {
 	}
 }
 
-struct ContentView_Previews: PreviewProvider {
-	static var previews: some View {
-		ContentView()
-	}
+#Preview {
+	ContentView()
 }

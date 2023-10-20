@@ -3,29 +3,18 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 11/21/22.
+//  Copyright © 2022-2023 SheftApps. All rights reserved.
 //
 
 import Foundation
-
-// MARK: - Fact Generator Delegate
-
-protocol FactGeneratorDelegate {
-
-	func factGeneratorWillGenerateFact(_ generator: FactGenerator)
-
-	func factGeneratorDidGenerateFact(_ generator: FactGenerator, fact: String)
-
-	func factGeneratorWillCheckFactForInappropriateWords(_ generator: FactGenerator)
-
-	func factGeneratorDidFail(_ generator: FactGenerator, error: Error)
-
-}
 
 struct FactGenerator {
 
 	// MARK: - Properties - URLs
 
 	private let factURLString = "https://api.api-ninjas.com/v1/facts?limit=1"
+
+	private let inappropriateWordsCheckerURLString = "https://language-checker.vercel.app/api/check-language"
 
 	// MARK: - Properties - Delegate
 
@@ -78,20 +67,6 @@ struct FactGenerator {
 		}
 	}
 
-	func parseFilterJSON(data: Data?) -> Bool {
-		guard let data = data else {
-			return false
-		}
-		let decoder = JSONDecoder()
-		do {
-			let factObject = try decoder.decode(FilteredWordsData.self, from: data)
-			return factObject.foundTargetWords
-		} catch {
-			delegate?.factGeneratorDidFail(self, error: error)
-			return false
-		}
-	}
-
 	func formattedFactText(for fact: String) -> String {
 		if fact.last == "." || fact.last == "?" || fact.last == "!" || fact.hasSuffix(".\"") {
 			return fact
@@ -102,8 +77,10 @@ struct FactGenerator {
 		}
 	}
 
+	// MARK: - Inappropriate Words Checker
+
 	func checkFactForInappropriateWords(fact: String) {
-		guard let url = URL(string: "https://language-checker.vercel.app/api/check-language") else { return }
+		guard let url = URL(string: inappropriateWordsCheckerURLString) else { return }
 		let urlSession = URLSession(configuration: .default)
 		// Your data model that you want to send
 		let body = ["content": fact]
@@ -129,6 +106,19 @@ struct FactGenerator {
 		dataTask.resume()
 	}
 
+	func parseFilterJSON(data: Data?) -> Bool {
+		guard let data = data else {
+			return false
+		}
+		let decoder = JSONDecoder()
+		do {
+			let factObject = try decoder.decode(FilteredWordsData.self, from: data)
+			return factObject.foundTargetWords
+		} catch {
+			delegate?.factGeneratorDidFail(self, error: error)
+			return false
+		}
+	}
 
 	// MARK: - Error Logging
 
