@@ -65,8 +65,7 @@ struct RandoFactoApp: App {
 
 		let settings = FirestoreSettings()
 		let firestore = Firestore.firestore()
-		settings.isPersistenceEnabled = true
-		settings.cacheSizeBytes = FirestoreCacheSizeUnlimited
+		settings.cacheSettings = PersistentCacheSettings(sizeBytes: FirestoreCacheSizeUnlimited as NSNumber)
 		firestore.settings = settings
 	}
 

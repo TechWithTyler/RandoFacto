@@ -15,6 +15,8 @@ protocol FactGeneratorDelegate {
 
 	func factGeneratorDidGenerateFact(_ generator: FactGenerator, fact: String)
 
+	func factGeneratorWillCheckFactForInappropriateWords(_ generator: FactGenerator)
+
 	func factGeneratorDidFail(_ generator: FactGenerator, error: Error)
 
 }
@@ -52,7 +54,8 @@ struct FactGenerator {
 				self.logFactDataError()
 				return
 			}
-			delegate?.factGeneratorDidGenerateFact(self, fact: factData)
+			delegate?.factGeneratorWillCheckFactForInappropriateWords(self)
+			checkFactForInappropriateWords(fact: factData)
 		}
 		dataTask.resume()
 	}
@@ -75,13 +78,57 @@ struct FactGenerator {
 		}
 	}
 
+	func parseFilterJSON(data: Data?) -> Bool {
+		guard let data = data else {
+			return false
+		}
+		let decoder = JSONDecoder()
+		do {
+			let factObject = try decoder.decode(FilteredWordsData.self, from: data)
+			return factObject.foundTargetWords
+		} catch {
+			delegate?.factGeneratorDidFail(self, error: error)
+			return false
+		}
+	}
+
 	func formattedFactText(for fact: String) -> String {
 		if fact.last == "." || fact.last == "?" || fact.last == "!" || fact.hasSuffix(".\"") {
 			return fact
+		} else if fact.lowercased().hasPrefix("did you know") {
+			return fact + "?"
 		} else {
 			return fact + "."
 		}
 	}
+
+	func checkFactForInappropriateWords(fact: String) {
+		guard let url = URL(string: "https://language-checker.vercel.app/api/check-language") else { return }
+		let urlSession = URLSession(configuration: .default)
+		// Your data model that you want to send
+		let body = ["content": fact]
+		// Convert model to JSON data
+		guard let jsonData = try? JSONSerialization.data(withJSONObject: body) else { return }
+		// Create the URL request
+		var request = URLRequest(url: url)
+		request.httpMethod = "POST"
+		request.httpBody = jsonData
+		request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+		let dataTask = urlSession.dataTask(with: request) { [self] data, _, error in
+			if let error = error {
+				self.delegate?.factGeneratorDidFail(self, error: error)
+				return
+			}
+			let inappropriateFact = self.parseFilterJSON(data: data)
+			if !inappropriateFact {
+				delegate?.factGeneratorDidGenerateFact(self, fact: fact)
+			} else {
+				generateRandomFact()
+			}
+		}
+		dataTask.resume()
+	}
+
 
 	// MARK: - Error Logging
 

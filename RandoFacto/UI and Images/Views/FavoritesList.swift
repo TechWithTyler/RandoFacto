@@ -15,17 +15,24 @@ struct FavoritesList: View {
 		NavigationStack {
 			VStack {
 				if parent.randoFactoDatabase.favorites.isEmpty {
-					Text("No Favorites")
-						.font(.largeTitle)
-						.foregroundColor(.secondary)
+					VStack {
+						Text("No Favorites")
+							.font(.largeTitle)
+						Text("Save facts to view offline by pressing the heart button.")
+							.font(.callout)
+					}
+					.foregroundColor(.secondary)
+					.padding()
 				} else {
 					VStack {
 						Text("Favorite facts: \(parent.randoFactoDatabase.favorites.count)")
 							.multilineTextAlignment(.center)
 							.padding(10)
+							.font(.title)
 						Text("Select a favorite fact to display it.")
 							.multilineTextAlignment(.center)
 							.padding(10)
+							.font(.callout)
 						List {
 							ForEach(parent.randoFactoDatabase.favorites, id: \.self) {
 								favorite in
@@ -43,7 +50,7 @@ struct FavoritesList: View {
 									Button {
 										parent.randoFactoDatabase.deleteFromFavorites(fact: favorite)
 									} label: {
-										Text("Delete")
+										Text("Unfavorite")
 									}
 								}
 							}.onDelete(perform: delete(at:))

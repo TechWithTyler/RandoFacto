@@ -83,8 +83,8 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 				Text("OK")
 			}
 		})
-		.alert("Delete all favorite facts?", isPresented: $showingDeleteAllFavorites, actions: {
-			Button("Delete", role: .destructive) {
+		.alert("Unfavorite all facts?", isPresented: $showingDeleteAllFavorites, actions: {
+			Button("Unfavorite", role: .destructive) {
 				randoFactoDatabase.deleteAllFavorites { error in
 					if let error = error {
 						showError(error: error)
@@ -141,7 +141,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	var footer: some View {
 		VStack {
-			Text("Facts provided by [api-ninjas.com](https://api-ninjas.com)")
+			Text("Facts provided by [api-ninjas.com](https://api-ninjas.com). Some facts may contain words not appropriate for all ages.")
 				.font(.footnote)
 				.foregroundColor(.secondary)
 		}
@@ -243,7 +243,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 						Button {
 							showingDeleteAllFavorites = true
 						} label: {
-							Text("Delete All…")
+							Text("Unfavorite All…")
 						}
 					}
 					Menu("Account") {
@@ -464,6 +464,10 @@ extension ContentView {
 
 	func factGeneratorWillGenerateFact(_ generator: FactGenerator) {
 		factText = generatingString
+	}
+
+	func factGeneratorWillCheckFactForInappropriateWords(_ generator: FactGenerator) {
+		factText = "Screening fact…"
 	}
 
 	func factGeneratorDidGenerateFact(_ generator: FactGenerator, fact: String) {
