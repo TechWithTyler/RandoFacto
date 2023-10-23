@@ -39,7 +39,7 @@ struct FavoritesList: View {
 								favorite in
 								Button {
 									parent.factText = favorite
-									parent.showingFavoritesList = false
+									parent.showingFavoriteFactsList = false
 								} label: {
 									Text(favorite)
 										.lineLimit(nil)
@@ -54,7 +54,14 @@ struct FavoritesList: View {
 										Text("Unfavorite")
 									}
 								}
-							}.onDelete(perform: delete(at:))
+								.swipeActions {
+									Button(role: .destructive) {
+										parent.randoFactoDatabase.deleteFromFavorites(fact: favorite)
+									} label: {
+										Text("Unfavorite")
+									}
+							}
+							}
 						}
 					}
 				}
@@ -62,7 +69,7 @@ struct FavoritesList: View {
 			.toolbar {
 				ToolbarItem(placement: .confirmationAction) {
 					Button {
-						parent.showingFavoritesList = false
+						parent.showingFavoriteFactsList = false
 					} label: {
 						Text("Done")
 					}
@@ -71,12 +78,6 @@ struct FavoritesList: View {
 		}
 		.navigationTitle("Favorite Facts List")
 		.frame(minWidth: 300, minHeight: 300)
-	}
-
-	func delete(at indexSet: IndexSet) {
-		guard let index = Array(indexSet).first else { return }
-		let favorite = parent.randoFactoDatabase.favoriteFacts[index]
-		parent.randoFactoDatabase.deleteFromFavorites(fact: favorite)
 	}
 
 }

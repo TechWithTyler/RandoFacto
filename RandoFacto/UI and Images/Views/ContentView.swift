@@ -51,11 +51,11 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	@State private var showingSignUp: Bool = false
 
-	@State private var showingDeleteUser: Bool = false
+	@State private var showingDeleteAccount: Bool = false
 
-	@State private var showingDeleteAllFavorites: Bool = false
+	@State private var showingDeleteAllFavoriteFacts: Bool = false
 
-	@State var showingFavoritesList: Bool = false
+	@State var showingFavoriteFactsList: Bool = false
 
 	private var notDisplayingFact: Bool {
 		return factText.isEmpty || factText == generatingString || factText == screeningString
@@ -98,32 +98,32 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 				Text("OK")
 			}
 		})
-		.alert("Unfavorite all facts?", isPresented: $showingDeleteAllFavorites, actions: {
+		.alert("Unfavorite all facts?", isPresented: $showingDeleteAllFavoriteFacts, actions: {
 			Button("Unfavorite", role: .destructive) {
 				randoFactoDatabase.deleteAllFavorites { error in
 					if let error = error {
 						showError(error: error)
 					}
-					showingDeleteAllFavorites = false
+					showingDeleteAllFavoriteFacts = false
 				}
 			}
 			Button("Cancel", role: .cancel) {
-				showingDeleteAllFavorites = false
+				showingDeleteAllFavoriteFacts = false
 			}
 		})
-		.alert("Delete your account?", isPresented: $showingDeleteUser, actions: {
+		.alert("Delete your account?", isPresented: $showingDeleteAccount, actions: {
 			Button("Delete", role: .destructive) {
 				randoFactoDatabase.deleteUser()
-				showingDeleteUser = false
+				showingDeleteAccount = false
 			}
 			Button("Cancel", role: .cancel) {
-				showingDeleteUser = false
+				showingDeleteAccount = false
 			}
 		}, message: {
 			Text("You won't be able to save favorite facts to view offline!")
 		})
-		.sheet(isPresented: $showingFavoritesList, onDismiss: {
-			showingFavoritesList = false
+		.sheet(isPresented: $showingFavoriteFactsList, onDismiss: {
+			showingFavoriteFactsList = false
 		}, content: {
 			FavoritesList(parent: self)
 		})
@@ -247,12 +247,12 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 				) {
 					Menu("Favorites List") {
 						Button {
-							showingFavoritesList = true
+							showingFavoriteFactsList = true
 						} label: {
 							Text("View…")
 						}
 						Button {
-							showingDeleteAllFavorites = true
+							showingDeleteAllFavoriteFacts = true
 						} label: {
 							Text("Unfavorite All…")
 						}
@@ -265,7 +265,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 						}
 						if randoFactoDatabase.online {
 							Button {
-								showingDeleteUser = true
+								showingDeleteAccount = true
 							} label: {
 								Text("Delete Account…")
 							}
