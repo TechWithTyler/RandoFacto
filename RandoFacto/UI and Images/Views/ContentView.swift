@@ -31,7 +31,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	private let factUnavailableString = "Fact unavailable"
 
-	@State var factText: String = "Loading…"
+	@State var factText: String = String()
 
 	@State private var credentialErrorText: String? = nil
 
@@ -56,6 +56,14 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 	@State private var showingDeleteAllFavorites: Bool = false
 
 	@State var showingFavoritesList: Bool = false
+
+	private var notDisplayingFact: Bool {
+		return factText.isEmpty || factText == generatingString || factText == screeningString
+	}
+
+	private var userLoggedIn: Bool {
+		return randoFactoDatabase.firebaseAuth.currentUser != nil
+	}
 
 	// MARK: - View
 
@@ -157,8 +165,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 	// MARK: - Buttons
 
 	var buttons: some View {
-		let notDisplayingFact = factText == generatingString || factText == screeningString
-		return ConditionalHVStack {
+		ConditionalHVStack {
 			if randoFactoDatabase.firebaseAuth.currentUser != nil {
 				if !(randoFactoDatabase.favoriteFacts.isEmpty) {
 					Button {
@@ -189,8 +196,6 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	@ToolbarContentBuilder
 	var toolbarContent: some ToolbarContent {
-			let userLoggedIn = randoFactoDatabase.firebaseAuth.currentUser != nil
-			let notDisplayingFact = factText == generatingString || factText == screeningString
 			let displayingLoadingMessage = factText.last == "…"
 			if displayingLoadingMessage {
 				ToolbarItem(placement: .automatic) {
@@ -232,9 +237,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 	// MARK: - Account Menu
 
 	var accountMenu: some View {
-		let userLoggedIn = randoFactoDatabase.firebaseAuth.currentUser != nil
-		let notDisplayingFact = factText == generatingString || factText == screeningString
-		return Menu {
+		Menu {
 			if !randoFactoDatabase.online && !userLoggedIn {
 				Text("Offline")
 			}
