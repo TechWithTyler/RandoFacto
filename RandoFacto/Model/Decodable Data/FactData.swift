@@ -8,7 +8,7 @@
 
 import Foundation
 
-// MARK: - Decodable Data
+// MARK: - Fact Data
 
 struct FactData: Codable {
 

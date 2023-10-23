@@ -35,7 +35,7 @@ enum NetworkError: LocalizedError {
 			case .dataError:
 				return "Fact data error."
 			case .quotaExceeded:
-				return "Too many favorite facts database requests at once. Try again later."
+				return "Too many favorite fact database requests at once. Try again later."
 			case let .userDeletionFailed(reason):
 				return "User deletion failed: \(reason)"
 			case let .unknown(reason):

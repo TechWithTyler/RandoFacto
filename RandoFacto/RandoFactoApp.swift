@@ -24,7 +24,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 @main
 struct RandoFactoApp: App {
 
-	// MARK: - AppDelegate Adaptor
+	// MARK: - macOS AppDelegate Adaptor
 
 	#if os(macOS)
 	@NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
@@ -47,7 +47,7 @@ struct RandoFactoApp: App {
 		#if os(macOS)
 		.windowStyle(.hiddenTitleBar)
 		#endif
-    }
+	}
 
 	// MARK: - Firebase Configuration
 
@@ -60,10 +60,8 @@ struct RandoFactoApp: App {
 			fatalError("Failed to load options from configuration file")
 		}
 		options.apiKey = firebaseApiKey
-
 		// Initialize Firebase with the custom options
 		FirebaseApp.configure(options: options)
-
 		let settings = FirestoreSettings()
 		let firestore = Firestore.firestore()
 		settings.cacheSettings = PersistentCacheSettings(sizeBytes: FirestoreCacheSizeUnlimited as NSNumber)

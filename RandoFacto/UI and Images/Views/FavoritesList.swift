@@ -15,7 +15,7 @@ struct FavoritesList: View {
 	var body: some View {
 		NavigationStack {
 			VStack {
-				if parent.randoFactoDatabase.favorites.isEmpty {
+				if parent.randoFactoDatabase.favoriteFacts.isEmpty {
 					VStack {
 						Text("No Favorites")
 							.font(.largeTitle)
@@ -26,7 +26,7 @@ struct FavoritesList: View {
 					.padding()
 				} else {
 					VStack {
-						Text("Favorite facts: \(parent.randoFactoDatabase.favorites.count)")
+						Text("Favorite facts: \(parent.randoFactoDatabase.favoriteFacts.count)")
 							.multilineTextAlignment(.center)
 							.padding(10)
 							.font(.title)
@@ -35,7 +35,7 @@ struct FavoritesList: View {
 							.padding(10)
 							.font(.callout)
 						List {
-							ForEach(parent.randoFactoDatabase.favorites, id: \.self) {
+							ForEach(parent.randoFactoDatabase.favoriteFacts, id: \.self) {
 								favorite in
 								Button {
 									parent.factText = favorite
@@ -60,7 +60,7 @@ struct FavoritesList: View {
 				}
 			}
 			.toolbar {
-				ToolbarItem(placement: .cancellationAction) {
+				ToolbarItem(placement: .confirmationAction) {
 					Button {
 						parent.showingFavoritesList = false
 					} label: {
@@ -75,7 +75,7 @@ struct FavoritesList: View {
 
 	func delete(at indexSet: IndexSet) {
 		guard let index = Array(indexSet).first else { return }
-		let favorite = parent.randoFactoDatabase.favorites[index]
+		let favorite = parent.randoFactoDatabase.favoriteFacts[index]
 		parent.randoFactoDatabase.deleteFromFavorites(fact: favorite)
 	}
 

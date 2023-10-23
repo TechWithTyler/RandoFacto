@@ -12,7 +12,7 @@
 		8D7507832ACDF0D500382FE1 /* FactData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D7507822ACDF0D500382FE1 /* FactData.swift */; };
 		8DA01A2C2AE3193F0068A139 /* FactGeneratorDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA01A2B2AE3193F0068A139 /* FactGeneratorDelegate.swift */; };
 		8DA01A2E2AE319700068A139 /* RandoFactoDatabaseDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA01A2D2AE319700068A139 /* RandoFactoDatabaseDelegate.swift */; };
-		8DA01A322AE319F70068A139 /* FilteredWordsData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA01A312AE319F70068A139 /* FilteredWordsData.swift */; };
+		8DA01A322AE319F70068A139 /* InappropriateWordsCheckerData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA01A312AE319F70068A139 /* InappropriateWordsCheckerData.swift */; };
 		8DA2C412292C1E1100705A2F /* RandoFactoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA2C411292C1E1100705A2F /* RandoFactoApp.swift */; };
 		8DA2C414292C1E1100705A2F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA2C413292C1E1100705A2F /* ContentView.swift */; };
 		8DA2C416292C1E1200705A2F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8DA2C415292C1E1200705A2F /* Assets.xcassets */; };
@@ -54,7 +54,7 @@
 		8D7507822ACDF0D500382FE1 /* FactData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactData.swift; sourceTree = "<group>"; };
 		8DA01A2B2AE3193F0068A139 /* FactGeneratorDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactGeneratorDelegate.swift; sourceTree = "<group>"; };
 		8DA01A2D2AE319700068A139 /* RandoFactoDatabaseDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandoFactoDatabaseDelegate.swift; sourceTree = "<group>"; };
-		8DA01A312AE319F70068A139 /* FilteredWordsData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilteredWordsData.swift; sourceTree = "<group>"; };
+		8DA01A312AE319F70068A139 /* InappropriateWordsCheckerData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InappropriateWordsCheckerData.swift; sourceTree = "<group>"; };
 		8DA2C40E292C1E1100705A2F /* RandoFacto.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RandoFacto.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8DA2C411292C1E1100705A2F /* RandoFactoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandoFactoApp.swift; sourceTree = "<group>"; };
 		8DA2C413292C1E1100705A2F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -134,7 +134,7 @@
 			isa = PBXGroup;
 			children = (
 				8D7507822ACDF0D500382FE1 /* FactData.swift */,
-				8DA01A312AE319F70068A139 /* FilteredWordsData.swift */,
+				8DA01A312AE319F70068A139 /* InappropriateWordsCheckerData.swift */,
 			);
 			path = "Decodable Data";
 			sourceTree = "<group>";
@@ -299,7 +299,7 @@
 				8DA2C414292C1E1100705A2F /* ContentView.swift in Sources */,
 				8DF48E312936A80700152681 /* RandoFactoDatabase.swift in Sources */,
 				8D7507832ACDF0D500382FE1 /* FactData.swift in Sources */,
-				8DA01A322AE319F70068A139 /* FilteredWordsData.swift in Sources */,
+				8DA01A322AE319F70068A139 /* InappropriateWordsCheckerData.swift in Sources */,
 				8DA2C412292C1E1100705A2F /* RandoFactoApp.swift in Sources */,
 				8DCF671F297F58B7006DE41E /* FavoritesList.swift in Sources */,
 			);
@@ -447,6 +447,8 @@
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UIRequiresFullScreen = NO;
+				INFOPLIST_KEY_UIStatusBarHidden = NO;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -494,6 +496,8 @@
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UIRequiresFullScreen = NO;
+				INFOPLIST_KEY_UIStatusBarHidden = NO;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";

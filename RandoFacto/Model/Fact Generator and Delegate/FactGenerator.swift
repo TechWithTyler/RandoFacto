@@ -85,7 +85,9 @@ struct FactGenerator {
 		// Your data model that you want to send
 		let body = ["content": fact]
 		// Convert model to JSON data
-		guard let jsonData = try? JSONSerialization.data(withJSONObject: body) else { return }
+		guard let jsonData = try? JSONSerialization.data(withJSONObject: body) else { 
+			logFactDataError()
+			return }
 		// Create the URL request
 		var request = URLRequest(url: url)
 		request.httpMethod = "POST"
@@ -96,8 +98,8 @@ struct FactGenerator {
 				self.delegate?.factGeneratorDidFail(self, error: error)
 				return
 			}
-			let inappropriateFact = self.parseFilterJSON(data: data)
-			if !inappropriateFact {
+			let factIsInappropriate = self.parseFilterJSON(data: data)
+			if !factIsInappropriate {
 				delegate?.factGeneratorDidGenerateFact(self, fact: fact)
 			} else {
 				generateRandomFact()
@@ -112,7 +114,7 @@ struct FactGenerator {
 		}
 		let decoder = JSONDecoder()
 		do {
-			let factObject = try decoder.decode(FilteredWordsData.self, from: data)
+			let factObject = try decoder.decode(InappropriateWordsCheckerData.self, from: data)
 			return factObject.foundTargetWords
 		} catch {
 			delegate?.factGeneratorDidFail(self, error: error)

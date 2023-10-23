@@ -1,5 +1,5 @@
 //
-//  FilteredWordsData.swift
+//  InappropriateWordsCheckerData.swift
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 10/20/23.
@@ -8,7 +8,9 @@
 
 import Foundation
 
-struct FilteredWordsData: Codable {
+// MARK: - Inappropriate Words Checker Data
+
+struct InappropriateWordsCheckerData: Codable {
 
 	let foundTargetWords: Bool
 

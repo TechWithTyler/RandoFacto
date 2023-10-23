@@ -19,6 +19,10 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	@ObservedObject var randoFactoDatabase = RandoFactoDatabase()
 
+	#if os(iOS)
+	private var haptics = UINotificationFeedbackGenerator()
+	#endif
+
 	// MARK: - Properties - Strings
 
 	private let generatingString = "Generating random fact…"
@@ -156,9 +160,9 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 		let notDisplayingFact = factText == generatingString || factText == screeningString
 		return ConditionalHVStack {
 			if randoFactoDatabase.firebaseAuth.currentUser != nil {
-				if !(randoFactoDatabase.favorites.isEmpty) {
+				if !(randoFactoDatabase.favoriteFacts.isEmpty) {
 					Button {
-						factText = randoFactoDatabase.favorites.randomElement()!
+						factText = randoFactoDatabase.favoriteFacts.randomElement()!
 					} label: {
 						Text("Generate Random Favorite Fact")
 					}
@@ -199,7 +203,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 			}
 			if factText != factUnavailableString && userLoggedIn {
 				ToolbarItem(placement: .automatic) {
-					if randoFactoDatabase.favorites.contains(factText) {
+					if randoFactoDatabase.favoriteFacts.contains(factText) {
 						Button {
 							randoFactoDatabase.deleteFromFavorites(fact: factText)
 						} label: {
@@ -292,28 +296,17 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 	var signUpForm: some View {
 		NavigationStack {
 			Form {
+				credentialFields
 				if let errorText = credentialErrorText {
 					HStack {
 						Image(systemName: "exclamationmark.triangle")
 						Text(errorText)
 							.font(.system(size: 18))
-							.lineLimit(2)
+							.lineLimit(5)
 							.multilineTextAlignment(.center)
 							.padding()
 					}
 					.foregroundColor(.red)
-				}
-				credentialFields
-				Button {
-					randoFactoDatabase.signUp(email: email, password: password) { error in
-						if let error = error {
-							showError(error: error)
-						} else {
-							dismissSignUp()
-						}
-					}
-				} label: {
-					Text("Sign Up")
 				}
 			}
 			.formStyle(.grouped)
@@ -332,6 +325,20 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 						Text("Cancel")
 					}
 				}
+				ToolbarItem(placement: .confirmationAction) {
+					Button {
+						randoFactoDatabase.signUp(email: email, password: password) { error in
+							if let error = error {
+								showError(error: error)
+							} else {
+								dismissSignUp()
+							}
+						}
+					} label: {
+						Text("Sign Up")
+					}
+					.disabled(email.isEmpty || password.isEmpty)
+				}
 			}
 		}
 	}
@@ -339,28 +346,18 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 	var logInForm: some View {
 		NavigationStack {
 			Form {
+				credentialFields
 				if let errorText = credentialErrorText {
 					HStack {
 						Image(systemName: "exclamationmark.triangle")
+							.symbolRenderingMode(.multicolor)
 						Text(errorText)
 							.font(.system(size: 18))
-							.lineLimit(2)
+							.lineLimit(5)
 							.multilineTextAlignment(.center)
 							.padding()
 					}
 					.foregroundColor(.red)
-				}
-				credentialFields
-				Button {
-					randoFactoDatabase.logIn(email: email, password: password) { error in
-						if let error = error {
-							showError(error: error)
-						} else {
-							dismissLogIn()
-						}
-					}
-				} label: {
-					Text("Login")
 				}
 			}
 			.formStyle(.grouped)
@@ -378,6 +375,20 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 					} label: {
 						Text("Cancel")
 					}
+				}
+				ToolbarItem(placement: .confirmationAction) {
+					Button {
+						randoFactoDatabase.logIn(email: email, password: password) { error in
+							if let error = error {
+								showError(error: error)
+							} else {
+								dismissLogIn()
+							}
+						}
+					} label: {
+						Text("Login")
+					}
+					.disabled(email.isEmpty || password.isEmpty)
 				}
 			}
 		}
@@ -430,6 +441,11 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 	// MARK: - Error Handling
 
 	func showError(error: Error) {
+		#if os(macOS)
+		NSSound.beep()
+		#elseif os(iOS)
+		haptics.notificationOccurred(.error)
+		#endif
 		let nsError = error as NSError
 		print("Error: \(nsError)")
 		// Check the error code to choose which error to show.
