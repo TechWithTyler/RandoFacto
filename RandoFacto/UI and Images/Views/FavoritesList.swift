@@ -35,7 +35,7 @@ struct FavoritesList: View {
 							.padding(10)
 							.font(.callout)
 						List {
-							ForEach(parent.randoFactoDatabase.favoriteFacts, id: \.self) {
+							ForEach(parent.randoFactoDatabase.favoriteFacts.sorted(by: >), id: \.self) {
 								favorite in
 								Button {
 									parent.factText = favorite

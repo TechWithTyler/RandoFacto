@@ -57,31 +57,39 @@ class RandoFactoDatabase: ObservableObject {
 		networkPathMonitor.pathUpdateHandler = {
 			[self] path in
 			if path.status == .satisfied {
-				firestore.enableNetwork {
-					[self] error in
-					if let error = error {
-						delegate?.randoFactoDatabaseNetworkEnableDidFail(self, error: error)
-					} else {
-						DispatchQueue.main.async { [self] in
-							online = true
-						}
-					}
-				}
+				goOnline()
 			} else {
-				firestore.disableNetwork {
-					[self] error in
-					if let error = error {
-						delegate?.randoFactoDatabaseNetworkDisableDidFail(self, error: error)
-					} else {
-						DispatchQueue.main.async { [self] in
-							online = false
-						}
-					}
-				}
+				goOffline()
 			}
 		}
 		let dispatchQueue = DispatchQueue(label: "Network Monitor")
 		networkPathMonitor.start(queue: dispatchQueue)
+	}
+
+	func goOnline() {
+		firestore.enableNetwork {
+			[self] error in
+			if let error = error {
+				delegate?.randoFactoDatabaseNetworkEnableDidFail(self, error: error)
+			} else {
+				DispatchQueue.main.async { [self] in
+					online = true
+				}
+			}
+		}
+	}
+
+	func goOffline() {
+		firestore.disableNetwork {
+			[self] error in
+			if let error = error {
+				delegate?.randoFactoDatabaseNetworkDisableDidFail(self, error: error)
+			} else {
+				DispatchQueue.main.async { [self] in
+					online = false
+				}
+			}
+		}
 	}
 
 	// MARK: - Authentication
@@ -145,34 +153,20 @@ class RandoFactoDatabase: ObservableObject {
 
 	func deleteUser() {
 		guard let user = firebaseAuth.currentUser else { return }
-		firestore.collection(favoritesCollectionName)
-			.whereField(userKeyName, isEqualTo: user.email!)
-			.getDocuments { [self] snapshot, error in
-				if let error = error {
-					delegate?.randoFactoDatabaseDidFailToDeleteUser(self, error: error)
-					return
-				}
-				guard let snapshot = snapshot else { return }
-				for ref in snapshot.documents {
-					firestore.collection(favoritesCollectionName)
-						.document(ref.documentID)
-						.delete { [self] error in
-							if let error = error {
-								delegate?.randoFactoDatabaseDidFailToDeleteUser(self, error: error)
-								return
-							} else {
-								user.delete { [self] error in
-									if let error = error {
-										delegate?.randoFactoDatabaseDidFailToDeleteUser(self, error: error)
-									} else {
-										favoriteFacts.removeAll()
-										logOut()
-									}
-								}
-							}
-						}
+		deleteAllFavorites { [self] error in
+			if let error = error {
+				delegate?.randoFactoDatabaseDidFailToDeleteUser(self, error: error)
+			} else {
+				user.delete { [self] error in
+					if let error = error {
+						delegate?.randoFactoDatabaseDidFailToDeleteUser(self, error: error)
+					} else {
+						favoriteFacts.removeAll()
+						logOut()
+					}
 				}
 			}
+		}
 	}
 
 	// MARK: - Favorites Management - Loading
