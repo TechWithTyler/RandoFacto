@@ -101,7 +101,7 @@ class RandoFactoDatabase: ObservableObject {
 					completionHandler(error)
 				} else {
 					Task {
-						await self.loadFavorites()
+						await self.loadFavoriteFactsForCurrentUser()
 					}
 					completionHandler(nil)
 				}
@@ -116,7 +116,7 @@ class RandoFactoDatabase: ObservableObject {
 					completionHandler(error)
 				} else {
 					Task {
-						await self.loadFavorites()
+						await self.loadFavoriteFactsForCurrentUser()
 					}
 					completionHandler(nil)
 				}
@@ -153,7 +153,7 @@ class RandoFactoDatabase: ObservableObject {
 
 	func deleteUser() {
 		guard let user = firebaseAuth.currentUser else { return }
-		deleteAllFavorites { [self] error in
+		deleteAllFavoriteFactsForCurrentUser { [self] error in
 			if let error = error {
 				delegate?.randoFactoDatabaseDidFailToDeleteUser(self, error: error)
 			} else {
@@ -171,7 +171,7 @@ class RandoFactoDatabase: ObservableObject {
 
 	// MARK: - Favorites Management - Loading
 
-	func loadFavorites() async {
+	func loadFavoriteFactsForCurrentUser() async {
 		guard let user = firebaseAuth.currentUser else { return }
 			DispatchQueue.main.async { [self] in
 				firestore.collection(favoritesCollectionName)
@@ -236,7 +236,7 @@ class RandoFactoDatabase: ObservableObject {
 		}
 	}
 
-	func deleteAllFavorites(completionHandler: @escaping ((Error?) -> Void)) {
+	func deleteAllFavoriteFactsForCurrentUser(completionHandler: @escaping ((Error?) -> Void)) {
 		let group = DispatchGroup()
 		for fact in favoriteFacts {
 			group.enter()
@@ -262,6 +262,12 @@ class RandoFactoDatabase: ObservableObject {
 		group.notify(queue: DispatchQueue.main) {
 			completionHandler(nil)
 		}
+	}
+
+	// MARK: - Get Random Favorite Fact
+
+	func getRandomFavoriteFact() -> String {
+		return favoriteFacts.randomElement()!
 	}
 
 }

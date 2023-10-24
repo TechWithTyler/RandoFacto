@@ -77,7 +77,7 @@ struct FavoritesList: View {
 			}
 		}
 		.navigationTitle("Favorite Facts List")
-		.frame(minWidth: 300, minHeight: 300)
+		.frame(minWidth: 400, minHeight: 300)
 	}
 
 }

@@ -100,7 +100,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 		})
 		.alert("Unfavorite all facts?", isPresented: $showingDeleteAllFavoriteFacts, actions: {
 			Button("Unfavorite", role: .destructive) {
-				randoFactoDatabase.deleteAllFavorites { error in
+				randoFactoDatabase.deleteAllFavoriteFactsForCurrentUser { error in
 					if let error = error {
 						showError(error: error)
 					}
@@ -169,9 +169,9 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 			if randoFactoDatabase.firebaseAuth.currentUser != nil {
 				if !(randoFactoDatabase.favoriteFacts.isEmpty) {
 					Button {
-						factText = randoFactoDatabase.favoriteFacts.randomElement()!
+						factText = randoFactoDatabase.getRandomFavoriteFact()
 					} label: {
-						Text("Generate Random Favorite Fact")
+						Text("Get Random Favorite Fact")
 					}
 #if os(iOS)
 					.padding()
@@ -196,7 +196,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	@ToolbarContentBuilder
 	var toolbarContent: some ToolbarContent {
-			let displayingLoadingMessage = factText.last == "…"
+		let displayingLoadingMessage = factText.last == "…" || factText.isEmpty
 			if displayingLoadingMessage {
 				ToolbarItem(placement: .automatic) {
 					ProgressView()
@@ -245,7 +245,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 				Section(header:
 				Text((randoFactoDatabase.firebaseAuth.currentUser?.email)!)
 				) {
-					Menu("Favorites List") {
+					Menu("Favorite Facts List") {
 						Button {
 							showingFavoriteFactsList = true
 						} label: {
@@ -422,7 +422,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 		password = String()
 		Task {
 			randoFactoDatabase.delegate = self
-			await randoFactoDatabase.loadFavorites()
+			await randoFactoDatabase.loadFavoriteFactsForCurrentUser()
 			factGenerator.generateRandomFact()
 		}
 	}
