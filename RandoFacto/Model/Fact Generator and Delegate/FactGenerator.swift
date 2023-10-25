@@ -82,17 +82,11 @@ struct FactGenerator {
 	func checkFactForInappropriateWords(fact: String) {
 		guard let url = URL(string: inappropriateWordsCheckerURLString) else { return }
 		let urlSession = URLSession(configuration: .default)
-		// Your data model that you want to send
-		let body = ["content": fact]
-		// Convert model to JSON data
-		guard let jsonData = try? JSONSerialization.data(withJSONObject: body) else { 
-			logFactDataError()
-			return }
 		// Create the URL request
-		var request = URLRequest(url: url)
-		request.httpMethod = "POST"
-		request.httpBody = jsonData
-		request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+		guard let request = createHTTPRequest(with: url, toScreenFact: fact) else {
+			logFactDataError()
+			return
+		}
 		let dataTask = urlSession.dataTask(with: request) { [self] data, _, error in
 			if let error = error {
 				self.delegate?.factGeneratorDidFail(self, error: error)
@@ -106,6 +100,20 @@ struct FactGenerator {
 			}
 		}
 		dataTask.resume()
+	}
+
+	func createHTTPRequest(with url: URL, toScreenFact fact: String) -> URLRequest? {
+		var request = URLRequest(url: url)
+		// Your data model that you want to send
+		let body = ["content": fact]
+		// Convert model to JSON data
+		guard let jsonData = try? JSONSerialization.data(withJSONObject: body) else {
+			logFactDataError()
+			return nil }
+		request.httpMethod = "POST"
+		request.httpBody = jsonData
+		request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+		return request
 	}
 
 	func parseFilterJSON(data: Data?) -> Bool {
