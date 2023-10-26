@@ -113,7 +113,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 		})
 		.alert("Delete your account?", isPresented: $showingDeleteAccount, actions: {
 			Button("Delete", role: .destructive) {
-				randoFactoDatabase.deleteUser()
+				randoFactoDatabase.deleteCurrentUser()
 				showingDeleteAccount = false
 			}
 			Button("Cancel", role: .cancel) {
@@ -259,7 +259,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 					}
 					Menu("Account") {
 						Button {
-							randoFactoDatabase.logOut()
+							randoFactoDatabase.logOutCurrentUser()
 						} label: {
 							Text("Logout")
 						}
@@ -497,7 +497,7 @@ extension ContentView {
 		factText = fact
 	}
 
-	func factGeneratorDidFail(_ generator: FactGenerator, error: Error) {
+	func factGeneratorDidFailToGenerateFact(_ generator: FactGenerator, error: Error) {
 		factText = factUnavailableString
 		showError(error: error)
 	}
@@ -537,7 +537,7 @@ extension ContentView {
 		showError(error: error)
 	}
 
-	func randoFactoDatabaseDidFailToLogOut(_ database: RandoFactoDatabase, userEmail: String, error: Error) {
+	func randoFactoDatabaseDidFailToLogOutUser(_ database: RandoFactoDatabase, userEmail: String, error: Error) {
 		showError(error: error)
 	}
 }

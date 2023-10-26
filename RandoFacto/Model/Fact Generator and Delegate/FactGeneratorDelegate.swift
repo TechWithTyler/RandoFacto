@@ -18,6 +18,6 @@ protocol FactGeneratorDelegate {
 
 	func factGeneratorWillCheckFactForInappropriateWords(_ generator: FactGenerator)
 
-	func factGeneratorDidFail(_ generator: FactGenerator, error: Error)
+	func factGeneratorDidFailToGenerateFact(_ generator: FactGenerator, error: Error)
 
 }

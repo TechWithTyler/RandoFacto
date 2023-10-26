@@ -124,14 +124,14 @@ class RandoFactoDatabase: ObservableObject {
 		}
 	}
 
-	func logOut() {
+	func logOutCurrentUser() {
 		DispatchQueue.main.async { [self] in
 			if let userEmail = firebaseAuth.currentUser?.email {
 				do {
 					try firebaseAuth.signOut()
 					favoriteFacts.removeAll()
 				} catch {
-					delegate?.randoFactoDatabaseDidFailToLogOut(self, userEmail: userEmail, error: error)
+					delegate?.randoFactoDatabaseDidFailToLogOutUser(self, userEmail: userEmail, error: error)
 				}
 			}
 		}
@@ -143,7 +143,7 @@ class RandoFactoDatabase: ObservableObject {
 				delegate?.randoFactoDatabaseLoadingDidFail(self, error: error)
 			} else {
 				if token == nil {
-					logOut()
+					logOutCurrentUser()
 				}
 			}
 		}
@@ -151,7 +151,7 @@ class RandoFactoDatabase: ObservableObject {
 
 	// MARK: - Delete User
 
-	func deleteUser() {
+	func deleteCurrentUser() {
 		guard let user = firebaseAuth.currentUser else { return }
 		deleteAllFavoriteFactsForCurrentUser { [self] error in
 			if let error = error {
@@ -162,7 +162,7 @@ class RandoFactoDatabase: ObservableObject {
 						delegate?.randoFactoDatabaseDidFailToDeleteUser(self, error: error)
 					} else {
 						favoriteFacts.removeAll()
-						logOut()
+						logOutCurrentUser()
 					}
 				}
 			}
@@ -184,18 +184,22 @@ class RandoFactoDatabase: ObservableObject {
 								logOutMissingUser()
 								return
 							}
-							favoriteFacts = []
-							for favorite in snapshot.documents {
-								if let fact = favorite.data()[factTextKeyName] as? String {
-									self.favoriteFacts.append(fact)
-								} else {
-									let loadError = NSError(domain: "\(favorite) doesn't appear to contain fact text!", code: 423)
-									delegate?.randoFactoDatabaseLoadingDidFail(self, error: loadError)
-								}
-							}
+							updateFavoriteFactsArray(from: snapshot)
 						}
 					}
 			}
+	}
+
+	func updateFavoriteFactsArray(from snapshot: QuerySnapshot) {
+		favoriteFacts = []
+		for favorite in snapshot.documents {
+			if let fact = favorite.data()[factTextKeyName] as? String {
+				favoriteFacts.append(fact)
+			} else {
+				let loadError = NSError(domain: "\(favorite) doesn't appear to contain fact text!", code: 423)
+				delegate?.randoFactoDatabaseLoadingDidFail(self, error: loadError)
+			}
+		}
 	}
 
 	// MARK: - Favorites Management - Saving/Deleting
@@ -217,22 +221,28 @@ class RandoFactoDatabase: ObservableObject {
 
 	func deleteFromFavorites(fact: String) {
 		DispatchQueue.main.async { [self] in
-			firestore.collection(favoritesCollectionName).whereField(factTextKeyName, isEqualTo: fact).getDocuments(source: .cache) { [self] snapshot, error in
+			firestore.collection(favoritesCollectionName)
+				.whereField(factTextKeyName, isEqualTo: fact)
+				.getDocuments(source: .cache) { [self] snapshot, error in
 				if let error = error {
 					delegate?.randoFactoDatabaseDidFailToDeleteFavorite(self, fact: fact, error: error)
 				} else {
-					if let snapshot = snapshot, let ref = snapshot.documents.first {
-						firestore.collection(favoritesCollectionName).document(ref.documentID).delete { [self]
-							error in
-							if let error = error {
-								delegate?.randoFactoDatabaseDidFailToDeleteFavorite(self, fact: fact, error: error)
-							}
-						}
-					} else {
-						delegate?.randoFactoDatabaseDidFailToDeleteFavorite(self, fact: fact, error: refError)
-					}
+					getFavoriteFactSnapshotAndDelete(snapshot, fact: fact)
 				}
 			}
+		}
+	}
+
+	func getFavoriteFactSnapshotAndDelete(_ snapshot: QuerySnapshot?, fact: String) {
+		if let snapshot = snapshot, let ref = snapshot.documents.first {
+			firestore.collection(favoritesCollectionName).document(ref.documentID).delete { [self]
+				error in
+				if let error = error {
+					delegate?.randoFactoDatabaseDidFailToDeleteFavorite(self, fact: fact, error: error)
+				}
+			}
+		} else {
+			delegate?.randoFactoDatabaseDidFailToDeleteFavorite(self, fact: fact, error: refError)
 		}
 	}
 

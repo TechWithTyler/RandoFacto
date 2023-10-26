@@ -36,7 +36,7 @@ struct FactGenerator {
 		delegate?.factGeneratorWillGenerateFact(self)
 		let dataTask = urlSession.dataTask(with: request) { [self] data, _, error in
 			if let error = error {
-				self.delegate?.factGeneratorDidFail(self, error: error)
+				self.delegate?.factGeneratorDidFailToGenerateFact(self, error: error)
 				return
 			}
 			guard let factData = self.parseJSON(data: data) else {
@@ -57,17 +57,17 @@ struct FactGenerator {
 		do {
 			if let factObject = try decoder.decode([FactData].self, from: data).first {
 				let text = factObject.fact
-				return formattedFactText(for: text)
+				return punctuatedFactText(for: text)
 			} else {
 				return nil
 			}
 		} catch {
-			delegate?.factGeneratorDidFail(self, error: error)
+			delegate?.factGeneratorDidFailToGenerateFact(self, error: error)
 			return nil
 		}
 	}
 
-	func formattedFactText(for fact: String) -> String {
+	func punctuatedFactText(for fact: String) -> String {
 		if fact.last == "." || fact.last == "?" || fact.last == "!" || fact.hasSuffix(".\"") {
 			return fact
 		} else if fact.lowercased().hasPrefix("did you know") {
@@ -89,7 +89,7 @@ struct FactGenerator {
 		}
 		let dataTask = urlSession.dataTask(with: request) { [self] data, _, error in
 			if let error = error {
-				self.delegate?.factGeneratorDidFail(self, error: error)
+				self.delegate?.factGeneratorDidFailToGenerateFact(self, error: error)
 				return
 			}
 			let factIsInappropriate = self.parseFilterJSON(data: data)
@@ -125,7 +125,7 @@ struct FactGenerator {
 			let factObject = try decoder.decode(InappropriateWordsCheckerData.self, from: data)
 			return factObject.foundTargetWords
 		} catch {
-			delegate?.factGeneratorDidFail(self, error: error)
+			delegate?.factGeneratorDidFailToGenerateFact(self, error: error)
 			return false
 		}
 	}
@@ -134,12 +134,12 @@ struct FactGenerator {
 
 	func logFactDataError() {
 		let dataError = NSError(domain: "Failed to get fact data", code: 523)
-		delegate?.factGeneratorDidFail(self, error: dataError)
+		delegate?.factGeneratorDidFailToGenerateFact(self, error: dataError)
 	}
 
 	func logDecodeError() {
 		let decodeError = NSError(domain: "Failed to decode fact data", code: 135)
-		delegate?.factGeneratorDidFail(self, error: decodeError)
+		delegate?.factGeneratorDidFailToGenerateFact(self, error: decodeError)
 	}
 
 }

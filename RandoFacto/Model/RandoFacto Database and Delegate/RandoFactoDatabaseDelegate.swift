@@ -22,7 +22,7 @@ protocol RandoFactoDatabaseDelegate {
 
 	func randoFactoDatabaseLoadingDidFail(_ database: RandoFactoDatabase, error: Error)
 
-	func randoFactoDatabaseDidFailToLogOut(_ database: RandoFactoDatabase, userEmail: String, error: Error)
+	func randoFactoDatabaseDidFailToLogOutUser(_ database: RandoFactoDatabase, userEmail: String, error: Error)
 
 	func randoFactoDatabaseDidFailToDeleteUser(_ database: RandoFactoDatabase, error: Error)
 
