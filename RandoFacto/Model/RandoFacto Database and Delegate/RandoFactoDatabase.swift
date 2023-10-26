@@ -169,7 +169,7 @@ class RandoFactoDatabase: ObservableObject {
 		}
 	}
 
-	// MARK: - Favorites Management - Loading
+	// MARK: - Favorite Facts Loading
 
 	func loadFavoriteFactsForCurrentUser() async {
 		guard let user = firebaseAuth.currentUser else { return }
@@ -200,6 +200,12 @@ class RandoFactoDatabase: ObservableObject {
 				delegate?.randoFactoDatabaseLoadingDidFail(self, error: loadError)
 			}
 		}
+	}
+
+	// MARK: - Get Random Favorite Fact
+
+	func getRandomFavoriteFact() -> String {
+		return favoriteFacts.randomElement()!
 	}
 
 	// MARK: - Favorites Management - Saving/Deleting
@@ -272,12 +278,6 @@ class RandoFactoDatabase: ObservableObject {
 		group.notify(queue: DispatchQueue.main) {
 			completionHandler(nil)
 		}
-	}
-
-	// MARK: - Get Random Favorite Fact
-
-	func getRandomFavoriteFact() -> String {
-		return favoriteFacts.randomElement()!
 	}
 
 }
