@@ -43,13 +43,13 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	@State private var errorToShow: NetworkError?
 
+	// MARK: - Properties - Authentication Form Type
+
+	@State private var authFormType: AuthFormType? = nil
+
 	// MARK: - Properties - Booleans
 
 	@State private var showingErrorAlert: Bool = false
-
-	@State private var showingLogIn: Bool = false
-
-	@State private var showingSignUp: Bool = false
 
 	@State private var showingDeleteAccount: Bool = false
 
@@ -127,15 +127,10 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 		}, content: {
 			FavoritesList(parent: self)
 		})
-		.sheet(isPresented: $showingSignUp, onDismiss: {
-			dismissSignUp()
-		}, content: {
-			signUpForm
-		})
-		.sheet(isPresented: $showingLogIn, onDismiss: {
-			dismissLogIn()
-		}, content: {
-			logInForm
+		.sheet(item: $authFormType, onDismiss: {
+			dismissAuthForm()
+		}, content: { _ in
+			authForm
 		})
 		.toolbar {
 			toolbarContent
@@ -275,12 +270,12 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 			} else {
 				if randoFactoDatabase.online {
 					Button {
-						showingLogIn = true
+						authFormType = .logIn
 					} label: {
 						Text("Login…")
 					}
 					Button {
-						showingSignUp = true
+						authFormType = .signUp
 					} label: {
 						Text("Sign Up…")
 					}
@@ -296,7 +291,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	// MARK: - Forms
 
-	var signUpForm: some View {
+	var authForm: some View {
 		NavigationStack {
 			Form {
 				credentialFields
@@ -315,7 +310,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 			.formStyle(.grouped)
 			.padding(.horizontal)
 			.keyboardShortcut(.defaultAction)
-			.navigationTitle("Sign Up")
+			.navigationTitle(authFormType == .signUp ? "Sign Up" : "Login")
 #if os(iOS)
 			.navigationBarTitleDisplayMode(.inline)
 #endif
@@ -323,73 +318,32 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 			.toolbar {
 				ToolbarItem(placement: .cancellationAction) {
 					Button {
-						dismissSignUp()
+						dismissAuthForm()
 					} label: {
 						Text("Cancel")
 					}
 				}
 				ToolbarItem(placement: .confirmationAction) {
 					Button {
-						randoFactoDatabase.signUp(email: email, password: password) { error in
-							if let error = error {
-								showError(error: error)
-							} else {
-								dismissSignUp()
+						if authFormType == .signUp {
+							randoFactoDatabase.signUp(email: email, password: password) { error in
+								if let error = error {
+									showError(error: error)
+								} else {
+									dismissAuthForm()
+								}
+							}
+						} else {
+							randoFactoDatabase.logIn(email: email, password: password) { error in
+								if let error = error {
+									showError(error: error)
+								} else {
+									dismissAuthForm()
+								}
 							}
 						}
 					} label: {
-						Text("Sign Up")
-					}
-					.disabled(email.isEmpty || password.isEmpty)
-				}
-			}
-		}
-	}
-
-	var logInForm: some View {
-		NavigationStack {
-			Form {
-				credentialFields
-				if let errorText = credentialErrorText {
-					HStack {
-						Image(systemName: "exclamationmark.triangle")
-							.symbolRenderingMode(.multicolor)
-						Text(errorText)
-							.font(.system(size: 18))
-							.lineLimit(5)
-							.multilineTextAlignment(.center)
-							.padding()
-					}
-					.foregroundColor(.red)
-				}
-			}
-			.formStyle(.grouped)
-			.keyboardShortcut(.defaultAction)
-			.padding(.horizontal)
-			.navigationTitle("Login")
-#if os(iOS)
-			.navigationBarTitleDisplayMode(.inline)
-#endif
-			.frame(minWidth: 400, minHeight: 400)
-			.toolbar {
-				ToolbarItem(placement: .cancellationAction) {
-					Button {
-						dismissLogIn()
-					} label: {
-						Text("Cancel")
-					}
-				}
-				ToolbarItem(placement: .confirmationAction) {
-					Button {
-						randoFactoDatabase.logIn(email: email, password: password) { error in
-							if let error = error {
-								showError(error: error)
-							} else {
-								dismissLogIn()
-							}
-						}
-					} label: {
-						Text("Login")
+						Text(authFormType == .signUp ? "Sign Up" : "Login")
 					}
 					.disabled(email.isEmpty || password.isEmpty)
 				}
@@ -427,18 +381,11 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 		}
 	}
 
-	func dismissSignUp() {
+	func dismissAuthForm() {
 		email = String()
 		password = String()
 		credentialErrorText = nil
-		showingSignUp = false
-	}
-
-	func dismissLogIn() {
-		email = String()
-		password = String()
-		credentialErrorText = nil
-		showingLogIn = false
+		authFormType = nil
 	}
 
 	// MARK: - Error Handling
@@ -463,7 +410,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 				errorToShow = .dataError
 			case 17014:
 				// Database errors
-				showingLogIn = true
+				authFormType = .logIn
 				errorToShow = .userDeletionFailed(reason: "It's been too long since you last logged in. Please re-log in and try deleting your account again.")
 			case 17052:
 				errorToShow = .quotaExceeded
@@ -472,7 +419,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 				errorToShow = .unknown(reason: nsError.localizedDescription)
 		}
 		// Show the error in the log in/sign up dialog if they're open, otherwise show it as an alert.
-		if showingLogIn || showingSignUp {
+		if authFormType != nil {
 			credentialErrorText = errorToShow?.errorDescription
 		} else {
 			showingErrorAlert = true
