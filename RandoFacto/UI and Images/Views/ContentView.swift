@@ -152,9 +152,10 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 	var footer: some View {
 		VStack {
 			Text("Facts provided by [api-ninjas.com](https://api-ninjas.com).")
-				.font(.footnote)
-				.foregroundColor(.secondary)
+			Text("Favorite facts database powered by Google Firebase.")
 		}
+		.font(.footnote)
+		.foregroundColor(.secondary)
 	}
 
 	// MARK: - Buttons
