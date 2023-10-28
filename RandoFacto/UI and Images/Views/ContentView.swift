@@ -144,7 +144,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 		ScrollView {
 			Text(factText)
 				.font(.largeTitle)
-				.textSelection(.enabled)
+				.isTextSelectable(!(notDisplayingFact || factText == factUnavailableString))
 				.multilineTextAlignment(.center)
 		}
 	}
