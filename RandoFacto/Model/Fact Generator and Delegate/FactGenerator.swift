@@ -34,13 +34,17 @@ struct FactGenerator {
 		let urlSession = URLSession(configuration: .default)
 		request.setValue(factGeneratorApiKey, forHTTPHeaderField: "X-Api-Key")
 		delegate?.factGeneratorWillGenerateFact(self)
-		let dataTask = urlSession.dataTask(with: request) { [self] data, _, error in
+		let dataTask = urlSession.dataTask(with: request) { [self] data, response, error in
+			if let response = response as? HTTPURLResponse {
+				self.logResponseCodeAsError(response: response)
+				return
+			}
 			if let error = error {
 				self.delegate?.factGeneratorDidFailToGenerateFact(self, error: error)
 				return
 			}
 			guard let factData = self.parseJSON(data: data) else {
-				self.logFactDataError()
+				self.logFactDataError(response: response)
 				return
 			}
 			delegate?.factGeneratorWillCheckFactForInappropriateWords(self)
@@ -87,9 +91,13 @@ struct FactGenerator {
 			logFactDataError()
 			return
 		}
-		let dataTask = urlSession.dataTask(with: request) { [self] data, _, error in
+		let dataTask = urlSession.dataTask(with: request) { [self] data, response, error in
 			if let error = error {
 				self.delegate?.factGeneratorDidFailToGenerateFact(self, error: error)
+				return
+			}
+			if let response = response as? HTTPURLResponse {
+				self.logResponseCodeAsError(response: response)
 				return
 			}
 			let factIsInappropriate = self.parseFilterJSON(data: data)
@@ -132,7 +140,7 @@ struct FactGenerator {
 
 	// MARK: - Error Logging
 
-	func logFactDataError() {
+	func logFactDataError(response: URLResponse? = nil) {
 		let dataError = NSError(domain: "Failed to get fact data", code: 523)
 		delegate?.factGeneratorDidFailToGenerateFact(self, error: dataError)
 	}
@@ -140,6 +148,12 @@ struct FactGenerator {
 	func logDecodeError() {
 		let decodeError = NSError(domain: "Failed to decode fact data", code: 135)
 		delegate?.factGeneratorDidFailToGenerateFact(self, error: decodeError)
+	}
+
+	func logResponseCodeAsError(response: HTTPURLResponse) {
+		let responseCode = response.statusCode
+		let error = NSError(domain: "\(NetworkError.getDomainForResponseCode(responseCode)): HTTP Response Status Code \(responseCode)", code: responseCode + 33000)
+		delegate?.factGeneratorDidFailToGenerateFact(self, error: error)
 	}
 
 }

@@ -405,6 +405,8 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 			case -1009:
 				errorToShow = .noInternet
 				// Fact data errors
+			case 33000...33999 /*HTTP response code + 33000 to add 33 (FD) to the beginning*/:
+				errorToShow = .httpResponseError(domain: nsError.domain)
 			case 423:
 				errorToShow = .noText
 			case 523:
