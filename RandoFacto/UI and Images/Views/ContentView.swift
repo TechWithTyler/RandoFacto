@@ -408,15 +408,15 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 			case 33000...33999 /*HTTP response code + 33000 to add 33 (FD) to the beginning*/:
 				errorToShow = .httpResponseError(domain: nsError.domain)
 			case 423:
-				errorToShow = .noText
+				errorToShow = .noFactText
 			case 523:
-				errorToShow = .dataError
+				errorToShow = .factDataError
 			case 17014:
 				// Database errors
 				authFormType = .logIn
 				errorToShow = .userDeletionFailed(reason: "It's been too long since you last logged in. Please re-log in and try deleting your account again.")
 			case 17052:
-				errorToShow = .quotaExceeded
+				errorToShow = .randoFactoDatabaseQuotaExceeded
 				// Other errors
 			default:
 				errorToShow = .unknown(reason: nsError.localizedDescription)

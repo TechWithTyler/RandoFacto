@@ -152,7 +152,7 @@ struct FactGenerator {
 
 	func logResponseCodeAsError(response: HTTPURLResponse) {
 		let responseCode = response.statusCode
-		let error = NSError(domain: "\(NetworkError.getDomainForResponseCode(responseCode)): HTTP Response Status Code \(responseCode)", code: responseCode + 33000)
+		let error = NSError(domain: "\(NetworkError.getErrorDomainForHTTPResponseCode(responseCode)): HTTP Response Status Code \(responseCode)", code: responseCode + 33000)
 		delegate?.factGeneratorDidFailToGenerateFact(self, error: error)
 	}
 
