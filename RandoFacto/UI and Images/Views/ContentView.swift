@@ -33,6 +33,10 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	@State var factText: String = String()
 
+	@State private var currentFactCreditsURL: String? = nil
+
+	@State private var currentFactCredits: String? = nil
+
 	@State private var credentialErrorText: String? = nil
 
 	@State private var email: String = String()
@@ -151,6 +155,9 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	var footer: some View {
 		VStack {
+			if let currentFactCreditsURL = currentFactCreditsURL, let currentFactCredits = currentFactCredits {
+				Text("Displayed fact source [\(currentFactCredits)](\(currentFactCreditsURL)).")
+			}
 			Text("Facts provided by [uselessfacts.jsph.pl](https://uselessfacts.jsph.pl).")
 			Text("Favorite facts database powered by Google Firebase.")
 		}
@@ -165,6 +172,8 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 			if randoFactoDatabase.firebaseAuth.currentUser != nil {
 				if !(randoFactoDatabase.favoriteFacts.isEmpty) {
 					Button {
+						currentFactCredits = nil
+						currentFactCreditsURL = nil
 						factText = randoFactoDatabase.getRandomFavoriteFact()
 					} label: {
 						Text("Get Random Favorite Fact")
@@ -176,6 +185,8 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 			}
 			if randoFactoDatabase.online {
 				Button {
+					currentFactCredits = nil
+					currentFactCreditsURL = nil
 						factGenerator.generateRandomFact()
 				} label: {
 					Text("Generate Random Fact")
@@ -443,8 +454,10 @@ extension ContentView {
 		factText = screeningString
 	}
 
-	func factGeneratorDidGenerateFact(_ generator: FactGenerator, fact: String) {
+	func factGeneratorDidGenerateFact(_ generator: FactGenerator, fact: String, source: String, sourceURL: String) {
 		factText = fact
+		currentFactCredits = source
+		currentFactCreditsURL = sourceURL
 	}
 
 	func factGeneratorDidFailToGenerateFact(_ generator: FactGenerator, error: Error) {

@@ -42,34 +42,44 @@ struct FactGenerator {
 				self.delegate?.factGeneratorDidFailToGenerateFact(self, error: error)
 				return
 			}
-			guard let factData = self.parseJSON(data: data) else {
+			let factData = self.parseJSON(data: data)
+			guard let factText = factData.text, let factSource = factData.source, let factSourceURL = factData.sourceURL else {
 				self.logFactDataError(response: response)
 				return
 			}
-			delegate?.factGeneratorWillCheckFactForInappropriateWords(self)
-			checkFactForInappropriateWords(fact: factData)
+			screenFact(fact: factText) { fact, httpResponse, error in
+				if let error = error {
+					delegate?.factGeneratorDidFailToGenerateFact(self, error: error)
+				} else if let httpResponse = httpResponse {
+					logResponseCodeAsError(response: httpResponse)
+				} else if let fact = fact {
+					delegate?.factGeneratorDidGenerateFact(self, fact: fact, source: factSource, sourceURL: factSourceURL)
+				} else {
+					generateRandomFact()
+				}
+			}
 		}
 		dataTask.resume()
 	}
 
-	func parseJSON(data: Data?) -> String? {
+	func parseJSON(data: Data?) -> (text: String?, source: String?, sourceURL: String?) {
 		guard let data = data else {
-			return nil
+			return (nil, nil, nil)
 		}
 		let decoder = JSONDecoder()
 		do {
 			let factObject = try decoder.decode(FactData.self, from: data)
-			return correctedFactText(factObject.text)
+			return (correctedFactText(factObject.text), factObject.source, factObject.sourceURL)
 		} catch {
 			delegate?.factGeneratorDidFailToGenerateFact(self, error: error)
-			return nil
+			return (nil, nil, nil)
 		}
 	}
 
 	// MARK: - Fact Text Correction
 
 	func correctedFactText(_ fact: String) -> String {
-		var correctedFact = fact.replacingOccurrences(of: "`", with: "'")
+		let correctedFact = fact.replacingOccurrences(of: "`", with: "'")
 		if correctedFact.last == "." || correctedFact.last == "?" || correctedFact.last == "!" || correctedFact.hasSuffix(".\"") {
 			return correctedFact
 		} else if correctedFact.lowercased().hasPrefix("did you know") && !correctedFact.hasSuffix("?") {
@@ -81,28 +91,29 @@ struct FactGenerator {
 
 	// MARK: - Inappropriate Words Checker
 
-	func checkFactForInappropriateWords(fact: String) {
-		guard let url = URL(string: inappropriateWordsCheckerURLString) else { return }
+	func screenFact(fact: String, completionHandler: @escaping ((String?, HTTPURLResponse?, Error?) -> Void)) {
+		guard let url = URL(string: inappropriateWordsCheckerURLString) else {
+			completionHandler(nil, nil, nil)
+			return }
 		let urlSession = URLSession(configuration: .default)
 		// Create the URL request
 		guard let request = createHTTPRequest(with: url, toScreenFact: fact) else {
 			logFactDataError()
+			completionHandler(nil, nil, nil)
 			return
 		}
 		let dataTask = urlSession.dataTask(with: request) { [self] data, response, error in
 			if let error = error {
-				self.delegate?.factGeneratorDidFailToGenerateFact(self, error: error)
-				return
+				completionHandler(nil, nil, error)
 			}
 			if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
-				self.logResponseCodeAsError(response: httpResponse)
-				return
+				completionHandler(nil, httpResponse, nil)
 			}
 			let factIsInappropriate = self.parseFilterJSON(data: data)
 			if !factIsInappropriate {
-				delegate?.factGeneratorDidGenerateFact(self, fact: fact)
+				completionHandler(fact, nil, nil)
 			} else {
-				generateRandomFact()
+				completionHandler(nil, nil, nil)
 			}
 		}
 		dataTask.resume()
