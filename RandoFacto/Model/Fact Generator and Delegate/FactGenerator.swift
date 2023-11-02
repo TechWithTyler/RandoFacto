@@ -145,7 +145,7 @@ struct FactGenerator {
 
 	func parseFilterJSON(data: Data?) -> Bool {
 		guard let data = data else {
-			return false
+			return true
 		}
 		let decoder = JSONDecoder()
 		do {
@@ -153,7 +153,7 @@ struct FactGenerator {
 			return factObject.containsInappropriateWords
 		} catch {
 			delegate?.factGeneratorDidFailToGenerateFact(self, error: error)
-			return false
+			return true
 		}
 	}
 
