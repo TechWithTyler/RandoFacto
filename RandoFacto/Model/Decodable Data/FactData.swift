@@ -12,6 +12,24 @@ import Foundation
 
 struct FactData: Codable {
 
-	let fact: String
+	let id: String
 
+	let text: String
+
+	let source: String
+
+	let sourceURL: String
+
+	let language: String
+
+	let permalink: String
+
+	enum CodingKeys: String, CodingKey {
+		case id
+		case text
+		case source
+		case sourceURL = "source_url"
+		case language
+		case permalink
+	}
 }

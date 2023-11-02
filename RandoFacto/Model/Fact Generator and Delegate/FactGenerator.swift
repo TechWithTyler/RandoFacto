@@ -12,7 +12,7 @@ struct FactGenerator {
 
 	// MARK: - Properties - URLs
 
-	private let factURLString = "https://api.api-ninjas.com/v1/facts?limit=1"
+	private let factURLString = "https://uselessfacts.jsph.pl/api/v2/facts/random?language=en"
 
 	private let inappropriateWordsCheckerURLString = "https://language-checker.vercel.app/api/check-language"
 
@@ -32,11 +32,10 @@ struct FactGenerator {
 		guard let url = URL(string: factURLString) else { return }
 		var request = URLRequest(url: url)
 		let urlSession = URLSession(configuration: .default)
-		request.setValue(factGeneratorApiKey, forHTTPHeaderField: "X-Api-Key")
 		delegate?.factGeneratorWillGenerateFact(self)
 		let dataTask = urlSession.dataTask(with: request) { [self] data, response, error in
-			if let response = response as? HTTPURLResponse {
-				self.logResponseCodeAsError(response: response)
+			if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
+				self.logResponseCodeAsError(response: httpResponse)
 				return
 			}
 			if let error = error {
@@ -59,25 +58,24 @@ struct FactGenerator {
 		}
 		let decoder = JSONDecoder()
 		do {
-			if let factObject = try decoder.decode([FactData].self, from: data).first {
-				let text = factObject.fact
-				return punctuatedFactText(for: text)
-			} else {
-				return nil
-			}
+			let factObject = try decoder.decode(FactData.self, from: data)
+			return correctedFactText(factObject.text)
 		} catch {
 			delegate?.factGeneratorDidFailToGenerateFact(self, error: error)
 			return nil
 		}
 	}
 
-	func punctuatedFactText(for fact: String) -> String {
-		if fact.last == "." || fact.last == "?" || fact.last == "!" || fact.hasSuffix(".\"") {
-			return fact
-		} else if fact.lowercased().hasPrefix("did you know") {
-			return fact + "?"
+	// MARK: - Fact Text Correction
+
+	func correctedFactText(_ fact: String) -> String {
+		var correctedFact = fact.replacingOccurrences(of: "`", with: "'")
+		if correctedFact.last == "." || correctedFact.last == "?" || correctedFact.last == "!" || correctedFact.hasSuffix(".\"") {
+			return correctedFact
+		} else if correctedFact.lowercased().hasPrefix("did you know") && !correctedFact.hasSuffix("?") {
+			return correctedFact + "?"
 		} else {
-			return fact + "."
+			return correctedFact + "."
 		}
 	}
 
@@ -96,8 +94,8 @@ struct FactGenerator {
 				self.delegate?.factGeneratorDidFailToGenerateFact(self, error: error)
 				return
 			}
-			if let response = response as? HTTPURLResponse {
-				self.logResponseCodeAsError(response: response)
+			if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
+				self.logResponseCodeAsError(response: httpResponse)
 				return
 			}
 			let factIsInappropriate = self.parseFilterJSON(data: data)
