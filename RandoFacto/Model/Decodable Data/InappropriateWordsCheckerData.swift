@@ -12,10 +12,11 @@ import Foundation
 
 struct InappropriateWordsCheckerData: Codable {
 
-	let foundTargetWords: Bool
+	let containsInappropriateWords: Bool
 
+	// Use CodingKeys to point a custom property name to the correct property name in the JSON data.
 	private enum CodingKeys: String, CodingKey {
-		case foundTargetWords = "found-target-words"
+		case containsInappropriateWords = "found-target-words"
 	}
 
 }

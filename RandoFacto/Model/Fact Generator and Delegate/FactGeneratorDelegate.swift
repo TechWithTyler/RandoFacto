@@ -14,7 +14,7 @@ protocol FactGeneratorDelegate {
 
 	func factGeneratorWillGenerateFact(_ generator: FactGenerator)
 
-	func factGeneratorDidGenerateFact(_ generator: FactGenerator, fact: String, source: String, sourceURL: String)
+	func factGeneratorDidGenerateFact(_ generator: FactGenerator, fact: String)
 
 	func factGeneratorWillCheckFactForInappropriateWords(_ generator: FactGenerator)
 

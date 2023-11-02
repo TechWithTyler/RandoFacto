@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		8D0C38D62ADDC9AB00EBB03A /* SheftAppsStylishUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D0C38D52ADDC9AB00EBB03A /* SheftAppsStylishUI.framework */; };
 		8D0C38D72ADDC9AB00EBB03A /* SheftAppsStylishUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8D0C38D52ADDC9AB00EBB03A /* SheftAppsStylishUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8D7507832ACDF0D500382FE1 /* FactData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D7507822ACDF0D500382FE1 /* FactData.swift */; };
+		8D7507832ACDF0D500382FE1 /* Fact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D7507822ACDF0D500382FE1 /* Fact.swift */; };
 		8D86430E2AEC594F0084C772 /* AuthFormType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D86430D2AEC594F0084C772 /* AuthFormType.swift */; };
 		8DA01A2C2AE3193F0068A139 /* FactGeneratorDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA01A2B2AE3193F0068A139 /* FactGeneratorDelegate.swift */; };
 		8DA01A2E2AE319700068A139 /* RandoFactoDatabaseDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA01A2D2AE319700068A139 /* RandoFactoDatabaseDelegate.swift */; };
@@ -52,7 +52,7 @@
 
 /* Begin PBXFileReference section */
 		8D0C38D52ADDC9AB00EBB03A /* SheftAppsStylishUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SheftAppsStylishUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		8D7507822ACDF0D500382FE1 /* FactData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactData.swift; sourceTree = "<group>"; };
+		8D7507822ACDF0D500382FE1 /* Fact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fact.swift; sourceTree = "<group>"; };
 		8D86430D2AEC594F0084C772 /* AuthFormType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthFormType.swift; sourceTree = "<group>"; };
 		8DA01A2B2AE3193F0068A139 /* FactGeneratorDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactGeneratorDelegate.swift; sourceTree = "<group>"; };
 		8DA01A2D2AE319700068A139 /* RandoFactoDatabaseDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandoFactoDatabaseDelegate.swift; sourceTree = "<group>"; };
@@ -136,7 +136,7 @@
 		8DA01A332AE31A020068A139 /* Decodable Data */ = {
 			isa = PBXGroup;
 			children = (
-				8D7507822ACDF0D500382FE1 /* FactData.swift */,
+				8D7507822ACDF0D500382FE1 /* Fact.swift */,
 				8DA01A312AE319F70068A139 /* InappropriateWordsCheckerData.swift */,
 			);
 			path = "Decodable Data";
@@ -301,7 +301,7 @@
 				8DA01A2E2AE319700068A139 /* RandoFactoDatabaseDelegate.swift in Sources */,
 				8DA2C414292C1E1100705A2F /* ContentView.swift in Sources */,
 				8DF48E312936A80700152681 /* RandoFactoDatabase.swift in Sources */,
-				8D7507832ACDF0D500382FE1 /* FactData.swift in Sources */,
+				8D7507832ACDF0D500382FE1 /* Fact.swift in Sources */,
 				8DA01A322AE319F70068A139 /* InappropriateWordsCheckerData.swift in Sources */,
 				8D86430E2AEC594F0084C772 /* AuthFormType.swift in Sources */,
 				8DA2C412292C1E1100705A2F /* RandoFactoApp.swift in Sources */,
@@ -455,7 +455,6 @@
 				INFOPLIST_KEY_UIStatusBarHidden = NO;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
@@ -504,7 +503,6 @@
 				INFOPLIST_KEY_UIStatusBarHidden = NO;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";

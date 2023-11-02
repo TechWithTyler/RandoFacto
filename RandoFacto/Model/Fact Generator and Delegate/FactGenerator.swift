@@ -29,31 +29,41 @@ struct FactGenerator {
 	// MARK: - Fact Generation
 
 	func generateRandomFact() {
+		// 1. Create constants.
 		guard let url = URL(string: factURLString) else { return }
-		var request = URLRequest(url: url)
+		let request = URLRequest(url: url)
 		let urlSession = URLSession(configuration: .default)
+		// 2. Tell the delegate that the fact generator will start generating a random fact.
 		delegate?.factGeneratorWillGenerateFact(self)
+		// 3. Create the data task with the fact URL.
 		let dataTask = urlSession.dataTask(with: request) { [self] data, response, error in
+			// 4. If an HTTP response other than 200 is returned, log it as an error.
 			if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
 				self.logResponseCodeAsError(response: httpResponse)
 				return
 			}
+			// 5. Log any errors.
 			if let error = error {
 				self.delegate?.factGeneratorDidFailToGenerateFact(self, error: error)
 				return
 			}
-			let factData = self.parseJSON(data: data)
-			guard let factText = factData.text, let factSource = factData.source, let factSourceURL = factData.sourceURL else {
-				self.logFactDataError(response: response)
+			// 6. Make sure we can get the fact text. If we can't, an error is logged.
+			guard let factText = parseJSON(data: data) else {
+				self.logFactDataError()
 				return
 			}
+			// 7. Screen the fact to make sure it doesn't contain inappropriate words. If we get an error or an HTTP response other than 200, log an error. If we get a fact, we know the fact is safe and we can display it. If we get nothing, keep trying to generate a fact until we get a safe one. Once a safe fact is generated, give it to the delegate.
 			screenFact(fact: factText) { fact, httpResponse, error in
 				if let error = error {
 					delegate?.factGeneratorDidFailToGenerateFact(self, error: error)
 				} else if let httpResponse = httpResponse {
 					logResponseCodeAsError(response: httpResponse)
 				} else if let fact = fact {
-					delegate?.factGeneratorDidGenerateFact(self, fact: fact, source: factSource, sourceURL: factSourceURL)
+					if fact.isEmpty {
+						logNoTextError()
+					} else {
+						delegate?.factGeneratorDidGenerateFact(self, fact: fact)
+					}
 				} else {
 					generateRandomFact()
 				}
@@ -62,17 +72,17 @@ struct FactGenerator {
 		dataTask.resume()
 	}
 
-	func parseJSON(data: Data?) -> (text: String?, source: String?, sourceURL: String?) {
+	func parseJSON(data: Data?) -> String? {
 		guard let data = data else {
-			return (nil, nil, nil)
+			return nil
 		}
 		let decoder = JSONDecoder()
 		do {
-			let factObject = try decoder.decode(FactData.self, from: data)
-			return (correctedFactText(factObject.text), factObject.source, factObject.sourceURL)
+			let factObject = try decoder.decode(Fact.self, from: data)
+			return correctedFactText(factObject.text)
 		} catch {
 			delegate?.factGeneratorDidFailToGenerateFact(self, error: error)
-			return (nil, nil, nil)
+			return nil
 		}
 	}
 
@@ -98,10 +108,10 @@ struct FactGenerator {
 		let urlSession = URLSession(configuration: .default)
 		// Create the URL request
 		guard let request = createHTTPRequest(with: url, toScreenFact: fact) else {
-			logFactDataError()
 			completionHandler(nil, nil, nil)
 			return
 		}
+		delegate?.factGeneratorWillCheckFactForInappropriateWords(self)
 		let dataTask = urlSession.dataTask(with: request) { [self] data, response, error in
 			if let error = error {
 				completionHandler(nil, nil, error)
@@ -140,7 +150,7 @@ struct FactGenerator {
 		let decoder = JSONDecoder()
 		do {
 			let factObject = try decoder.decode(InappropriateWordsCheckerData.self, from: data)
-			return factObject.foundTargetWords
+			return factObject.containsInappropriateWords
 		} catch {
 			delegate?.factGeneratorDidFailToGenerateFact(self, error: error)
 			return false
@@ -154,9 +164,9 @@ struct FactGenerator {
 		delegate?.factGeneratorDidFailToGenerateFact(self, error: dataError)
 	}
 
-	func logDecodeError() {
-		let decodeError = NSError(domain: "Failed to decode fact data", code: 135)
-		delegate?.factGeneratorDidFailToGenerateFact(self, error: decodeError)
+	func logNoTextError() {
+		let dataError = NSError(domain: "No fact text", code: 423)
+		delegate?.factGeneratorDidFailToGenerateFact(self, error: dataError)
 	}
 
 	func logResponseCodeAsError(response: HTTPURLResponse) {
