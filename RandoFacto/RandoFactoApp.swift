@@ -43,6 +43,7 @@ struct RandoFactoApp: App {
             ContentView()
 				.frame(minWidth: 400, minHeight: 300, alignment: .center)
 				.ignoresSafeArea(edges: .all)
+				.sheftAppsStylishUIDesign(buttonBorders: .unmodified)
 		}
 		#if os(macOS)
 		.windowStyle(.hiddenTitleBar)
