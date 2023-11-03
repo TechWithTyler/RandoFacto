@@ -54,7 +54,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseErrorDelegate
 	// MARK: - Properties - Authentication Form Type
 
 	// The authentication form to display, or nil if neither are to be displayed.
-	@State private var authenticationFormType: authenticationFormType? = nil
+	@State private var authenticationFormType: AuthenticationFormType? = nil
 
 	// MARK: - Properties - Booleans
 
@@ -142,7 +142,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseErrorDelegate
 		})
 		// Authentication form
 		.sheet(item: $authenticationFormType, onDismiss: {
-			dismissauthenticationForm()
+			dismissAuthenticationForm()
 		}, content: { _ in
 			authenticationForm
 		})
@@ -295,9 +295,9 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseErrorDelegate
 						Text("Login…")
 					}
 					Button {
-						authenticationFormType = .signUp
+						authenticationFormType = .signup
 					} label: {
-						Text("Sign Up…")
+						Text("Signup…")
 					}
 				}
 			}
@@ -309,7 +309,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseErrorDelegate
 		.help("Account")
 	}
 
-	// MARK: - Forms
+	// MARK: - Authentication Form
 
 	var authenticationForm: some View {
 		NavigationStack {
@@ -330,7 +330,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseErrorDelegate
 			.formStyle(.grouped)
 			.padding(.horizontal)
 			.keyboardShortcut(.defaultAction)
-			.navigationTitle(authenticationFormType == .signUp ? "Sign Up" : "Login")
+			.navigationTitle(authenticationFormType == .signup ? "Signup" : "Login")
 #if os(iOS)
 			.navigationBarTitleDisplayMode(.inline)
 #endif
@@ -338,19 +338,19 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseErrorDelegate
 			.toolbar {
 				ToolbarItem(placement: .cancellationAction) {
 					Button {
-						dismissauthenticationForm()
+						dismissAuthenticationForm()
 					} label: {
 						Text("Cancel")
 					}
 				}
 				ToolbarItem(placement: .confirmationAction) {
 					Button {
-						if authenticationFormType == .signUp {
+						if authenticationFormType == .signup {
 							randoFactoDatabase.signUp(email: email, password: password) { error in
 								if let error = error {
 									showError(error: error)
 								} else {
-									dismissauthenticationForm()
+									dismissAuthenticationForm()
 								}
 							}
 						} else {
@@ -358,12 +358,12 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseErrorDelegate
 								if let error = error {
 									showError(error: error)
 								} else {
-									dismissauthenticationForm()
+									dismissAuthenticationForm()
 								}
 							}
 						}
 					} label: {
-						Text(authenticationFormType == .signUp ? "Sign Up" : "Login")
+						Text(authenticationFormType == .signup ? "Signup" : "Login")
 					}
 					.disabled(email.isEmpty || password.isEmpty)
 				}
@@ -401,7 +401,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseErrorDelegate
 		}
 	}
 
-	func dismissauthenticationForm() {
+	func dismissAuthenticationForm() {
 		email = String()
 		password = String()
 		credentialErrorText = nil
@@ -440,7 +440,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseErrorDelegate
 			default:
 				errorToShow = .unknown(reason: nsError.localizedDescription)
 		}
-		// Show the error in the login/sign up dialog if they're open, otherwise show it as an alert.
+		// Show the error in the login/signup dialog if they're open, otherwise show it as an alert.
 		if authenticationFormType != nil {
 			credentialErrorText = errorToShow?.errorDescription
 		} else {

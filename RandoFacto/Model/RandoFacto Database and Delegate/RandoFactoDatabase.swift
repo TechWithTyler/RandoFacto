@@ -34,7 +34,7 @@ class RandoFactoDatabase: ObservableObject {
 	// The current user's Firestore database.
 	private let firestore = Firestore.firestore()
 
-	// Used to get the current user or to sign up, login, logout, or delete a user.
+	// Used to get the current user or to signup, login, logout, or delete a user.
 	@Published var firebaseAuthentication = Auth.auth()
 
 	// MARK: - Properties - Strings
@@ -55,8 +55,8 @@ class RandoFactoDatabase: ObservableObject {
 
 	// MARK: - Initialization
 
-	init(delegate: RandoFactoDatabaseErrorDelegate? = nil) {
-		self.errorDelegate = delegate
+	init(errorDelegate: RandoFactoDatabaseErrorDelegate? = nil) {
+		self.errorDelegate = errorDelegate
 		configureNetworkPathMonitor()
 	}
 

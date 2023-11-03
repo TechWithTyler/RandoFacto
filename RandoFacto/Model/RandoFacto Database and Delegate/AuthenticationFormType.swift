@@ -8,9 +8,9 @@
 
 import Foundation
 
-enum authenticationFormType: Identifiable {
+enum AuthenticationFormType: Identifiable {
 
-	case signUp
+	case signup
 
 	case login
 
