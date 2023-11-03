@@ -34,33 +34,36 @@ struct FavoritesList: View {
 							.multilineTextAlignment(.center)
 							.padding(10)
 							.font(.callout)
-						List {
-							ForEach(parent.randoFactoDatabase.favoriteFacts.sorted(by: >), id: \.self) {
-								favorite in
-								Button {
-									parent.factText = favorite
-									parent.showingFavoriteFactsList = false
-								} label: {
-									Text(favorite)
-										.lineLimit(nil)
-										.multilineTextAlignment(.leading)
-										.foregroundColor(.primary)
-								}
-								.buttonStyle(.borderless)
-								.contextMenu {
+						Form {
+							List {
+								ForEach(parent.randoFactoDatabase.favoriteFacts.sorted(by: >), id: \.self) {
+									favorite in
 									Button {
-										parent.randoFactoDatabase.deleteFromFavorites(fact: favorite)
+										parent.factText = favorite
+										parent.showingFavoriteFactsList = false
 									} label: {
-										Text("Unfavorite")
+										Text(favorite)
+											.lineLimit(nil)
+											.multilineTextAlignment(.leading)
+											.foregroundColor(.primary)
+											.frame(maxWidth: .infinity, alignment: .leading)
+									}
+									.buttonStyle(.borderless)
+									.contextMenu {
+										Button {
+											parent.randoFactoDatabase.deleteFromFavorites(fact: favorite)
+										} label: {
+											Text("Unfavorite")
+										}
+									}
+									.swipeActions {
+										Button(role: .destructive) {
+											parent.randoFactoDatabase.deleteFromFavorites(fact: favorite)
+										} label: {
+											Text("Unfavorite")
+										}
 									}
 								}
-								.swipeActions {
-									Button(role: .destructive) {
-										parent.randoFactoDatabase.deleteFromFavorites(fact: favorite)
-									} label: {
-										Text("Unfavorite")
-									}
-							}
 							}
 						}
 					}

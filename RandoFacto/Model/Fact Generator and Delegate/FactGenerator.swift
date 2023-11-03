@@ -92,6 +92,8 @@ struct FactGenerator {
 		let correctedFact = fact.replacingOccurrences(of: "`", with: "'")
 		if correctedFact.last == "." || correctedFact.last == "?" || correctedFact.last == "!" || correctedFact.hasSuffix(".\"") {
 			return correctedFact
+		} else if correctedFact.hasSuffix(". ") {
+			return "\(correctedFact.dropLast(2))."
 		} else if correctedFact.lowercased().hasPrefix("did you know") && !correctedFact.hasSuffix("?") {
 			return correctedFact + "?"
 		} else {
