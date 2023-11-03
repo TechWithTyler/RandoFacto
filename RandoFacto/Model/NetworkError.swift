@@ -37,7 +37,7 @@ enum NetworkError: LocalizedError {
 			case 400: return "Bad Request"
 			case 401: return "Unauthorized"
 			case 403: return "Forbidden (maybe access to this service isn't allowed from your current network)"
-			case 404: return "Not Found (maybe service temporarily down"
+			case 404: return "Not Found (maybe service temporarily down)"
 			case 408: return "Request Timeout (maybe bad internet connection)"
 			case 500: return "Internal Server Error"
 			case 502: return "Bad Gateway"
