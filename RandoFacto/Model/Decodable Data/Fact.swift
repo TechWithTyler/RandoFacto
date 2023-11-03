@@ -12,6 +12,7 @@ import Foundation
 
 struct Fact: Codable {
 
+	// This property is named exactly as it is in the JSON data returned by the random facts API.
 	let text: String
 
 }

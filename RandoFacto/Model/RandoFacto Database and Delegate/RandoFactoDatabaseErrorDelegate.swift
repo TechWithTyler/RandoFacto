@@ -8,9 +8,9 @@
 
 import Foundation
 
-// MARK: - RandoFacto Database Delegate
+// MARK: - RandoFacto Database Error Delegate
 
-protocol RandoFactoDatabaseDelegate {
+protocol RandoFactoDatabaseErrorDelegate {
 
 	func randoFactoDatabaseNetworkEnableDidFail(_ database: RandoFactoDatabase, error: Error)
 
@@ -22,7 +22,7 @@ protocol RandoFactoDatabaseDelegate {
 
 	func randoFactoDatabaseLoadingDidFail(_ database: RandoFactoDatabase, error: Error)
 
-	func randoFactoDatabaseDidFailToLogOutUser(_ database: RandoFactoDatabase, userEmail: String, error: Error)
+	func randoFactoDatabaseDidFailToLogoutUser(_ database: RandoFactoDatabase, userEmail: String, error: Error)
 
 	func randoFactoDatabaseDidFailToDeleteUser(_ database: RandoFactoDatabase, error: Error)
 

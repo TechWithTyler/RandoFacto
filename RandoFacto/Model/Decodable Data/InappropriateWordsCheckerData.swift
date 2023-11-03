@@ -12,6 +12,7 @@ import Foundation
 
 struct InappropriateWordsCheckerData: Codable {
 
+	// This property isn't named the same as it is in the JSON data returned by the inappropriate words checker API, so it's mapped to the correct name using the coding key below.
 	let containsInappropriateWords: Bool
 
 	// Use CodingKeys to point a custom property name to the correct property name in the JSON data.

@@ -1,5 +1,5 @@
 //
-//  AuthFormType.swift
+//  authenticationFormType.swift
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 10/27/23.
@@ -8,11 +8,11 @@
 
 import Foundation
 
-enum AuthFormType: Identifiable {
+enum authenticationFormType: Identifiable {
 
 	case signUp
 
-	case logIn
+	case login
 
 	var id: Int {
 		return hashValue

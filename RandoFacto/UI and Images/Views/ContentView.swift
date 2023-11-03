@@ -9,7 +9,7 @@
 import SwiftUI
 import SheftAppsStylishUI
 
-struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
+struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseErrorDelegate {
 
 	// MARK: - Properties - Objects
 
@@ -25,27 +25,36 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	// MARK: - Properties - Strings
 
+	// Displayed when generating a random fact.
 	private let generatingString = "Generating random fact…"
 
+	// Displayed while the generated random fact is being screened to make sure it's free of inappropriate words.
 	private let screeningString = "Screening fact…"
 
+	// Displayed when a FactGenerator error occurs.
 	private let factUnavailableString = "Fact unavailable"
 
+	// The text to display in the fact text label.
 	@State var factText: String = String()
 
+	// The text to display in the credential error label in the login/signup dialogs.
 	@State private var credentialErrorText: String? = nil
 
+	// The email text field's text for the login/signup dialogs.
 	@State private var email: String = String()
 
+	// The password text field's text for the login/signup dialogs.
 	@State private var password: String = String()
 
 	// MARK: - Properties - Network Error
 
+	// The error to show to the user as an alert or in the login/signup dialog.
 	@State private var errorToShow: NetworkError?
 
 	// MARK: - Properties - Authentication Form Type
 
-	@State private var authFormType: AuthFormType? = nil
+	// The authentication form to display, or nil if neither are to be displayed.
+	@State private var authenticationFormType: authenticationFormType? = nil
 
 	// MARK: - Properties - Booleans
 
@@ -62,7 +71,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 	}
 
 	private var userLoggedIn: Bool {
-		return randoFactoDatabase.firebaseAuth.currentUser != nil
+		return randoFactoDatabase.firebaseAuthentication.currentUser != nil
 	}
 
 	// MARK: - View
@@ -90,6 +99,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 		.padding(.top, 50)
 		.padding(.bottom)
 		.padding(.horizontal)
+		// Error alert
 		.alert(isPresented: $showingErrorAlert, error: errorToShow, actions: {
 			Button {
 				showingErrorAlert = false
@@ -98,6 +108,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 				Text("OK")
 			}
 		})
+		// Unfavorite all facts alert
 		.alert("Unfavorite all facts?", isPresented: $showingDeleteAllFavoriteFacts, actions: {
 			Button("Unfavorite", role: .destructive) {
 				randoFactoDatabase.deleteAllFavoriteFactsForCurrentUser { error in
@@ -111,6 +122,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 				showingDeleteAllFavoriteFacts = false
 			}
 		})
+		// Delete account alert
 		.alert("Delete your account?", isPresented: $showingDeleteAccount, actions: {
 			Button("Delete", role: .destructive) {
 				randoFactoDatabase.deleteCurrentUser()
@@ -122,16 +134,19 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 		}, message: {
 			Text("You won't be able to save favorite facts to view offline!")
 		})
+		// Favorite facts list
 		.sheet(isPresented: $showingFavoriteFactsList, onDismiss: {
 			showingFavoriteFactsList = false
 		}, content: {
 			FavoritesList(parent: self)
 		})
-		.sheet(item: $authFormType, onDismiss: {
-			dismissAuthForm()
+		// Authentication form
+		.sheet(item: $authenticationFormType, onDismiss: {
+			dismissauthenticationForm()
 		}, content: { _ in
-			authForm
+			authenticationForm
 		})
+		// Toolbar
 		.toolbar {
 			toolbarContent
 		}
@@ -162,9 +177,10 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	var buttons: some View {
 		ConditionalHVStack {
-			if randoFactoDatabase.firebaseAuth.currentUser != nil {
+			if userLoggedIn {
 				if !(randoFactoDatabase.favoriteFacts.isEmpty) {
 					Button {
+						// Sets factText to a random fact from the favorite facts list.
 						factText = randoFactoDatabase.getRandomFavoriteFact()
 					} label: {
 						Text("Get Random Favorite Fact")
@@ -176,6 +192,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 			}
 			if randoFactoDatabase.online {
 				Button {
+					// Asks the fact generator to perform its URL requests to generate a random fact.
 						factGenerator.generateRandomFact()
 				} label: {
 					Text("Generate Random Fact")
@@ -235,13 +252,15 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 	var accountMenu: some View {
 		Menu {
 			if !randoFactoDatabase.online && !userLoggedIn {
+				// Text = disabled menu item
 				Text("Offline")
 			}
 			if userLoggedIn {
 				Section(header:
-				Text((randoFactoDatabase.firebaseAuth.currentUser?.email)!)
+				Text((randoFactoDatabase.firebaseAuthentication.currentUser?.email)!)
 				) {
 					Menu("Favorite Facts List") {
+						// Buttom = enabled menu item
 						Button {
 							showingFavoriteFactsList = true
 						} label: {
@@ -255,7 +274,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 					}
 					Menu("Account") {
 						Button {
-							randoFactoDatabase.logOutCurrentUser()
+							randoFactoDatabase.logoutCurrentUser()
 						} label: {
 							Text("Logout")
 						}
@@ -271,12 +290,12 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 			} else {
 				if randoFactoDatabase.online {
 					Button {
-						authFormType = .logIn
+						authenticationFormType = .login
 					} label: {
 						Text("Login…")
 					}
 					Button {
-						authFormType = .signUp
+						authenticationFormType = .signUp
 					} label: {
 						Text("Sign Up…")
 					}
@@ -292,7 +311,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 
 	// MARK: - Forms
 
-	var authForm: some View {
+	var authenticationForm: some View {
 		NavigationStack {
 			Form {
 				credentialFields
@@ -311,7 +330,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 			.formStyle(.grouped)
 			.padding(.horizontal)
 			.keyboardShortcut(.defaultAction)
-			.navigationTitle(authFormType == .signUp ? "Sign Up" : "Login")
+			.navigationTitle(authenticationFormType == .signUp ? "Sign Up" : "Login")
 #if os(iOS)
 			.navigationBarTitleDisplayMode(.inline)
 #endif
@@ -319,32 +338,32 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 			.toolbar {
 				ToolbarItem(placement: .cancellationAction) {
 					Button {
-						dismissAuthForm()
+						dismissauthenticationForm()
 					} label: {
 						Text("Cancel")
 					}
 				}
 				ToolbarItem(placement: .confirmationAction) {
 					Button {
-						if authFormType == .signUp {
+						if authenticationFormType == .signUp {
 							randoFactoDatabase.signUp(email: email, password: password) { error in
 								if let error = error {
 									showError(error: error)
 								} else {
-									dismissAuthForm()
+									dismissauthenticationForm()
 								}
 							}
 						} else {
-							randoFactoDatabase.logIn(email: email, password: password) { error in
+							randoFactoDatabase.login(email: email, password: password) { error in
 								if let error = error {
 									showError(error: error)
 								} else {
-									dismissAuthForm()
+									dismissauthenticationForm()
 								}
 							}
 						}
 					} label: {
-						Text(authFormType == .signUp ? "Sign Up" : "Login")
+						Text(authenticationFormType == .signUp ? "Sign Up" : "Login")
 					}
 					.disabled(email.isEmpty || password.isEmpty)
 				}
@@ -376,17 +395,17 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 		email = String()
 		password = String()
 		Task {
-			randoFactoDatabase.delegate = self
+			randoFactoDatabase.errorDelegate = self
 			await randoFactoDatabase.loadFavoriteFactsForCurrentUser()
 			factGenerator.generateRandomFact()
 		}
 	}
 
-	func dismissAuthForm() {
+	func dismissauthenticationForm() {
 		email = String()
 		password = String()
 		credentialErrorText = nil
-		authFormType = nil
+		authenticationFormType = nil
 	}
 
 	// MARK: - Error Handling
@@ -406,23 +425,23 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 				errorToShow = .noInternet
 				// Fact data errors
 			case 33000...33999 /*HTTP response code + 33000 to add 33 (FD) to the beginning*/:
-				errorToShow = .httpResponseError(domain: nsError.domain)
+				errorToShow = .badHTTPResponse(domain: nsError.domain)
 			case 423:
 				errorToShow = .noFactText
 			case 523:
 				errorToShow = .factDataError
 			case 17014:
 				// Database errors
-				authFormType = .logIn
-				errorToShow = .userDeletionFailed(reason: "It's been too long since you last logged in. Please re-log in and try deleting your account again.")
+				authenticationFormType = .login
+				errorToShow = .userDeletionFailed(reason: "It's been too long since you last logged in. Please re-login and try deleting your account again.")
 			case 17052:
 				errorToShow = .randoFactoDatabaseQuotaExceeded
 				// Other errors
 			default:
 				errorToShow = .unknown(reason: nsError.localizedDescription)
 		}
-		// Show the error in the log in/sign up dialog if they're open, otherwise show it as an alert.
-		if authFormType != nil {
+		// Show the error in the login/sign up dialog if they're open, otherwise show it as an alert.
+		if authenticationFormType != nil {
 			credentialErrorText = errorToShow?.errorDescription
 		} else {
 			showingErrorAlert = true
@@ -487,7 +506,7 @@ extension ContentView {
 		showError(error: error)
 	}
 
-	func randoFactoDatabaseDidFailToLogOutUser(_ database: RandoFactoDatabase, userEmail: String, error: Error) {
+	func randoFactoDatabaseDidFailToLogoutUser(_ database: RandoFactoDatabase, userEmail: String, error: Error) {
 		showError(error: error)
 	}
 }

@@ -12,26 +12,34 @@ enum NetworkError: LocalizedError {
 
 	// MARK: - Error Case Definitions - Unknown
 
+	// Unknown error, with the given reason.
 	case unknown(reason: String)
 
 	// MARK: - Error Case Definitions - Fact Generation
 
+	// No internet connection.
 	case noInternet
 
-	case httpResponseError(domain: String)
+	// Bad HTTP response, with the given error domain.
+	case badHTTPResponse(domain: String)
 
+	// Generated fact doesn't contain text.
 	case noFactText
 
+	// Fact generation/screening error.
 	case factDataError
 
 	// MARK: - Error Case Definitions - RandoFacto Database
 
+	// Too many RandoFacto database requests (e.g. repeatedly favoriting and unfavoriting the same fact).
 	case randoFactoDatabaseQuotaExceeded
 
+	// Account deletion failed, with the given reason.
 	case userDeletionFailed(reason: String)
 
 	// MARK: - HTTP Response Status Code To Error Domain String
 
+	// This method returns the given HTTP response code's corresponding message.
 	static func getErrorDomainForHTTPResponseCode(_ code: Int) -> String {
 		switch code {
 			case 400: return "Bad Request"
@@ -51,10 +59,15 @@ enum NetworkError: LocalizedError {
 	// MARK: - Error Description
 
 	var errorDescription: String? {
+		return chooseErrorDescriptionToLog()
+	}
+
+	// This method chooses the error's description based on the error.
+	func chooseErrorDescriptionToLog() -> String? {
 		switch self {
 			case .noInternet:
 				return "No internet connection. Running in offline mode."
-			case let .httpResponseError(domain):
+			case let .badHTTPResponse(domain):
 				return domain
 			case .noFactText:
 				return "Generated fact doesn't appear to contain text."
