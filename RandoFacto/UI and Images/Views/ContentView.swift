@@ -209,18 +209,18 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 							randoFactoDatabase.deleteFromFavorites(fact: factText)
 						} label: {
 								Image(systemName: "heart.fill")
+								.accessibilityLabel("Unfavorite")
 						}.padding()
 							.help("Unfavorite")
-							.accessibilityLabel("Unfavorite")
 							.disabled(notDisplayingFact || factText == factUnavailableString)
 					} else {
 						Button {
 							randoFactoDatabase.saveToFavorites(fact: factText)
 						} label: {
 							Image(systemName: "heart")
+								.accessibilityLabel("Favorite")
 						}.padding()
 							.help("Favorite")
-							.accessibilityLabel("Favorite")
 							.disabled(notDisplayingFact || factText == factUnavailableString)
 					}
 				}
@@ -284,9 +284,9 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseDelegate {
 			}
 		} label: {
 			Image(systemName: "person.circle")
+				.accessibilityLabel("Account")
 		}
 		.disabled(notDisplayingFact)
-		.accessibilityLabel("Account")
 		.help("Account")
 	}
 

@@ -34,10 +34,10 @@ enum NetworkError: LocalizedError {
 
 	static func getErrorDomainForHTTPResponseCode(_ code: Int) -> String {
 		switch code {
-			case 400: return "Bad Request (maybe all our API calls used up for this month)"
+			case 400: return "Bad Request"
 			case 401: return "Unauthorized"
 			case 403: return "Forbidden (maybe access to this service isn't allowed from your current network)"
-			case 404: return "Not Found"
+			case 404: return "Not Found (maybe service temporarily down"
 			case 408: return "Request Timeout (maybe bad internet connection)"
 			case 500: return "Internal Server Error"
 			case 502: return "Bad Gateway"
