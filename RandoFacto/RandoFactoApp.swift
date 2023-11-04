@@ -43,7 +43,6 @@ struct RandoFactoApp: App {
             ContentView()
 				.frame(minWidth: 400, minHeight: 300, alignment: .center)
 				.ignoresSafeArea(edges: .all)
-				.sheftAppsStylishUIDesign(buttonBorders: .unmodified)
 		}
 		#if os(macOS)
 		.windowStyle(.hiddenTitleBar)
@@ -53,10 +52,11 @@ struct RandoFactoApp: App {
 	// MARK: - Firebase Configuration
 
 	func configureFirebase() {
-		// Create a FirebaseAppOptions object with the API key
+		// 1. Make sure the GoogleService-Info.plist file is present in the app bundle.
 		guard let googleServicePlist = Bundle.main.url(forResource: "GoogleService-Info", withExtension: "plist") else {
 			fatalError("Firebase configuration file not found")
 		}
+		// 2. Create a FirebaseAppOptions object with the API key
 		guard let options = FirebaseOptions(contentsOfFile: googleServicePlist.path) else {
 			fatalError("Failed to load options from configuration file")
 		}
