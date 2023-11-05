@@ -226,6 +226,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseErrorDelegate
 							randoFactoDatabase.deleteFromFavorites(fact: factText)
 						} label: {
 								Image(systemName: "heart.fill")
+								.symbolRenderingMode(.multicolor)
 								.accessibilityLabel("Unfavorite")
 						}.padding()
 							.help("Unfavorite")

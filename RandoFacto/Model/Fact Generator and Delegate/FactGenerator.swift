@@ -9,27 +9,27 @@
 import Foundation
 
 struct FactGenerator {
-
+	
 	// MARK: - Properties - URLs
-
+	
 	// The URL of the random facts API.
 	private let factURLString = "https://uselessfacts.jsph.pl/api/v2/facts/random?language=en"
-
+	
 	// The URL of the inappropriate words checker API.
 	private let inappropriateWordsCheckerURLString = "https://language-checker.vercel.app/api/check-language"
-
+	
 	// MARK: - Properties - Delegate
-
+	
 	var delegate: FactGeneratorDelegate?
-
+	
 	// MARK: - Initialization
-
+	
 	init(delegate: FactGeneratorDelegate? = nil) {
 		self.delegate = delegate
 	}
-
+	
 	// MARK: - Fact Generation
-
+	
 	// This method uses a random facts web API which returns JSON data to generate a random fact.
 	func generateRandomFact() {
 		// 1. Create constants.
@@ -74,7 +74,7 @@ struct FactGenerator {
 		}
 		dataTask.resume()
 	}
-
+	
 	func parseJSON(data: Data?) -> String? {
 		// 1. If data is nil, log an error.
 		guard let data = data else {
@@ -91,25 +91,25 @@ struct FactGenerator {
 			return nil
 		}
 	}
-
+	
 	// MARK: - Fact Text Correction
-
+	
 	func correctedFactText(_ fact: String) -> String {
 		// Replace incorrect characters and add missing characters to the fact.
 		let correctedFact = fact.replacingOccurrences(of: "`", with: "'")
-		if correctedFact.last == "." || correctedFact.last == "?" || correctedFact.last == "!" || correctedFact.hasSuffix(".\"") {
-			return correctedFact
-		} else if correctedFact.hasSuffix(".  ") {
+		if correctedFact.hasSuffix(".  ") {
 			return "\(correctedFact.dropLast(2))."
+		} else if correctedFact.last == "." || correctedFact.last == "?" || correctedFact.last == "!" || correctedFact.hasSuffix(".\"") {
+			return correctedFact
 		} else if correctedFact.lowercased().hasPrefix("did you know") && !correctedFact.hasSuffix("?") {
 			return correctedFact + "?"
 		} else {
 			return correctedFact + "."
 		}
 	}
-
+	
 	// MARK: - Inappropriate Words Checker
-
+	
 	func screenFact(fact: String, completionHandler: @escaping ((String?, HTTPURLResponse?, Error?) -> Void)) {
 		// 1. Create constants.
 		guard let url = URL(string: inappropriateWordsCheckerURLString) else {
@@ -140,7 +140,7 @@ struct FactGenerator {
 		}
 		dataTask.resume()
 	}
-
+	
 	func createHTTPRequest(with url: URL, toScreenFact fact: String) -> URLRequest? {
 		// Create the URL request.
 		var request = URLRequest(url: url)
@@ -158,7 +158,7 @@ struct FactGenerator {
 			return nil
 		}
 	}
-
+	
 	func parseFilterJSON(data: Data?) -> Bool {
 		// 1. If data is nil, be on the safe side and treat the fact as inappropriate.
 		guard let data = data else {
@@ -174,23 +174,23 @@ struct FactGenerator {
 			return true
 		}
 	}
-
+	
 	// MARK: - Custom Error Logging
-
+	
 	// These methods log any errors not handled by catch blocks or completion handlers.
-
+	
 	func logFactDataError(response: URLResponse? = nil) {
 		let dataError = NSError(domain: "Failed to get fact data", code: 523)
 		delegate?.factGeneratorDidFailToGenerateFact(self, error: dataError)
 	}
-
+	
 	func logNoTextError() {
 		let dataError = NSError(domain: "No fact text", code: 423)
 		delegate?.factGeneratorDidFailToGenerateFact(self, error: dataError)
 	}
-
+	
 	// MARK: - Unsuccessful HTTP Response Code As Error
-
+	
 	// This method creates an error from the given HTTP response's code and logs it.
 	func logResponseCodeAsError(response: HTTPURLResponse) {
 		let responseMessage = response.errorDomainForResponseCode
@@ -198,5 +198,5 @@ struct FactGenerator {
 		let error = NSError(domain: "\(responseMessage): HTTP Response Status Code \(responseCode)", code: responseCode + 33000)
 		delegate?.factGeneratorDidFailToGenerateFact(self, error: error)
 	}
-
+	
 }
