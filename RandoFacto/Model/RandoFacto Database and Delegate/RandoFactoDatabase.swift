@@ -129,7 +129,7 @@ class RandoFactoDatabase: ObservableObject {
 	}
 
 	// This method takes the user's credentials and tries to sign them up for a RandoFacto database account.
-	func signUp(email: String, password: String, completionHandler: @escaping ((Error?) -> Void)) {
+	func signup(email: String, password: String, completionHandler: @escaping ((Error?) -> Void)) {
 		DispatchQueue.main.async { [self] in
 			firebaseAuthentication.createUser(withEmail: email, password: password) { result, error in
 				self.handleAuthenticationRequest(error: error, completionHandler: completionHandler)
@@ -230,7 +230,7 @@ class RandoFactoDatabase: ObservableObject {
 			if let fact = favorite.data()[factTextKeyName] as? String {
 				favoriteFacts.append(fact)
 			} else {
-				// 4. Otherwise, log an error. RandoFacto only gives the user safe facts that contain text--this error is only logged if a previously-saved favorite fact had its data removed, or it was manually added to RandoFacto's Firestore.
+				// 4. Otherwise, log an error. RandoFacto only gives the user safe facts that contain text--this error is only logged if a previously-saved favorite fact had its data removed, or if it was manually added to RandoFacto's Firestore.
 				let loadError = NSError(domain: "\(favorite) doesn't appear to contain fact text!", code: 423)
 				errorDelegate?.randoFactoDatabaseLoadingDidFail(self, error: loadError)
 			}

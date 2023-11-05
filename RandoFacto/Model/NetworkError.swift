@@ -37,25 +37,6 @@ enum NetworkError: LocalizedError {
 	// Account deletion failed, with the given reason.
 	case userDeletionFailed(reason: String)
 
-	// MARK: - HTTP Response Status Code To Error Domain String
-
-	// This method returns the given HTTP response code's corresponding message.
-	static func getErrorDomainForHTTPResponseCode(_ code: Int) -> String {
-		switch code {
-			case 400: return "Bad Request"
-			case 401: return "Unauthorized"
-			case 403: return "Forbidden (maybe access to this service isn't allowed from your current network)"
-			case 404: return "Not Found (maybe service temporarily down)"
-			case 408: return "Request Timeout (maybe bad internet connection)"
-			case 500: return "Internal Server Error"
-			case 502: return "Bad Gateway"
-			case 503: return "Service Unavailable"
-			case 504: return "Gateway Timeout"
-			case 505: return "HTTP Version Not Supported"
-			default: return "Unknown Response Code"
-		}
-	}
-
 	// MARK: - Error Description
 
 	var errorDescription: String? {

@@ -346,7 +346,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseErrorDelegate
 				ToolbarItem(placement: .confirmationAction) {
 					Button {
 						if authenticationFormType == .signup {
-							randoFactoDatabase.signUp(email: email, password: password) { error in
+							randoFactoDatabase.signup(email: email, password: password) { error in
 								if let error = error {
 									showError(error: error)
 								} else {

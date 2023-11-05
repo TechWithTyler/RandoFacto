@@ -42,7 +42,7 @@ struct FactGenerator {
 		// 3. Create the data task with the fact URL.
 		let dataTask = urlSession.dataTask(with: request) { [self] data, response, error in
 			// 4. If an HTTP response other than 200 is returned, log it as an error.
-			if let httpResponse = response as? HTTPURLResponse, httpResponse.isNotSuccessful {
+			if let httpResponse = response as? HTTPURLResponse, httpResponse.isUnsuccessful {
 				self.logResponseCodeAsError(response: httpResponse)
 				return
 			}
@@ -128,7 +128,7 @@ struct FactGenerator {
 			if let error = error {
 				completionHandler(nil, nil, error)
 			}
-			if let httpResponse = response as? HTTPURLResponse, httpResponse.isNotSuccessful {
+			if let httpResponse = response as? HTTPURLResponse, httpResponse.isUnsuccessful {
 				completionHandler(nil, httpResponse, nil)
 			}
 			let factIsInappropriate = parseFilterJSON(data: data)
@@ -193,8 +193,9 @@ struct FactGenerator {
 
 	// This method creates an error from the given HTTP response's code and logs it.
 	func logResponseCodeAsError(response: HTTPURLResponse) {
+		let responseMessage = response.errorDomainForResponseCode
 		let responseCode = response.statusCode
-		let error = NSError(domain: "\(NetworkError.getErrorDomainForHTTPResponseCode(responseCode)): HTTP Response Status Code \(responseCode)", code: responseCode + 33000)
+		let error = NSError(domain: "\(responseMessage): HTTP Response Status Code \(responseCode)", code: responseCode + 33000)
 		delegate?.factGeneratorDidFailToGenerateFact(self, error: error)
 	}
 
