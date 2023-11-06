@@ -9,13 +9,11 @@
 import SwiftUI
 import SheftAppsStylishUI
 
-struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseErrorDelegate {
+struct ContentView: View, RandoFactoDatabaseErrorDelegate {
 
 	// MARK: - Properties - Objects
 
-	private var factGenerator: FactGenerator {
-		return FactGenerator(delegate: self)
-	}
+	private var factGenerator = FactGenerator()
 
 	@ObservedObject var randoFactoDatabase = RandoFactoDatabase()
 
@@ -192,8 +190,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseErrorDelegate
 			}
 			if randoFactoDatabase.online {
 				Button {
-					// Asks the fact generator to perform its URL requests to generate a random fact.
-						factGenerator.generateRandomFact()
+					generateRandomFact()
 				} label: {
 					Text("Generate Random Fact")
 				}
@@ -390,6 +387,22 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseErrorDelegate
 		}
 	}
 
+	// MARK: - Fact Generation
+
+	func generateRandomFact() {
+		// Asks the fact generator to perform its URL requests to generate a random fact.
+		factGenerator.generateRandomFact {
+			factText = generatingString
+		} completionHandler: {
+			fact, error in
+			if let fact = fact {
+				factText = fact
+			} else if let error = error {
+				showError(error: error)
+			}
+		}
+	}
+
 	// MARK: - UI Methods
 
 	func prepareView() {
@@ -398,7 +411,7 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseErrorDelegate
 		Task {
 			randoFactoDatabase.errorDelegate = self
 			await randoFactoDatabase.loadFavoriteFactsForCurrentUser()
-			factGenerator.generateRandomFact()
+			generateRandomFact()
 		}
 	}
 
@@ -449,28 +462,6 @@ struct ContentView: View, FactGeneratorDelegate, RandoFactoDatabaseErrorDelegate
 		}
 	}
 
-}
-
-extension ContentView {
-
-	// MARK: - Fact Generator Delegate
-
-	func factGeneratorWillGenerateFact(_ generator: FactGenerator) {
-		factText = generatingString
-	}
-
-	func factGeneratorWillCheckFactForInappropriateWords(_ generator: FactGenerator) {
-		factText = screeningString
-	}
-
-	func factGeneratorDidGenerateFact(_ generator: FactGenerator, fact: String) {
-		factText = fact
-	}
-
-	func factGeneratorDidFailToGenerateFact(_ generator: FactGenerator, error: Error) {
-		factText = factUnavailableString
-		showError(error: error)
-	}
 }
 
 extension ContentView {

@@ -8,16 +8,3 @@
 
 import Foundation
 
-// MARK: - Fact Generator Delegate
-
-protocol FactGeneratorDelegate {
-
-	func factGeneratorWillGenerateFact(_ generator: FactGenerator)
-
-	func factGeneratorDidGenerateFact(_ generator: FactGenerator, fact: String)
-
-	func factGeneratorWillCheckFactForInappropriateWords(_ generator: FactGenerator)
-
-	func factGeneratorDidFailToGenerateFact(_ generator: FactGenerator, error: Error)
-
-}
