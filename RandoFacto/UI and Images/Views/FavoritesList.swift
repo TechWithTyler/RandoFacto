@@ -7,14 +7,37 @@
 //
 
 import SwiftUI
+import SheftAppsStylishUI
 
 struct FavoritesList: View {
 
+	@Environment(\.dismiss) var dismiss
+
 	@ObservedObject var viewModel: RandoFactoViewModel
 
+	@State private var searchText = String()
+
+	var searchResults: [String] {
+		let content = viewModel.favoriteFacts
+		if searchText.isEmpty {
+			return content
+		} else {
+			return content.filter { $0.contains(searchText) }
+		}
+	}
+
 	var body: some View {
-		NavigationStack {
-			VStack {
+#if os(macOS)
+		SAMVisualEffectViewSwiftUIRepresentable {
+			content
+		}
+#else
+		content
+#endif
+	}
+
+	var content: some View {
+		VStack {
 				if viewModel.favoriteFacts.isEmpty {
 					VStack {
 						Text("No Favorites")
@@ -34,14 +57,13 @@ struct FavoritesList: View {
 							.multilineTextAlignment(.center)
 							.padding(10)
 							.font(.callout)
-						Form {
 							List {
-								ForEach(viewModel.favoriteFacts.sorted(by: >), id: \.self) {
+								ForEach(searchResults.sorted(by: >), id: \.self) {
 									favorite in
 									Button {
 										DispatchQueue.main.async {
 											viewModel.factText = favorite
-											viewModel.showingFavoriteFactsList = false
+											dismiss()
 										}
 									} label: {
 										Text(favorite)
@@ -66,20 +88,12 @@ struct FavoritesList: View {
 										}
 									}
 								}
+								.searchable(text: $searchText, placement: .toolbar, prompt: "Search Favorite Facts")
 							}
-						}
+							.listStyle(.plain)
+							.background(.clear)
 					}
 				}
-			}
-			.toolbar {
-				ToolbarItem(placement: .confirmationAction) {
-					Button {
-						viewModel.showingFavoriteFactsList = false
-					} label: {
-						Text("Done")
-					}
-				}
-			}
 		}
 		.navigationTitle("Favorite Facts List")
 		.frame(minWidth: 400, minHeight: 300)

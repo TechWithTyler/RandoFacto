@@ -53,7 +53,7 @@ struct FactGenerator {
 				}
 				return
 			}
-			// 7. Screen the fact to make sure it doesn't contain inappropriate words. If we get an error or an HTTP response other than 200, log an error. If we get a fact, we know the fact is safe and we can display it. If we get nothing, keep trying to generate a fact until we get a safe one. Once a safe fact is generated, give it to the delegate.
+			// 7. Screen the fact to make sure it doesn't contain inappropriate words. If we get an error or an HTTP response other than 200, log an error. If we get a fact, we know the fact is safe and we can display it. If we get nothing, keep trying to generate a fact until we get a safe one. Once a safe fact is generated, give it to the view.
 			screenFact(fact: factText) { fact, httpResponse, error in
 				if let error = error {
 					completionHandler(nil, error)
@@ -97,15 +97,9 @@ struct FactGenerator {
 	// MARK: - Fact Text Correction
 
 	func correctedFactText(_ fact: String) -> String {
-		// Replace incorrect characters and add missing characters to the fact.
+		// Replace incorrect characters.
 		let correctedFact = fact.replacingOccurrences(of: "`", with: "'")
-		if correctedFact.last == "." || correctedFact.last == "?" || correctedFact.last == "!" || correctedFact.hasSuffix(".\"") || correctedFact.hasSuffix(" ") {
-			return correctedFact
-		} else if correctedFact.lowercased().hasPrefix("did you know") && !correctedFact.hasSuffix("?") {
-			return correctedFact + "?"
-		} else {
-			return correctedFact + "."
-		}
+		return correctedFact
 	}
 
 	// MARK: - Inappropriate Words Checker

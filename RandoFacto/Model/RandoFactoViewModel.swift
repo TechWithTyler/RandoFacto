@@ -83,10 +83,10 @@ class RandoFactoViewModel: ObservableObject {
 	// MARK: - Properties - Firebase
 
 	// The current user's Firestore database.
-	private let firestore = Firestore.firestore()
+	private var firestore: Firestore
 
 	// Used to get the current user or to signup, login, logout, or delete a user.
-	@Published var firebaseAuthentication = Auth.auth()
+	@Published var firebaseAuthentication: Auth
 
 	// MARK: - Properties - Errors
 
@@ -96,7 +96,28 @@ class RandoFactoViewModel: ObservableObject {
 	// MARK: - Initialization
 
 	init() {
+		// 1. Make sure the GoogleService-Info.plist file is present in the app bundle.
+		guard let googleServicePlist = Bundle.main.url(forResource: "GoogleService-Info", withExtension: "plist") else {
+			fatalError("Firebase configuration file not found")
+		}
+		// 2. Create a FirebaseAppOptions object with the API key.
+		guard let options = FirebaseOptions(contentsOfFile: googleServicePlist.path) else {
+			fatalError("Failed to load options from configuration file")
+		}
+		options.apiKey = firebaseApiKey
+		// 3. Initialize Firebase with the custom options.
+		FirebaseApp.configure(options: options)
+		firestore = Firestore.firestore()
+		firebaseAuthentication = Auth.auth()
+		let settings = FirestoreSettings()
+		settings.cacheSettings = PersistentCacheSettings(sizeBytes: FirestoreCacheSizeUnlimited as NSNumber)
+		firestore.settings = settings
+		// 4. Configure the network path monitor.
 		configureNetworkPathMonitor()
+		// 5. Load all the favorite facts into the app.
+		loadFavoriteFactsForCurrentUser()
+		// 6. Generate a random fact.
+		generateRandomFact()
 	}
 
 	// MARK: - Network Path Monitor Configuration
@@ -144,6 +165,29 @@ class RandoFactoViewModel: ObservableObject {
 		}
 	}
 
+	// MARK: - Fact Generation
+
+	func generateRandomFact() {
+		// Asks the fact generator to perform its URL requests to generate a random fact.
+		factGenerator.generateRandomFact {
+			DispatchQueue.main.async { [self] in
+				factText = generatingString
+			}
+		} completionHandler: { [self]
+			fact, error in
+			if let fact = fact {
+				DispatchQueue.main.async { [self] in
+					factText = fact
+				}
+			} else if let error = error {
+				DispatchQueue.main.async { [self] in
+					factText = factUnavailableString
+				}
+				showError(error: error)
+			}
+		}
+	}
+
 	// MARK: - Authentication
 
 	// This method loads the user's favorite facts if authentication is successful. Otherwise, it logs an error.
@@ -152,10 +196,8 @@ class RandoFactoViewModel: ObservableObject {
 			showError(error: error)
 			successHandler(false)
 		} else {
-			Task {
-				await self.loadFavoriteFactsForCurrentUser()
+				self.loadFavoriteFactsForCurrentUser()
 				successHandler(true)
-			}
 			}
 	}
 
@@ -230,7 +272,7 @@ class RandoFactoViewModel: ObservableObject {
 	// MARK: - Favorite Facts Loading
 
 	// This method asynchronously loads all the favorite facts associated with the current user.
-	func loadFavoriteFactsForCurrentUser() async {
+	func loadFavoriteFactsForCurrentUser() {
 		// 1. Make sure we can get the current user.
 		guard let user = firebaseAuthentication.currentUser else { return }
 		// 2. Get the Firestore collection containing favorite facts.

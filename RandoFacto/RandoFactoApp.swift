@@ -30,17 +30,13 @@ struct RandoFactoApp: App {
 	@NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 	#endif
 
-	// MARK: - Initialization
-
-	init() {
-		configureFirebase()
-	}
+	@ObservedObject var viewModel = RandoFactoViewModel()
 
 	// MARK: - Windows and Views
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+			ContentView(viewModel: viewModel)
 				.frame(minWidth: 400, minHeight: 300, alignment: .center)
 				.ignoresSafeArea(edges: .all)
 		}
@@ -48,26 +44,5 @@ struct RandoFactoApp: App {
 		.windowStyle(.hiddenTitleBar)
 		#endif
 	}
-
-	// MARK: - Firebase Configuration
-
-	func configureFirebase() {
-		// 1. Make sure the GoogleService-Info.plist file is present in the app bundle.
-		guard let googleServicePlist = Bundle.main.url(forResource: "GoogleService-Info", withExtension: "plist") else {
-			fatalError("Firebase configuration file not found")
-		}
-		// 2. Create a FirebaseAppOptions object with the API key
-		guard let options = FirebaseOptions(contentsOfFile: googleServicePlist.path) else {
-			fatalError("Failed to load options from configuration file")
-		}
-		options.apiKey = firebaseApiKey
-		// Initialize Firebase with the custom options
-		FirebaseApp.configure(options: options)
-		let settings = FirestoreSettings()
-		let firestore = Firestore.firestore()
-		settings.cacheSettings = PersistentCacheSettings(sizeBytes: FirestoreCacheSizeUnlimited as NSNumber)
-		firestore.settings = settings
-	}
-
 
 }

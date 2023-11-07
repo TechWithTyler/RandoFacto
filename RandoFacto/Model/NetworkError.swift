@@ -43,6 +43,10 @@ enum NetworkError: LocalizedError, Equatable {
 		return chooseErrorDescriptionToLog()
 	}
 
+	var id: UUID {
+		return UUID()
+	}
+
 	// This method chooses the error's description based on the error.
 	func chooseErrorDescriptionToLog() -> String? {
 		switch self {
@@ -61,6 +65,13 @@ enum NetworkError: LocalizedError, Equatable {
 			case let .unknown(reason):
 				return reason
 		}
+	}
+
+	// MARK: - Inequality Check
+
+	// This method compares the UUID of 2 NetworkError objects to see if they're not equal.
+	static func !=(lError: NetworkError, rError: NetworkError) -> Bool {
+		return lError.id != rError.id
 	}
 
 }

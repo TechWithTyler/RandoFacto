@@ -13,7 +13,7 @@ struct ContentView: View {
 
 	// MARK: - Properties - Objects
 
-	@ObservedObject var viewModel = RandoFactoViewModel()
+	@ObservedObject var viewModel: RandoFactoViewModel
 
 #if os(iOS)
 	private var haptics = UINotificationFeedbackGenerator()
@@ -41,9 +41,22 @@ struct ContentView: View {
 			Divider()
 			footer
 		}
+		.navigationDestination(isPresented: $viewModel.showingFavoriteFactsList) {
+			FavoritesList(viewModel: viewModel)
+		}
 		.padding(.top, 50)
 		.padding(.bottom)
 		.padding(.horizontal)
+		// Error sound/haptics
+		.onChange(of: viewModel.errorToShow) { value in
+			if value != nil {
+#if os(macOS)
+				NSSound.beep()
+#elseif os(iOS)
+				haptics.notificationOccurred(.error)
+#endif
+			}
+		}
 		// Error alert
 		.alert(isPresented: $viewModel.showingErrorAlert, error: viewModel.errorToShow, actions: {
 			Button {
@@ -79,12 +92,6 @@ struct ContentView: View {
 		}, message: {
 			Text("You won't be able to save favorite facts to view offline!")
 		})
-		// Favorite facts list
-		.sheet(isPresented: $viewModel.showingFavoriteFactsList, onDismiss: {
-			viewModel.showingFavoriteFactsList = false
-		}, content: {
-			FavoritesList(viewModel: viewModel)
-		})
 		// Authentication form
 		.sheet(item: $viewModel.authenticationFormType, onDismiss: {
 			viewModel.authenticationFormType = nil
@@ -94,20 +101,6 @@ struct ContentView: View {
 		// Toolbar
 		.toolbar {
 			toolbarContent
-		}
-		// On appear
-		.onAppear {
-			prepareView()
-		}
-		// Error sound/haptics
-		.onChange(of: viewModel.errorToShow) { value in
-			if value != nil {
-				#if os(macOS)
-				NSSound.beep()
-				#elseif os(iOS)
-				haptics.notificationOccurred(.error)
-				#endif
-			}
 		}
 	}
 
@@ -150,7 +143,7 @@ struct ContentView: View {
 			}
 			if viewModel.online {
 				Button {
-					generateRandomFact()
+					viewModel.generateRandomFact()
 				} label: {
 					Text("Generate Random Fact")
 				}
@@ -279,40 +272,8 @@ struct ContentView: View {
 		.help("Account")
 	}
 
-	// MARK: - Fact Generation
-
-	func generateRandomFact() {
-		// Asks the fact generator to perform its URL requests to generate a random fact.
-			viewModel.factGenerator.generateRandomFact {
-				DispatchQueue.main.async {
-				viewModel.factText = viewModel.generatingString
-				}
-			} completionHandler: {
-				fact, error in
-					if let fact = fact {
-						DispatchQueue.main.async {
-							viewModel.factText = fact
-						}
-					} else if let error = error {
-						DispatchQueue.main.async {
-							viewModel.factText = viewModel.factUnavailableString
-						}
-						viewModel.showError(error: error)
-					}
-			}
-	}
-
-	// MARK: - UI Methods
-
-	func prepareView() {
-		generateRandomFact()
-		Task {
-			await viewModel.loadFavoriteFactsForCurrentUser()
-		}
-	}
-
 }
 
 #Preview {
-	ContentView()
+	ContentView(viewModel: RandoFactoViewModel())
 }
