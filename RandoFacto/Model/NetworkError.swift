@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum NetworkError: LocalizedError {
+enum NetworkError: LocalizedError, Equatable {
 
 	// MARK: - Error Case Definitions - Unknown
 

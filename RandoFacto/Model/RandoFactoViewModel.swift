@@ -1,5 +1,5 @@
 //
-//  RandoFactoDatabase.swift
+//  RandoFactoViewModel.swift
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 11/29/22.
@@ -10,34 +10,25 @@ import SwiftUI
 import Firebase
 import Network
 
-class RandoFactoDatabase: ObservableObject {
+class RandoFactoViewModel: ObservableObject {
 
-	// MARK: - Properties - Favorite Facts Array
+	// MARK: - Properties - Fact Generator
 
-	// The favorite facts loaded from the current user's Firestore database.
-	@Published var favoriteFacts: [String] = []
-
-	// MARK: - Properties - Error Delegate
-
-	var errorDelegate: RandoFactoDatabaseErrorDelegate?
-
-	// MARK: - Properties - Network Monitor
-
-	// Observes changes to the device's network connection to tell the app whether it should run in online or offline mode.
-	private var networkPathMonitor = NWPathMonitor()
-
-	// Whether the device is online.
-	@Published var online = false
-
-	// MARK: - Properties - Firebase
-
-	// The current user's Firestore database.
-	private let firestore = Firestore.firestore()
-
-	// Used to get the current user or to signup, login, logout, or delete a user.
-	@Published var firebaseAuthentication = Auth.auth()
+	var factGenerator = FactGenerator()
 
 	// MARK: - Properties - Strings
+
+	// The text to display in the fact text label.
+	@Published var factText: String = String()
+
+	// Displayed when generating a random fact.
+	let generatingString = "Generating random fact…"
+
+	// Displayed when a FactGenerator error occurs.
+	let factUnavailableString = "Fact unavailable"
+
+	// The text to display in the credential error label in the login/signup dialogs.
+	@Published var credentialErrorText: String? = nil
 
 	// The collection name of the favorite facts collection in a user's Firestore database.
 	private let favoritesCollectionName = "favoriteFacts"
@@ -48,6 +39,55 @@ class RandoFactoDatabase: ObservableObject {
 	// The key name of a fact's associated user.
 	private let userKeyName = "user"
 
+	// MARK: - Properties - Network Error
+
+	// The error to show to the user as an alert or in the login/signup dialog.
+	@Published var errorToShow: NetworkError?
+
+	// MARK: - Properties - Authentication Form Type
+
+	// The authentication form to display, or nil if neither are to be displayed.
+	@Published var authenticationFormType: AuthenticationFormType? = nil
+
+	// MARK: - Properties - Booleans
+
+	@Published var showingErrorAlert: Bool = false
+
+	@Published var showingDeleteAccount: Bool = false
+
+	@Published var showingDeleteAllFavoriteFacts: Bool = false
+
+	@Published var showingFavoriteFactsList: Bool = false
+
+	// Whether the device is online.
+	@Published var online = false
+
+	var notDisplayingFact: Bool {
+		return factText.isEmpty || factText == generatingString
+	}
+
+	var userLoggedIn: Bool {
+		return firebaseAuthentication.currentUser != nil
+	}
+
+	// MARK: - Properties - Favorite Facts Array
+
+	// The favorite facts loaded from the current user's Firestore database.
+	@Published var favoriteFacts: [String] = []
+
+	// MARK: - Properties - Network Monitor
+
+	// Observes changes to the device's network connection to tell the app whether it should run in online or offline mode.
+	private var networkPathMonitor = NWPathMonitor()
+
+	// MARK: - Properties - Firebase
+
+	// The current user's Firestore database.
+	private let firestore = Firestore.firestore()
+
+	// Used to get the current user or to signup, login, logout, or delete a user.
+	@Published var firebaseAuthentication = Auth.auth()
+
 	// MARK: - Properties - Errors
 
 	// The error logged if the RandoFacto database is unable to get the document (data) from the corresponding QuerySnapshot.
@@ -55,8 +95,7 @@ class RandoFactoDatabase: ObservableObject {
 
 	// MARK: - Initialization
 
-	init(errorDelegate: RandoFactoDatabaseErrorDelegate? = nil) {
-		self.errorDelegate = errorDelegate
+	init() {
 		configureNetworkPathMonitor()
 	}
 
@@ -81,7 +120,7 @@ class RandoFactoDatabase: ObservableObject {
 		firestore.enableNetwork {
 			[self] error in
 			if let error = error {
-				errorDelegate?.randoFactoDatabaseNetworkEnableDidFail(self, error: error)
+				showError(error: error)
 			} else {
 				// Updating a published property must be done on the main thread, so we use DispatchQueue.main.async to run any code that sets such properties.
 				DispatchQueue.main.async { [self] in
@@ -96,7 +135,7 @@ class RandoFactoDatabase: ObservableObject {
 		firestore.disableNetwork {
 			[self] error in
 			if let error = error {
-				errorDelegate?.randoFactoDatabaseNetworkDisableDidFail(self, error: error)
+				showError(error: error)
 			} else {
 				DispatchQueue.main.async { [self] in
 					online = false
@@ -108,54 +147,49 @@ class RandoFactoDatabase: ObservableObject {
 	// MARK: - Authentication
 
 	// This method loads the user's favorite facts if authentication is successful. Otherwise, it logs an error.
-	func handleAuthenticationRequest(error: Error?, completionHandler: @escaping ((Error?) -> Void)) {
+	func handleAuthenticationRequest(error: Error?, successHandler: @escaping ((Bool) -> Void)) {
 		if let error = error {
-			completionHandler(error)
+			showError(error: error)
+			successHandler(false)
 		} else {
 			Task {
 				await self.loadFavoriteFactsForCurrentUser()
+				successHandler(true)
 			}
-			completionHandler(nil)
-		}
+			}
 	}
 
 	// This method takes the user's credentials and tries to log them into their RandoFacto database account.
-	func login(email: String, password: String, completionHandler: @escaping ((Error?) -> Void)) {
-		DispatchQueue.main.async { [self] in
+	func login(email: String, password: String, successHandler: @escaping ((Bool) -> Void)) {
 			firebaseAuthentication.signIn(withEmail: email, password: password) { [self] result, error in
-				handleAuthenticationRequest(error: error, completionHandler: completionHandler)
+				handleAuthenticationRequest(error: error, successHandler: successHandler)
 			}
-		}
 	}
 
 	// This method takes the user's credentials and tries to sign them up for a RandoFacto database account.
-	func signup(email: String, password: String, completionHandler: @escaping ((Error?) -> Void)) {
-		DispatchQueue.main.async { [self] in
+	func signup(email: String, password: String, successHandler: @escaping ((Bool) -> Void)) {
 			firebaseAuthentication.createUser(withEmail: email, password: password) { result, error in
-				self.handleAuthenticationRequest(error: error, completionHandler: completionHandler)
+				self.handleAuthenticationRequest(error: error, successHandler: successHandler)
 			}
-		}
 	}
 
 	// This method tries to logout the current user, clearing the app's favorite facts list if successful.
 	func logoutCurrentUser() {
-		DispatchQueue.main.async { [self] in
-			if let userEmail = firebaseAuthentication.currentUser?.email {
 				do {
 					try firebaseAuthentication.signOut()
+					DispatchQueue.main.async { [self] in
 					favoriteFacts.removeAll()
+					}
 				} catch {
-					errorDelegate?.randoFactoDatabaseDidFailToLogoutUser(self, userEmail: userEmail, error: error)
+					showError(error: error)
 				}
-			}
-		}
 	}
 
 	// This method logs out a user that has had their account deleted but is still logged into the app on its end.
 	func logoutMissingUser() {
 		firebaseAuthentication.currentUser?.getIDTokenForcingRefresh(true) { [self] token, error in
 			if let error = error {
-				errorDelegate?.randoFactoDatabaseLoadingDidFail(self, error: error)
+				showError(error: error)
 			} else {
 				if token == nil {
 					logoutCurrentUser()
@@ -171,22 +205,24 @@ class RandoFactoDatabase: ObservableObject {
 		// 1. Make sure we can get the current user.
 		guard let user = firebaseAuthentication.currentUser else { return }
 		// 2. Delete all their favorite facts.
-		deleteAllFavoriteFactsForCurrentUser { [self] error in
-			// 3. If that fails, log an error and don't continue deletion.
-			if let error = error {
-				errorDelegate?.randoFactoDatabaseDidFailToDeleteUser(self, error: error)
-			} else {
-				// 4. Or if it succeeds, delete the current user.
-				user.delete { [self] error in
-					// 5. If that fails, log an error.
-					if let error = error {
-						errorDelegate?.randoFactoDatabaseDidFailToDeleteUser(self, error: error)
-					} else {
-						// 6. If the user and all their favorite facts were successfully deleted, clear the favorite facts list and log the user out.
-						favoriteFacts.removeAll()
-						logoutCurrentUser()
+			deleteAllFavoriteFactsForCurrentUser { [self] error in
+				// 3. If that fails, log an error and don't continue deletion.
+				if let error = error {
+					showError(error: error)
+				} else {
+					// 4. Or if it succeeds, delete the current user.
+					user.delete { [self] error in
+						// 5. If that fails, log an error.
+						if let error = error {
+							showError(error: error)
+						} else {
+							// 6. If the user and all their favorite facts were successfully deleted, clear the favorite facts list and log the user out.
+							DispatchQueue.main.async { [self] in
+								favoriteFacts.removeAll()
+							}
+							logoutCurrentUser()
+						}
 					}
-				}
 			}
 		}
 	}
@@ -198,7 +234,6 @@ class RandoFactoDatabase: ObservableObject {
 		// 1. Make sure we can get the current user.
 		guard let user = firebaseAuthentication.currentUser else { return }
 		// 2. Get the Firestore collection containing favorite facts.
-			DispatchQueue.main.async { [self] in
 				firestore.collection(favoritesCollectionName)
 				// 3. FIlter the result to include only the current user's favorite facts.
 					.whereField(userKeyName, isEqualTo: (user.email)!)
@@ -206,7 +241,7 @@ class RandoFactoDatabase: ObservableObject {
 					.addSnapshotListener(includeMetadataChanges: true) { [self] snapshot, error in
 						// 5. Log any errors.
 						if let error = error {
-							errorDelegate?.randoFactoDatabaseLoadingDidFail(self, error: error)
+							showError(error: error)
 						} else {
 							// 6. If no data can be found, it's most likely due to a missing user, so log them out and return.
 							guard let snapshot = snapshot else {
@@ -216,24 +251,27 @@ class RandoFactoDatabase: ObservableObject {
 							// 7. If a change was successfully detected, update the app's favorite facts array.
 							updateFavoriteFactsList(from: snapshot)
 						}
-					}
 			}
 	}
 
 	// This method updates the app's favorite facts list with the given QuerySnapshot's data.
 	func updateFavoriteFactsList(from snapshot: QuerySnapshot) {
-		// 1. Clear the favorite facts list.
-		favoriteFacts.removeAll()
+		DispatchQueue.main.async { [self] in
+			// 1. Clear the favorite facts list.
+			favoriteFacts.removeAll()
+		}
 		// 2. Go through each document (piece of data) in the snapshot.
-		for favorite in snapshot.documents {
-			// 3. If the data's "fact" key contains data, append it to the favorite facts list.
-			if let fact = favorite.data()[factTextKeyName] as? String {
-				favoriteFacts.append(fact)
-			} else {
-				// 4. Otherwise, log an error. RandoFacto only gives the user safe facts that contain text--this error is only logged if a previously-saved favorite fact had its data removed, or if it was manually added to RandoFacto's Firestore.
-				let loadError = NSError(domain: "\(favorite) doesn't appear to contain fact text!", code: 423)
-				errorDelegate?.randoFactoDatabaseLoadingDidFail(self, error: loadError)
-			}
+			for favorite in snapshot.documents {
+				// 3. If the data's "fact" key contains data, append it to the favorite facts list.
+				if let fact = favorite.data()[factTextKeyName] as? String {
+					DispatchQueue.main.async { [self] in
+						favoriteFacts.append(fact)
+					}
+				} else {
+					// 4. Otherwise, log an error. RandoFacto only gives the user safe facts that contain text--this error is only logged if a previously-saved favorite fact had its data removed, or if it was manually added to RandoFacto's Firestore.
+					let loadError = NSError(domain: "\(favorite) doesn't appear to contain fact text!", code: 423)
+					showError(error: loadError)
+				}
 		}
 	}
 
@@ -260,7 +298,7 @@ class RandoFactoDatabase: ObservableObject {
 			firestore.collection(favoritesCollectionName).addDocument(data: data) { [self] error in
 				// 4. If that fails, log an error.
 				if let error = error {
-					errorDelegate?.randoFactoDatabaseDidFailToAddFavorite(self, fact: fact, error: error)
+					showError(error: error)
 				}
 			}
 		}
@@ -275,7 +313,7 @@ class RandoFactoDatabase: ObservableObject {
 				.getDocuments(source: .cache) { [self] snapshot, error in
 					// 2. If that fails, log an error.
 				if let error = error {
-					errorDelegate?.randoFactoDatabaseDidFailToDeleteFavorite(self, fact: fact, error: error)
+					showError(error: error)
 				} else {
 					// 3. Or if we're error-free, get the snapshot and delete.
 					getFavoriteFactSnapshotAndDelete(snapshot, fact: fact)
@@ -286,6 +324,7 @@ class RandoFactoDatabase: ObservableObject {
 
 	// This method gets the data from the given snapshot and deletes it.
 	func getFavoriteFactSnapshotAndDelete(_ snapshot: QuerySnapshot?, fact: String) {
+		DispatchQueue.main.async { [self] in
 		// 1. Make sure the snapshot and the corresponding data is there.
 		if let snapshot = snapshot, let ref = snapshot.documents.first {
 			// 2. Delete the corresponding document.
@@ -293,12 +332,13 @@ class RandoFactoDatabase: ObservableObject {
 				error in
 				// 3. Log an error if deletion fails.
 				if let error = error {
-					errorDelegate?.randoFactoDatabaseDidFailToDeleteFavorite(self, fact: fact, error: error)
+					showError(error: error)
 				}
 			}
 		} else {
 			// 4. If we can't get the snapshot or corresponding data, log an error.
-			errorDelegate?.randoFactoDatabaseDidFailToDeleteFavorite(self, fact: fact, error: refError)
+			showError(error: refError)
+		}
 		}
 	}
 
@@ -336,5 +376,43 @@ class RandoFactoDatabase: ObservableObject {
 			completionHandler(nil)
 		}
 	}
+
+	// MARK: - Error Handling
+
+	func showError(error: Error) {
+		DispatchQueue.main.async { [self] in
+			let nsError = error as NSError
+			print("Error: \(nsError)")
+			// Check the error code to choose which error to show.
+			switch nsError.code {
+					// Network errors
+				case -1009:
+					errorToShow = .noInternet
+					// Fact data errors
+				case 33000...33999 /*HTTP response code + 33000 to add 33 (FD) to the beginning*/:
+					errorToShow = .badHTTPResponse(domain: nsError.domain)
+				case 423:
+					errorToShow = .noFactText
+				case 523:
+					errorToShow = .factDataError
+				case 17014:
+					// Database errors
+					authenticationFormType = .login
+					errorToShow = .userDeletionFailed(reason: "It's been too long since you last logged in. Please re-login and try deleting your account again.")
+				case 17052:
+					errorToShow = .randoFactoDatabaseQuotaExceeded
+					// Other errors
+				default:
+					errorToShow = .unknown(reason: nsError.localizedDescription)
+			}
+			// Show the error in the login/signup dialog if they're open, otherwise show it as an alert.
+			if authenticationFormType != nil {
+				credentialErrorText = errorToShow?.errorDescription
+			} else {
+				showingErrorAlert = true
+			}
+		}
+	}
+
 
 }

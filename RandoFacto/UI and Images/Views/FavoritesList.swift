@@ -10,12 +10,12 @@ import SwiftUI
 
 struct FavoritesList: View {
 
-	var parent: ContentView
+	@ObservedObject var viewModel: RandoFactoViewModel
 
 	var body: some View {
 		NavigationStack {
 			VStack {
-				if parent.randoFactoDatabase.favoriteFacts.isEmpty {
+				if viewModel.favoriteFacts.isEmpty {
 					VStack {
 						Text("No Favorites")
 							.font(.largeTitle)
@@ -26,7 +26,7 @@ struct FavoritesList: View {
 					.padding()
 				} else {
 					VStack {
-						Text("Favorite facts: \(parent.randoFactoDatabase.favoriteFacts.count)")
+						Text("Favorite facts: \(viewModel.favoriteFacts.count)")
 							.multilineTextAlignment(.center)
 							.padding(10)
 							.font(.title)
@@ -36,11 +36,13 @@ struct FavoritesList: View {
 							.font(.callout)
 						Form {
 							List {
-								ForEach(parent.randoFactoDatabase.favoriteFacts.sorted(by: >), id: \.self) {
+								ForEach(viewModel.favoriteFacts.sorted(by: >), id: \.self) {
 									favorite in
 									Button {
-										parent.factText = favorite
-										parent.showingFavoriteFactsList = false
+										DispatchQueue.main.async {
+											viewModel.factText = favorite
+											viewModel.showingFavoriteFactsList = false
+										}
 									} label: {
 										Text(favorite)
 											.lineLimit(nil)
@@ -51,14 +53,14 @@ struct FavoritesList: View {
 									.buttonStyle(.borderless)
 									.contextMenu {
 										Button {
-											parent.randoFactoDatabase.deleteFromFavorites(fact: favorite)
+											viewModel.deleteFromFavorites(fact: favorite)
 										} label: {
 											Text("Unfavorite")
 										}
 									}
 									.swipeActions {
 										Button(role: .destructive) {
-											parent.randoFactoDatabase.deleteFromFavorites(fact: favorite)
+											viewModel.deleteFromFavorites(fact: favorite)
 										} label: {
 											Text("Unfavorite")
 										}
@@ -72,7 +74,7 @@ struct FavoritesList: View {
 			.toolbar {
 				ToolbarItem(placement: .confirmationAction) {
 					Button {
-						parent.showingFavoriteFactsList = false
+						viewModel.showingFavoriteFactsList = false
 					} label: {
 						Text("Done")
 					}
@@ -86,5 +88,5 @@ struct FavoritesList: View {
 }
 
 #Preview {
-	FavoritesList(parent: ContentView())
+	FavoritesList(viewModel: RandoFactoViewModel())
 }
