@@ -39,6 +39,10 @@ class RandoFactoViewModel: ObservableObject {
 	// The key name of a fact's associated user.
 	private let userKeyName = "user"
 
+	// MARK: - Properties - Integers
+
+	@Published var selectedTab: Tab? = .randomFact
+
 	// MARK: - Properties - Network Error
 
 	// The error to show to the user as an alert or in the login/signup dialog.
@@ -57,8 +61,6 @@ class RandoFactoViewModel: ObservableObject {
 
 	@Published var showingDeleteAllFavoriteFacts: Bool = false
 
-	@Published var showingFavoriteFactsList: Bool = false
-
 	// Whether the device is online.
 	@Published var online = false
 
@@ -67,6 +69,7 @@ class RandoFactoViewModel: ObservableObject {
 	}
 
 	var userLoggedIn: Bool {
+		guard let firebaseAuthentication = firebaseAuthentication else { return false }
 		return firebaseAuthentication.currentUser != nil
 	}
 
@@ -83,10 +86,10 @@ class RandoFactoViewModel: ObservableObject {
 	// MARK: - Properties - Firebase
 
 	// The current user's Firestore database.
-	private var firestore: Firestore
+	private var firestore: Firestore?
 
 	// Used to get the current user or to signup, login, logout, or delete a user.
-	@Published var firebaseAuthentication: Auth
+	@Published var firebaseAuthentication: Auth?
 
 	// MARK: - Properties - Errors
 
@@ -96,6 +99,17 @@ class RandoFactoViewModel: ObservableObject {
 	// MARK: - Initialization
 
 	init() {
+		// 1. Configure Firebase.
+		configureFirebase()
+		// 2. Configure the network path monitor.
+		configureNetworkPathMonitor()
+		// 3. Load all the favorite facts into the app.
+		loadFavoriteFactsForCurrentUser()
+		// 4. Generate a random fact.
+		generateRandomFact()
+	}
+
+	func configureFirebase() {
 		// 1. Make sure the GoogleService-Info.plist file is present in the app bundle.
 		guard let googleServicePlist = Bundle.main.url(forResource: "GoogleService-Info", withExtension: "plist") else {
 			fatalError("Firebase configuration file not found")
@@ -109,15 +123,12 @@ class RandoFactoViewModel: ObservableObject {
 		FirebaseApp.configure(options: options)
 		firestore = Firestore.firestore()
 		firebaseAuthentication = Auth.auth()
+		guard let firestore = firestore else {
+			fatalError("Couldn't initialize Firestore")
+		}
 		let settings = FirestoreSettings()
 		settings.cacheSettings = PersistentCacheSettings(sizeBytes: FirestoreCacheSizeUnlimited as NSNumber)
 		firestore.settings = settings
-		// 4. Configure the network path monitor.
-		configureNetworkPathMonitor()
-		// 5. Load all the favorite facts into the app.
-		loadFavoriteFactsForCurrentUser()
-		// 6. Generate a random fact.
-		generateRandomFact()
 	}
 
 	// MARK: - Network Path Monitor Configuration
@@ -138,6 +149,7 @@ class RandoFactoViewModel: ObservableObject {
 
 	// This method enables online mode.
 	func goOnline() {
+		guard let firestore = firestore else { return }
 		firestore.enableNetwork {
 			[self] error in
 			if let error = error {
@@ -153,6 +165,7 @@ class RandoFactoViewModel: ObservableObject {
 
 	// This method enables offline mode.
 	func goOffline() {
+		guard let firestore = firestore else { return }
 		firestore.disableNetwork {
 			[self] error in
 			if let error = error {
@@ -203,14 +216,14 @@ class RandoFactoViewModel: ObservableObject {
 
 	// This method takes the user's credentials and tries to log them into their RandoFacto database account.
 	func login(email: String, password: String, successHandler: @escaping ((Bool) -> Void)) {
-			firebaseAuthentication.signIn(withEmail: email, password: password) { [self] result, error in
+		firebaseAuthentication?.signIn(withEmail: email, password: password) { [self] result, error in
 				handleAuthenticationRequest(error: error, successHandler: successHandler)
 			}
 	}
 
 	// This method takes the user's credentials and tries to sign them up for a RandoFacto database account.
 	func signup(email: String, password: String, successHandler: @escaping ((Bool) -> Void)) {
-			firebaseAuthentication.createUser(withEmail: email, password: password) { result, error in
+		firebaseAuthentication?.createUser(withEmail: email, password: password) { result, error in
 				self.handleAuthenticationRequest(error: error, successHandler: successHandler)
 			}
 	}
@@ -218,7 +231,7 @@ class RandoFactoViewModel: ObservableObject {
 	// This method tries to logout the current user, clearing the app's favorite facts list if successful.
 	func logoutCurrentUser() {
 				do {
-					try firebaseAuthentication.signOut()
+					try firebaseAuthentication?.signOut()
 					DispatchQueue.main.async { [self] in
 					favoriteFacts.removeAll()
 					}
@@ -229,12 +242,13 @@ class RandoFactoViewModel: ObservableObject {
 
 	// This method logs out a user that has had their account deleted but is still logged into the app on its end.
 	func logoutMissingUser() {
-		firebaseAuthentication.currentUser?.getIDTokenForcingRefresh(true) { [self] token, error in
+		firebaseAuthentication?.currentUser?.getIDTokenForcingRefresh(true) { [self] token, error in
 			if let error = error {
 				showError(error: error)
 			} else {
 				if token == nil {
 					logoutCurrentUser()
+					selectedTab = .randomFact
 				}
 			}
 		}
@@ -245,7 +259,7 @@ class RandoFactoViewModel: ObservableObject {
 	// This method deletes the current user.
 	func deleteCurrentUser() {
 		// 1. Make sure we can get the current user.
-		guard let user = firebaseAuthentication.currentUser else { return }
+		guard let user = firebaseAuthentication?.currentUser else { return }
 		// 2. Delete all their favorite facts.
 			deleteAllFavoriteFactsForCurrentUser { [self] error in
 				// 3. If that fails, log an error and don't continue deletion.
@@ -274,9 +288,9 @@ class RandoFactoViewModel: ObservableObject {
 	// This method asynchronously loads all the favorite facts associated with the current user.
 	func loadFavoriteFactsForCurrentUser() {
 		// 1. Make sure we can get the current user.
-		guard let user = firebaseAuthentication.currentUser else { return }
+		guard let user = firebaseAuthentication?.currentUser else { return }
 		// 2. Get the Firestore collection containing favorite facts.
-				firestore.collection(favoritesCollectionName)
+		firestore?.collection(favoritesCollectionName)
 				// 3. FIlter the result to include only the current user's favorite facts.
 					.whereField(userKeyName, isEqualTo: (user.email)!)
 				// 4. Listen for any changes made to the favorite facts list on the Firebase end, such as by RandoFacto on another device.
@@ -329,7 +343,7 @@ class RandoFactoViewModel: ObservableObject {
 	// This method saves the given fact to the RandoFacto database.
 	func saveToFavorites(fact: String) {
 		// 1. Make sure the fact doesn't already exist and that the current user has an email (who would have an account but no email?!).
-		guard !favoriteFacts.contains(fact), let userEmail = firebaseAuthentication.currentUser?.email else { return }
+		guard !favoriteFacts.contains(fact), let userEmail = firebaseAuthentication?.currentUser?.email else { return }
 		// 2. Create a dictionary containing the data that should be saved as a new document in the favorite facts Firestore collection.
 		DispatchQueue.main.async { [self] in
 			let data: [String : String] = [
@@ -337,7 +351,7 @@ class RandoFactoViewModel: ObservableObject {
 				userKeyName : userEmail
 			]
 			// 3. Add the favorite fact to the database.
-			firestore.collection(favoritesCollectionName).addDocument(data: data) { [self] error in
+			firestore?.collection(favoritesCollectionName).addDocument(data: data) { [self] error in
 				// 4. If that fails, log an error.
 				if let error = error {
 					showError(error: error)
@@ -350,7 +364,7 @@ class RandoFactoViewModel: ObservableObject {
 	func deleteFromFavorites(fact: String) {
 		// 1. Get facts that match the given fact (there should only be 1).
 		DispatchQueue.main.async { [self] in
-			firestore.collection(favoritesCollectionName)
+			firestore?.collection(favoritesCollectionName)
 				.whereField(factTextKeyName, isEqualTo: fact)
 				.getDocuments(source: .cache) { [self] snapshot, error in
 					// 2. If that fails, log an error.
@@ -370,7 +384,7 @@ class RandoFactoViewModel: ObservableObject {
 		// 1. Make sure the snapshot and the corresponding data is there.
 		if let snapshot = snapshot, let ref = snapshot.documents.first {
 			// 2. Delete the corresponding document.
-			firestore.collection(favoritesCollectionName).document(ref.documentID).delete { [self]
+			firestore?.collection(favoritesCollectionName).document(ref.documentID).delete { [self]
 				error in
 				// 3. Log an error if deletion fails.
 				if let error = error {
@@ -391,7 +405,7 @@ class RandoFactoViewModel: ObservableObject {
 		for fact in favoriteFacts {
 			group.enter()
 			// 2. Get the document corresponding to the fact.
-			firestore.collection(favoritesCollectionName).whereField(factTextKeyName, isEqualTo: fact).getDocuments(source: .cache) { [self] snapshot, error in
+			firestore?.collection(favoritesCollectionName).whereField(factTextKeyName, isEqualTo: fact).getDocuments(source: .cache) { [self] snapshot, error in
 				defer {
 					group.leave()
 				}
@@ -406,7 +420,7 @@ class RandoFactoViewModel: ObservableObject {
 					return
 				}
 				// 5. Try to delete the fact, logging an error if it fails.
-				firestore.collection(favoritesCollectionName).document(ref.documentID).delete { error in
+				firestore?.collection(favoritesCollectionName).document(ref.documentID).delete { error in
 					if let error = error {
 						completionHandler(error)
 					}

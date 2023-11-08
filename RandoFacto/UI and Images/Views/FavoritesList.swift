@@ -11,8 +11,6 @@ import SheftAppsStylishUI
 
 struct FavoritesList: View {
 
-	@Environment(\.dismiss) var dismiss
-
 	@ObservedObject var viewModel: RandoFactoViewModel
 
 	@State private var searchText = String()
@@ -27,18 +25,8 @@ struct FavoritesList: View {
 	}
 
 	var body: some View {
-#if os(macOS)
-		SAMVisualEffectViewSwiftUIRepresentable {
-			content
-		}
-#else
-		content
-#endif
-	}
-
-	var content: some View {
 		VStack {
-				if viewModel.favoriteFacts.isEmpty {
+				if searchResults.isEmpty {
 					VStack {
 						Text("No Favorites")
 							.font(.largeTitle)
@@ -48,8 +36,7 @@ struct FavoritesList: View {
 					.foregroundColor(.secondary)
 					.padding()
 				} else {
-					VStack {
-						Text("Favorite facts: \(viewModel.favoriteFacts.count)")
+						Text("Favorite facts: \(searchResults.count)")
 							.multilineTextAlignment(.center)
 							.padding(10)
 							.font(.title)
@@ -63,7 +50,7 @@ struct FavoritesList: View {
 									Button {
 										DispatchQueue.main.async {
 											viewModel.factText = favorite
-											dismiss()
+											viewModel.selectedTab = .favoriteFacts
 										}
 									} label: {
 										Text(favorite)
@@ -88,13 +75,34 @@ struct FavoritesList: View {
 										}
 									}
 								}
-								.searchable(text: $searchText, placement: .toolbar, prompt: "Search Favorite Facts")
 							}
-							.listStyle(.plain)
-							.background(.clear)
 					}
-				}
 		}
+		// Toolbar
+		.toolbar {
+			ToolbarItem(placement: .automatic) {
+				Button {
+					viewModel.showingDeleteAllFavoriteFacts = true
+				} label: {
+					Label("Delete All…", systemImage: "trash")
+				}
+			}
+		}
+		// Unfavorite all facts alert
+		.alert("Unfavorite all facts?", isPresented: $viewModel.showingDeleteAllFavoriteFacts, actions: {
+			Button("Unfavorite", role: .destructive) {
+				viewModel.deleteAllFavoriteFactsForCurrentUser { error in
+					if let error = error {
+						viewModel.showError(error: error)
+					}
+					viewModel.showingDeleteAllFavoriteFacts = false
+				}
+			}
+			Button("Cancel", role: .cancel) {
+				viewModel.showingDeleteAllFavoriteFacts = false
+			}
+		})
+		.searchable(text: $searchText, placement: .toolbar, prompt: "Search Favorite Facts")
 		.navigationTitle("Favorite Facts List")
 		.frame(minWidth: 400, minHeight: 300)
 	}
