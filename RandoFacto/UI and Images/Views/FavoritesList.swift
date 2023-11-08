@@ -36,57 +36,58 @@ struct FavoritesList: View {
 					.foregroundColor(.secondary)
 					.padding()
 				} else {
-						Text("Favorite facts: \(searchResults.count)")
-							.multilineTextAlignment(.center)
-							.padding(10)
-							.font(.title)
-						Text("Select a favorite fact to display it.")
-							.multilineTextAlignment(.center)
-							.padding(10)
-							.font(.callout)
-							List {
-								ForEach(searchResults.sorted(by: >), id: \.self) {
-									favorite in
-									Button {
-										DispatchQueue.main.async {
-											viewModel.factText = favorite
-											viewModel.selectedTab = .favoriteFacts
-										}
-									} label: {
-										Text(favorite)
-											.lineLimit(nil)
-											.multilineTextAlignment(.leading)
-											.foregroundColor(.primary)
-											.frame(maxWidth: .infinity, alignment: .leading)
-									}
-									.buttonStyle(.borderless)
-									.contextMenu {
-										Button {
-											viewModel.deleteFromFavorites(fact: favorite)
-										} label: {
-											Text("Unfavorite")
-										}
-									}
-									.swipeActions {
-										Button(role: .destructive) {
-											viewModel.deleteFromFavorites(fact: favorite)
-										} label: {
-											Text("Unfavorite")
-										}
-									}
+					Text("Favorite facts: \(searchResults.count)")
+						.multilineTextAlignment(.center)
+						.padding(10)
+						.font(.title)
+					Text("Select a favorite fact to display it.")
+						.multilineTextAlignment(.center)
+						.padding(10)
+						.font(.callout)
+					List {
+						ForEach(searchResults.sorted(by: >), id: \.self) {
+							favorite in
+							Button {
+								DispatchQueue.main.async {
+									viewModel.factText = favorite
+									viewModel.selectedTab = .favoriteFacts
+								}
+							} label: {
+								Text(favorite)
+									.lineLimit(nil)
+									.multilineTextAlignment(.leading)
+									.foregroundColor(.primary)
+									.frame(maxWidth: .infinity, alignment: .leading)
+							}
+							.buttonStyle(.borderless)
+							.contextMenu {
+								Button {
+									viewModel.deleteFromFavorites(fact: favorite)
+								} label: {
+									Text("Unfavorite")
 								}
 							}
+							.swipeActions {
+								Button(role: .destructive) {
+									viewModel.deleteFromFavorites(fact: favorite)
+								} label: {
+									Text("Unfavorite")
+								}
+							}
+						}
 					}
+					.searchable(text: $searchText, placement: .toolbar, prompt: "Search Favorite Facts")
+				}
 		}
 		// Toolbar
 		.toolbar {
-			ToolbarItem(placement: .automatic) {
-				Button {
-					viewModel.showingDeleteAllFavoriteFacts = true
-				} label: {
-					Label("Delete All…", systemImage: "trash")
+				ToolbarItem(placement: .automatic) {
+					Button {
+						viewModel.showingDeleteAllFavoriteFacts = true
+					} label: {
+						Label("Delete All…", systemImage: "trash")
+					}
 				}
-			}
 		}
 		// Unfavorite all facts alert
 		.alert("Unfavorite all facts?", isPresented: $viewModel.showingDeleteAllFavoriteFacts, actions: {
@@ -102,7 +103,6 @@ struct FavoritesList: View {
 				viewModel.showingDeleteAllFavoriteFacts = false
 			}
 		})
-		.searchable(text: $searchText, placement: .toolbar, prompt: "Search Favorite Facts")
 		.navigationTitle("Favorite Facts List")
 		.frame(minWidth: 400, minHeight: 300)
 	}

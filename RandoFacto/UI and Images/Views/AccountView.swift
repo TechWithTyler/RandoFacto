@@ -15,6 +15,10 @@ struct AccountView: View {
     var body: some View {
 		Form {
 			if viewModel.userLoggedIn {
+				Button("Change Password…") {
+					viewModel.authenticationFormType = .passwordChange
+				}
+				Spacer()
 				Button("Logout") {
 					viewModel.logoutCurrentUser()
 				}
@@ -31,7 +35,9 @@ struct AccountView: View {
 			}
 		}
 		.navigationTitle(viewModel.firebaseAuthentication?.currentUser?.email ?? "Account")
+		#if os(iOS)
 		.navigationBarTitleDisplayMode(.automatic)
+		#endif
 		.formStyle(.grouped)
 		// Delete account alert
 		.alert("Delete your account?", isPresented: $viewModel.showingDeleteAccount, actions: {

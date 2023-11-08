@@ -14,6 +14,8 @@ enum AuthenticationFormType: Identifiable {
 
 	case login
 
+	case passwordChange
+
 	var id: Int {
 		return hashValue
 	}

@@ -24,8 +24,8 @@ struct AuthenticationFormView: View {
 
 	@State private var isAuthenticating: Bool = false
 
-	var isFormValid: Bool {
-		return !email.isEmpty || !password.isEmpty
+	var isFormInvalid: Bool {
+		return viewModel.authenticationFormType == .passwordChange ? password.isEmpty : email.isEmpty || password.isEmpty
 	}
 
 	// MARK: - Dismiss
@@ -38,6 +38,25 @@ struct AuthenticationFormView: View {
 		NavigationStack {
 			Form {
 				credentialFields
+				if viewModel.authenticationFormType == .login && !email.isEmpty && password.isEmpty {
+					Button("Forgot Password") {
+						viewModel.errorToShow = nil
+						viewModel.showingResetPasswordEmailSent = false
+						viewModel.credentialErrorText = nil
+						viewModel.resetPassword(email: email)
+					}
+				}
+				if viewModel.showingResetPasswordEmailSent {
+					HStack {
+						Image(systemName: "checkmark.circle")
+						Text("A password reset email has been sent to \(email).")
+							.font(.system(size: 18))
+							.lineLimit(5)
+							.multilineTextAlignment(.center)
+							.padding()
+					}
+					.foregroundColor(.green)
+				}
 				if let errorText = viewModel.credentialErrorText {
 					HStack {
 						Image(systemName: "exclamationmark.triangle")
@@ -66,6 +85,9 @@ struct AuthenticationFormView: View {
 				}
 					ToolbarItem(placement: .cancellationAction) {
 						Button {
+							viewModel.showingResetPasswordEmailSent = false
+							viewModel.errorToShow = nil
+							viewModel.credentialErrorText = nil
 							dismiss()
 						} label: {
 							Text("Cancel")
@@ -74,6 +96,9 @@ struct AuthenticationFormView: View {
 					}
 					ToolbarItem(placement: .confirmationAction) {
 						Button {
+							viewModel.showingResetPasswordEmailSent = false
+							viewModel.errorToShow = nil
+							viewModel.credentialErrorText = nil
 							if viewModel.authenticationFormType == .signup {
 								isAuthenticating = true
 								viewModel.signup(email: email, password: password) {
@@ -83,6 +108,8 @@ struct AuthenticationFormView: View {
 										dismiss()
 									}
 								}
+							} else if viewModel.authenticationFormType == .passwordChange {
+								viewModel.updatePasswordForCurrentUser(newPassword: password)
 							} else {
 								isAuthenticating = true
 								viewModel.login(email: email, password: password) {
@@ -94,9 +121,9 @@ struct AuthenticationFormView: View {
 								}
 							}
 						} label: {
-							Text(viewModel.authenticationFormType == .signup ? "Signup" : "Login")
+							Text(confirmButtonText)
 						}
-						.disabled(!isFormValid || isAuthenticating)
+						.disabled(isFormInvalid || isAuthenticating)
 					}
 				}
 		}
@@ -106,16 +133,26 @@ struct AuthenticationFormView: View {
 		}
 	}
 
+	var confirmButtonText: String {
+		switch viewModel.authenticationFormType {
+			case .signup: return "Signup"
+			case .passwordChange: return "Update"
+			case .none, .login: return "Login"
+		}
+	}
+
 	// MARK: - Credential Fields
 
 	var credentialFields: some View {
 		Section {
-			HStack {
-				TextField("Email", text: $email)
-					.textContentType(.username)
+			if viewModel.authenticationFormType != .passwordChange {
+				HStack {
+					TextField("Email", text: $email)
+						.textContentType(.username)
 #if os(iOS)
-					.keyboardType(.emailAddress)
+						.keyboardType(.emailAddress)
 #endif
+				}
 			}
 			HStack {
 				SecureField("Password", text: $password)

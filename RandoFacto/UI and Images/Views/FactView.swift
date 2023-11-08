@@ -25,9 +25,11 @@ struct FactView: View {
 			Divider()
 			footer
 		}
-		.padding()
+		.padding(.horizontal)
 		.navigationTitle("Random Fact")
+		#if os(iOS)
 		.navigationBarTitleDisplayMode(.inline)
+		#endif
 		// Toolbar
 		.toolbar {
 			toolbarContent

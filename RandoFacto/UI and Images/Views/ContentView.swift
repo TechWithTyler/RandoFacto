@@ -22,12 +22,23 @@ struct ContentView: View {
 	var body: some View {
 		NavigationSplitView {
 			List(selection: $viewModel.selectedTab) {
-				ForEach(Tab.allCases, id: \.hashValue) { tab in
-					NavigationLink(value: tab) {
-						label(for: tab)
+				NavigationLink(value: Tab.randomFact) {
+					label(for: .randomFact)
+				}
+				if viewModel.userLoggedIn {
+					NavigationLink(value: Tab.favoriteFacts) {
+						label(for: .favoriteFacts)
+							.badge(viewModel.favoriteFacts.count)
 					}
 				}
+				NavigationLink(value: Tab.account) {
+					label(for: .account)
+				}
 			}
+			.navigationTitle("RandoFacto")
+#if os(iOS)
+			.navigationBarTitleDisplayMode(.automatic)
+#endif
 		} detail: {
 			switch viewModel.selectedTab {
 				case .randomFact:
@@ -40,8 +51,6 @@ struct ContentView: View {
 					EmptyView()
 			}
 		}
-		.navigationTitle("RandoFacto")
-		.navigationBarTitleDisplayMode(.automatic)
 		// Error alert
 		.alert(isPresented: $viewModel.showingErrorAlert, error: viewModel.errorToShow, actions: {
 			Button {
@@ -76,7 +85,7 @@ struct ContentView: View {
 			case .favoriteFacts:
 				Label("Favorite Facts", systemImage: "heart")
 			case .account:
-				Label(viewModel.firebaseAuthentication?.currentUser?.displayName ?? "Account", systemImage: "person.circle")
+				Label(viewModel.firebaseAuthentication?.currentUser?.email ?? "Account", systemImage: "person.circle")
 
 		}
 	}

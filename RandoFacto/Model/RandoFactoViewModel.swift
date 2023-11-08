@@ -61,6 +61,8 @@ class RandoFactoViewModel: ObservableObject {
 
 	@Published var showingDeleteAllFavoriteFacts: Bool = false
 
+	@Published var showingResetPasswordEmailSent: Bool = false
+
 	// Whether the device is online.
 	@Published var online = false
 
@@ -104,7 +106,9 @@ class RandoFactoViewModel: ObservableObject {
 		// 2. Configure the network path monitor.
 		configureNetworkPathMonitor()
 		// 3. Load all the favorite facts into the app.
-		loadFavoriteFactsForCurrentUser()
+		Task {
+			await loadFavoriteFactsForCurrentUser()
+		}
 		// 4. Generate a random fact.
 		generateRandomFact()
 	}
@@ -205,36 +209,67 @@ class RandoFactoViewModel: ObservableObject {
 
 	// This method loads the user's favorite facts if authentication is successful. Otherwise, it logs an error.
 	func handleAuthenticationRequest(error: Error?, successHandler: @escaping ((Bool) -> Void)) {
-		if let error = error {
-			showError(error: error)
-			successHandler(false)
-		} else {
-				self.loadFavoriteFactsForCurrentUser()
+		DispatchQueue.main.async { [self] in
+			if let error = error {
+				showError(error: error)
+				successHandler(false)
+			} else {
+				Task {
+					await self.loadFavoriteFactsForCurrentUser()
+				}
 				successHandler(true)
 			}
+		}
 	}
 
 	// This method takes the user's credentials and tries to log them into their RandoFacto database account.
 	func login(email: String, password: String, successHandler: @escaping ((Bool) -> Void)) {
-		firebaseAuthentication?.signIn(withEmail: email, password: password) { [self] result, error in
+		DispatchQueue.main.async { [self] in
+			firebaseAuthentication?.signIn(withEmail: email, password: password) { [self] result, error in
 				handleAuthenticationRequest(error: error, successHandler: successHandler)
 			}
+		}
 	}
 
 	// This method takes the user's credentials and tries to sign them up for a RandoFacto database account.
 	func signup(email: String, password: String, successHandler: @escaping ((Bool) -> Void)) {
-		firebaseAuthentication?.createUser(withEmail: email, password: password) { result, error in
+		DispatchQueue.main.async { [self] in
+			firebaseAuthentication?.createUser(withEmail: email, password: password) { result, error in
 				self.handleAuthenticationRequest(error: error, successHandler: successHandler)
 			}
+		}
+	}
+
+	func resetPassword(email: String) {
+		DispatchQueue.main.async { [self] in
+			firebaseAuthentication?.sendPasswordReset(withEmail: email, actionCodeSettings: ActionCodeSettings()) { [self] error in
+				if let error = error {
+					showError(error: error)
+				} else {
+					showingResetPasswordEmailSent = true
+				}
+			}
+		}
+	}
+
+	func updatePasswordForCurrentUser(newPassword: String) {
+		guard let user = firebaseAuthentication?.currentUser else { return }
+		DispatchQueue.main.async { [self] in
+			user.updatePassword(to: newPassword) { [self] error in
+				if let error = error {
+					showError(error: error)
+				}
+			}
+		}
 	}
 
 	// This method tries to logout the current user, clearing the app's favorite facts list if successful.
 	func logoutCurrentUser() {
 				do {
-					try firebaseAuthentication?.signOut()
 					DispatchQueue.main.async { [self] in
-					favoriteFacts.removeAll()
+						favoriteFacts.removeAll()
 					}
+					try firebaseAuthentication?.signOut()
 				} catch {
 					showError(error: error)
 				}
@@ -242,13 +277,15 @@ class RandoFactoViewModel: ObservableObject {
 
 	// This method logs out a user that has had their account deleted but is still logged into the app on its end.
 	func logoutMissingUser() {
-		firebaseAuthentication?.currentUser?.getIDTokenForcingRefresh(true) { [self] token, error in
-			if let error = error {
-				showError(error: error)
-			} else {
-				if token == nil {
-					logoutCurrentUser()
-					selectedTab = .randomFact
+		DispatchQueue.main.async { [self] in
+			firebaseAuthentication?.currentUser?.getIDTokenForcingRefresh(true) { [self] token, error in
+				if let error = error {
+					showError(error: error)
+				} else {
+					if token == nil {
+						logoutCurrentUser()
+						selectedTab = .randomFact
+					}
 				}
 			}
 		}
@@ -261,6 +298,7 @@ class RandoFactoViewModel: ObservableObject {
 		// 1. Make sure we can get the current user.
 		guard let user = firebaseAuthentication?.currentUser else { return }
 		// 2. Delete all their favorite facts.
+		DispatchQueue.main.async { [self] in
 			deleteAllFavoriteFactsForCurrentUser { [self] error in
 				// 3. If that fails, log an error and don't continue deletion.
 				if let error = error {
@@ -279,6 +317,7 @@ class RandoFactoViewModel: ObservableObject {
 							logoutCurrentUser()
 						}
 					}
+				}
 			}
 		}
 	}
@@ -286,28 +325,30 @@ class RandoFactoViewModel: ObservableObject {
 	// MARK: - Favorite Facts Loading
 
 	// This method asynchronously loads all the favorite facts associated with the current user.
-	func loadFavoriteFactsForCurrentUser() {
+	func loadFavoriteFactsForCurrentUser() async {
 		// 1. Make sure we can get the current user.
-		guard let user = firebaseAuthentication?.currentUser else { return }
-		// 2. Get the Firestore collection containing favorite facts.
-		firestore?.collection(favoritesCollectionName)
-				// 3. FIlter the result to include only the current user's favorite facts.
-					.whereField(userKeyName, isEqualTo: (user.email)!)
-				// 4. Listen for any changes made to the favorite facts list on the Firebase end, such as by RandoFacto on another device.
-					.addSnapshotListener(includeMetadataChanges: true) { [self] snapshot, error in
-						// 5. Log any errors.
-						if let error = error {
-							showError(error: error)
-						} else {
-							// 6. If no data can be found, it's most likely due to a missing user, so log them out and return.
-							guard let snapshot = snapshot else {
-								logoutMissingUser()
-								return
-							}
-							// 7. If a change was successfully detected, update the app's favorite facts array.
-							updateFavoriteFactsList(from: snapshot)
+		guard let userEmail = firebaseAuthentication?.currentUser?.email else { return }
+		DispatchQueue.main.async { [self] in
+			// 2. Get the Firestore collection containing favorite facts.
+			logoutMissingUser()
+			firestore?.collection(favoritesCollectionName)
+			// 3. FIlter the result to include only the current user's favorite facts.
+				.whereField(userKeyName, isEqualTo: userEmail)
+			// 4. Listen for any changes made to the favorite facts list on the Firebase end, such as by RandoFacto on another device.
+				.addSnapshotListener(includeMetadataChanges: true) { [self] snapshot, error in
+					// 5. Log any errors.
+					if let error = error {
+						showError(error: error)
+					} else {
+						// 6. If no data can be found, it's most likely due to a missing user, so log them out and return.
+						guard let snapshot = snapshot else {
+							return
 						}
-			}
+						// 7. If a change was successfully detected, update the app's favorite facts array.
+						updateFavoriteFactsList(from: snapshot)
+					}
+				}
+		}
 	}
 
 	// This method updates the app's favorite facts list with the given QuerySnapshot's data.
@@ -315,7 +356,6 @@ class RandoFactoViewModel: ObservableObject {
 		DispatchQueue.main.async { [self] in
 			// 1. Clear the favorite facts list.
 			favoriteFacts.removeAll()
-		}
 		// 2. Go through each document (piece of data) in the snapshot.
 			for favorite in snapshot.documents {
 				// 3. If the data's "fact" key contains data, append it to the favorite facts list.
@@ -328,6 +368,7 @@ class RandoFactoViewModel: ObservableObject {
 					let loadError = NSError(domain: "\(favorite) doesn't appear to contain fact text!", code: 423)
 					showError(error: loadError)
 				}
+			}
 		}
 	}
 
@@ -335,6 +376,7 @@ class RandoFactoViewModel: ObservableObject {
 
 	// This method gets a random fact from the favorite facts list and returns it.
 	func getRandomFavoriteFact() -> String {
+		logoutMissingUser()
 		return favoriteFacts.randomElement()!
 	}
 
@@ -346,6 +388,7 @@ class RandoFactoViewModel: ObservableObject {
 		guard !favoriteFacts.contains(fact), let userEmail = firebaseAuthentication?.currentUser?.email else { return }
 		// 2. Create a dictionary containing the data that should be saved as a new document in the favorite facts Firestore collection.
 		DispatchQueue.main.async { [self] in
+			logoutMissingUser()
 			let data: [String : String] = [
 				factTextKeyName : fact,
 				userKeyName : userEmail
@@ -364,6 +407,7 @@ class RandoFactoViewModel: ObservableObject {
 	func deleteFromFavorites(fact: String) {
 		// 1. Get facts that match the given fact (there should only be 1).
 		DispatchQueue.main.async { [self] in
+			logoutMissingUser()
 			firestore?.collection(favoritesCollectionName)
 				.whereField(factTextKeyName, isEqualTo: fact)
 				.getDocuments(source: .cache) { [self] snapshot, error in
@@ -402,6 +446,7 @@ class RandoFactoViewModel: ObservableObject {
 	func deleteAllFavoriteFactsForCurrentUser(completionHandler: @escaping ((Error?) -> Void)) {
 		// 1. Go through all favorite facts.
 		let group = DispatchGroup()
+		logoutMissingUser()
 		for fact in favoriteFacts {
 			group.enter()
 			// 2. Get the document corresponding to the fact.
