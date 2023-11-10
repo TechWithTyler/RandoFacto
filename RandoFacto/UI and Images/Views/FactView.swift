@@ -25,7 +25,6 @@ struct FactView: View {
 			Divider()
 			footer
 		}
-		.padding(.horizontal)
 		.navigationTitle("Random Fact")
 		#if os(iOS)
 		.navigationBarTitleDisplayMode(.inline)
@@ -42,6 +41,7 @@ struct FactView: View {
 				.font(.largeTitle)
 				.isTextSelectable(!(viewModel.notDisplayingFact || viewModel.factText == viewModel.factUnavailableString))
 				.multilineTextAlignment(.center)
+				.padding(.horizontal)
 		}
 	}
 
@@ -109,7 +109,7 @@ struct FactView: View {
 							Image(systemName: "heart.fill")
 								.symbolRenderingMode(.multicolor)
 								.accessibilityLabel("Unfavorite")
-						}.padding()
+						}
 							.help("Unfavorite")
 							.disabled(viewModel.notDisplayingFact || viewModel.factText == viewModel.factUnavailableString || viewModel.isDeletingUser)
 					} else {
@@ -120,7 +120,7 @@ struct FactView: View {
 						} label: {
 							Image(systemName: "heart")
 								.accessibilityLabel("Favorite")
-						}.padding()
+						}
 							.help("Favorite")
 							.disabled(viewModel.notDisplayingFact || viewModel.factText == viewModel.factUnavailableString || viewModel.isDeletingUser)
 					}
