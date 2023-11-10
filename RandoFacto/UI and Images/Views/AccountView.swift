@@ -13,17 +13,49 @@ struct AccountView: View {
 	@ObservedObject var viewModel: RandoFactoViewModel
 
     var body: some View {
+#if os(iOS)
+					accountSection
+			.formStyle(.grouped)
+			.navigationTitle("Settings")
+			.navigationBarTitleDisplayMode(.automatic)
+#else
+			TabView {
+				accountSection
+					.tabItem {
+						Label("Account", systemImage: "person.circle")
+					}
+					.tag(Tab.account)
+			}
+#endif
+    }
+
+	var accountSection: some View {
 		Form {
-			if viewModel.userLoggedIn {
-				Button("Change Password…") {
-					viewModel.authenticationFormType = .passwordChange
+			if viewModel.isDeletingUser {
+				HStack {
+					LoadingIndicator()
+					Text("Deleting account…")
 				}
-				Spacer()
-				Button("Logout") {
-					viewModel.logoutCurrentUser()
+			} else if viewModel.userLoggedIn {
+				Section {
+					Picker("Fact on Launch", selection: $viewModel.initialFact) {
+						Text("Random Fact").tag(0)
+						Text("Random Favorite Fact").tag(1)
+					}
+					.pickerStyle(.menu)
 				}
-				Button("Delete Account…") {
-					viewModel.showingDeleteAccount = true
+				Section {
+					Button("Change Password…") {
+						viewModel.authenticationFormType = .passwordChange
+					}
+				}
+				Section {
+					Button("Logout") {
+						viewModel.logoutCurrentUser()
+					}
+					Button("Delete Account…") {
+						viewModel.showingDeleteAccount = true
+					}
 				}
 			} else {
 				Button("Login") {
@@ -34,16 +66,17 @@ struct AccountView: View {
 				}
 			}
 		}
-		.navigationTitle(viewModel.firebaseAuthentication?.currentUser?.email ?? "Account")
-		#if os(iOS)
-		.navigationBarTitleDisplayMode(.automatic)
-		#endif
 		.formStyle(.grouped)
 		// Delete account alert
 		.alert("Delete your account?", isPresented: $viewModel.showingDeleteAccount, actions: {
 			Button("Delete", role: .destructive) {
-				viewModel.deleteCurrentUser()
-				viewModel.showingDeleteAccount = false
+				viewModel.deleteCurrentUser {
+					[self] error in
+					if let error = error {
+						viewModel.showError(error: error)
+					}
+					viewModel.showingDeleteAccount = false
+				}
 			}
 			Button("Cancel", role: .cancel) {
 				viewModel.showingDeleteAccount = false
@@ -57,7 +90,7 @@ struct AccountView: View {
 		}, content: { _ in
 			AuthenticationFormView(viewModel: viewModel)
 		})
-    }
+	}
 }
 
 #Preview {

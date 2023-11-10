@@ -25,15 +25,17 @@ struct ContentView: View {
 				NavigationLink(value: Tab.randomFact) {
 					label(for: .randomFact)
 				}
-				if viewModel.userLoggedIn {
+				if viewModel.userLoggedIn && !viewModel.isDeletingUser {
 					NavigationLink(value: Tab.favoriteFacts) {
 						label(for: .favoriteFacts)
 							.badge(viewModel.favoriteFacts.count)
 					}
 				}
+				#if !os(macOS)
 				NavigationLink(value: Tab.account) {
 					label(for: .account)
 				}
+				#endif
 			}
 			.navigationTitle("RandoFacto")
 #if os(iOS)
@@ -66,6 +68,13 @@ struct ContentView: View {
 				viewModel.selectedTab = .randomFact
 			}
 		}
+		// User login state change/user deletion
+		.onChange(of: viewModel.isDeletingUser) { value in
+			viewModel.dismissFavoriteFacts()
+		}
+		.onChange(of: viewModel.userLoggedIn) { value in
+			viewModel.dismissFavoriteFacts()
+		}
 		// Error sound/haptics
 		.onChange(of: viewModel.errorToShow) { value in
 			if value != nil {
@@ -85,7 +94,7 @@ struct ContentView: View {
 			case .favoriteFacts:
 				Label("Favorite Facts", systemImage: "heart")
 			case .account:
-				Label(viewModel.firebaseAuthentication?.currentUser?.email ?? "Account", systemImage: "person.circle")
+				Label("Settings", systemImage: "gear")
 
 		}
 	}

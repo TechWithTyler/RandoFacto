@@ -30,6 +30,9 @@ class RandoFactoViewModel: ObservableObject {
 	// The text to display in the credential error label in the login/signup dialogs.
 	@Published var credentialErrorText: String? = nil
 
+	// The collection name of all users.
+	private let usersCollectionName = "users"
+
 	// The collection name of the favorite facts collection in a user's Firestore database.
 	private let favoritesCollectionName = "favoriteFacts"
 
@@ -40,6 +43,10 @@ class RandoFactoViewModel: ObservableObject {
 	private let userKeyName = "user"
 
 	// MARK: - Properties - Integers
+
+	@AppStorage("initialFact") var initialFact: Int = 0
+
+	// MARK: - Properties - Tabs
 
 	@Published var selectedTab: Tab? = .randomFact
 
@@ -64,14 +71,17 @@ class RandoFactoViewModel: ObservableObject {
 	@Published var showingResetPasswordEmailSent: Bool = false
 
 	// Whether the device is online.
-	@Published var online = false
+	@Published var online: Bool = false
+
+	@Published var isDeletingUser: Bool = false
+
+	@Published var isAuthenticating: Bool = false
 
 	var notDisplayingFact: Bool {
 		return factText.isEmpty || factText == generatingString
 	}
 
 	var userLoggedIn: Bool {
-		guard let firebaseAuthentication = firebaseAuthentication else { return false }
 		return firebaseAuthentication.currentUser != nil
 	}
 
@@ -88,51 +98,38 @@ class RandoFactoViewModel: ObservableObject {
 	// MARK: - Properties - Firebase
 
 	// The current user's Firestore database.
-	private var firestore: Firestore?
+	private var firestore = Firestore.firestore()
+
+	var userListener: ListenerRegistration? = nil
+
+	var favoriteFactsListener: ListenerRegistration? = nil
 
 	// Used to get the current user or to signup, login, logout, or delete a user.
-	@Published var firebaseAuthentication: Auth?
+	@Published var firebaseAuthentication = Auth.auth()
 
 	// MARK: - Properties - Errors
 
-	// The error logged if the RandoFacto database is unable to get the document (data) from the corresponding QuerySnapshot.
-	private let refError = NSError(domain: "Favorite fact reference not found", code: 144)
+	// The error logged if the RandoFacto database is unable to get the document (data) from the corresponding favorite fact QuerySnapshot.
+	private let favoriteFactReferenceError = NSError(domain: "Favorite fact reference not found", code: 144)
 
 	// MARK: - Initialization
 
 	init() {
-		// 1. Configure Firebase.
-		configureFirebase()
-		// 2. Configure the network path monitor.
+		// 1. Configure the network path monitor.
 		configureNetworkPathMonitor()
-		// 3. Load all the favorite facts into the app.
-		Task {
-			await loadFavoriteFactsForCurrentUser()
+		// 2. Load all the favorite facts into the app.
+		addUserSessionHandler()
+		loadFavoriteFactsForCurrentUser { [self] in
+			guard notDisplayingFact else { return }
+			// 3. Generate a random fact.
+			if initialFact == 0 || favoriteFacts.isEmpty || !userLoggedIn {
+				generateRandomFact()
+			} else {
+				DispatchQueue.main.async { [self] in
+					factText = getRandomFavoriteFact()
+				}
+			}
 		}
-		// 4. Generate a random fact.
-		generateRandomFact()
-	}
-
-	func configureFirebase() {
-		// 1. Make sure the GoogleService-Info.plist file is present in the app bundle.
-		guard let googleServicePlist = Bundle.main.url(forResource: "GoogleService-Info", withExtension: "plist") else {
-			fatalError("Firebase configuration file not found")
-		}
-		// 2. Create a FirebaseAppOptions object with the API key.
-		guard let options = FirebaseOptions(contentsOfFile: googleServicePlist.path) else {
-			fatalError("Failed to load options from configuration file")
-		}
-		options.apiKey = firebaseApiKey
-		// 3. Initialize Firebase with the custom options.
-		FirebaseApp.configure(options: options)
-		firestore = Firestore.firestore()
-		firebaseAuthentication = Auth.auth()
-		guard let firestore = firestore else {
-			fatalError("Couldn't initialize Firestore")
-		}
-		let settings = FirestoreSettings()
-		settings.cacheSettings = PersistentCacheSettings(sizeBytes: FirestoreCacheSizeUnlimited as NSNumber)
-		firestore.settings = settings
 	}
 
 	// MARK: - Network Path Monitor Configuration
@@ -153,7 +150,6 @@ class RandoFactoViewModel: ObservableObject {
 
 	// This method enables online mode.
 	func goOnline() {
-		guard let firestore = firestore else { return }
 		firestore.enableNetwork {
 			[self] error in
 			if let error = error {
@@ -169,7 +165,6 @@ class RandoFactoViewModel: ObservableObject {
 
 	// This method enables offline mode.
 	func goOffline() {
-		guard let firestore = firestore else { return }
 		firestore.disableNetwork {
 			[self] error in
 			if let error = error {
@@ -205,88 +200,174 @@ class RandoFactoViewModel: ObservableObject {
 		}
 	}
 
+	// MARK: - Registered Users Handler
+
+	func addUserSessionHandler() {
+		DispatchQueue.main.async { [self] in
+			guard let currentUser = firebaseAuthentication.currentUser, let email = currentUser.email else {
+				logoutMissingUser()
+				return
+			}
+			userListener = firestore.collection(usersCollectionName)
+				.whereField(userKeyName, isEqualTo: email)
+				.addSnapshotListener(includeMetadataChanges: true) { [self] documentSnapshot, error in
+					if let error = error {
+						showError(error: error)
+					} else {
+						// Logout the user if they're deleted.
+						if let snapshot = documentSnapshot, (snapshot.isEmpty || snapshot.documents.isEmpty) {
+							logoutMissingUser()
+						} else if documentSnapshot == nil {
+							logoutMissingUser()
+						}
+					}
+				}
+		}
+	}
+
 	// MARK: - Authentication
 
 	// This method loads the user's favorite facts if authentication is successful. Otherwise, it logs an error.
-	func handleAuthenticationRequest(error: Error?, successHandler: @escaping ((Bool) -> Void)) {
-		DispatchQueue.main.async { [self] in
-			if let error = error {
-				showError(error: error)
-				successHandler(false)
-			} else {
-				Task {
-					await self.loadFavoriteFactsForCurrentUser()
+	func handleAuthenticationRequest(result: AuthDataResult?, error: Error?, isSignup: Bool, successHandler: @escaping ((Bool) -> Void)) {
+		let successBlock: (() -> Void) = { [self] in
+			DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [self] in
+			loadFavoriteFactsForCurrentUser { [self] in
+					addUserSessionHandler()
+					successHandler(true)
 				}
-				successHandler(true)
+			}
+		}
+		if let error = error {
+			showError(error: error)
+			successHandler(false)
+		} else {
+			if isSignup {
+				// Add the user reference
+				if let email = result?.user.email, let id = result?.user.uid {
+					addUserReference(email: email, id: id) { [self] error in
+						if let error = error {
+							showError(error: error)
+							successHandler(false)
+						} else {
+							successBlock()
+						}
+					}
+				} else {
+					successHandler(false)
+				}
+			} else {
+				// If a user exists but their reference doesn't, add it.
+				if let email = result?.user.email, let id = result?.user.uid {
+					addMissingUserReference(email: email, id: id) { [self] error in
+						if let error = error {
+							showError(error: error)
+							successHandler(false)
+						} else {
+							successBlock()
+						}
+					}
+				} else {
+					successHandler(false)
+				}
 			}
 		}
 	}
 
+	// This method adds a reference for the current user once they signup or login and such reference is missing.
+	func addUserReference(email: String, id: String, completionHandler: @escaping ((Error?) -> Void)) {
+		let data: [String : String] = [
+			userKeyName : email
+		]
+		firestore.collection(usersCollectionName)
+			.document(id).setData(data) {
+				error in
+				if let error = error {
+					completionHandler(error)
+				} else {
+					completionHandler(nil)
+				}
+			}
+	}
+
+	// This method checks for the current user's reference and adds it if it doesn't exist.
+	func addMissingUserReference(email: String, id: String, completionHandler: @escaping ((Error?) -> Void)) {
+		firestore.collection(usersCollectionName)
+			.getDocuments(source: .server) { [self] snapshot, error in
+				if let error = error {
+					completionHandler(error)
+				} else {
+					if let snapshot = snapshot, (snapshot.isEmpty || snapshot.documents.isEmpty) {
+						addUserReference(email: email, id: id) { error in
+							if let error = error {
+								completionHandler(error)
+							} else {
+								completionHandler(nil)
+							}
+						}
+					} else {
+						completionHandler(nil)
+					}
+				}
+			}
+	}
+
 	// This method takes the user's credentials and tries to log them into their RandoFacto database account.
 	func login(email: String, password: String, successHandler: @escaping ((Bool) -> Void)) {
-		DispatchQueue.main.async { [self] in
-			firebaseAuthentication?.signIn(withEmail: email, password: password) { [self] result, error in
-				handleAuthenticationRequest(error: error, successHandler: successHandler)
-			}
+		firebaseAuthentication.signIn(withEmail: email, password: password) { [self] result, error in
+			handleAuthenticationRequest(result: result, error: error, isSignup: false, successHandler: successHandler)
 		}
 	}
 
 	// This method takes the user's credentials and tries to sign them up for a RandoFacto database account.
 	func signup(email: String, password: String, successHandler: @escaping ((Bool) -> Void)) {
-		DispatchQueue.main.async { [self] in
-			firebaseAuthentication?.createUser(withEmail: email, password: password) { result, error in
-				self.handleAuthenticationRequest(error: error, successHandler: successHandler)
-			}
+		firebaseAuthentication.createUser(withEmail: email, password: password) { [self] result, error in
+			self.handleAuthenticationRequest(result: result, error: error, isSignup: true, successHandler: successHandler)
 		}
 	}
 
 	func resetPassword(email: String) {
-		DispatchQueue.main.async { [self] in
-			firebaseAuthentication?.sendPasswordReset(withEmail: email, actionCodeSettings: ActionCodeSettings()) { [self] error in
-				if let error = error {
-					showError(error: error)
-				} else {
-					showingResetPasswordEmailSent = true
-				}
+		firebaseAuthentication.sendPasswordReset(withEmail: email, actionCodeSettings: ActionCodeSettings(), completion: { [self] error in
+			if let error = error {
+				showError(error: error)
+			} else {
+				showingResetPasswordEmailSent = true
 			}
-		}
+		})
 	}
 
 	func updatePasswordForCurrentUser(newPassword: String) {
-		guard let user = firebaseAuthentication?.currentUser else { return }
-		DispatchQueue.main.async { [self] in
-			user.updatePassword(to: newPassword) { [self] error in
-				if let error = error {
-					showError(error: error)
-				}
+		guard let user = firebaseAuthentication.currentUser else { return }
+		user.updatePassword(to: newPassword) { [self] error in
+			if let error = error {
+				showError(error: error)
 			}
 		}
 	}
 
 	// This method tries to logout the current user, clearing the app's favorite facts list if successful.
 	func logoutCurrentUser() {
-				do {
-					DispatchQueue.main.async { [self] in
-						favoriteFacts.removeAll()
-					}
-					try firebaseAuthentication?.signOut()
-				} catch {
-					showError(error: error)
-				}
+		do {
+			try firebaseAuthentication.signOut()
+			DispatchQueue.main.async { [self] in
+				favoriteFacts.removeAll()
+			}
+			initialFact = 0
+			userListener?.remove()
+			userListener = nil
+			favoriteFactsListener?.remove()
+			favoriteFactsListener = nil
+		} catch {
+			showError(error: error)
+		}
 	}
 
-	// This method logs out a user that has had their account deleted but is still logged into the app on its end.
 	func logoutMissingUser() {
-		DispatchQueue.main.async { [self] in
-			firebaseAuthentication?.currentUser?.getIDTokenForcingRefresh(true) { [self] token, error in
-				if let error = error {
-					showError(error: error)
-				} else {
-					if token == nil {
-						logoutCurrentUser()
-						selectedTab = .randomFact
-					}
-				}
+		deleteAllFavoriteFactsForCurrentUser(forUserDeletion: true) { [self] error in
+			if let error = error {
+				showError(error: error)
+				return
+			} else {
+				logoutCurrentUser()
 			}
 		}
 	}
@@ -294,44 +375,61 @@ class RandoFactoViewModel: ObservableObject {
 	// MARK: - Delete User
 
 	// This method deletes the current user.
-	func deleteCurrentUser() {
-		// 1. Make sure we can get the current user.
-		guard let user = firebaseAuthentication?.currentUser else { return }
-		// 2. Delete all their favorite facts.
-		DispatchQueue.main.async { [self] in
-			deleteAllFavoriteFactsForCurrentUser { [self] error in
-				// 3. If that fails, log an error and don't continue deletion.
-				if let error = error {
-					showError(error: error)
-				} else {
-					// 4. Or if it succeeds, delete the current user.
-					user.delete { [self] error in
-						// 5. If that fails, log an error.
-						if let error = error {
-							showError(error: error)
-						} else {
-							// 6. If the user and all their favorite facts were successfully deleted, clear the favorite facts list and log the user out.
-							DispatchQueue.main.async { [self] in
-								favoriteFacts.removeAll()
+	func deleteCurrentUser(completionHandler: @escaping (Error?) -> Void) {
+		guard let user = firebaseAuthentication.currentUser else {
+			let userNotFoundError = NSError(domain: "User not found", code: 545)
+			completionHandler(userNotFoundError)
+			return
+		}
+		isDeletingUser = true
+		deleteAllFavoriteFactsForCurrentUser(forUserDeletion: true) { [self] error in
+			if let error = error {
+				completionHandler(error)
+			} else {
+				DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) { [self] in
+					userListener?.remove()
+					userListener = nil
+					firestore.collection(usersCollectionName)
+						.document(user.uid).delete { [self] error in
+							if let error = error {
+								addUserSessionHandler()
+								isDeletingUser = false
+								completionHandler(error)
 							}
-							logoutCurrentUser()
+						}
+					DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [self] in
+						user.delete { [self] error in
+							if let error = error {
+								logoutMissingUser()
+								addUserSessionHandler()
+								isDeletingUser = false
+								completionHandler(error)
+								return
+							} else {
+								isDeletingUser = false
+								completionHandler(nil)
+							}
 						}
 					}
 				}
 			}
 		}
 	}
-
 	// MARK: - Favorite Facts Loading
 
 	// This method asynchronously loads all the favorite facts associated with the current user.
-	func loadFavoriteFactsForCurrentUser() async {
-		// 1. Make sure we can get the current user.
-		guard let userEmail = firebaseAuthentication?.currentUser?.email else { return }
+	func loadFavoriteFactsForCurrentUser(completionHandler: @escaping (() -> Void)) {
 		DispatchQueue.main.async { [self] in
+			guard userLoggedIn else {
+				completionHandler()
+				return
+			}
+			// 1. Make sure we can get the current user.
+			guard let user = firebaseAuthentication.currentUser, let userEmail = user.email else {
+				completionHandler()
+				return }
 			// 2. Get the Firestore collection containing favorite facts.
-			logoutMissingUser()
-			firestore?.collection(favoritesCollectionName)
+			favoriteFactsListener = firestore.collection(favoritesCollectionName)
 			// 3. FIlter the result to include only the current user's favorite facts.
 				.whereField(userKeyName, isEqualTo: userEmail)
 			// 4. Listen for any changes made to the favorite facts list on the Firebase end, such as by RandoFacto on another device.
@@ -339,36 +437,37 @@ class RandoFactoViewModel: ObservableObject {
 					// 5. Log any errors.
 					if let error = error {
 						showError(error: error)
+						completionHandler()
 					} else {
-						// 6. If no data can be found, it's most likely due to a missing user, so log them out and return.
+						// 6. If no data can be found, return.
 						guard let snapshot = snapshot else {
+							completionHandler()
 							return
 						}
 						// 7. If a change was successfully detected, update the app's favorite facts array.
-						updateFavoriteFactsList(from: snapshot)
+						updateFavoriteFactsList(from: snapshot, completionHandler: completionHandler)
 					}
 				}
 		}
 	}
 
 	// This method updates the app's favorite facts list with the given QuerySnapshot's data.
-	func updateFavoriteFactsList(from snapshot: QuerySnapshot) {
+	func updateFavoriteFactsList(from snapshot: QuerySnapshot, completionHandler: @escaping (() -> Void)) {
 		DispatchQueue.main.async { [self] in
 			// 1. Clear the favorite facts list.
 			favoriteFacts.removeAll()
-		// 2. Go through each document (piece of data) in the snapshot.
+			// 2. Go through each document (piece of data) in the snapshot.
 			for favorite in snapshot.documents {
 				// 3. If the data's "fact" key contains data, append it to the favorite facts list.
 				if let fact = favorite.data()[factTextKeyName] as? String {
-					DispatchQueue.main.async { [self] in
-						favoriteFacts.append(fact)
-					}
+					favoriteFacts.append(fact)
 				} else {
 					// 4. Otherwise, log an error. RandoFacto only gives the user safe facts that contain text--this error is only logged if a previously-saved favorite fact had its data removed, or if it was manually added to RandoFacto's Firestore.
 					let loadError = NSError(domain: "\(favorite) doesn't appear to contain fact text!", code: 423)
 					showError(error: loadError)
 				}
 			}
+			completionHandler()
 		}
 	}
 
@@ -376,8 +475,17 @@ class RandoFactoViewModel: ObservableObject {
 
 	// This method gets a random fact from the favorite facts list and returns it.
 	func getRandomFavoriteFact() -> String {
-		logoutMissingUser()
 		return favoriteFacts.randomElement()!
+	}
+
+	// MARK: - Favorite Facts Unavailable Handler
+
+	func dismissFavoriteFacts() {
+		if (!userLoggedIn || isDeletingUser) && selectedTab == .favoriteFacts {
+			DispatchQueue.main.async { [self] in
+				selectedTab = .randomFact
+			}
+		}
 	}
 
 	// MARK: - Favorites Management - Saving/Deleting
@@ -385,16 +493,16 @@ class RandoFactoViewModel: ObservableObject {
 	// This method saves the given fact to the RandoFacto database.
 	func saveToFavorites(fact: String) {
 		// 1. Make sure the fact doesn't already exist and that the current user has an email (who would have an account but no email?!).
-		guard !favoriteFacts.contains(fact), let userEmail = firebaseAuthentication?.currentUser?.email else { return }
+		guard !favoriteFacts.contains(fact), let userEmail = firebaseAuthentication.currentUser?.email else {
+			return }
 		// 2. Create a dictionary containing the data that should be saved as a new document in the favorite facts Firestore collection.
 		DispatchQueue.main.async { [self] in
-			logoutMissingUser()
 			let data: [String : String] = [
 				factTextKeyName : fact,
 				userKeyName : userEmail
 			]
 			// 3. Add the favorite fact to the database.
-			firestore?.collection(favoritesCollectionName).addDocument(data: data) { [self] error in
+			firestore.collection(favoritesCollectionName).addDocument(data: data) { [self] error in
 				// 4. If that fails, log an error.
 				if let error = error {
 					showError(error: error)
@@ -407,74 +515,73 @@ class RandoFactoViewModel: ObservableObject {
 	func deleteFromFavorites(fact: String) {
 		// 1. Get facts that match the given fact (there should only be 1).
 		DispatchQueue.main.async { [self] in
-			logoutMissingUser()
-			firestore?.collection(favoritesCollectionName)
+			firestore.collection(favoritesCollectionName)
 				.whereField(factTextKeyName, isEqualTo: fact)
 				.getDocuments(source: .cache) { [self] snapshot, error in
 					// 2. If that fails, log an error.
-				if let error = error {
-					showError(error: error)
-				} else {
-					// 3. Or if we're error-free, get the snapshot and delete.
-					getFavoriteFactSnapshotAndDelete(snapshot, fact: fact)
+					if let error = error {
+						showError(error: error)
+					} else {
+						// 3. Or if we're error-free, get the snapshot and delete.
+						getFavoriteFactSnapshotAndDelete(snapshot)
+					}
 				}
-			}
 		}
 	}
 
 	// This method gets the data from the given snapshot and deletes it.
-	func getFavoriteFactSnapshotAndDelete(_ snapshot: QuerySnapshot?, fact: String) {
+	func getFavoriteFactSnapshotAndDelete(_ snapshot: QuerySnapshot?) {
 		DispatchQueue.main.async { [self] in
-		// 1. Make sure the snapshot and the corresponding data is there.
-		if let snapshot = snapshot, let ref = snapshot.documents.first {
-			// 2. Delete the corresponding document.
-			firestore?.collection(favoritesCollectionName).document(ref.documentID).delete { [self]
-				error in
-				// 3. Log an error if deletion fails.
-				if let error = error {
-					showError(error: error)
+			// 1. Make sure the snapshot and the corresponding data is there.
+			if let snapshot = snapshot, let ref = snapshot.documents.first {
+				// 2. Delete the corresponding document.
+				firestore.collection(favoritesCollectionName).document(ref.documentID).delete { [self]
+					error in
+					// 3. Log an error if deletion fails.
+					if let error = error {
+						showError(error: error)
+					}
 				}
+			} else {
+				// 4. If we can't get the snapshot or corresponding data, log an error.
+				showError(error: favoriteFactReferenceError)
 			}
-		} else {
-			// 4. If we can't get the snapshot or corresponding data, log an error.
-			showError(error: refError)
-		}
 		}
 	}
 
 	// This method deletes all favorite facts from the database.
-	func deleteAllFavoriteFactsForCurrentUser(completionHandler: @escaping ((Error?) -> Void)) {
-		// 1. Go through all favorite facts.
+	func deleteAllFavoriteFactsForCurrentUser(forUserDeletion deletingUser: Bool = false, completionHandler: @escaping ((Error?) -> Void)) {
+		guard let userEmail = firebaseAuthentication.currentUser?.email else {
+			return }
 		let group = DispatchGroup()
-		logoutMissingUser()
-		for fact in favoriteFacts {
-			group.enter()
-			// 2. Get the document corresponding to the fact.
-			firestore?.collection(favoritesCollectionName).whereField(factTextKeyName, isEqualTo: fact).getDocuments(source: .cache) { [self] snapshot, error in
-				defer {
-					group.leave()
-				}
-				// 3. If an error occurs, log it and cancel deletion.
+		var deletionError: Error?
+		group.enter()
+		firestore.collection(favoritesCollectionName)
+			.whereField(userKeyName, isEqualTo: userEmail)
+			.getDocuments(source: deletingUser ? .server : .cache) { [self] (snapshot, error) in
 				if let error = error {
-					completionHandler(error)
-					return
-				}
-				// 4. If we can't get the snapshot or corresponding data, log an error and cancel deletion.
-				guard let snapshot = snapshot, let ref = snapshot.documents.first else {
-					completionHandler(refError)
-					return
-				}
-				// 5. Try to delete the fact, logging an error if it fails.
-				firestore?.collection(favoritesCollectionName).document(ref.documentID).delete { error in
-					if let error = error {
-						completionHandler(error)
+					defer {
+						group.leave()
+					}
+					deletionError = error
+				} else {
+					defer {
+						group.leave()
+					}
+					for document in snapshot!.documents {
+						firestore.collection(favoritesCollectionName).document(document.documentID).delete { error in
+							if let error = error {
+								defer {
+									group.leave()
+								}
+								deletionError = error
+							}
+						}
 					}
 				}
 			}
-		}
-		// 6. Leave the dispatch group.
-		group.notify(queue: DispatchQueue.main) {
-			completionHandler(nil)
+		group.notify(queue: .main) {
+			completionHandler(deletionError)
 		}
 	}
 

@@ -30,9 +30,28 @@ struct RandoFactoApp: App {
 	@NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 	#endif
 
-	@ObservedObject var viewModel = RandoFactoViewModel()
+	@ObservedObject var viewModel: RandoFactoViewModel
 
 	// MARK: - Windows and Views
+
+	init() {
+		// 1. Make sure the GoogleService-Info.plist file is present in the app bundle.
+		guard let googleServicePlist = Bundle.main.url(forResource: "GoogleService-Info", withExtension: "plist") else {
+			fatalError("Firebase configuration file not found")
+		}
+		// 2. Create a FirebaseOptions object with the API key.
+		guard let options = FirebaseOptions(contentsOfFile: googleServicePlist.path) else {
+			fatalError("Failed to load options from configuration file")
+		}
+		options.apiKey = firebaseApiKey
+		// 3. Initialize Firebase with the custom options.
+		FirebaseApp.configure(options: options)
+		let firestore = Firestore.firestore()
+		let settings = FirestoreSettings()
+		settings.cacheSettings = PersistentCacheSettings(sizeBytes: FirestoreCacheSizeUnlimited as NSNumber)
+		firestore.settings = settings
+		viewModel = RandoFactoViewModel()
+	}
 
     var body: some Scene {
         WindowGroup {
@@ -40,6 +59,12 @@ struct RandoFactoApp: App {
 				.frame(minWidth: 400, minHeight: 300, alignment: .center)
 				.ignoresSafeArea(edges: .all)
 		}
+		#if os(macOS)
+		Settings {
+			AccountView(viewModel: viewModel)
+				.frame(width: 400, height: 400)
+		}
+		#endif
 	}
 
 }

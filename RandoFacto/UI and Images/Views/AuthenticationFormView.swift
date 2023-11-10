@@ -22,8 +22,6 @@ struct AuthenticationFormView: View {
 	// The password text field's text.
 	@State private var password: String = String()
 
-	@State private var isAuthenticating: Bool = false
-
 	var isFormInvalid: Bool {
 		return viewModel.authenticationFormType == .passwordChange ? password.isEmpty : email.isEmpty || password.isEmpty
 	}
@@ -78,7 +76,7 @@ struct AuthenticationFormView: View {
 #endif
 			.frame(minWidth: 400, minHeight: 400)
 			.toolbar {
-				if isAuthenticating {
+				if viewModel.isAuthenticating {
 					ToolbarItem(placement: .automatic) {
 						LoadingIndicator()
 					}
@@ -92,18 +90,19 @@ struct AuthenticationFormView: View {
 						} label: {
 							Text("Cancel")
 						}
-						.disabled(isAuthenticating)
+						.disabled(viewModel.isAuthenticating)
 					}
 					ToolbarItem(placement: .confirmationAction) {
 						Button {
 							viewModel.showingResetPasswordEmailSent = false
 							viewModel.errorToShow = nil
 							viewModel.credentialErrorText = nil
+							email = email.lowercased()
 							if viewModel.authenticationFormType == .signup {
-								isAuthenticating = true
+								viewModel.isAuthenticating = true
 								viewModel.signup(email: email, password: password) {
 									success in
-									isAuthenticating = false
+									viewModel.isAuthenticating = false
 									if success {
 										dismiss()
 									}
@@ -111,10 +110,10 @@ struct AuthenticationFormView: View {
 							} else if viewModel.authenticationFormType == .passwordChange {
 								viewModel.updatePasswordForCurrentUser(newPassword: password)
 							} else {
-								isAuthenticating = true
+								viewModel.isAuthenticating = true
 								viewModel.login(email: email, password: password) {
 									success in
-									isAuthenticating = false
+									viewModel.isAuthenticating = false
 									if success {
 										dismiss()
 									}
@@ -123,7 +122,7 @@ struct AuthenticationFormView: View {
 						} label: {
 							Text(confirmButtonText)
 						}
-						.disabled(isFormInvalid || isAuthenticating)
+						.disabled(isFormInvalid || viewModel.isAuthenticating)
 					}
 				}
 		}
