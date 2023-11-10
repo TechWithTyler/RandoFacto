@@ -34,8 +34,11 @@ enum NetworkError: LocalizedError, Equatable {
 	// Too many RandoFacto database requests (e.g. repeatedly favoriting and unfavoriting the same fact).
 	case randoFactoDatabaseQuotaExceeded
 
+	// Couldn't get data from server
+	case randoFactoDatabaseServerDataRetrievalError
+
 	// Account deletion failed, with the given reason.
-	case userDeletionFailed(reason: String)
+	case tooLongSinceLastLogin
 
 	// MARK: - Error Description
 
@@ -60,8 +63,10 @@ enum NetworkError: LocalizedError, Equatable {
 				return "Fact data error"
 			case .randoFactoDatabaseQuotaExceeded:
 				return "Too many favorite fact database requests at once. Try again later."
-			case let .userDeletionFailed(reason):
-				return "User deletion failed: \(reason)"
+			case .randoFactoDatabaseServerDataRetrievalError:
+				return "Failed to download data from server. Using device data."
+			case .tooLongSinceLastLogin:
+				return "It's been too long since you last logged in on this device. If you're trying to delete your account, please re-login and try again. If you're trying to change your password, please enter your email address and press \"\(forgotPasswordButtonTitle)\" to send a password reset email."
 			case let .unknown(reason):
 				return reason
 		}

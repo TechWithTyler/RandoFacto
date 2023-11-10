@@ -10,12 +10,20 @@ import SwiftUI
 
 struct LoadingIndicator: View {
 
+	var text: String?
+
     var body: some View {
-		ProgressView()
-			.progressViewStyle(.circular)
+		HStack {
+			ProgressView()
+				.progressViewStyle(.circular)
 #if os(macOS)
-			.controlSize(.small)
+				.controlSize(.small)
 #endif
+			if let text = text {
+				Text(text)
+					.padding(.horizontal)
+			}
+		}
     }
 	
 }

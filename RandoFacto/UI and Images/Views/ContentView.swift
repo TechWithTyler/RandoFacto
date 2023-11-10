@@ -48,7 +48,7 @@ struct ContentView: View {
 				case .favoriteFacts:
 					FavoritesList(viewModel: viewModel)
 				case .account:
-					AccountView(viewModel: viewModel)
+					SettingsView(viewModel: viewModel)
 				case .none:
 					EmptyView()
 			}

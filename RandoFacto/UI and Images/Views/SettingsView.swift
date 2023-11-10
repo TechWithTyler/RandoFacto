@@ -1,5 +1,5 @@
 //
-//  AccountView.swift
+//  SettingsView.swift
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 11/7/23.
@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct AccountView: View {
+struct SettingsView: View {
 
 	@ObservedObject var viewModel: RandoFactoViewModel
 
@@ -31,18 +31,17 @@ struct AccountView: View {
 
 	var accountSection: some View {
 		Form {
+			Text((viewModel.firebaseAuthentication.currentUser?.email) ?? "Login to your RandoFacto account to save favorite facts to view on all your devices, even while offline.")
+				.font(.largeTitle)
+				.fontWeight(.bold)
 			if viewModel.isDeletingUser {
-				HStack {
-					LoadingIndicator()
-					Text("Deleting account…")
-				}
+				LoadingIndicator(text: "Deleting account…")
 			} else if viewModel.userLoggedIn {
 				Section {
 					Picker("Fact on Launch", selection: $viewModel.initialFact) {
 						Text("Random Fact").tag(0)
 						Text("Random Favorite Fact").tag(1)
 					}
-					.pickerStyle(.menu)
 				}
 				Section {
 					Button("Change Password…") {
@@ -85,14 +84,12 @@ struct AccountView: View {
 			Text("You won't be able to save favorite facts to view offline!")
 		})
 		// Authentication form
-		.sheet(item: $viewModel.authenticationFormType, onDismiss: {
-			viewModel.authenticationFormType = nil
-		}, content: { _ in
+		.sheet(item: $viewModel.authenticationFormType) {_ in 
 			AuthenticationFormView(viewModel: viewModel)
-		})
+		}
 	}
 }
 
 #Preview {
-	AccountView(viewModel: RandoFactoViewModel())
+	SettingsView(viewModel: RandoFactoViewModel())
 }

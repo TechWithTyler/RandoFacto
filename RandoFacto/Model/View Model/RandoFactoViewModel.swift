@@ -21,26 +21,8 @@ class RandoFactoViewModel: ObservableObject {
 	// The text to display in the fact text label.
 	@Published var factText: String = String()
 
-	// Displayed when generating a random fact.
-	let generatingString = "Generating random fact…"
-
-	// Displayed when a FactGenerator error occurs.
-	let factUnavailableString = "Fact unavailable"
-
 	// The text to display in the credential error label in the login/signup dialogs.
 	@Published var credentialErrorText: String? = nil
-
-	// The collection name of all users.
-	private let usersCollectionName = "users"
-
-	// The collection name of the favorite facts collection in a user's Firestore database.
-	private let favoritesCollectionName = "favoriteFacts"
-
-	// The key name of a fact's text.
-	private let factTextKeyName = "fact"
-
-	// The key name of a fact's associated user.
-	private let userKeyName = "user"
 
 	// MARK: - Properties - Integers
 
@@ -335,11 +317,14 @@ class RandoFactoViewModel: ObservableObject {
 		})
 	}
 
-	func updatePasswordForCurrentUser(newPassword: String) {
+	func updatePasswordForCurrentUser(newPassword: String, completionHandler: @escaping ((Bool) -> Void)) {
 		guard let user = firebaseAuthentication.currentUser else { return }
 		user.updatePassword(to: newPassword) { [self] error in
 			if let error = error {
 				showError(error: error)
+				completionHandler(false)
+			} else {
+				completionHandler(true)
 			}
 		}
 	}
@@ -603,10 +588,13 @@ class RandoFactoViewModel: ObservableObject {
 					errorToShow = .noFactText
 				case 523:
 					errorToShow = .factDataError
-				case 17014:
+				case 14:
 					// Database errors
+					errorToShow = .randoFactoDatabaseServerDataRetrievalError
+				case 17014:
+					logoutCurrentUser()
 					authenticationFormType = .login
-					errorToShow = .userDeletionFailed(reason: "It's been too long since you last logged in. Please re-login and try deleting your account again.")
+					errorToShow = .tooLongSinceLastLogin
 				case 17052:
 					errorToShow = .randoFactoDatabaseQuotaExceeded
 					// Other errors

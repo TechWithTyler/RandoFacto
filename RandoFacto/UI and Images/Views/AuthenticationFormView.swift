@@ -37,99 +37,103 @@ struct AuthenticationFormView: View {
 			Form {
 				credentialFields
 				if viewModel.authenticationFormType == .login && !email.isEmpty && password.isEmpty {
-					Button("Forgot Password") {
+					Button(forgotPasswordButtonTitle) {
 						viewModel.errorToShow = nil
 						viewModel.showingResetPasswordEmailSent = false
 						viewModel.credentialErrorText = nil
 						viewModel.resetPassword(email: email)
 					}
+#if os(macOS)
+					.buttonStyle(.link)
+#endif
 				}
 				if viewModel.showingResetPasswordEmailSent {
-					HStack {
-						Image(systemName: "checkmark.circle")
-						Text("A password reset email has been sent to \(email).")
-							.font(.system(size: 18))
-							.lineLimit(5)
-							.multilineTextAlignment(.center)
-							.padding()
-					}
-					.foregroundColor(.green)
+					AuthenticationMessageView(text: "A password reset email has been sent to \"\(email)\". Follow the instructions to reset your password.", type: .confirmation)
 				}
 				if let errorText = viewModel.credentialErrorText {
-					HStack {
-						Image(systemName: "exclamationmark.triangle")
-						Text(errorText)
-							.font(.system(size: 18))
-							.lineLimit(5)
-							.multilineTextAlignment(.center)
-							.padding()
-					}
-					.foregroundColor(.red)
+					AuthenticationMessageView(text: errorText, type: .error)
 				}
 			}
 			.formStyle(.grouped)
 			.padding(.horizontal)
-			.keyboardShortcut(.defaultAction)
-			.navigationTitle(viewModel.authenticationFormType == .signup ? "Signup" : "Login")
+			.navigationTitle(titleText)
 #if os(iOS)
-			.navigationBarTitleDisplayMode(.inline)
+			.navigationBarTitleDisplayMode(.automatic)
 #endif
-			.frame(minWidth: 400, minHeight: 400)
 			.toolbar {
 				if viewModel.isAuthenticating {
 					ToolbarItem(placement: .automatic) {
+#if os(macOS)
+						LoadingIndicator(text: "Please wait…")
+#else
 						LoadingIndicator()
+#endif
 					}
 				}
-					ToolbarItem(placement: .cancellationAction) {
-						Button {
-							viewModel.showingResetPasswordEmailSent = false
-							viewModel.errorToShow = nil
-							viewModel.credentialErrorText = nil
-							dismiss()
-						} label: {
-							Text("Cancel")
-						}
-						.disabled(viewModel.isAuthenticating)
+				ToolbarItem(placement: .cancellationAction) {
+					Button {
+						viewModel.showingResetPasswordEmailSent = false
+						viewModel.errorToShow = nil
+						viewModel.credentialErrorText = nil
+						dismiss()
+					} label: {
+						Text("Cancel")
 					}
-					ToolbarItem(placement: .confirmationAction) {
-						Button {
-							viewModel.showingResetPasswordEmailSent = false
-							viewModel.errorToShow = nil
-							viewModel.credentialErrorText = nil
-							email = email.lowercased()
-							if viewModel.authenticationFormType == .signup {
-								viewModel.isAuthenticating = true
-								viewModel.signup(email: email, password: password) {
-									success in
-									viewModel.isAuthenticating = false
-									if success {
-										dismiss()
-									}
-								}
-							} else if viewModel.authenticationFormType == .passwordChange {
-								viewModel.updatePasswordForCurrentUser(newPassword: password)
-							} else {
-								viewModel.isAuthenticating = true
-								viewModel.login(email: email, password: password) {
-									success in
-									viewModel.isAuthenticating = false
-									if success {
-										dismiss()
-									}
+					.disabled(viewModel.isAuthenticating)
+				}
+				ToolbarItem(placement: .confirmationAction) {
+					Button {
+						viewModel.showingResetPasswordEmailSent = false
+						viewModel.errorToShow = nil
+						viewModel.credentialErrorText = nil
+						email = email.lowercased()
+						if viewModel.authenticationFormType == .signup {
+							viewModel.isAuthenticating = true
+							viewModel.signup(email: email, password: password) {
+								success in
+								viewModel.isAuthenticating = false
+								if success {
+									dismiss()
 								}
 							}
-						} label: {
-							Text(confirmButtonText)
+						} else if viewModel.authenticationFormType == .passwordChange {
+							viewModel.isAuthenticating = true
+							viewModel.updatePasswordForCurrentUser(newPassword: password) {
+								success in
+								viewModel.isAuthenticating = false
+								if success {
+									dismiss()
+								}
+							}
+						} else {
+							viewModel.isAuthenticating = true
+							viewModel.login(email: email, password: password) {
+								success in
+								viewModel.isAuthenticating = false
+								if success {
+									dismiss()
+								}
+							}
 						}
-						.disabled(isFormInvalid || viewModel.isAuthenticating)
+					} label: {
+						Text(confirmButtonText)
 					}
+					.disabled(isFormInvalid || viewModel.isAuthenticating)
 				}
+			}
+		}
+		.onAppear {
+			if viewModel.authenticationFormType == .passwordChange {
+				email = (viewModel.firebaseAuthentication.currentUser?.email)!
+			}
 		}
 		.onDisappear {
 			viewModel.credentialErrorText = nil
 			viewModel.authenticationFormType = nil
 		}
+#if os(macOS)
+		.frame(minWidth: 400, maxWidth: 400, minHeight: 400, maxHeight: 400)
+#endif
 	}
 
 	var confirmButtonText: String {
@@ -140,28 +144,31 @@ struct AuthenticationFormView: View {
 		}
 	}
 
+	var titleText: String {
+		switch viewModel.authenticationFormType {
+			case .signup: return "Signup"
+			case .passwordChange: return "Change Password"
+			case .none, .login: return "Login"
+		}
+	}
+
 	// MARK: - Credential Fields
 
 	var credentialFields: some View {
 		Section {
 			if viewModel.authenticationFormType != .passwordChange {
-				HStack {
-					TextField("Email", text: $email)
-						.textContentType(.username)
+				TextField("Email", text: $email)
+					.textContentType(.username)
 #if os(iOS)
-						.keyboardType(.emailAddress)
+					.keyboardType(.emailAddress)
 #endif
-				}
 			}
-			HStack {
-				SecureField("Password", text: $password)
-					.textContentType(.password)
-			}
+			ViewablePasswordField("Password", text: $password)
 		}
 	}
-
+	
 }
 
 #Preview {
-    AuthenticationFormView(viewModel: RandoFactoViewModel())
+	AuthenticationFormView(viewModel: RandoFactoViewModel())
 }

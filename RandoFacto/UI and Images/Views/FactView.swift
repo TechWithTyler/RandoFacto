@@ -39,7 +39,7 @@ struct FactView: View {
 		ScrollView {
 			Text(viewModel.factText)
 				.font(.largeTitle)
-				.isTextSelectable(!(viewModel.notDisplayingFact || viewModel.factText == viewModel.factUnavailableString))
+				.isTextSelectable(!(viewModel.notDisplayingFact || viewModel.factText == factUnavailableString))
 				.multilineTextAlignment(.center)
 				.padding(.horizontal)
 		}
@@ -52,6 +52,7 @@ struct FactView: View {
 		}
 		.font(.footnote)
 		.foregroundColor(.secondary)
+		.padding(.horizontal)
 	}
 
 	// MARK: - Buttons
@@ -98,7 +99,7 @@ struct FactView: View {
 				LoadingIndicator()
 			}
 		} else {
-			if viewModel.factText != viewModel.factUnavailableString && viewModel.userLoggedIn {
+			if viewModel.factText != factUnavailableString && viewModel.userLoggedIn {
 				ToolbarItem(placement: .automatic) {
 					if viewModel.favoriteFacts.contains(viewModel.factText) {
 						Button {
@@ -111,7 +112,7 @@ struct FactView: View {
 								.accessibilityLabel("Unfavorite")
 						}
 							.help("Unfavorite")
-							.disabled(viewModel.notDisplayingFact || viewModel.factText == viewModel.factUnavailableString || viewModel.isDeletingUser)
+							.disabled(viewModel.notDisplayingFact || viewModel.factText == factUnavailableString || viewModel.isDeletingUser)
 					} else {
 						Button {
 							DispatchQueue.main.async {
@@ -122,7 +123,7 @@ struct FactView: View {
 								.accessibilityLabel("Favorite")
 						}
 							.help("Favorite")
-							.disabled(viewModel.notDisplayingFact || viewModel.factText == viewModel.factUnavailableString || viewModel.isDeletingUser)
+							.disabled(viewModel.notDisplayingFact || viewModel.factText == factUnavailableString || viewModel.isDeletingUser)
 					}
 				}
 			}

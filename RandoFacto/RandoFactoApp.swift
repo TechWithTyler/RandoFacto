@@ -61,7 +61,7 @@ struct RandoFactoApp: App {
 		}
 		#if os(macOS)
 		Settings {
-			AccountView(viewModel: viewModel)
+			SettingsView(viewModel: viewModel)
 				.frame(width: 400, height: 400)
 		}
 		#endif
