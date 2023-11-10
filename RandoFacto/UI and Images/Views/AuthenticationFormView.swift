@@ -163,10 +163,10 @@ struct AuthenticationFormView: View {
 					.keyboardType(.emailAddress)
 #endif
 			}
-			ViewablePasswordField("Password", text: $password)
+			ViewablePasswordField("Password", text: $password, signup: viewModel.authenticationFormType == .signup)
 		}
 	}
-	
+
 }
 
 #Preview {

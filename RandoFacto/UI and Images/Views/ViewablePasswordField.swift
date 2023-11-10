@@ -15,18 +15,21 @@ struct ViewablePasswordField: View {
 
 	@State var showPassword: Bool = false
 
-	init(_ label: String, text: Binding<String>) {
+	var signup: Bool
+
+	init(_ label: String, text: Binding<String>, signup: Bool) {
 		self.label = label
 		self._text = text
+		self.signup = signup
 	}
 
     var body: some View {
 			if showPassword {
 				TextField(label, text: $text)
-					.textContentType(.password)
+					.textContentType(signup ? nil : .password)
 			} else {
 				SecureField(label, text: $text)
-					.textContentType(.password)
+					.textContentType(signup ? nil : .password)
 			}
 			Toggle("Show Password", isOn: $showPassword)
 		#if os(macOS)
@@ -37,5 +40,10 @@ struct ViewablePasswordField: View {
 
 #Preview {
 	@State var password = "password"
-	return ViewablePasswordField("Password", text: $password)
+	return ViewablePasswordField("Password", text: $password, signup: false)
+}
+
+#Preview {
+	@State var password = "newpassword"
+	return ViewablePasswordField("Password", text: $password, signup: true)
 }
