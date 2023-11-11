@@ -69,7 +69,7 @@ struct FactView: View {
 					} label: {
 						Text("Get Random Favorite Fact")
 					}
-					.disabled(viewModel.isDeletingUser)
+					.disabled(viewModel.userDeletionStage != nil)
 #if os(iOS)
 					.padding()
 #endif
@@ -112,7 +112,7 @@ struct FactView: View {
 								.accessibilityLabel("Unfavorite")
 						}
 							.help("Unfavorite")
-							.disabled(viewModel.notDisplayingFact || viewModel.factText == factUnavailableString || viewModel.isDeletingUser)
+							.disabled(viewModel.notDisplayingFact || viewModel.factText == factUnavailableString || viewModel.userDeletionStage != nil)
 					} else {
 						Button {
 							DispatchQueue.main.async {
@@ -123,7 +123,7 @@ struct FactView: View {
 								.accessibilityLabel("Favorite")
 						}
 							.help("Favorite")
-							.disabled(viewModel.notDisplayingFact || viewModel.factText == factUnavailableString || viewModel.isDeletingUser)
+							.disabled(viewModel.notDisplayingFact || viewModel.factText == factUnavailableString || viewModel.userDeletionStage != nil)
 					}
 				}
 			}

@@ -9,9 +9,10 @@
 /* Begin PBXBuildFile section */
 		8D0312222AF995AF00DBB2B2 /* AuthenticationFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0312212AF995AF00DBB2B2 /* AuthenticationFormView.swift */; };
 		8D0312242AF9CAB100DBB2B2 /* LoadingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0312232AF9CAB100DBB2B2 /* LoadingIndicator.swift */; };
-		8D051C5E2AFB15590064E90E /* Tab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D051C5D2AFB15590064E90E /* Tab.swift */; };
+		8D051C5E2AFB15590064E90E /* Page.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D051C5D2AFB15590064E90E /* Page.swift */; };
 		8D0C38D62ADDC9AB00EBB03A /* SheftAppsStylishUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D0C38D52ADDC9AB00EBB03A /* SheftAppsStylishUI.framework */; };
 		8D0C38D72ADDC9AB00EBB03A /* SheftAppsStylishUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8D0C38D52ADDC9AB00EBB03A /* SheftAppsStylishUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8D63D5F92AFF1D470084BACF /* UserDeletionStage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D63D5F82AFF1D470084BACF /* UserDeletionStage.swift */; };
 		8D86430E2AEC594F0084C772 /* AuthenticationFormType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D86430D2AEC594F0084C772 /* AuthenticationFormType.swift */; };
 		8D86FF052AF56CA600239DEE /* HTTPResponseExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D86FF042AF56CA600239DEE /* HTTPResponseExtension.swift */; };
 		8D8899DC2AFDF39900BDDDFD /* InappropriateWordsCheckerData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8899DA2AFDF39900BDDDFD /* InappropriateWordsCheckerData.swift */; };
@@ -61,8 +62,9 @@
 /* Begin PBXFileReference section */
 		8D0312212AF995AF00DBB2B2 /* AuthenticationFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationFormView.swift; sourceTree = "<group>"; };
 		8D0312232AF9CAB100DBB2B2 /* LoadingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingIndicator.swift; sourceTree = "<group>"; };
-		8D051C5D2AFB15590064E90E /* Tab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tab.swift; sourceTree = "<group>"; };
+		8D051C5D2AFB15590064E90E /* Page.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Page.swift; sourceTree = "<group>"; };
 		8D0C38D52ADDC9AB00EBB03A /* SheftAppsStylishUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SheftAppsStylishUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D63D5F82AFF1D470084BACF /* UserDeletionStage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDeletionStage.swift; sourceTree = "<group>"; };
 		8D86430D2AEC594F0084C772 /* AuthenticationFormType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationFormType.swift; sourceTree = "<group>"; };
 		8D86FF042AF56CA600239DEE /* HTTPResponseExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPResponseExtension.swift; sourceTree = "<group>"; };
 		8D8899DA2AFDF39900BDDDFD /* InappropriateWordsCheckerData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InappropriateWordsCheckerData.swift; sourceTree = "<group>"; };
@@ -109,6 +111,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8D63D5F72AFEBBE90084BACF /* Authentication */ = {
+			isa = PBXGroup;
+			children = (
+				8D86430D2AEC594F0084C772 /* AuthenticationFormType.swift */,
+				8D8899DF2AFDF3D100BDDDFD /* AuthenticationMessageType.swift */,
+				8D63D5F82AFF1D470084BACF /* UserDeletionStage.swift */,
+			);
+			path = Authentication;
+			sourceTree = "<group>";
+		};
 		8D8899D92AFDF39900BDDDFD /* Decodable Data */ = {
 			isa = PBXGroup;
 			children = (
@@ -122,9 +134,8 @@
 			isa = PBXGroup;
 			children = (
 				8DF48E302936A80700152681 /* RandoFactoViewModel.swift */,
-				8D86430D2AEC594F0084C772 /* AuthenticationFormType.swift */,
-				8D051C5D2AFB15590064E90E /* Tab.swift */,
-				8D8899DF2AFDF3D100BDDDFD /* AuthenticationMessageType.swift */,
+				8D63D5F72AFEBBE90084BACF /* Authentication */,
+				8D051C5D2AFB15590064E90E /* Page.swift */,
 			);
 			path = "View Model";
 			sourceTree = "<group>";
@@ -321,6 +332,7 @@
 				8DF48E392936B02900152681 /* NetworkError.swift in Sources */,
 				8DFEB0A52AFAF6FD00F57DB1 /* ContentView.swift in Sources */,
 				8DD7920F2A2E78F800C1B61C /* APIKeys.swift in Sources */,
+				8D63D5F92AFF1D470084BACF /* UserDeletionStage.swift in Sources */,
 				8DFEB0A32AFAF64800F57DB1 /* SettingsView.swift in Sources */,
 				8DF48E312936A80700152681 /* RandoFactoViewModel.swift in Sources */,
 				8DFEB0A72AFAF77800F57DB1 /* FactView.swift in Sources */,
@@ -330,7 +342,7 @@
 				8D8F1AF82AFDF25600DB9B7D /* AuthenticationMessageView.swift in Sources */,
 				8D8899DC2AFDF39900BDDDFD /* InappropriateWordsCheckerData.swift in Sources */,
 				8D86FF052AF56CA600239DEE /* HTTPResponseExtension.swift in Sources */,
-				8D051C5E2AFB15590064E90E /* Tab.swift in Sources */,
+				8D051C5E2AFB15590064E90E /* Page.swift in Sources */,
 				8D8899DD2AFDF39900BDDDFD /* Fact.swift in Sources */,
 				8D86430E2AEC594F0084C772 /* AuthenticationFormType.swift in Sources */,
 				8D8899E02AFDF3D100BDDDFD /* AuthenticationMessageType.swift in Sources */,

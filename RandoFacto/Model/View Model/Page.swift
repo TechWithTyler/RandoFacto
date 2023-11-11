@@ -1,5 +1,5 @@
 //
-//  Tab.swift
+//  Page.swift
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 11/7/23.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum Tab : String, CaseIterable {
+enum Page : String, CaseIterable {
 	
 	case randomFact
 

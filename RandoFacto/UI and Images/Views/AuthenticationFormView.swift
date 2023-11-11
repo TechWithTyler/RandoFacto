@@ -40,7 +40,7 @@ struct AuthenticationFormView: View {
 					Button(forgotPasswordButtonTitle) {
 						viewModel.errorToShow = nil
 						viewModel.showingResetPasswordEmailSent = false
-						viewModel.credentialErrorText = nil
+						viewModel.authenticationErrorText = nil
 						viewModel.resetPassword(email: email)
 					}
 #if os(macOS)
@@ -50,13 +50,13 @@ struct AuthenticationFormView: View {
 				if viewModel.showingResetPasswordEmailSent {
 					AuthenticationMessageView(text: "A password reset email has been sent to \"\(email)\". Follow the instructions to reset your password.", type: .confirmation)
 				}
-				if let errorText = viewModel.credentialErrorText {
+				if let errorText = viewModel.authenticationErrorText {
 					AuthenticationMessageView(text: errorText, type: .error)
 				}
 			}
 			.formStyle(.grouped)
 			.padding(.horizontal)
-			.navigationTitle(titleText)
+			.navigationTitle((viewModel.authenticationFormType?.titleText) ?? Authentication.FormType.login.titleText)
 #if os(iOS)
 			.navigationBarTitleDisplayMode(.automatic)
 #endif
@@ -74,7 +74,7 @@ struct AuthenticationFormView: View {
 					Button {
 						viewModel.showingResetPasswordEmailSent = false
 						viewModel.errorToShow = nil
-						viewModel.credentialErrorText = nil
+						viewModel.authenticationErrorText = nil
 						dismiss()
 					} label: {
 						Text("Cancel")
@@ -85,7 +85,7 @@ struct AuthenticationFormView: View {
 					Button {
 						viewModel.showingResetPasswordEmailSent = false
 						viewModel.errorToShow = nil
-						viewModel.credentialErrorText = nil
+						viewModel.authenticationErrorText = nil
 						email = email.lowercased()
 						if viewModel.authenticationFormType == .signup {
 							viewModel.isAuthenticating = true
@@ -116,7 +116,7 @@ struct AuthenticationFormView: View {
 							}
 						}
 					} label: {
-						Text(confirmButtonText)
+						Text(viewModel.authenticationFormType?.confirmButtonText ?? Authentication.FormType.login.confirmButtonText)
 					}
 					.disabled(isFormInvalid || viewModel.isAuthenticating)
 				}
@@ -128,28 +128,12 @@ struct AuthenticationFormView: View {
 			}
 		}
 		.onDisappear {
-			viewModel.credentialErrorText = nil
+			viewModel.authenticationErrorText = nil
 			viewModel.authenticationFormType = nil
 		}
 #if os(macOS)
 		.frame(minWidth: 400, maxWidth: 400, minHeight: 400, maxHeight: 400)
 #endif
-	}
-
-	var confirmButtonText: String {
-		switch viewModel.authenticationFormType {
-			case .signup: return "Signup"
-			case .passwordChange: return "Update"
-			case .none, .login: return "Login"
-		}
-	}
-
-	var titleText: String {
-		switch viewModel.authenticationFormType {
-			case .signup: return "Signup"
-			case .passwordChange: return "Change Password"
-			case .none, .login: return "Login"
-		}
 	}
 
 	// MARK: - Credential Fields

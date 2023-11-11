@@ -24,7 +24,7 @@ struct SettingsView: View {
 					.tabItem {
 						Label("Account", systemImage: "person.circle")
 					}
-					.tag(Tab.account)
+					.tag(Page.account)
 			}
 #endif
     }
@@ -34,8 +34,8 @@ struct SettingsView: View {
 			Text((viewModel.firebaseAuthentication.currentUser?.email) ?? "Login to your RandoFacto account to save favorite facts to view on all your devices, even while offline.")
 				.font(.largeTitle)
 				.fontWeight(.bold)
-			if viewModel.isDeletingUser {
-				LoadingIndicator(text: "Deleting account…")
+			if let deletionStage = viewModel.userDeletionStage {
+				LoadingIndicator(text: "Deleting \(deletionStage)…")
 			} else if viewModel.userLoggedIn {
 				Section {
 					Picker("Fact on Launch", selection: $viewModel.initialFact) {
@@ -57,10 +57,10 @@ struct SettingsView: View {
 					}
 				}
 			} else {
-				Button("Login") {
+				Button(loginText) {
 					viewModel.authenticationFormType = .login
 				}
-				Button("Signup") {
+				Button(signupText) {
 					viewModel.authenticationFormType = .signup
 				}
 			}

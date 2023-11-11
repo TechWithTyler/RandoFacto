@@ -50,7 +50,7 @@ struct FavoritesList: View {
 							Button {
 								DispatchQueue.main.async {
 									viewModel.factText = favorite
-									viewModel.selectedTab = .favoriteFacts
+									viewModel.selectedPage = .favoriteFacts
 								}
 							} label: {
 								Text(favorite)

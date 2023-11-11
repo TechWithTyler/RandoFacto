@@ -7,6 +7,9 @@
 //
 
 import Foundation
+import Firebase
+
+typealias Authentication = Auth
 
 // Displayed when generating a random fact.
 let generatingString = "Generating random fact…"
@@ -16,6 +19,12 @@ let factUnavailableString = "Fact unavailable"
 
 // The title of the button used to send a password reset email.
 let forgotPasswordButtonTitle = "Forgot Password"
+
+// The title of the login dialog/buttons.
+let loginText = "Login"
+
+// The title of the signup dialog/buttons.
+let signupText = "Signup"
 
 // The collection name of all users.
 let usersCollectionName = "users"

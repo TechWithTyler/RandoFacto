@@ -21,18 +21,18 @@ struct ContentView: View {
 
 	var body: some View {
 		NavigationSplitView {
-			List(selection: $viewModel.selectedTab) {
-				NavigationLink(value: Tab.randomFact) {
+			List(selection: $viewModel.selectedPage) {
+				NavigationLink(value: Page.randomFact) {
 					label(for: .randomFact)
 				}
-				if viewModel.userLoggedIn && !viewModel.isDeletingUser {
-					NavigationLink(value: Tab.favoriteFacts) {
+				if viewModel.userLoggedIn && viewModel.userDeletionStage == nil {
+					NavigationLink(value: Page.favoriteFacts) {
 						label(for: .favoriteFacts)
 							.badge(viewModel.favoriteFacts.count)
 					}
 				}
 				#if !os(macOS)
-				NavigationLink(value: Tab.account) {
+				NavigationLink(value: Page.account) {
 					label(for: .account)
 				}
 				#endif
@@ -42,7 +42,7 @@ struct ContentView: View {
 			.navigationBarTitleDisplayMode(.automatic)
 #endif
 		} detail: {
-			switch viewModel.selectedTab {
+			switch viewModel.selectedPage {
 				case .randomFact:
 					FactView(viewModel: viewModel)
 				case .favoriteFacts:
@@ -63,13 +63,13 @@ struct ContentView: View {
 			}
 		})
 		// Nil selection catcher
-		.onChange(of: viewModel.selectedTab) { value in
+		.onChange(of: viewModel.selectedPage) { value in
 			if value == nil && horizontalSizeClass == .regular {
-				viewModel.selectedTab = .randomFact
+				viewModel.selectedPage = .randomFact
 			}
 		}
 		// User login state change/user deletion
-		.onChange(of: viewModel.isDeletingUser) { value in
+		.onChange(of: viewModel.userDeletionStage) { value in
 			viewModel.dismissFavoriteFacts()
 		}
 		.onChange(of: viewModel.userLoggedIn) { value in
@@ -87,7 +87,7 @@ struct ContentView: View {
 		}
 	}
 
-	func label(for tab: Tab) -> some View {
+	func label(for tab: Page) -> some View {
 		switch tab {
 			case .randomFact:
 				Label("Random Fact", systemImage: "questionmark")

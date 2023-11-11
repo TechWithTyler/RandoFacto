@@ -21,16 +21,18 @@ class RandoFactoViewModel: ObservableObject {
 	// The text to display in the fact text label.
 	@Published var factText: String = String()
 
-	// The text to display in the credential error label in the login/signup dialogs.
-	@Published var credentialErrorText: String? = nil
+	// The text to display in the credential error label in the authentication dialogs.
+	@Published var authenticationErrorText: String? = nil
 
 	// MARK: - Properties - Integers
 
+	// Whether to display one of the user's favorite facts or generate a random fact when the app launches. This setting resets to 0 (Random Fact) when the user logs out or deletes their account.
 	@AppStorage("initialFact") var initialFact: Int = 0
 
-	// MARK: - Properties - Tabs
+	// MARK: - Properties - Pages
 
-	@Published var selectedTab: Tab? = .randomFact
+	// The page currently selected in the sidebar/top-level view. On macOS, the settings view is accessed by the Settings option in the app menu instead as a page.
+	@Published var selectedPage: Page? = .randomFact
 
 	// MARK: - Properties - Network Error
 
@@ -40,7 +42,11 @@ class RandoFactoViewModel: ObservableObject {
 	// MARK: - Properties - Authentication Form Type
 
 	// The authentication form to display, or nil if neither are to be displayed.
-	@Published var authenticationFormType: AuthenticationFormType? = nil
+	@Published var authenticationFormType: Authentication.FormType? = nil
+
+	// MARK: - Properties - Account Deletion Stage
+
+	@Published var userDeletionStage: User.DeletionStage? = nil
 
 	// MARK: - Properties - Booleans
 
@@ -55,8 +61,7 @@ class RandoFactoViewModel: ObservableObject {
 	// Whether the device is online.
 	@Published var online: Bool = false
 
-	@Published var isDeletingUser: Bool = false
-
+	// Whether an authentication request is in progress.
 	@Published var isAuthenticating: Bool = false
 
 	var notDisplayingFact: Bool {
@@ -87,7 +92,7 @@ class RandoFactoViewModel: ObservableObject {
 	var favoriteFactsListener: ListenerRegistration? = nil
 
 	// Used to get the current user or to signup, login, logout, or delete a user.
-	@Published var firebaseAuthentication = Auth.auth()
+	@Published var firebaseAuthentication = Authentication.auth()
 
 	// MARK: - Properties - Errors
 
@@ -366,9 +371,10 @@ class RandoFactoViewModel: ObservableObject {
 			completionHandler(userNotFoundError)
 			return
 		}
-		isDeletingUser = true
+		userDeletionStage = .data
 		deleteAllFavoriteFactsForCurrentUser(forUserDeletion: true) { [self] error in
 			if let error = error {
+				userDeletionStage = nil
 				completionHandler(error)
 			} else {
 				DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) { [self] in
@@ -378,20 +384,21 @@ class RandoFactoViewModel: ObservableObject {
 						.document(user.uid).delete { [self] error in
 							if let error = error {
 								addUserSessionHandler()
-								isDeletingUser = false
+								userDeletionStage = nil
 								completionHandler(error)
+							} else {
+								userDeletionStage = .account
 							}
 						}
 					DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [self] in
 						user.delete { [self] error in
+							userDeletionStage = nil
 							if let error = error {
 								logoutMissingUser()
 								addUserSessionHandler()
-								isDeletingUser = false
 								completionHandler(error)
 								return
 							} else {
-								isDeletingUser = false
 								completionHandler(nil)
 							}
 						}
@@ -466,9 +473,9 @@ class RandoFactoViewModel: ObservableObject {
 	// MARK: - Favorite Facts Unavailable Handler
 
 	func dismissFavoriteFacts() {
-		if (!userLoggedIn || isDeletingUser) && selectedTab == .favoriteFacts {
+		if (!userLoggedIn || userDeletionStage != nil) && selectedPage == .favoriteFacts {
 			DispatchQueue.main.async { [self] in
-				selectedTab = .randomFact
+				selectedPage = .randomFact
 			}
 		}
 	}
@@ -603,7 +610,7 @@ class RandoFactoViewModel: ObservableObject {
 			}
 			// Show the error in the login/signup dialog if they're open, otherwise show it as an alert.
 			if authenticationFormType != nil {
-				credentialErrorText = errorToShow?.errorDescription
+				authenticationErrorText = errorToShow?.errorDescription
 			} else {
 				showingErrorAlert = true
 			}
