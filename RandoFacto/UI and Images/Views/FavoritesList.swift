@@ -94,7 +94,7 @@ struct FavoritesList: View {
 			Button("Unfavorite", role: .destructive) {
 				viewModel.deleteAllFavoriteFactsForCurrentUser { error in
 					if let error = error {
-						viewModel.showError(error: error)
+						viewModel.showError(error)
 					}
 					viewModel.showingDeleteAllFavoriteFacts = false
 				}

@@ -35,6 +35,22 @@ struct RandoFactoApp: App {
 
 	// MARK: - Windows and Views
 
+    var body: some Scene {
+        WindowGroup {
+			ContentView(viewModel: viewModel)
+				.frame(minWidth: 400, minHeight: 300, alignment: .center)
+				.ignoresSafeArea(edges: .all)
+		}
+		#if os(macOS)
+		Settings {
+			SettingsView(viewModel: viewModel)
+				.frame(width: 400, height: 400)
+		}
+		#endif
+	}
+
+	// MARK: - Initiailization
+
 	init() {
 		// 1. Make sure the GoogleService-Info.plist file is present in the app bundle.
 		guard let googleServicePlist = Bundle.main.url(forResource: "GoogleService-Info", withExtension: "plist") else {
@@ -55,20 +71,6 @@ struct RandoFactoApp: App {
 		firestore.settings = settings
 		// 5. Configure the RandoFacto view model.
 		viewModel = RandoFactoViewModel()
-	}
-
-    var body: some Scene {
-        WindowGroup {
-			ContentView(viewModel: viewModel)
-				.frame(minWidth: 400, minHeight: 300, alignment: .center)
-				.ignoresSafeArea(edges: .all)
-		}
-		#if os(macOS)
-		Settings {
-			SettingsView(viewModel: viewModel)
-				.frame(width: 400, height: 400)
-		}
-		#endif
 	}
 
 }

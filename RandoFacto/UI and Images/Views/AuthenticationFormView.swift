@@ -41,7 +41,7 @@ struct AuthenticationFormView: View {
 						viewModel.errorToShow = nil
 						viewModel.showingResetPasswordEmailSent = false
 						viewModel.authenticationErrorText = nil
-						viewModel.resetPassword(email: email)
+						viewModel.sendPasswordReset(toEmail: email)
 					}
 #if os(macOS)
 					.buttonStyle(.link)
@@ -56,10 +56,11 @@ struct AuthenticationFormView: View {
 			}
 			.formStyle(.grouped)
 			.padding(.horizontal)
-			.navigationTitle((viewModel.authenticationFormType?.titleText) ?? Authentication.FormType.login.titleText)
+			.navigationTitle(viewModel.authenticationFormType?.titleText ?? Authentication.FormType.login.titleText)
 #if os(iOS)
 			.navigationBarTitleDisplayMode(.automatic)
 #endif
+			.interactiveDismissDisabled(viewModel.isAuthenticating)
 			.toolbar {
 				if viewModel.isAuthenticating {
 					ToolbarItem(placement: .automatic) {
@@ -83,6 +84,10 @@ struct AuthenticationFormView: View {
 				}
 				ToolbarItem(placement: .confirmationAction) {
 					Button {
+						guard !password.containsEmoji else {
+							viewModel.authenticationErrorText = "Passwords can't contain emoji."
+							return
+						}
 						viewModel.showingResetPasswordEmailSent = false
 						viewModel.errorToShow = nil
 						viewModel.authenticationErrorText = nil
@@ -98,7 +103,7 @@ struct AuthenticationFormView: View {
 							}
 						} else if viewModel.authenticationFormType == .passwordChange {
 							viewModel.isAuthenticating = true
-							viewModel.updatePasswordForCurrentUser(newPassword: password) {
+							viewModel.updatePasswordForCurrentUser(to: password) {
 								success in
 								viewModel.isAuthenticating = false
 								if success {
@@ -128,8 +133,11 @@ struct AuthenticationFormView: View {
 			}
 		}
 		.onDisappear {
-			viewModel.authenticationErrorText = nil
-			viewModel.authenticationFormType = nil
+			password.removeAll()
+			if viewModel.errorToShow == nil {
+				viewModel.authenticationErrorText = nil
+				viewModel.authenticationFormType = nil
+			}
 		}
 #if os(macOS)
 		.frame(minWidth: 400, maxWidth: 400, minHeight: 400, maxHeight: 400)

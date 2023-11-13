@@ -23,10 +23,12 @@ struct FactGenerator {
 	// This method uses a random facts web API which returns JSON data to generate a random fact.
 	func generateRandomFact(didBeginHandler: @escaping (() -> Void), completionHandler: @escaping ((String?, Error?) -> Void)) {
 		// 1. Create constants.
-		guard let url = URL(string: factURLString) else { logFactDataError { error in
+		guard let url = URL(string: factURLString) else { 
+			logFactDataError { error in
 			completionHandler(nil, error)
 		}
-			return }
+			return
+		}
 		let request = URLRequest(url: url)
 		let urlSession = URLSession(configuration: .default)
 		// 2. Call the "did begin" handler.
