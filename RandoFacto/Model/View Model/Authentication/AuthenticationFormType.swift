@@ -10,6 +10,7 @@ import Foundation
 
 extension Authentication {
 	
+	// Represents a type of authentication form.
 	enum FormType: Identifiable {
 
 		case signup
@@ -18,10 +19,12 @@ extension Authentication {
 
 		case passwordChange
 
+		// An ID which allows SwiftUI sheets to be presented based on one of the above cases.
 		var id: Int {
 			return hashValue
 		}
 
+		// The text for the form's default button.
 		var confirmButtonText: String {
 			switch self {
 				case .signup: return signupText
@@ -30,6 +33,7 @@ extension Authentication {
 			}
 		}
 
+		// The form's title text.
 		var titleText: String {
 			switch self {
 				case .signup: return signupText

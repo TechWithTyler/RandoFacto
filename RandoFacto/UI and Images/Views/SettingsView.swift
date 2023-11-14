@@ -24,7 +24,7 @@ struct SettingsView: View {
 					.tabItem {
 						Label("Account", systemImage: "person.circle")
 					}
-					.tag(Page.account)
+					.tag(Page.settings)
 			}
 #endif
     }

@@ -32,8 +32,8 @@ struct ContentView: View {
 					}
 				}
 				#if !os(macOS)
-				NavigationLink(value: Page.account) {
-					label(for: .account)
+				NavigationLink(value: Page.settings) {
+					label(for: .settings)
 				}
 				#endif
 			}
@@ -47,7 +47,7 @@ struct ContentView: View {
 					FactView(viewModel: viewModel)
 				case .favoriteFacts:
 					FavoritesList(viewModel: viewModel)
-				case .account:
+				case .settings:
 					SettingsView(viewModel: viewModel)
 				case .none:
 					EmptyView()
@@ -93,7 +93,7 @@ struct ContentView: View {
 				Label("Random Fact", systemImage: "questionmark")
 			case .favoriteFacts:
 				Label("Favorite Facts", systemImage: "heart")
-			case .account:
+			case .settings:
 				Label("Settings", systemImage: "gear")
 
 		}

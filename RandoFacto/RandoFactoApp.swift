@@ -9,18 +9,6 @@
 import SwiftUI
 import Firebase
 
-#if os(macOS)
-class AppDelegate: NSObject, NSApplicationDelegate {
-
-	// MARK: - Quit When Last Window Closed
-
-	func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
-		return true
-	}
-
-}
-#endif
-
 @main
 struct RandoFactoApp: App {
 
@@ -31,10 +19,12 @@ struct RandoFactoApp: App {
 	@NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 	#endif
 
+	// The main model object for the app, which supplies data for its views.
 	@ObservedObject var viewModel: RandoFactoViewModel
 
 	// MARK: - Windows and Views
 
+	// The windows and views in the app.
     var body: some Scene {
         WindowGroup {
 			ContentView(viewModel: viewModel)
@@ -42,6 +32,7 @@ struct RandoFactoApp: App {
 				.ignoresSafeArea(edges: .all)
 		}
 		#if os(macOS)
+		// On macOS, Settings are presented as a window instead of as one of the app's pages.
 		Settings {
 			SettingsView(viewModel: viewModel)
 				.frame(width: 400, height: 400)
@@ -67,7 +58,12 @@ struct RandoFactoApp: App {
 		// 4. Enable syncing Firestore data to the device for use offline.
 		let firestore = Firestore.firestore()
 		let settings = FirestoreSettings()
-		settings.cacheSettings = PersistentCacheSettings(sizeBytes: FirestoreCacheSizeUnlimited as NSNumber)
+		// Persistent cache must be at least 1,048,576 bytes (1024KB or 1MB). Here we use unlimited storage.
+		let persistentCacheSizeBytes = FirestoreCacheSizeUnlimited as NSNumber
+		let persistentCache = PersistentCacheSettings(sizeBytes: persistentCacheSizeBytes)
+		settings.cacheSettings = persistentCache
+		settings.isSSLEnabled = true
+		settings.dispatchQueue = .main
 		firestore.settings = settings
 		// 5. Configure the RandoFacto view model.
 		viewModel = RandoFactoViewModel()

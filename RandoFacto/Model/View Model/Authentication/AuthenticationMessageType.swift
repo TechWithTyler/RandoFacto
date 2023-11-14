@@ -8,8 +8,13 @@
 
 import Foundation
 
-enum AuthenticationMessageType {
+extension Authentication {
 
-	case confirmation, error
+	// A confirmation or error message to display in the authentication form.
+	enum MessageType {
 
+		case confirmation, error
+
+	}
+	
 }

@@ -17,10 +17,11 @@ struct FavoritesList: View {
 
 	var searchResults: [String] {
 		let content = viewModel.favoriteFacts
+		let factText = content.map { $0.text }
 		if searchText.isEmpty {
-			return content
+			return factText
 		} else {
-			return content.filter { $0.contains(searchText) }
+			return factText.filter { $0.contains(searchText) }
 		}
 	}
 
@@ -62,23 +63,23 @@ struct FavoritesList: View {
 							.buttonStyle(.borderless)
 							.contextMenu {
 								Button {
-									viewModel.deleteFromFavorites(fact: favorite)
+									viewModel.deleteFromFavorites(factText: favorite)
 								} label: {
 									Text("Unfavorite")
 								}
 							}
 							.swipeActions {
 								Button(role: .destructive) {
-									viewModel.deleteFromFavorites(fact: favorite)
+									viewModel.deleteFromFavorites(factText: favorite)
 								} label: {
 									Text("Unfavorite")
 								}
 							}
 						}
 					}
-					.searchable(text: $searchText, placement: .toolbar, prompt: "Search Favorite Facts")
 				}
 		}
+		.searchable(text: $searchText, placement: .toolbar, prompt: "Search Favorite Facts")
 		// Toolbar
 		.toolbar {
 				ToolbarItem(placement: .automatic) {

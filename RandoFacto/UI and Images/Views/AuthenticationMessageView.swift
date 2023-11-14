@@ -12,7 +12,7 @@ struct AuthenticationMessageView: View {
 
 	var text: String
 
-	var type: AuthenticationMessageType
+	var type: Authentication.MessageType
 
     var body: some View {
 		HStack {

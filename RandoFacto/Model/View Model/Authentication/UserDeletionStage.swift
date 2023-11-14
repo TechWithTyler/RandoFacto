@@ -11,7 +11,8 @@ import Firebase
 
 extension User {
 
-	enum DeletionStage : String {
+	// The current stage of a user's account deletion.
+	enum AccountDeletionStage : String {
 
 		case data
 		

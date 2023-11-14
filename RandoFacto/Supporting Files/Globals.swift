@@ -26,14 +26,14 @@ let loginText = "Login"
 // The title of the signup dialog/buttons.
 let signupText = "Signup"
 
-// The collection name of all users.
+// The name of the collection containing all registered users in the Firestore database.
 let usersCollectionName = "users"
 
-// The collection name of the favorite facts collection in a user's Firestore database.
+// The name of the collection containing favorite facts in the Firestore database.
 let favoritesCollectionName = "favoriteFacts"
 
-// The key name of a fact's text.
-let factTextKeyName = "fact"
+// The key name of a fact's text in the Firestore database.
+let factTextKeyName = "text"
 
-// The key name of a fact's associated user.
+// The key name of a fact's associated user or a user reference.
 let userKeyName = "user"

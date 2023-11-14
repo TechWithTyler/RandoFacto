@@ -8,12 +8,14 @@
 
 import Foundation
 
+// A page in the app.
+// CaseIterable allows you to iterate through an enum's caaes as if it were a collection.
 enum Page : String, CaseIterable {
 	
 	case randomFact
 
 	case favoriteFacts
 
-	case account
+	case settings
 
 }

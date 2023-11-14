@@ -101,10 +101,10 @@ struct FactView: View {
 		} else {
 			if viewModel.factText != factUnavailableString && viewModel.userLoggedIn {
 				ToolbarItem(placement: .automatic) {
-					if viewModel.favoriteFacts.contains(viewModel.factText) {
+					if viewModel.displayedFactIsSaved {
 						Button {
 							DispatchQueue.main.async {
-								viewModel.deleteFromFavorites(fact: viewModel.factText)
+								viewModel.deleteFromFavorites(factText: viewModel.factText)
 							}
 						} label: {
 							Image(systemName: "heart.fill")
@@ -116,7 +116,7 @@ struct FactView: View {
 					} else {
 						Button {
 							DispatchQueue.main.async {
-								viewModel.saveToFavorites(fact: viewModel.factText)
+								viewModel.saveToFavorites(factText: viewModel.factText)
 							}
 						} label: {
 							Image(systemName: "heart")
