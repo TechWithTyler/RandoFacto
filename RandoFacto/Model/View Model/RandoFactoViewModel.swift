@@ -455,7 +455,7 @@ extension RandoFactoViewModel {
 
 	// This method adds a reference for the current user once they signup or login and such reference is missing.
 	func addUserReference(email: String, id: String, completionHandler: @escaping ((Error?) -> Void)) {
-		let userReference = UserReference(email: email, id: id)
+		let userReference = User.Reference(email: email, id: id)
 		do {
 			try firestore.collection(usersCollectionName).document(id).setData(from: userReference)
 		} catch {

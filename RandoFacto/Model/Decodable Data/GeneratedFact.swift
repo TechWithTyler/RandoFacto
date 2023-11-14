@@ -1,5 +1,5 @@
 //
-//  Fact.swift
+//  GeneratedFact.swift
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 11/21/22.
@@ -8,9 +8,10 @@
 
 import Foundation
 
-// MARK: - Fact Data
+// MARK: - Generated Fact Data
 
-struct Fact: Codable {
+// Represents the JSON data returned by the random facts API.
+struct GeneratedFact: Codable {
 
 	// This property is named exactly as it is in the JSON data returned by the random facts API.
 	let text: String

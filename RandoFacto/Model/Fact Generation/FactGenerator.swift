@@ -89,7 +89,7 @@ struct FactGenerator {
 		// 2. Try to decode the JSON data to create a Fact object, and get the text from it, correcting punctuation as necessary. If decoding fails, log an error.
 		let decoder = JSONDecoder()
 		do {
-			let factObject = try decoder.decode(Fact.self, from: data)
+			let factObject = try decoder.decode(GeneratedFact.self, from: data)
 			return correctedFactText(factObject.text)
 		} catch {
 			return nil

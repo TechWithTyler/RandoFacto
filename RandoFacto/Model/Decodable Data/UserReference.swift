@@ -7,12 +7,19 @@
 //
 
 import Foundation
-import FirebaseFirestoreSwift
+import Firebase
 
-struct UserReference: Codable {
+// MARK: - Registered User Reference Data
 
-	let email: String
+// Represents a registered user.
+extension User {
 
-	let id: String
+	struct Reference: Codable {
+
+		let email: String
+
+		let id: String
+
+	}
 
 }

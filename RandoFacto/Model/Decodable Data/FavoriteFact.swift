@@ -9,6 +9,9 @@
 import Foundation
 import FirebaseFirestoreSwift
 
+// MARK: - Favorite Fact Data
+
+// We need to represent favorite facts as a separate object from facts returned by the fact generator API, because having more properties than needed will result in the object not decoding properly.
 struct FavoriteFact: Codable, Equatable {
 
 	@DocumentID var id: String?

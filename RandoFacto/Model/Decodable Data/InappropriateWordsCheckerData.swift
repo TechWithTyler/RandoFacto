@@ -10,6 +10,7 @@ import Foundation
 
 // MARK: - Inappropriate Words Checker Data
 
+// Represents whether a fact fed to the inappropriate words checker API contains inappropriate words.
 struct InappropriateWordsCheckerData: Codable {
 
 	// This property isn't named the same as it is in the JSON data returned by the inappropriate words checker API, so it's mapped to the correct name using the coding key below.
