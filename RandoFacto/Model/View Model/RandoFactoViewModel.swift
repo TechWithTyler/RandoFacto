@@ -251,14 +251,15 @@ extension RandoFactoViewModel {
 	// This method updates the app's favorite facts list with snapshot's data.
 	func updateFavoriteFactsList(from snapshot: QuerySnapshot, completionHandler: @escaping (() -> Void)) {
 		DispatchQueue.main.async { [self] in
-			// 1. Clear the favorite facts list.
-			favoriteFacts.removeAll()
-			// 2. Go through each document (piece of data) in the snapshot.
+			// 1. Try to replace the data in favoriteFacts with snapshot's data by decoding it to a FavoriteFact object.
 			do {
+				// compactMap is marked throws so you can call throwing functions in its closure. Errors are then "rethrown" so the catch block of this do statement can handle them.
 				favoriteFacts = try snapshot.documents.compactMap { document in
+					// data(as:) handles the decoding of the data, so we don't need to use a Decoder object.
 					return try document.data(as: FavoriteFact.self)
 				}
 			} catch {
+				// 2. If that fails, log an error.
 				showError(error)
 			}
 			completionHandler()
@@ -387,7 +388,7 @@ extension RandoFactoViewModel {
 				return
 			}
 			userListener = firestore.collection(usersCollectionName)
-				.whereField(userKeyName, isEqualTo: email)
+				.whereField(emailKeyName, isEqualTo: email)
 				.addSnapshotListener(includeMetadataChanges: true) { [self] documentSnapshot, error in
 					if let error = error {
 						showError(error)
@@ -455,11 +456,12 @@ extension RandoFactoViewModel {
 
 	// This method adds a reference for the current user once they signup or login and such reference is missing.
 	func addUserReference(email: String, id: String, completionHandler: @escaping ((Error?) -> Void)) {
-		let userReference = User.Reference(email: email, id: id)
+		let userReference = User.Reference(email: email)
 		do {
 			try firestore.collection(usersCollectionName).document(id).setData(from: userReference)
+			completionHandler(nil)
 		} catch {
-			showError(error)
+			completionHandler(error)
 		}
 	}
 

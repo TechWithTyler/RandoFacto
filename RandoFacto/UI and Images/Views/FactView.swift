@@ -107,7 +107,7 @@ struct FactView: View {
 								viewModel.deleteFromFavorites(factText: viewModel.factText)
 							}
 						} label: {
-							Image(systemName: "heart.fill")
+							Image(systemName: "star.fill")
 								.symbolRenderingMode(.multicolor)
 								.accessibilityLabel("Unfavorite")
 						}
@@ -119,7 +119,7 @@ struct FactView: View {
 								viewModel.saveToFavorites(factText: viewModel.factText)
 							}
 						} label: {
-							Image(systemName: "heart")
+							Image(systemName: "star")
 								.accessibilityLabel("Favorite")
 						}
 							.help("Favorite")

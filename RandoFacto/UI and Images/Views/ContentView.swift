@@ -62,6 +62,9 @@ struct ContentView: View {
 				Text("OK")
 			}
 		})
+		#if os(macOS)
+		.dialogSeverity(.critical)
+		#endif
 		// Nil selection catcher
 		.onChange(of: viewModel.selectedPage) { value in
 			if value == nil && horizontalSizeClass == .regular {
@@ -92,7 +95,7 @@ struct ContentView: View {
 			case .randomFact:
 				Label("Random Fact", systemImage: "questionmark")
 			case .favoriteFacts:
-				Label("Favorite Facts", systemImage: "heart")
+				Label("Favorite Facts", systemImage: "star")
 			case .settings:
 				Label("Settings", systemImage: "gear")
 

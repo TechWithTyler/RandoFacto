@@ -196,11 +196,11 @@
 			isa = PBXGroup;
 			children = (
 				8DA2C411292C1E1100705A2F /* RandoFactoApp.swift */,
+				8D87C7CB2B02D97F009BBE56 /* AppDelegate.swift */,
 				8D91FEA02AE22C8C00ACB743 /* UI and Images */,
 				8DA2F333296E38C40068F761 /* Model */,
 				8D91FEA12AE22CB600ACB743 /* Supporting Files */,
 				8DD7920E2A2E78F800C1B61C /* APIKeys.swift */,
-				8D87C7CB2B02D97F009BBE56 /* AppDelegate.swift */,
 			);
 			path = RandoFacto;
 			sourceTree = "<group>";

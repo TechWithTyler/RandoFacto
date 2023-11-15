@@ -18,8 +18,6 @@ extension User {
 
 		let email: String
 
-		let id: String
-
 	}
 
 }

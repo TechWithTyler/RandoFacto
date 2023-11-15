@@ -32,7 +32,7 @@ struct SettingsView: View {
 	var accountSection: some View {
 		Form {
 			Text((viewModel.firebaseAuthentication.currentUser?.email) ?? "Login to your RandoFacto account to save favorite facts to view on all your devices, even while offline.")
-				.font(.largeTitle)
+				.font(.system(size: 24))
 				.fontWeight(.bold)
 			if let deletionStage = viewModel.userDeletionStage {
 				LoadingIndicator(text: "Deleting \(deletionStage)…")
@@ -68,6 +68,9 @@ struct SettingsView: View {
 		.formStyle(.grouped)
 		// Delete account alert
 		.alert("Delete your account?", isPresented: $viewModel.showingDeleteAccount, actions: {
+			Button("Cancel", role: .cancel) {
+				viewModel.showingDeleteAccount = false
+			}
 			Button("Delete", role: .destructive) {
 				viewModel.deleteCurrentUser {
 					[self] error in
@@ -77,12 +80,12 @@ struct SettingsView: View {
 					viewModel.showingDeleteAccount = false
 				}
 			}
-			Button("Cancel", role: .cancel) {
-				viewModel.showingDeleteAccount = false
-			}
 		}, message: {
 			Text("You won't be able to save favorite facts to view offline!")
 		})
+		#if os(macOS)
+		.dialogSeverity(.critical)
+		#endif
 		// Authentication form
 		.sheet(item: $viewModel.authenticationFormType) {_ in 
 			AuthenticationFormView(viewModel: viewModel)

@@ -35,5 +35,8 @@ let favoritesCollectionName = "favoriteFacts"
 // The key name of a fact's text in the Firestore database.
 let factTextKeyName = "text"
 
-// The key name of a fact's associated user or a user reference.
+// The key name of a fact's associated user.
 let userKeyName = "user"
+
+// The key name of a registered user's email.
+let emailKeyName = "email"
