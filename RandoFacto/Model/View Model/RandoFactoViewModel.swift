@@ -407,7 +407,7 @@ extension RandoFactoViewModel {
 					if let error = error {
 						showError(error)
 					} else {
-						// Logout the user if they're deleted.
+						// Logout the user if they're deleted. We need to make sure the snapshot is from the server, not the cache, to prevent the detection of a missing user reference when logging in on a new device for the first time.
 						if let snapshot = documentSnapshot, !snapshot.metadata.isFromCache, (snapshot.isEmpty || snapshot.documents.isEmpty) {
 							logoutMissingUser()
 						} else if documentSnapshot == nil {
