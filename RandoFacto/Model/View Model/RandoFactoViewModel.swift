@@ -47,7 +47,7 @@ class RandoFactoViewModel: ObservableObject {
 
 	// MARK: - Properties - Account Deletion Stage
 
-	// The current stage of user deletion. Deleting a user deletes their favorite facts and reference first, then their actual account. If the data deletion is successful but deletion of the account itself fails, the user's reference is put back.
+	// The current stage of user deletion. Deleting a user deletes their favorite facts and reference first, then their actual account. If the user is still able to login after deletion, the actual account failed to be deleted, so the user reference will be put back.
 	@Published var userDeletionStage: User.AccountDeletionStage? = nil
 
 	// MARK: - Properties - Booleans
@@ -66,6 +66,9 @@ class RandoFactoViewModel: ObservableObject {
 
 	// Whether the device is online.
 	@Published var online: Bool = false
+
+	// Whether the favorite facts database syncing is in progress.
+	@Published var isSyncing: Bool = false
 
 	// Whether an authentication request is in progress.
 	@Published var isAuthenticating: Bool = false
@@ -224,25 +227,36 @@ extension RandoFactoViewModel {
 			// 1. Make sure we can get the current user.
 			guard let user = firebaseAuthentication.currentUser, let userEmail = user.email else {
 				completionHandler()
-				return }
+				return
+			}
 			// 2. Get the Firestore collection containing favorite facts.
 			favoriteFactsListener = firestore.collection(favoritesCollectionName)
-			// 3. FIlter the result to include only the current user's favorite facts.
+			// 3. Filter the result to include only the current user's favorite facts.
 				.whereField(userKeyName, isEqualTo: userEmail)
 			// 4. Listen for any changes made to the favorite facts list on the Firebase end, such as by RandoFacto on another device.
 				.addSnapshotListener(includeMetadataChanges: true) { [self] snapshot, error in
+					// Set isSyncing to true at the start of the data sync
+					isSyncing = true
 					// 5. Log any errors.
 					if let error = error {
 						showError(error)
+						// Set isSyncing to false if there's an error
+						isSyncing = false
 						completionHandler()
 					} else {
 						// 6. If no data can be found, return.
 						guard let snapshot = snapshot else {
+							// Set isSyncing to false if no data is found
+							isSyncing = false
 							completionHandler()
 							return
 						}
 						// 7. If a change was successfully detected, update the app's favorite facts array.
-						updateFavoriteFactsList(from: snapshot, completionHandler: completionHandler)
+						updateFavoriteFactsList(from: snapshot, completionHandler: {
+							// Set isSyncing to false after updating the favorite facts array
+							isSyncing = false
+							completionHandler()
+						})
 					}
 				}
 		}
@@ -394,7 +408,7 @@ extension RandoFactoViewModel {
 						showError(error)
 					} else {
 						// Logout the user if they're deleted.
-						if let snapshot = documentSnapshot, (snapshot.isEmpty || snapshot.documents.isEmpty) {
+						if let snapshot = documentSnapshot, !snapshot.metadata.isFromCache, (snapshot.isEmpty || snapshot.documents.isEmpty) {
 							logoutMissingUser()
 						} else if documentSnapshot == nil {
 							logoutMissingUser()

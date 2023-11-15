@@ -27,15 +27,21 @@ struct FavoritesList: View {
 
 	var body: some View {
 		VStack {
-				if searchResults.isEmpty {
-					VStack {
-						Text("No Favorites")
-							.font(.largeTitle)
-						Text("Save facts to view offline by pressing the heart button.")
-							.font(.callout)
-					}
-					.foregroundColor(.secondary)
-					.padding()
+			if viewModel.isSyncing {
+				VStack {
+					Text("Syncing favorite facts…")
+						.font(.largeTitle)
+				}
+				.padding()
+			} else if searchResults.isEmpty {
+				VStack {
+					Text("No Favorites")
+						.font(.largeTitle)
+					Text("Save facts to view offline by pressing the star button.")
+						.font(.callout)
+				}
+				.foregroundColor(.secondary)
+				.padding()
 				} else {
 					Text("Favorite facts: \(searchResults.count)")
 						.multilineTextAlignment(.center)
@@ -82,12 +88,18 @@ struct FavoritesList: View {
 		.searchable(text: $searchText, placement: .toolbar, prompt: "Search Favorite Facts")
 		// Toolbar
 		.toolbar {
+			if viewModel.isSyncing {
+				ToolbarItem(placement: .automatic) {
+						LoadingIndicator()
+				}
+			} else {
 				ToolbarItem(placement: .automatic) {
 					Button {
 						viewModel.showingDeleteAllFavoriteFacts = true
 					} label: {
 						Label("Delete All…", systemImage: "trash")
 					}
+				}
 				}
 		}
 		// Unfavorite all facts alert

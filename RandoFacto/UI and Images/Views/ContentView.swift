@@ -28,7 +28,7 @@ struct ContentView: View {
 				if viewModel.userLoggedIn && viewModel.userDeletionStage == nil {
 					NavigationLink(value: Page.favoriteFacts) {
 						label(for: .favoriteFacts)
-							.badge(viewModel.favoriteFacts.count)
+							.badge(viewModel.isSyncing ? 0 : viewModel.favoriteFacts.count)
 					}
 				}
 				#if !os(macOS)

@@ -94,7 +94,7 @@ struct FactView: View {
 	@ToolbarContentBuilder
 	var toolbarContent: some ToolbarContent {
 		let displayingLoadingMessage = viewModel.factText.last == "…" || viewModel.factText.isEmpty
-		if displayingLoadingMessage {
+		if displayingLoadingMessage || viewModel.isSyncing {
 			ToolbarItem(placement: .automatic) {
 				LoadingIndicator()
 			}
