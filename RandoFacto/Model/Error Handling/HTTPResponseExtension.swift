@@ -36,4 +36,14 @@ extension HTTPURLResponse {
 		}
 	}
 
+	// MARK: - Unsuccessful HTTP Response Code As Error
+
+	// This method creates an error from the given HTTP response's code and logs it.
+	func logAsError(completionHandler: ((Error) -> Void)) {
+		let responseMessage = errorDomainForResponseCode
+		let responseCode = statusCode
+		let error = NSError(domain: "\(responseMessage): HTTP Response Status Code \(responseCode)", code: responseCode + 33000)
+		completionHandler(error)
+	}
+
 }

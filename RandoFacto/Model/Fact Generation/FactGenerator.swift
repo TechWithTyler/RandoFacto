@@ -37,7 +37,7 @@ struct FactGenerator {
 		let dataTask = urlSession.dataTask(with: request) { [self] data, response, error in
 			// 4. If an HTTP response other than 200 is returned, log it as an error.
 			if let httpResponse = response as? HTTPURLResponse, httpResponse.isUnsuccessful {
-				self.logResponseCodeAsError(response: httpResponse) {
+				httpResponse.logAsError {
 					error in
 					completionHandler(nil, error)
 				}
@@ -60,7 +60,7 @@ struct FactGenerator {
 				if let error = error {
 					completionHandler(nil, error)
 				} else if let httpResponse = httpResponse {
-					logResponseCodeAsError(response: httpResponse) {
+					httpResponse.logAsError {
 						error in
 						completionHandler(nil, error)
 					}
@@ -172,23 +172,13 @@ struct FactGenerator {
 	// These methods log any errors not handled by catch blocks or completion handlers.
 
 	func logFactDataError(completionHandler: ((Error) -> Void)) {
-		let dataError = NSError(domain: "Failed to get fact data", code: 523)
+		let dataError = NSError(domain: ErrorDomain.failedToGetData.rawValue, code: ErrorCode.failedToGetData.rawValue)
 		completionHandler(dataError)
 	}
 
 	func logNoTextError(completionHandler: ((Error) -> Void)) {
-		let dataError = NSError(domain: "No fact text", code: 423)
+		let dataError = NSError(domain: ErrorDomain.noText.rawValue, code: ErrorCode.noText.rawValue)
 		completionHandler(dataError)
-	}
-
-	// MARK: - Unsuccessful HTTP Response Code As Error
-
-	// This method creates an error from the given HTTP response's code and logs it.
-	func logResponseCodeAsError(response: HTTPURLResponse, completionHandler: ((Error) -> Void)) {
-		let responseMessage = response.errorDomainForResponseCode
-		let responseCode = response.statusCode
-		let error = NSError(domain: "\(responseMessage): HTTP Response Status Code \(responseCode)", code: responseCode + 33000)
-		completionHandler(error)
 	}
 
 }

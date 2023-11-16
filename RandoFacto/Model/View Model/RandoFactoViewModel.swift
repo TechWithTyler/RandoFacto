@@ -252,7 +252,7 @@ extension RandoFactoViewModel {
 							return
 						}
 						// 7. If a change was successfully detected, update the app's favorite facts array.
-						updateFavoriteFactsList(from: snapshot, completionHandler: {
+						updateFavoriteFactsList(from: snapshot, completionHandler: { [self] in
 							// Set isSyncing to false after updating the favorite facts array
 							isSyncing = false
 							completionHandler()
@@ -397,17 +397,27 @@ extension RandoFactoViewModel {
 	// This method sets up the app to listen for changes to registered user references. The email addresses and IDs of registered users get added to a Firestore collection called "users" when they signup, because Firebase doesn't have an ability to immediately notify the app of creations/deletions of accounts.
 	func addRegisteredUsersHandler() {
 		DispatchQueue.main.async { [self] in
+			// 1. Make sure the current user is logged in.
 			guard let currentUser = firebaseAuthentication.currentUser, let email = currentUser.email else {
 				logoutMissingUser()
 				return
 			}
+			// 2. Get all registered users.
 			userListener = firestore.collection(usersCollectionName)
+			// 3. Filter the results to include only the current user.
 				.whereField(emailKeyName, isEqualTo: email)
+			// 4. Listen for any changes made to the users collection.
 				.addSnapshotListener(includeMetadataChanges: true) { [self] documentSnapshot, error in
 					if let error = error {
+						// 5. If that fails, log an error.
 						showError(error)
 					} else {
-						// Logout the user if they're deleted. We need to make sure the snapshot is from the server, not the cache, to prevent the detection of a missing user reference when logging in on a new device for the first time.
+						// 6. Logout the user if they're deleted. We need to make sure the snapshot is from the server, not the cache, to prevent the detection of a missing user reference when logging in on a new device for the first time.
+						/*
+						 A user reference is considered "missing"/the user is considered "deleted" if any of the following are true:
+						 * The snapshot or its documents collection is empty.
+						 * The snapshot is nil.
+						 */
 						if let snapshot = documentSnapshot, !snapshot.metadata.isFromCache, (snapshot.isEmpty || snapshot.documents.isEmpty) {
 							logoutMissingUser()
 						} else if documentSnapshot == nil {
@@ -636,23 +646,25 @@ extension RandoFactoViewModel {
 			// Check the error code to choose which error to show.
 			switch nsError.code {
 					// Network errors
-				case -1009:
+				case URLError.notConnectedToInternet.rawValue:
 					errorToShow = .noInternet
+				case URLError.networkConnectionLost.rawValue:
+					errorToShow = .networkConnectionLost
 					// Fact data errors
 				case 33000...33999 /*HTTP response code + 33000 to add 33 (FD) to the beginning*/:
 					errorToShow = .badHTTPResponse(domain: nsError.domain)
-				case 423:
+				case FactGenerator.ErrorCode.noText.rawValue:
 					errorToShow = .noFactText
-				case 523:
+				case FactGenerator.ErrorCode.failedToGetData.rawValue:
 					errorToShow = .factDataError
-				case 14:
+				case FirestoreErrorCode.unavailable.rawValue:
 					// Database errors
 					errorToShow = .randoFactoDatabaseServerDataRetrievalError
-				case 17014:
+				case AuthErrorCode.requiresRecentLogin.rawValue:
 					logoutCurrentUser()
 					authenticationFormType = .login
 					errorToShow = .tooLongSinceLastLogin
-				case 17052:
+				case AuthErrorCode.quotaExceeded.rawValue:
 					errorToShow = .randoFactoDatabaseQuotaExceeded
 					// Other errors
 				default:

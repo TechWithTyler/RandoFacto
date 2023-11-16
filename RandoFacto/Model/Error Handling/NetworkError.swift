@@ -20,6 +20,9 @@ enum NetworkError: LocalizedError, Equatable {
 	// No internet connection.
 	case noInternet
 
+	// Network connection lost.
+	case networkConnectionLost
+
 	// Bad HTTP response, with the given error domain.
 	case badHTTPResponse(domain: String)
 
@@ -55,12 +58,14 @@ enum NetworkError: LocalizedError, Equatable {
 		switch self {
 			case .noInternet:
 				return "No internet connection. Running in offline mode."
+			case .networkConnectionLost:
+				return "Internet connection lost."
 			case let .badHTTPResponse(domain):
 				return domain
 			case .noFactText:
 				return "Generated fact doesn't appear to contain text."
 			case .factDataError:
-				return "Fact data error"
+				return "Failed to retrieve or decode fact data."
 			case .randoFactoDatabaseQuotaExceeded:
 				return "Too many favorite fact database requests at once. Try again later."
 			case .randoFactoDatabaseServerDataRetrievalError:
