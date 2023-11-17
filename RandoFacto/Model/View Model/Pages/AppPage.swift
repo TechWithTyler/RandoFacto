@@ -1,5 +1,5 @@
 //
-//  Page.swift
+//  AppPage.swift
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 11/7/23.
@@ -10,7 +10,7 @@ import Foundation
 
 // A page in the app.
 // CaseIterable allows you to iterate through an enum's caaes as if it were a collection.
-enum Page : String, CaseIterable {
+enum AppPage : String, CaseIterable {
 	
 	case randomFact
 

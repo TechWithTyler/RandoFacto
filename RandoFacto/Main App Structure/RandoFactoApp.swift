@@ -10,6 +10,7 @@ import SwiftUI
 import Firebase
 
 @main
+// This is the simplest way to create an app in SwiftUI--you get a fully-functional app just with this one struct!
 struct RandoFactoApp: App {
 
 	// MARK: - macOS AppDelegate Adaptor
@@ -31,8 +32,50 @@ struct RandoFactoApp: App {
 				.frame(minWidth: 400, minHeight: 300, alignment: .center)
 				.ignoresSafeArea(edges: .all)
 		}
-		#if os(macOS)
-		// On macOS, Settings are presented as a window instead of as one of the app's pages.
+        .commands {
+            CommandGroup(after: .toolbar) {
+                Section {
+                    Button("Increase Fact Text Size") {
+                        viewModel.factTextSize += 1
+                    }
+                    .disabled(viewModel.factTextSize == 48)
+                    .keyboardShortcut(KeyEquivalent("+"), modifiers: .command)
+                    Button("Decrease Fact Text Size") {
+                        viewModel.factTextSize -= 1
+                    }
+                    .disabled(viewModel.factTextSize == 12)
+                    .keyboardShortcut(KeyEquivalent("-"), modifiers: .command)
+                }
+            }
+            CommandMenu("Fact") {
+                Section {
+                    Button(generateRandomFactButtonTitle) {
+                        viewModel.generateRandomFact()
+                    }
+                    .disabled(!viewModel.online || viewModel.notDisplayingFact)
+                    .keyboardShortcut(KeyboardShortcut(KeyEquivalent("r"), modifiers: .command))
+                    Button(getRandomFavoriteFactButtonTitle) {
+                        viewModel.factText = viewModel.getRandomFavoriteFact()
+                    }
+                    .keyboardShortcut(KeyboardShortcut(KeyEquivalent("r"), modifiers: [.command, .option]))
+                    .disabled(!viewModel.favoriteFactsAvailable || viewModel.notDisplayingFact)
+                }
+                if !viewModel.notDisplayingFact && viewModel.userLoggedIn && viewModel.displayedFactIsSaved {
+                    Button("Delete Current Fact From Favorites") {
+                        viewModel.deleteFromFavorites(factText: viewModel.factText)
+                    }
+                    .keyboardShortcut(KeyboardShortcut(KeyEquivalent("f"), modifiers: .command))
+                } else {
+                    Button("Save Current Fact to Favorites") {
+                        viewModel.saveToFavorites(factText: viewModel.factText)
+                    }
+                    .keyboardShortcut(KeyboardShortcut(KeyEquivalent("f"), modifiers: .command))
+                    .disabled(viewModel.notDisplayingFact || !viewModel.userLoggedIn)
+                }
+            }
+        }
+        #if os(macOS)
+        // On macOS, Settings are presented as a window instead of as one of the app's pages.
 		Settings {
 			SettingsView(viewModel: viewModel)
 				.frame(width: 400, height: 400)

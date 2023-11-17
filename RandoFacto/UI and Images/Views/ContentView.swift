@@ -22,17 +22,17 @@ struct ContentView: View {
 	var body: some View {
 		NavigationSplitView {
 			List(selection: $viewModel.selectedPage) {
-				NavigationLink(value: Page.randomFact) {
+				NavigationLink(value: AppPage.randomFact) {
 					label(for: .randomFact)
 				}
 				if viewModel.userLoggedIn && viewModel.userDeletionStage == nil {
-					NavigationLink(value: Page.favoriteFacts) {
+					NavigationLink(value: AppPage.favoriteFacts) {
 						label(for: .favoriteFacts)
 							.badge(viewModel.isSyncing ? 0 : viewModel.favoriteFacts.count)
 					}
 				}
 				#if !os(macOS)
-				NavigationLink(value: Page.settings) {
+				NavigationLink(value: AppPage.settings) {
 					label(for: .settings)
 				}
 				#endif
@@ -90,7 +90,7 @@ struct ContentView: View {
 		}
 	}
 
-	func label(for tab: Page) -> some View {
+	func label(for tab: AppPage) -> some View {
 		switch tab {
 			case .randomFact:
 				Label("Random Fact", systemImage: "questionmark")

@@ -62,9 +62,11 @@ struct FavoritesList: View {
 							} label: {
 								Text(favorite)
 									.lineLimit(nil)
+                                    .font(.system(size: CGFloat(viewModel.factTextSize)))
 									.multilineTextAlignment(.leading)
 									.foregroundColor(.primary)
 									.frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding(.vertical)
 							}
 							.buttonStyle(.borderless)
 							.contextMenu {

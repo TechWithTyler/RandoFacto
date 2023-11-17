@@ -25,15 +25,21 @@ class RandoFactoViewModel: ObservableObject {
 	// The text to display in the authentication error label in the authentication (login/signup/password change) dialogs.
 	@Published var authenticationErrorText: String? = nil
 
-	// MARK: - Properties - Integers
+    // MARK: - Properties - Integers
+    
+    var fontSizeValue: Int {
+        return Int(factTextSize)
+    }
 
 	// Whether to display one of the user's favorite facts or generate a random fact when the app launches. This setting resets to 0 (Random Fact), and is hidden, when the user logs out or deletes their account.
 	@AppStorage("initialFact") var initialFact: Int = 0
+    
+    @AppStorage("factTextSize") var factTextSize: Double = 12
 
 	// MARK: - Properties - Pages
 
 	// The page currently selected in the sidebar/top-level view. On macOS, the settings view is accessed by the Settings option in the app menu instead of as a page.
-	@Published var selectedPage: Page? = .randomFact
+	@Published var selectedPage: AppPage? = .randomFact
 
 	// MARK: - Properties - Authentication Form Type
 
@@ -72,6 +78,11 @@ class RandoFactoViewModel: ObservableObject {
 
 	// Whether an authentication request is in progress.
 	@Published var isAuthenticating: Bool = false
+    
+    // Whether favorite facts are available to be displayed.
+    var favoriteFactsAvailable: Bool {
+        return userLoggedIn && !favoriteFacts.isEmpty
+    }
 
 	// Whether the fact text view is displaying something other than a fact (i.e., a loading or error message).
 	var notDisplayingFact: Bool {
@@ -90,7 +101,7 @@ class RandoFactoViewModel: ObservableObject {
 
 	// MARK: - Properties - Favorite Facts Array
 
-	// The favorite facts loaded from the current user's Firestore database. Storing the data in this array makes getting favorite facts easier than getting the corresponding Firestore data each time, which could cause errors.
+	// The favorite facts loaded from the Firestore database. Storing the data in this array makes getting favorite facts easier than getting the corresponding Firestore data each time, which could cause errors.
 	@Published var favoriteFacts: [FavoriteFact] = []
 
 	// MARK: - Properties - Network Monitor
@@ -418,7 +429,9 @@ extension RandoFactoViewModel {
 						 * The snapshot or its documents collection is empty.
 						 * The snapshot is nil.
 						 */
-						if let snapshot = documentSnapshot, !snapshot.metadata.isFromCache, (snapshot.isEmpty || snapshot.documents.isEmpty) {
+						if let snapshot = documentSnapshot, !snapshot.metadata.isFromCache, (snapshot.isEmpty || snapshot.documents.isEmpty), !snapshot.documents.contains(where: { document in
+							return document.documentID == currentUser.uid
+						}) {
 							logoutMissingUser()
 						} else if documentSnapshot == nil {
 							logoutMissingUser()

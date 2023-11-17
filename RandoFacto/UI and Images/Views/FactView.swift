@@ -38,10 +38,10 @@ struct FactView: View {
 	var factView: some View {
 		ScrollView {
 			Text(viewModel.factText)
-				.font(.largeTitle)
+                .font(.system(size: CGFloat(viewModel.factTextSize)))
 				.isTextSelectable(!(viewModel.notDisplayingFact || viewModel.factText == factUnavailableString))
 				.multilineTextAlignment(.center)
-				.padding(.horizontal)
+				.padding()
 		}
 	}
 
@@ -59,27 +59,25 @@ struct FactView: View {
 
 	var buttons: some View {
 		ConditionalHVStack {
-			if viewModel.userLoggedIn {
-				if !(viewModel.favoriteFacts.isEmpty) {
+            if viewModel.favoriteFactsAvailable {
 					Button {
 						DispatchQueue.main.async {
 							// Sets factText to a random fact from the favorite facts list.
 							viewModel.factText = viewModel.getRandomFavoriteFact()
 						}
 					} label: {
-						Text("Get Random Favorite Fact")
+						Text(getRandomFavoriteFactButtonTitle)
 					}
 					.disabled(viewModel.userDeletionStage != nil)
 #if os(iOS)
 					.padding()
 #endif
 				}
-			}
 			if viewModel.online {
 				Button {
 					viewModel.generateRandomFact()
 				} label: {
-					Text("Generate Random Fact")
+					Text(generateRandomFactButtonTitle)
 				}
 #if os(iOS)
 				.padding()

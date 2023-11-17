@@ -13,19 +13,25 @@ struct SettingsView: View {
 	@ObservedObject var viewModel: RandoFactoViewModel
 
     var body: some View {
-#if os(iOS)
-					accountSection
-			.formStyle(.grouped)
-			.navigationTitle("Settings")
-			.navigationBarTitleDisplayMode(.automatic)
+#if os(macOS)
+        TabView {
+            accountSection
+                .tabItem {
+                    Label("Account", systemImage: "person.circle")
+                }
+                .tag(SettingsPage.account)
+            displaySection
+                .tabItem {
+                    Label("Display", systemImage: "textformat.size")
+                }
+                .tag(SettingsPage.display)
+        }
 #else
-			TabView {
-				accountSection
-					.tabItem {
-						Label("Account", systemImage: "person.circle")
-					}
-					.tag(Page.settings)
-			}
+        accountSection
+        displaySection
+            .formStyle(.grouped)
+            .navigationTitle("Settings")
+            .navigationBarTitleDisplayMode(.automatic)
 #endif
     }
 
@@ -91,6 +97,21 @@ struct SettingsView: View {
 			AuthenticationFormView(viewModel: viewModel)
 		}
 	}
+    
+    var displaySection: some View {
+        Form {
+            Slider(value: $viewModel.factTextSize, in: 12...48, step: 1) {
+                Text("Fact Text Size: \(viewModel.fontSizeValue)")
+            } minimumValueLabel: {
+                Text("12")
+            } maximumValueLabel: {
+                Text("48")
+            }
+            .accessibilityValue("\(viewModel.fontSizeValue)")
+        }
+        .formStyle(.grouped)
+    }
+    
 }
 
 #Preview {

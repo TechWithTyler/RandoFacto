@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SheftAppsStylishUI
 
 struct ViewablePasswordField: View {
 
@@ -25,11 +26,11 @@ struct ViewablePasswordField: View {
 
     var body: some View {
 			if showPassword {
-				TextField(label, text: $text)
+				FormTextField(label, text: $text)
 					.textContentType(signup ? nil : .password)
 			} else {
-				SecureField(label, text: $text)
-					.textContentType(signup ? nil : .password)
+                    FormSecureField(label, text: $text)
+                        .textContentType(signup ? nil : .password)
 			}
 			Toggle("Show Password", isOn: $showPassword)
 		#if os(macOS)

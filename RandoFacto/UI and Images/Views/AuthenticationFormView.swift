@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import SheftAppsStylishUI
 
 struct AuthenticationFormView: View {
 
@@ -149,7 +150,7 @@ struct AuthenticationFormView: View {
 	var credentialFields: some View {
 		Section {
 			if viewModel.authenticationFormType != .passwordChange {
-				TextField("Email", text: $email)
+				FormTextField("Email", text: $email)
 					.textContentType(.username)
 #if os(iOS)
 					.keyboardType(.emailAddress)

@@ -17,6 +17,10 @@ let generatingString = "Generating random fact…"
 // Displayed when a FactGenerator error occurs.
 let factUnavailableString = "Fact unavailable"
 
+let generateRandomFactButtonTitle = "Generate Random Fact"
+
+let getRandomFavoriteFactButtonTitle = "Get Random Favorite Fact"
+
 // The title of the button used to send a password reset email.
 let forgotPasswordButtonTitle = "Forgot Password"
 

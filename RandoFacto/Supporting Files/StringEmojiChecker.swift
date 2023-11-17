@@ -8,12 +8,15 @@
 import Foundation
 
 extension String {
+
 	var containsEmoji: Bool {
 		for scalar in unicodeScalars {
-			if scalar.properties.isEmoji {
+			// Check if the scalar is an emoji and not a numeric character
+			if scalar.properties.isEmoji && scalar.properties.isEmojiPresentation {
 				return true
 			}
 		}
 		return false
 	}
+
 }
