@@ -117,7 +117,7 @@ struct SettingsView: View {
             #else
             HStack {
                 Text(sliderText)
-                Spacer()
+                Spacer(minLength: 20)
                 textSizeSlider
             }
             #endif
@@ -126,12 +126,12 @@ struct SettingsView: View {
     }
     
     var textSizeSlider: some View {
-        Slider(value: $viewModel.factTextSize, in: 12...48, step: 1) {
+        Slider(value: $viewModel.factTextSize, in: minFontSize...maxFontSize, step: 1) {
             Text(sliderText)
         } minimumValueLabel: {
-            Text("12")
+            Text("\(Int(minFontSize))")
         } maximumValueLabel: {
-            Text("48")
+            Text("\(Int(maxFontSize))")
         }
         .accessibilityValue("\(viewModel.fontSizeValue)")
     }

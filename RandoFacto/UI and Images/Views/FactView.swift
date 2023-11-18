@@ -92,38 +92,34 @@ struct FactView: View {
 	@ToolbarContentBuilder
 	var toolbarContent: some ToolbarContent {
 		let displayingLoadingMessage = viewModel.factText.last == "…" || viewModel.factText.isEmpty
-		if displayingLoadingMessage || viewModel.isSyncing {
+		if displayingLoadingMessage {
 			ToolbarItem(placement: .automatic) {
 				LoadingIndicator()
 			}
 		} else {
 			if viewModel.factText != factUnavailableString && viewModel.userLoggedIn {
-				ToolbarItem(placement: .automatic) {
-					if viewModel.displayedFactIsSaved {
-						Button {
-							DispatchQueue.main.async {
-								viewModel.deleteFromFavorites(factText: viewModel.factText)
-							}
-						} label: {
-							Image(systemName: "star.fill")
-								.symbolRenderingMode(.multicolor)
-								.accessibilityLabel("Unfavorite")
-						}
-							.help("Unfavorite")
-							.disabled(viewModel.notDisplayingFact || viewModel.factText == factUnavailableString || viewModel.userDeletionStage != nil)
-					} else {
-						Button {
-							DispatchQueue.main.async {
-								viewModel.saveToFavorites(factText: viewModel.factText)
-							}
-						} label: {
-							Image(systemName: "star")
-								.accessibilityLabel("Favorite")
-						}
-							.help("Favorite")
-							.disabled(viewModel.notDisplayingFact || viewModel.factText == factUnavailableString || viewModel.userDeletionStage != nil)
-					}
-				}
+                ToolbarItem(placement: .automatic) {
+                    Button {
+                        DispatchQueue.main.async {
+                            if viewModel.displayedFactIsSaved {
+                                viewModel.deleteFromFavorites(factText: viewModel.factText)
+                            } else {
+                                viewModel.saveToFavorites(factText: viewModel.factText)
+                            }
+                        }
+                    } label: {
+                        if viewModel.displayedFactIsSaved {
+                            Image(systemName: "star.fill")
+                                .symbolRenderingMode(.multicolor)
+                                .accessibilityLabel("Unfavorite")
+                        } else {
+                            Image(systemName: "star")
+                                .accessibilityLabel("Favorite")
+                        }
+                    }
+                    .help(viewModel.displayedFactIsSaved ? "Unfavorite" : "Favorite")
+                    .disabled(viewModel.factText == factUnavailableString || viewModel.userDeletionStage != nil)
+                }
 			}
 		}
 	}

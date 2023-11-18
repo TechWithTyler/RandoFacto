@@ -34,7 +34,7 @@ class RandoFactoViewModel: ObservableObject {
 	// Whether to display one of the user's favorite facts or generate a random fact when the app launches. This setting resets to 0 (Random Fact), and is hidden, when the user logs out or deletes their account.
 	@AppStorage("initialFact") var initialFact: Int = 0
     
-    @AppStorage("factTextSize") var factTextSize: Double = 12
+    @AppStorage("factTextSize") var factTextSize: Double = 13
 
 	// MARK: - Properties - Pages
 
@@ -72,9 +72,6 @@ class RandoFactoViewModel: ObservableObject {
 
 	// Whether the device is online.
 	@Published var online: Bool = false
-
-	// Whether the favorite facts database syncing is in progress.
-	@Published var isSyncing: Bool = false
 
 	// Whether an authentication request is in progress.
 	@Published var isAuthenticating: Bool = false
@@ -246,28 +243,18 @@ extension RandoFactoViewModel {
 				.whereField(userKeyName, isEqualTo: userEmail)
 			// 4. Listen for any changes made to the favorite facts list on the Firebase end, such as by RandoFacto on another device.
 				.addSnapshotListener(includeMetadataChanges: true) { [self] snapshot, error in
-					// Set isSyncing to true at the start of the data sync
-					isSyncing = true
 					// 5. Log any errors.
 					if let error = error {
 						showError(error)
-						// Set isSyncing to false if there's an error
-						isSyncing = false
 						completionHandler()
 					} else {
 						// 6. If no data can be found, return.
 						guard let snapshot = snapshot else {
-							// Set isSyncing to false if no data is found
-							isSyncing = false
 							completionHandler()
 							return
 						}
 						// 7. If a change was successfully detected, update the app's favorite facts array.
-						updateFavoriteFactsList(from: snapshot, completionHandler: { [self] in
-							// Set isSyncing to false after updating the favorite facts array
-							isSyncing = false
-							completionHandler()
-						})
+						updateFavoriteFactsList(from: snapshot, completionHandler: completionHandler)
 					}
 				}
 		}

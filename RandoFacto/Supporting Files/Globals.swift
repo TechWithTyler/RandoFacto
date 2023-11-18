@@ -9,7 +9,11 @@
 import Foundation
 import Firebase
 
+// MARK: - Typealiases
+
 typealias Authentication = Auth
+
+// MARK: - Properties - Strings
 
 // Displayed while the app is loading.
 let loadingString = "Loading…"
@@ -47,3 +51,9 @@ let userKeyName = "user"
 
 // The key name of a registered user's email.
 let emailKeyName = "email"
+
+// MARK: - Properties - Doubles
+
+var minFontSize: Double = 13
+
+var maxFontSize: Double = 48

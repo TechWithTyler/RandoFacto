@@ -27,13 +27,7 @@ struct FavoritesList: View {
 
 	var body: some View {
 		VStack {
-			if viewModel.isSyncing {
-				VStack {
-					Text("Syncing favorite facts…")
-						.font(.largeTitle)
-				}
-				.padding()
-			} else if searchResults.isEmpty {
+			if searchResults.isEmpty {
 				VStack {
 					Text("No Favorites")
 						.font(.largeTitle)
@@ -70,18 +64,10 @@ struct FavoritesList: View {
 							}
 							.buttonStyle(.borderless)
 							.contextMenu {
-								Button {
-									viewModel.deleteFromFavorites(factText: favorite)
-								} label: {
-									Text("Unfavorite")
-								}
+                                unfavoriteAction(for: favorite)
 							}
 							.swipeActions {
-								Button(role: .destructive) {
-									viewModel.deleteFromFavorites(factText: favorite)
-								} label: {
-									Text("Unfavorite")
-								}
+                                unfavoriteAction(for: favorite)
 							}
 						}
 					}
@@ -90,37 +76,21 @@ struct FavoritesList: View {
 		.searchable(text: $searchText, placement: .toolbar, prompt: "Search Favorite Facts")
 		// Toolbar
 		.toolbar {
-			if viewModel.isSyncing {
 				ToolbarItem(placement: .automatic) {
-						LoadingIndicator()
-				}
-			} else {
-				ToolbarItem(placement: .automatic) {
-					Button {
-						viewModel.showingDeleteAllFavoriteFacts = true
-					} label: {
-						Label("Delete All…", systemImage: "trash")
-					}
-				}
+                    UnfavoriteAllButton(viewModel: viewModel)
 				}
 		}
-		// Unfavorite all facts alert
-		.alert("Unfavorite all facts?", isPresented: $viewModel.showingDeleteAllFavoriteFacts, actions: {
-			Button("Unfavorite", role: .destructive) {
-				viewModel.deleteAllFavoriteFactsForCurrentUser { error in
-					if let error = error {
-						viewModel.showError(error)
-					}
-					viewModel.showingDeleteAllFavoriteFacts = false
-				}
-			}
-			Button("Cancel", role: .cancel) {
-				viewModel.showingDeleteAllFavoriteFacts = false
-			}
-		})
 		.navigationTitle("Favorite Facts List")
 		.frame(minWidth: 400, minHeight: 300)
 	}
+    
+    func unfavoriteAction(for favorite: String) -> some View {
+        Button(role: .destructive) {
+            viewModel.deleteFromFavorites(factText: favorite)
+        } label: {
+            Label("Unfavorite", image: "star.slash")
+        }
+    }
 
 }
 

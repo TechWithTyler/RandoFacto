@@ -23,12 +23,12 @@ struct RandoFactoCommands: Commands {
                 Button("Increase Fact Text Size") {
                     viewModel.factTextSize += 1
                 }
-                .disabled(viewModel.factTextSize == 48)
+                .disabled(viewModel.factTextSize == maxFontSize)
                 .keyboardShortcut(KeyEquivalent("+"), modifiers: .command)
                 Button("Decrease Fact Text Size") {
                     viewModel.factTextSize -= 1
                 }
-                .disabled(viewModel.factTextSize == 12)
+                .disabled(viewModel.factTextSize == minFontSize)
                 .keyboardShortcut(KeyEquivalent("-"), modifiers: .command)
             }
         }
@@ -45,18 +45,24 @@ struct RandoFactoCommands: Commands {
                 .keyboardShortcut(KeyboardShortcut(KeyEquivalent("g"), modifiers: [.command, .control, .shift]))
                 .disabled(!viewModel.favoriteFactsAvailable || viewModel.notDisplayingFact)
             }
-            if !viewModel.notDisplayingFact && viewModel.userLoggedIn && viewModel.displayedFactIsSaved {
-                Button("Delete Current Fact From Favorites") {
-                    viewModel.deleteFromFavorites(factText: viewModel.factText)
+            Section {
+                if !viewModel.notDisplayingFact && viewModel.userLoggedIn && viewModel.displayedFactIsSaved {
+                    Button("Delete Current Fact From Favorites") {
+                        viewModel.deleteFromFavorites(factText: viewModel.factText)
+                    }
+                    .keyboardShortcut(KeyboardShortcut(KeyEquivalent("f"), modifiers: [.command, .shift]))
+                } else {
+                    Button("Save Current Fact to Favorites") {
+                        viewModel.saveToFavorites(factText: viewModel.factText)
+                    }
+                    .keyboardShortcut(KeyboardShortcut(KeyEquivalent("f"), modifiers: [.command, .shift]))
+                    .disabled(viewModel.notDisplayingFact || viewModel.factText == factUnavailableString || !viewModel.userLoggedIn)
                 }
-                .keyboardShortcut(KeyboardShortcut(KeyEquivalent("f"), modifiers: [.command, .shift]))
-                .disabled(viewModel.isSyncing)
-            } else {
-                Button("Save Current Fact to Favorites") {
-                    viewModel.saveToFavorites(factText: viewModel.factText)
+            }
+            if viewModel.userLoggedIn {
+                Section {
+                    UnfavoriteAllButton(viewModel: viewModel)
                 }
-                .keyboardShortcut(KeyboardShortcut(KeyEquivalent("f"), modifiers: [.command, .shift]))
-                .disabled(viewModel.notDisplayingFact || !viewModel.userLoggedIn || viewModel.isSyncing)
             }
         }
     }

@@ -28,8 +28,11 @@ struct ContentView: View {
 				if viewModel.userLoggedIn && viewModel.userDeletionStage == nil {
 					NavigationLink(value: AppPage.favoriteFacts) {
 						label(for: .favoriteFacts)
-							.badge(viewModel.isSyncing ? 0 : viewModel.favoriteFacts.count)
+							.badge(viewModel.favoriteFacts.count)
 					}
+                    .contextMenu {
+                        UnfavoriteAllButton(viewModel: viewModel)
+                    }
 				}
 				#if !os(macOS)
 				NavigationLink(value: AppPage.settings) {
@@ -65,6 +68,20 @@ struct ContentView: View {
 		#if os(macOS)
 		.dialogSeverity(.critical)
 		#endif
+        // Unfavorite all facts alert
+        .alert("Unfavorite all facts?", isPresented: $viewModel.showingDeleteAllFavoriteFacts, actions: {
+            Button("Unfavorite", role: .destructive) {
+                viewModel.deleteAllFavoriteFactsForCurrentUser { error in
+                    if let error = error {
+                        viewModel.showError(error)
+                    }
+                    viewModel.showingDeleteAllFavoriteFacts = false
+                }
+            }
+            Button("Cancel", role: .cancel) {
+                viewModel.showingDeleteAllFavoriteFacts = false
+            }
+        })
 		// Nil selection catcher
 		.onChange(of: viewModel.selectedPage) { value in
 			if value == nil && horizontalSizeClass == .regular {
