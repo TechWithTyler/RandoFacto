@@ -11,6 +11,9 @@ import Firebase
 
 typealias Authentication = Auth
 
+// Displayed while the app is loading.
+let loadingString = "Loading…"
+
 // Displayed when generating a random fact.
 let generatingString = "Generating random fact…"
 

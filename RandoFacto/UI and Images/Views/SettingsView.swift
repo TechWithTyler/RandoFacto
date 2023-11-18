@@ -11,32 +11,44 @@ import SwiftUI
 struct SettingsView: View {
 
 	@ObservedObject var viewModel: RandoFactoViewModel
+    
+    var sliderText: String {
+        return "Fact Text Size: \(viewModel.fontSizeValue)"
+    }
 
     var body: some View {
 #if os(macOS)
         TabView {
-            accountSection
-                .tabItem {
-                    Label("Account", systemImage: "person.circle")
-                }
-                .tag(SettingsPage.account)
-            displaySection
-                .tabItem {
-                    Label("Display", systemImage: "textformat.size")
-                }
-                .tag(SettingsPage.display)
+            Form {
+                accountSection
+            }
+            .formStyle(.grouped)
+            .tabItem {
+                Label("Account", systemImage: "person.circle")
+            }
+            .tag(SettingsPage.account)
+            Form {
+                displaySection
+            }
+            .formStyle(.grouped)
+            .tabItem {
+                Label("Display", systemImage: "textformat.size")
+            }
+            .tag(SettingsPage.display)
         }
 #else
-        accountSection
-        displaySection
-            .formStyle(.grouped)
+        Form {
+                accountSection
+                displaySection
+        }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.automatic)
+            .formStyle(.grouped)
 #endif
     }
 
 	var accountSection: some View {
-		Form {
+		Group {
 			Text((viewModel.firebaseAuthentication.currentUser?.email) ?? "Login to your RandoFacto account to save favorite facts to view on all your devices, even while offline.")
 				.font(.system(size: 24))
 				.fontWeight(.bold)
@@ -99,17 +111,29 @@ struct SettingsView: View {
 	}
     
     var displaySection: some View {
-        Form {
-            Slider(value: $viewModel.factTextSize, in: 12...48, step: 1) {
-                Text("Fact Text Size: \(viewModel.fontSizeValue)")
-            } minimumValueLabel: {
-                Text("12")
-            } maximumValueLabel: {
-                Text("48")
+        Section {
+            #if os(macOS)
+            textSizeSlider
+            #else
+            HStack {
+                Text(sliderText)
+                Spacer()
+                textSizeSlider
             }
-            .accessibilityValue("\(viewModel.fontSizeValue)")
+            #endif
         }
         .formStyle(.grouped)
+    }
+    
+    var textSizeSlider: some View {
+        Slider(value: $viewModel.factTextSize, in: 12...48, step: 1) {
+            Text(sliderText)
+        } minimumValueLabel: {
+            Text("12")
+        } maximumValueLabel: {
+            Text("48")
+        }
+        .accessibilityValue("\(viewModel.fontSizeValue)")
     }
     
 }

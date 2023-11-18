@@ -38,6 +38,7 @@
 		8DA2C41A292C1E1200705A2F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8DA2C419292C1E1200705A2F /* Preview Assets.xcassets */; };
 		8DA2C421292C1E6000705A2F /* FactGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA2C420292C1E6000705A2F /* FactGenerator.swift */; };
 		8DCE5DE52B080AA200DD3CE7 /* SettingsPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCE5DE42B080AA200DD3CE7 /* SettingsPage.swift */; };
+		8DCE5DE72B08272B00DD3CE7 /* RandoFactoCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCE5DE62B08272B00DD3CE7 /* RandoFactoCommands.swift */; };
 		8DCF671F297F58B7006DE41E /* FavoritesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCF671E297F58B7006DE41E /* FavoritesList.swift */; };
 		8DD7920F2A2E78F800C1B61C /* APIKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DD7920E2A2E78F800C1B61C /* APIKeys.swift */; };
 		8DF48E312936A80700152681 /* RandoFactoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF48E302936A80700152681 /* RandoFactoViewModel.swift */; };
@@ -90,6 +91,7 @@
 		8DA2C419292C1E1200705A2F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		8DA2C420292C1E6000705A2F /* FactGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactGenerator.swift; sourceTree = "<group>"; };
 		8DCE5DE42B080AA200DD3CE7 /* SettingsPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPage.swift; sourceTree = "<group>"; };
+		8DCE5DE62B08272B00DD3CE7 /* RandoFactoCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandoFactoCommands.swift; sourceTree = "<group>"; };
 		8DCF671E297F58B7006DE41E /* FavoritesList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesList.swift; sourceTree = "<group>"; };
 		8DD7920E2A2E78F800C1B61C /* APIKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKeys.swift; sourceTree = "<group>"; };
 		8DF48E2E2936A62900152681 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -194,6 +196,7 @@
 			children = (
 				8DA2C411292C1E1100705A2F /* RandoFactoApp.swift */,
 				8D87C7CB2B02D97F009BBE56 /* AppDelegate.swift */,
+				8DCE5DE62B08272B00DD3CE7 /* RandoFactoCommands.swift */,
 			);
 			path = "Main App Structure";
 			sourceTree = "<group>";
@@ -390,6 +393,7 @@
 				8D8899E02AFDF3D100BDDDFD /* AuthenticationMessageType.swift in Sources */,
 				8DA2C412292C1E1100705A2F /* RandoFactoApp.swift in Sources */,
 				8DCF671F297F58B7006DE41E /* FavoritesList.swift in Sources */,
+				8DCE5DE72B08272B00DD3CE7 /* RandoFactoCommands.swift in Sources */,
 				8D87C7CC2B02D97F009BBE56 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

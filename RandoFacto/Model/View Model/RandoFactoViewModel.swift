@@ -20,7 +20,7 @@ class RandoFactoViewModel: ObservableObject {
 	// MARK: - Properties - Strings
 
 	// The text to display in the fact text view.
-	@Published var factText: String = String()
+	@Published var factText: String = loadingString
 
 	// The text to display in the authentication error label in the authentication (login/signup/password change) dialogs.
 	@Published var authenticationErrorText: String? = nil
@@ -86,7 +86,7 @@ class RandoFactoViewModel: ObservableObject {
 
 	// Whether the fact text view is displaying something other than a fact (i.e., a loading or error message).
 	var notDisplayingFact: Bool {
-		return factText.isEmpty || factText == generatingString
+		return factText == loadingString || factText == generatingString
 	}
 
 	// Whether the displayed fact is saved as a favorite.
