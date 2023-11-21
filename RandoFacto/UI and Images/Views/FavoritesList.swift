@@ -81,6 +81,7 @@ struct FavoritesList: View {
                 }
             }
         }
+        .animation(.default, value: searchResults)
         .searchable(text: $searchText, placement: .toolbar, prompt: "Search Favorite Facts")
         // Toolbar
         .toolbar {
