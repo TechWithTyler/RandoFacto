@@ -37,39 +37,47 @@ struct FavoritesList: View {
 				.foregroundColor(.secondary)
 				.padding()
 				} else {
-					Text("Favorite facts: \(searchResults.count)")
-						.multilineTextAlignment(.center)
-						.padding(10)
-						.font(.title)
-					Text("Select a favorite fact to display it.")
-						.multilineTextAlignment(.center)
-						.padding(10)
-						.font(.callout)
 					List {
-						ForEach(searchResults.sorted(by: >), id: \.self) {
-							favorite in
-							Button {
-								DispatchQueue.main.async { [self] in
-									viewModel.factText = favorite
-									viewModel.selectedPage = .randomFact
-								}
-							} label: {
-								Text(favorite)
-									.lineLimit(nil)
-                                    .font(.system(size: CGFloat(viewModel.factTextSize)))
-									.multilineTextAlignment(.leading)
-									.foregroundColor(.primary)
-									.frame(maxWidth: .infinity, alignment: .leading)
-                                    .padding(.vertical)
-							}
-							.buttonStyle(.borderless)
-							.contextMenu {
-                                unfavoriteAction(for: favorite)
-							}
-							.swipeActions {
-                                unfavoriteAction(for: favorite)
-							}
-						}
+                        Section(header:
+                                    HStack {
+                            Spacer()
+                            VStack(alignment: .center) {
+                                Text("Favorite facts: \(searchResults.count)")
+                                    .multilineTextAlignment(.center)
+                                    .padding(10)
+                                    .font(.title)
+                                Text("Select a favorite fact to display it.")
+                                    .multilineTextAlignment(.center)
+                                    .padding(10)
+                                    .font(.callout)
+                            }
+                            Spacer()
+                        }) {
+                            ForEach(searchResults.sorted(by: >), id: \.self) {
+                                favorite in
+                                Button {
+                                    DispatchQueue.main.async { [self] in
+                                        viewModel.factText = favorite
+                                        viewModel.selectedPage = .randomFact
+                                    }
+                                } label: {
+                                    Text(favorite)
+                                        .lineLimit(nil)
+                                        .font(.system(size: CGFloat(viewModel.factTextSize)))
+                                        .multilineTextAlignment(.leading)
+                                        .foregroundColor(.primary)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .padding(.vertical)
+                                }
+                                .buttonStyle(.borderless)
+                                .contextMenu {
+                                    unfavoriteAction(for: favorite)
+                                }
+                                .swipeActions {
+                                    unfavoriteAction(for: favorite)
+                                }
+                            }
+                        }
 					}
 				}
 		}
