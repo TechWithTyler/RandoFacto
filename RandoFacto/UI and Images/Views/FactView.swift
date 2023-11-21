@@ -15,77 +15,81 @@ struct FactView: View {
 
 	@ObservedObject var viewModel: RandoFactoViewModel
 
-	// MARK: - View
+    // MARK: - View
 
-	var body: some View {
-		VStack {
-			factView
-			Spacer()
-			buttons
-			Divider()
-			footer
-		}
-		.navigationTitle("Random Fact")
-		#if os(iOS)
-		.navigationBarTitleDisplayMode(.inline)
-		#endif
-		// Toolbar
-		.toolbar {
-			toolbarContent
-		}
-	}
+    var body: some View {
+        TranslucentFooterVStack {
+            factView
+        } translucentFooterContent: {
+            buttons
+            Divider()
+            footer
+        }
+        .navigationTitle("Random Fact")
+        #if os(iOS)
+        .navigationBarTitleDisplayMode(.inline)
+        #endif
+        // Toolbar
+        .toolbar {
+            toolbarContent
+        }
+    }
 
-	var factView: some View {
-		ScrollView {
-			Text(viewModel.factText)
-                .font(.system(size: CGFloat(viewModel.factTextSize)))
-				.isTextSelectable(!(viewModel.notDisplayingFact || viewModel.factText == factUnavailableString))
-				.multilineTextAlignment(.center)
-				.padding()
-		}
-	}
+    var factView: some View {
+        ScrollView {
+            VStack {
+                Text(viewModel.factText)
+                    .font(.system(size: CGFloat(viewModel.factTextSize)))
+                    .isTextSelectable(!(viewModel.notDisplayingFact || viewModel.factText == factUnavailableString))
+                    .multilineTextAlignment(.center)
+                    .padding()
+                Spacer(minLength: 200)
+            }
+        }
+    }
 
-	var footer: some View {
-		VStack {
-			Text("Facts provided by [uselessfacts.jsph.pl](https://uselessfacts.jsph.pl).")
-			Text("Favorite facts database powered by Google Firebase.")
-		}
-		.font(.footnote)
-		.foregroundColor(.secondary)
-		.padding(.horizontal)
-	}
+    var footer: some View {
+        VStack {
+            Text("Facts provided by uselessfacts.jsph.pl.")
+            Text("Favorite facts database powered by Google Firebase.")
+        }
+        .font(.footnote)
+        .foregroundColor(.secondary)
+        .padding(.horizontal)
+    }
 
-	// MARK: - Buttons
+    // MARK: - Buttons
 
-	var buttons: some View {
-		ConditionalHVStack {
+    var buttons: some View {
+        ConditionalHVStack {
             if viewModel.favoriteFactsAvailable {
-					Button {
-						DispatchQueue.main.async {
-							// Sets factText to a random fact from the favorite facts list.
-							viewModel.factText = viewModel.getRandomFavoriteFact()
-						}
-					} label: {
-						Text(getRandomFavoriteFactButtonTitle)
-					}
-					.disabled(viewModel.userDeletionStage != nil)
-#if os(iOS)
-					.padding()
-#endif
-				}
-			if viewModel.online {
-				Button {
-					viewModel.generateRandomFact()
-				} label: {
-					Text(generateRandomFactButtonTitle)
-				}
-#if os(iOS)
-				.padding()
-#endif
-			}
-		}
-		.disabled(viewModel.notDisplayingFact)
-	}
+                Button {
+                    DispatchQueue.main.async {
+                        // Sets factText to a random fact from the favorite facts list.
+                        viewModel.factText = viewModel.getRandomFavoriteFact()
+                    }
+                } label: {
+                    Text(getRandomFavoriteFactButtonTitle)
+                }
+                .disabled(viewModel.userDeletionStage != nil)
+                #if os(iOS)
+                .padding()
+                #endif
+            }
+            if viewModel.online {
+                Button {
+                    viewModel.generateRandomFact()
+                } label: {
+                    Text(generateRandomFactButtonTitle)
+                }
+                #if os(iOS)
+                .padding()
+                #endif
+            }
+        }
+        .disabled(viewModel.notDisplayingFact)
+    }
+
 
 	// MARK: - Toolbar
 
