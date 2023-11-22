@@ -87,6 +87,7 @@ struct FavoritesList: View {
         .toolbar {
             ToolbarItem(placement: .automatic) {
                 UnfavoriteAllButton(viewModel: viewModel)
+                    .help("Unfavorite All")
             }
         }
         .navigationTitle("Favorite Facts List")
