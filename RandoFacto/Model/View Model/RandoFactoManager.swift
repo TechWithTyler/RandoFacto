@@ -412,7 +412,7 @@ extension RandoFactoManager {
                          * The snapshot or its documents collection is empty.
                          * The snapshot is nil.
                          */
-                        guard userDeletionStage == nil else { return }
+                        guard userDeletionStage == nil && !isAuthenticating else { return }
                         if let snapshot = documentSnapshot, !snapshot.metadata.isFromCache, (snapshot.isEmpty || snapshot.documents.isEmpty), !snapshot.documents.contains(where: { document in
                             return document.documentID == currentUser.uid
                         }) {
