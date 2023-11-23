@@ -41,7 +41,7 @@ let signupText = "Signup"
 let usersCollectionName = "users"
 
 // The name of the collection containing favorite facts in the Firestore database.
-let favoritesCollectionName = "favoriteFacts"
+let favoriteFactsCollectionName = "favoriteFacts"
 
 // The key name of a fact's text in the Firestore database.
 let factTextKeyName = "text"

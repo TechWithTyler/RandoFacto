@@ -11,7 +11,7 @@ import SheftAppsStylishUI
 
 struct FavoritesList: View {
     
-    @ObservedObject var viewModel: RandoFactoViewModel
+    @ObservedObject var viewModel: RandoFactoManager
     
     @State private var searchText = String()
     
@@ -105,5 +105,5 @@ struct FavoritesList: View {
 }
 
 #Preview {
-    FavoritesList(viewModel: RandoFactoViewModel())
+    FavoritesList(viewModel: RandoFactoManager())
 }

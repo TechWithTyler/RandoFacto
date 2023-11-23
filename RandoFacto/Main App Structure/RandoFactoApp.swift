@@ -21,7 +21,7 @@ struct RandoFactoApp: App {
 	#endif
 
 	// The main model object for the app, which supplies data for its views.
-	@ObservedObject var viewModel: RandoFactoViewModel
+	@ObservedObject var viewModel: RandoFactoManager
 
 	// MARK: - Windows and Views
 
@@ -70,7 +70,7 @@ struct RandoFactoApp: App {
 		settings.dispatchQueue = .main
 		firestore.settings = settings
 		// 5. Configure the RandoFacto view model.
-		viewModel = RandoFactoViewModel()
+		viewModel = RandoFactoManager()
 	}
 
 }

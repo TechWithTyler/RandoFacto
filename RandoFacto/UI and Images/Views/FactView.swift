@@ -13,7 +13,7 @@ struct FactView: View {
     
     // MARK: - Properties - Objects
     
-    @ObservedObject var viewModel: RandoFactoViewModel
+    @ObservedObject var viewModel: RandoFactoManager
     
     // MARK: - View
     
@@ -125,5 +125,5 @@ struct FactView: View {
 }
 
 #Preview {
-    ContentView(viewModel: RandoFactoViewModel())
+    ContentView(viewModel: RandoFactoManager())
 }

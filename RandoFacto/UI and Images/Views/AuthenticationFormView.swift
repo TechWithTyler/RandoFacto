@@ -13,7 +13,7 @@ struct AuthenticationFormView: View {
 
 	// MARK: - Properties - View Model
 
-	@ObservedObject var viewModel: RandoFactoViewModel
+	@ObservedObject var viewModel: RandoFactoManager
 
 	// MARK: - Properties - Strings
 
@@ -163,5 +163,5 @@ struct AuthenticationFormView: View {
 }
 
 #Preview {
-	AuthenticationFormView(viewModel: RandoFactoViewModel())
+	AuthenticationFormView(viewModel: RandoFactoManager())
 }

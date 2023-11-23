@@ -1,5 +1,5 @@
 //
-//  NetworkError.swift
+//  RandoFactoError.swift
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 11/29/22.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum NetworkError: LocalizedError, Equatable {
+enum RandoFactoError: LocalizedError, Equatable {
 
 	// MARK: - Error Case Definitions - Unknown
 
@@ -79,8 +79,8 @@ enum NetworkError: LocalizedError, Equatable {
 
 	// MARK: - Inequality Check
 
-	// This method compares the UUID of 2 NetworkError objects to see if they're not equal.
-	static func !=(lError: NetworkError, rError: NetworkError) -> Bool {
+	// This method compares the UUID of 2 RandoFactoError objects to see if they're not equal.
+	static func !=(lError: RandoFactoError, rError: RandoFactoError) -> Bool {
 		return lError.id != rError.id
 	}
 

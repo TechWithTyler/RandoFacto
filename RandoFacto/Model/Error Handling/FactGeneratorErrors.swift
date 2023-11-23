@@ -1,5 +1,5 @@
 //
-//  FavtGeneratorErrors.swift
+//  FactGeneratorErrors.swift
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 11/15/23.

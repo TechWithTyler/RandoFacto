@@ -35,7 +35,7 @@ struct FactGenerator {
 		didBeginHandler()
 		// 3. Create the data task with the fact URL.
 		let dataTask = urlSession.dataTask(with: request) { [self] data, response, error in
-			// 4. If an HTTP response other than 200 is returned, log it as an error.
+			// 4. If an HTTP response is returned and its code isn't within the 2xx range, log it as an error.
 			if let httpResponse = response as? HTTPURLResponse, httpResponse.isUnsuccessful {
 				httpResponse.logAsError {
 					error in
@@ -55,15 +55,10 @@ struct FactGenerator {
 				}
 				return
 			}
-			// 7. Screen the fact to make sure it doesn't contain inappropriate words. If we get an error or an HTTP response other than 200, log an error. If we get a fact, we know the fact is safe and we can display it. If we get nothing, keep trying to generate a fact until we get a safe one. Once a safe fact is generated, give it to the view.
-			screenFact(fact: factText) { fact, httpResponse, error in
+			// 7. Screen the fact to make sure it doesn't contain inappropriate words. If we get an error or an HTTP response with a code that's not in the 2xx range, log an error. If we get a fact, we know the fact is safe and we can display it. If we get nothing, keep trying to generate a fact until we get a safe one. Once a safe fact is generated, give it to the view.
+			screenFact(fact: factText) { fact, error in
 				if let error = error {
 					completionHandler(nil, error)
-				} else if let httpResponse = httpResponse {
-					httpResponse.logAsError {
-						error in
-						completionHandler(nil, error)
-					}
 				} else if let fact = fact {
 					if fact.isEmpty {
 						logNoTextError {
@@ -78,6 +73,7 @@ struct FactGenerator {
 				}
 			}
 		}
+        // To start a URLSessionDataTask, we resume it.
 		dataTask.resume()
 	}
 
@@ -86,9 +82,10 @@ struct FactGenerator {
 		guard let data = data else {
 			return nil
 		}
-		// 2. Try to decode the JSON data to create a Fact object, and get the text from it, correcting punctuation as necessary. If decoding fails, log an error.
+		// 2. Try to decode the JSON data to create a GeneratedFact object, and get the text from it, correcting punctuation as necessary. If decoding fails, log an error.
 		let decoder = JSONDecoder()
 		do {
+            // Since we're using a type name, not an instance of that type, we use TypeName.self instead of TypeName().
 			let factObject = try decoder.decode(GeneratedFact.self, from: data)
 			return correctedFactText(factObject.text)
 		} catch {
@@ -106,30 +103,32 @@ struct FactGenerator {
 
 	// MARK: - Inappropriate Words Checker
 
-	func screenFact(fact: String, completionHandler: @escaping ((String?, HTTPURLResponse?, Error?) -> Void)) {
+	func screenFact(fact: String, completionHandler: @escaping ((String?, Error?) -> Void)) {
 		// 1. Create constants.
 		guard let url = URL(string: inappropriateWordsCheckerURLString) else {
-			completionHandler(nil, nil, nil)
+			completionHandler(nil, nil)
 			return }
 		let urlSession = URLSession(configuration: .default)
 		// 2. Create the URL request.
 		guard let request = createHTTPRequest(with: url, toScreenFact: fact) else {
-			completionHandler(nil, nil, nil)
+			completionHandler(nil, nil)
 			return
 		}
 		// 3. Create the data task with the inappropriate words checker URL, handling errors and HTTP responses just as we do in generateRandomFact().
 		let dataTask = urlSession.dataTask(with: request) { [self] data, response, error in
 			if let error = error {
-				completionHandler(nil, nil, error)
+				completionHandler(nil, error)
 			}
 			if let httpResponse = response as? HTTPURLResponse, httpResponse.isUnsuccessful {
-				completionHandler(nil, httpResponse, nil)
+                httpResponse.logAsError { error in
+                    completionHandler(nil, error)
+                }
 			}
 			let factIsInappropriate = parseFilterJSON(data: data)
 			if !factIsInappropriate {
-				completionHandler(fact, nil, nil)
+				completionHandler(fact, nil)
 			} else {
-				completionHandler(nil, nil, nil)
+				completionHandler(nil, nil)
 			}
 		}
 		dataTask.resume()
@@ -157,7 +156,7 @@ struct FactGenerator {
 		guard let data = data else {
 			return true
 		}
-		// 2. Try to decode the JSON data to create an InappropriateWordsCheckerData object, and get whether the fact is inappropriate from it, returning the fact if it's appropriate. If decoding fails, log an error.
+		// 2. Try to decode the JSON data to create an InappropriateWordsCheckerData object, and get whether the fact is inappropriate from it, returning the fact if it's appropriate. If decoding fails, be on the safe side and treat the fact as inappropriate.
 		let decoder = JSONDecoder()
 		do {
 			let factObject = try decoder.decode(InappropriateWordsCheckerData.self, from: data)

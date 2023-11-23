@@ -11,7 +11,7 @@ import SheftAppsStylishUI
 
 struct ContentView: View {
 
-	@ObservedObject var viewModel: RandoFactoViewModel
+	@ObservedObject var viewModel: RandoFactoManager
 
 	@Environment(\.horizontalSizeClass) var horizontalSizeClass
 
@@ -122,5 +122,5 @@ struct ContentView: View {
 }
 
 #Preview {
-	ContentView(viewModel: RandoFactoViewModel())
+	ContentView(viewModel: RandoFactoManager())
 }

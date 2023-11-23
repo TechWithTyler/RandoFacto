@@ -10,7 +10,7 @@ import SwiftUI
 
 struct SettingsView: View {
 
-	@ObservedObject var viewModel: RandoFactoViewModel
+	@ObservedObject var viewModel: RandoFactoManager
     
     var sliderText: String {
         return "Fact Text Size: \(viewModel.fontSizeValue)"
@@ -139,5 +139,5 @@ struct SettingsView: View {
 }
 
 #Preview {
-	SettingsView(viewModel: RandoFactoViewModel())
+	SettingsView(viewModel: RandoFactoManager())
 }

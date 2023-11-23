@@ -9,7 +9,7 @@ import SwiftUI
 
 struct RandoFactoCommands: Commands {
     
-    @ObservedObject var viewModel: RandoFactoViewModel
+    @ObservedObject var viewModel: RandoFactoManager
     
     // MARK: - Menu Commands
     

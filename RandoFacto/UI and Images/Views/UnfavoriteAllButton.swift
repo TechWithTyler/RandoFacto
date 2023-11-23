@@ -10,7 +10,7 @@ import SwiftUI
 
 struct UnfavoriteAllButton: View {
     
-    @ObservedObject var viewModel: RandoFactoViewModel
+    @ObservedObject var viewModel: RandoFactoManager
     
     var body: some View {
         Button(role: .destructive) {
@@ -23,5 +23,5 @@ struct UnfavoriteAllButton: View {
 }
 
 #Preview {
-    UnfavoriteAllButton(viewModel: RandoFactoViewModel())
+    UnfavoriteAllButton(viewModel: RandoFactoManager())
 }

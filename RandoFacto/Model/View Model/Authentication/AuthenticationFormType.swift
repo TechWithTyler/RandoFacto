@@ -1,5 +1,5 @@
 //
-//  authenticationFormType.swift
+//  AuthenticationFormType.swift
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 10/27/23.
