@@ -13,6 +13,7 @@ import Foundation
 // Represents whether a fact fed to the inappropriate words checker API contains inappropriate words.
 struct InappropriateWordsCheckerData: Codable {
 
+    // Whether a fact contains inappropriate words.
 	// This property isn't named the same as it is in the JSON data returned by the inappropriate words checker API, so it's mapped to the correct name using the coding key below.
 	let containsInappropriateWords: Bool
 

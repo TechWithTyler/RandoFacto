@@ -34,7 +34,7 @@ class RandoFactoManager: ObservableObject {
     }
     
     // Whether to display one of the user's favorite facts or generate a random fact when the app launches. This setting resets to 0 (Random Fact), and is hidden, when the user logs out or deletes their account.
-    // The @AppStorage property wrapper ties a property to the given UserDefaults key name. Such properties behave the same as UserDefaults get/set properties like the "5- or 10-frame" setting in SkippyNums, but with the added benefit of automatic UI refreshing.
+    // The @AppStorage property wrapper ties a property to the given UserDefaults key name. Such properties behave the same as UserDefaults get/set properties such as the "5- or 10-frame" setting in SkippyNums, but with the added benefit of automatic UI refreshing.
     @AppStorage("initialFact") var initialFact: Int = 0
     
     // The text size for facts.
@@ -42,7 +42,7 @@ class RandoFactoManager: ObservableObject {
     
     // MARK: - Properties - Pages
     
-    // The page currently selected in the sidebar/top-level view. On macOS, the settings view is accessed by the Settings option in the app menu instead of as a page.
+    // The page currently selected in the sidebar/top-level view. On macOS, the settings view is accessed by the Settings menu item in the app menu instead of as a page.
     @Published var selectedPage: AppPage? = .randomFact
     
     // MARK: - Properties - Authentication Form Type
@@ -50,7 +50,7 @@ class RandoFactoManager: ObservableObject {
     // The authentication form to display, or nil if none are to be displayed.
     @Published var authenticationFormType: Authentication.FormType? = nil
     
-    // MARK: - Properties - Network Error
+    // MARK: - Properties - RandoFacto Error
     
     // The error to show to the user as an alert or in the authentication dialog.
     @Published var errorToShow: RandoFactoError?
@@ -112,10 +112,10 @@ class RandoFactoManager: ObservableObject {
     
     // MARK: - Properties - Firebase
     
-    // The current user's Firestore database.
+    // The app's Firestore database.
     private var firestore = Firestore.firestore()
     
-    // Listens for changes to the references for registrered users.
+    // Listens for changes to the references for registered users.
     var userListener: ListenerRegistration? = nil
     
     // Listens for changes to the current user's favorite facts.
@@ -152,7 +152,7 @@ class RandoFactoManager: ObservableObject {
     
     // MARK: - Network - Path Monitor Configuration
     
-    // This method configures the network path monitor's path update handler, which tells the app to enable or disable online mode, which shows or hides internet-connection-required UI based on network connection.
+    // This method configures the network path monitor's path update handler, which tells the app to enable or disable online mode, showing or hiding internet-connection-required UI based on network connection.
     func configureNetworkPathMonitor() {
         networkPathMonitor.pathUpdateHandler = {
             [self] path in
@@ -227,7 +227,7 @@ extension RandoFactoManager {
     
     // MARK: - Favorite Facts - Loading
     
-    // This method asynchronously loads all the favorite facts associated with the current user. Firestore doesn't have a way to associate data with the user that created it, so we have to add a "user" key to each favorite fact so when a user deletes their account, their favorite facts, but no one else's, are also deleted.
+    // This method asynchronously loads all the favorite facts associated with the current user. Firestore doesn't have a way to associate data with the user that created it, so we have to add a "user" key to each favorite fact so when a user deletes their account, their favorite facts, but no one else's, are deleted.
     func loadFavoriteFactsForCurrentUser(completionHandler: @escaping (() -> Void)) {
         DispatchQueue.main.async { [self] in
             guard userLoggedIn else {
@@ -354,32 +354,44 @@ extension RandoFactoManager {
     
     // This method deletes all of the current user's favorite facts from the database.
     func deleteAllFavoriteFactsForCurrentUser(forUserDeletion deletingUser: Bool = false, completionHandler: @escaping ((Error?) -> Void)) {
-       guard let userEmail = firebaseAuthentication.currentUser?.email else {
-           return }
-       var deletionError: Error?
-       let group = DispatchGroup()
-       firestore.collection(favoriteFactsCollectionName)
-           .whereField(userKeyName, isEqualTo: userEmail)
-           .getDocuments(source: deletingUser ? .server : .cache) { (snapshot, error) in
-               if let error = error {
-                   deletionError = error
-               } else {
-                   if let documents = snapshot?.documents {
-                      for document in documents {
-                          group.enter()
-                          document.reference.delete { error in
-                              if let error = error {
-                                  deletionError = error
-                              }
-                              group.leave()
-                          }
-                      }
-                       group.notify(queue: .main) {
-                           completionHandler(deletionError)
-                       }
-                   }
-               }
-           }
+        // 1. Make sure we can get the current user.
+        guard let userEmail = firebaseAuthentication.currentUser?.email else {
+            return }
+        var deletionError: Error?
+        // 2. Create a DispatchGroup.
+        let group = DispatchGroup()
+        // 3. Get all favorite facts associated with the current user. If deleting their account, get from the server instead of the cache to ensure the server data is wiped before deletion continues.
+        firestore.collection(favoriteFactsCollectionName)
+            .whereField(userKeyName, isEqualTo: userEmail)
+            .getDocuments(source: deletingUser ? .server : .cache) { (snapshot, error) in
+                // 4. If that fails, log an error.
+                if let error = error {
+                    deletionError = error
+                } else {
+                    // 5. Loop through each favorite fact.
+                    if let documents = snapshot?.documents {
+                        for document in documents {
+                            // 6. Enter the DispatchGroup before attempting deletion.
+                            group.enter()
+                            // 7. Try to delete this favorite fact, leaving the DispatchGroup when done. If an error occurs, log it.
+                            document.reference.delete { error in
+                                if let error = error {
+                                    deletionError = error
+                                }
+                                group.leave()
+                            }
+                            // 8. Get out of the loop and cancel deletion if deletion of this favorite fact fails.
+                            if deletionError != nil {
+                                break
+                            }
+                        }
+                        // 9. Notify the DispatchGroup on the main thread and call the completion handler.
+                        group.notify(queue: .main) {
+                            completionHandler(deletionError)
+                        }
+                    }
+                }
+            }
     }
     
 }
@@ -388,7 +400,7 @@ extension RandoFactoManager {
     
     // MARK: - Authentication - Registered Users Handler
     
-    // This method sets up the app to listen for changes to registered user references. The email addresses and IDs of registered users get added to a Firestore collection called "users" when they signup, because Firebase doesn't yet have an ability to immediately notify the app of creations/deletions of accounts.
+    // This method sets up the app to listen for changes to registered user references. The email addresses and IDs of registered users get added to a Firestore collection called "users" when they signup, because Firebase doesn't yet have an ability to immediately notify the app of creations/deletions of accounts or checking whether they exist.
     func addRegisteredUsersHandler() {
         DispatchQueue.main.async { [self] in
             // 1. Make sure the current user is logged in.
@@ -400,19 +412,20 @@ extension RandoFactoManager {
             userListener = firestore.collection(usersCollectionName)
             // 3. Filter the results to include only the current user.
                 .whereField(emailKeyName, isEqualTo: email)
-            // 4. Listen for any changes made to the users collection.
+            // 4. Listen for any changes made to the "users" collection.
                 .addSnapshotListener(includeMetadataChanges: true) { [self] documentSnapshot, error in
                     if let error = error {
                         // 5. If that fails, log an error.
                         showError(error)
                     } else {
-                        // 6. Logout the user if they're deleted. We need to make sure the snapshot is from the server, not the cache, to prevent the detection of a missing user reference when logging in on a new device for the first time.
+                        // 6. Logout the user if they've been deleted from another device. We need to make sure the snapshot is from the server, not the cache, to prevent the detection of a missing user reference when logging in on a new device for the first time. We also need to make sure a user isn't currently being logged in or deleted on this device, otherwise a missing user would be detected and logged out, causing the operation to never complete.
+                        guard userDeletionStage == nil && !isAuthenticating else { return }
                         /*
                          A user reference is considered "missing"/the user is considered "deleted" if any of the following are true:
                          * The snapshot or its documents collection is empty.
+                         * The snapshot's documents collection doesn't contain the current user's ID.
                          * The snapshot is nil.
                          */
-                        guard userDeletionStage == nil && !isAuthenticating else { return }
                         if let snapshot = documentSnapshot, !snapshot.metadata.isFromCache, (snapshot.isEmpty || snapshot.documents.isEmpty), !snapshot.documents.contains(where: { document in
                             return document.documentID == currentUser.uid
                         }) {
@@ -429,6 +442,7 @@ extension RandoFactoManager {
     
     // This method loads the user's favorite facts if authentication is successful. Otherwise, it logs an error.
     func handleAuthenticationRequest(with result: AuthDataResult?, error: Error?, isSignup: Bool, successHandler: @escaping ((Bool) -> Void)) {
+        // 1. Create the block which will be performed if authentication is successful. This block loads the user's favorite facts, adds the registered users handler, and calls the completion handler.
         let successBlock: (() -> Void) = { [self] in
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [self] in
                 loadFavoriteFactsForCurrentUser { [self] in
@@ -437,12 +451,13 @@ extension RandoFactoManager {
                 }
             }
         }
+        // 2. Log an error if unsuccessful.
         if let error = error {
             showError(error)
             successHandler(false)
         } else {
+            // 3. IF successful, add the user reference if signing up, or check for the user reference when logging in, adding it if it doesn't exist. If that's successful, call the success block.
             if isSignup {
-                // Add the user reference
                 if let email = result?.user.email, let id = result?.user.uid {
                     addUserReference(email: email, id: id) { [self] error in
                         if let error = error {
@@ -456,7 +471,6 @@ extension RandoFactoManager {
                     successHandler(false)
                 }
             } else {
-                // If a user exists but their reference doesn't, add it.
                 if let email = result?.user.email, let id = result?.user.uid {
                     addMissingUserReference(email: email, id: id) { [self] error in
                         if let error = error {
@@ -477,17 +491,21 @@ extension RandoFactoManager {
     
     // This method adds a reference for the current user once they signup or login and such reference is missing.
     func addUserReference(email: String, id: String, completionHandler: @escaping ((Error?) -> Void)) {
+        // 1. Create a User.Reference object.
         let userReference = User.Reference(email: email)
+        // 2. Try to add the data from this object as a new document whose document ID is that of the user. Matching the document ID with the user ID makes deleting it easier.
         do {
             try firestore.collection(usersCollectionName).document(id).setData(from: userReference)
             completionHandler(nil)
         } catch {
+            // 3. If that fails, log an error.
             completionHandler(error)
         }
     }
     
     // This method checks for the current user's reference and adds it if it doesn't exist.
     func addMissingUserReference(email: String, id: String, completionHandler: @escaping ((Error?) -> Void)) {
+        // 1. Create the block which will add the missing user reference if needed.
         let addReferenceBlock: ((() -> Void)) = { [self] in
             addUserReference(email: email, id: id) { error in
                 if let error = error {
@@ -497,17 +515,21 @@ extension RandoFactoManager {
                 }
             }
         }
+        // 2. Check if the current user has a reference.
         firestore.collection(usersCollectionName)
             .whereField(emailKeyName, isEqualTo: email)
             .getDocuments(source: .server) { snapshot, error in
+                // 3. If that fails, log an error.
                 if let error = error {
                     completionHandler(error)
                 } else {
+                    // 4. If the reference doesn't exist, call the add reference block.
                     if let snapshot = snapshot, (snapshot.isEmpty || snapshot.documents.isEmpty) {
                         addReferenceBlock()
                     } else if snapshot == nil {
                         addReferenceBlock()
                     } else {
+                        // 5. If it exists, call the completion handler.
                         completionHandler(nil)
                     }
                 }
@@ -535,7 +557,7 @@ extension RandoFactoManager {
     // MARK: - Authentication - Password Reset/Update
     
     // This method sends a password reset email to email. The message body is customized in RandoFacto's Firebase console.
-    func sendPasswordReset(toEmail email: String) {
+    func sendPasswordResetLink(toEmail email: String) {
         firebaseAuthentication.sendPasswordReset(withEmail: email, actionCodeSettings: ActionCodeSettings(), completion: { [self] error in
             if let error = error {
                 showError(error)
@@ -563,7 +585,9 @@ extension RandoFactoManager {
     // This method tries to logout the current user, clearing the app's favorite facts list if successful.
     func logoutCurrentUser() {
         do {
+            // 1. Try to logout the current user.
             try firebaseAuthentication.signOut()
+            // 2. If successful, clear the favorite facts list, remove the user listener and favorite facts listener, and reset the Fact on Launch setting to "Random Fact".
             DispatchQueue.main.async { [self] in
                 favoriteFacts.removeAll()
             }
@@ -573,17 +597,21 @@ extension RandoFactoManager {
             favoriteFactsListener?.remove()
             favoriteFactsListener = nil
         } catch {
+            // 3. If unsuccessful, log an error.
             showError(error)
         }
     }
     
     // This method logs out the current user after deletion or if their reference goes missing. If the account itself still exists, logging in will put the missing reference back.
     func logoutMissingUser() {
+        // 1. Delete all the missing user's favorite facts, getting the data from the server instead of the cache.
         deleteAllFavoriteFactsForCurrentUser(forUserDeletion: true) { [self] error in
             if let error = error {
+                // 2. If that fails, log an error.
                 showError(error)
                 return
             } else {
+                // 3. If successful, log the user out.
                 logoutCurrentUser()
             }
         }
@@ -593,25 +621,33 @@ extension RandoFactoManager {
     
     // This method deletes the current user's favorite facts, their reference, and then their account.
     func deleteCurrentUser(completionHandler: @escaping (Error?) -> Void) {
+        // 1. Make sure we can get the current user.
         guard let user = firebaseAuthentication.currentUser else {
             let userNotFoundError = NSError(domain: "User not found", code: 545)
             completionHandler(userNotFoundError)
             return
         }
+        // 2. Delete all their favorite facts, getting data from the server instead of the cache.
         userDeletionStage = .data
         deleteAllFavoriteFactsForCurrentUser(forUserDeletion: true) { [self] error in
+            // 3. If that fails, log an error and cancel deletion.
             if let error = error {
                 userDeletionStage = nil
                 completionHandler(error)
             } else {
+                // 4. If successful, delete the user reference.
                 deleteUserReference(forUser: user) { [self] error in
+                    // 5. If that fails, log an error and cancel deletion.
                     if let error = error {
                         userDeletionStage = nil
                         completionHandler(error)
                     } else {
+                        // 6. If successful, all user data has been deleted, so the account can be safely deleted.
                         user.delete { [self] error in
+                            if error == nil {
+                                logoutMissingUser()
+                            }
                             userDeletionStage = nil
-                            logoutMissingUser()
                             completionHandler(error)
                         }
                     }
@@ -620,10 +656,12 @@ extension RandoFactoManager {
         }
     }
     
-    // This method deletes a user's reference from the database.
+    // This method deletes user's reference from the database.
     func deleteUserReference(forUser user: User, completionHandler: @escaping ((Error?) -> Void)) {
+        // 1. Make sure we can get the user's email.
         guard let userEmail = user.email else { return }
         var deletionError: Error?
+        // 2. Create a DispatchGroup and delete the user reference the same way we delete all favorite facts.
         let group = DispatchGroup()
         self.firestore.collection(usersCollectionName)
             .whereField(emailKeyName, isEqualTo: userEmail)
@@ -656,9 +694,10 @@ extension RandoFactoManager {
     // This method shows error's localizedDescription as an alert or in the authentication form.
     func showError(_ error: Error) {
         DispatchQueue.main.async { [self] in
+            // 1. Convert the error to NSError and print it.
             let nsError = error as NSError
             print("Error: \(nsError)")
-            // Check the error code to choose which error to show.
+            // 2. Check the error code to choose which error to show.
             switch nsError.code {
                 // Network errors
             case URLError.notConnectedToInternet.rawValue:
@@ -681,11 +720,11 @@ extension RandoFactoManager {
                 errorToShow = .tooLongSinceLastLogin
             case AuthErrorCode.quotaExceeded.rawValue:
                 errorToShow = .randoFactoDatabaseQuotaExceeded
-                // Other errors
             default:
+                // Other errors
                 errorToShow = .unknown(reason: nsError.localizedDescription)
             }
-            // Show the error in the login/signup dialog if they're open, otherwise show it as an alert.
+            // 3. Show the error in the login/signup dialog if they're open, otherwise show it as an alert.
             if authenticationFormType != nil {
                 authenticationErrorText = errorToShow?.errorDescription
             } else {

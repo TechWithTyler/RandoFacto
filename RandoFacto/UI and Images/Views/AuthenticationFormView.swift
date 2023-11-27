@@ -42,7 +42,7 @@ struct AuthenticationFormView: View {
 						viewModel.errorToShow = nil
 						viewModel.showingResetPasswordEmailSent = false
 						viewModel.authenticationErrorText = nil
-						viewModel.sendPasswordReset(toEmail: email)
+						viewModel.sendPasswordResetLink(toEmail: email)
 					}
 #if os(macOS)
 					.buttonStyle(.link)

@@ -16,6 +16,7 @@ extension User {
 
 	struct Reference: Codable {
 
+        // The email of the user.
 		let email: String
 
 	}

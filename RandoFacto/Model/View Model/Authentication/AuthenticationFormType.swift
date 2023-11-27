@@ -12,17 +12,23 @@ extension Authentication {
 	
 	// Represents a type of authentication form.
 	enum FormType: Identifiable {
+        
+        // MARK: - Authentication Form Type Definitions
 
 		case signup
 
 		case login
 
 		case passwordChange
+        
+        // MARK: - Authentication Form Type ID
 
 		// An ID which allows SwiftUI sheets to be presented based on one of the above cases.
 		var id: Int {
 			return hashValue
 		}
+        
+        // MARK: - Confirm Button Text
 
 		// The text for the form's default button.
 		var confirmButtonText: String {
@@ -32,6 +38,8 @@ extension Authentication {
 				case .login: return loginText
 			}
 		}
+        
+        // MARK: - Title Text
 
 		// The form's title text.
 		var titleText: String {

@@ -50,8 +50,10 @@ struct ContentView: View {
 					FactView(viewModel: viewModel)
 				case .favoriteFacts:
 					FavoritesList(viewModel: viewModel)
+                #if !os(macOS)
 				case .settings:
 					SettingsView(viewModel: viewModel)
+                #endif
 				case .none:
 					EmptyView()
 			}
@@ -113,9 +115,10 @@ struct ContentView: View {
 				Label("Random Fact", systemImage: "questionmark")
 			case .favoriteFacts:
 				Label("Favorite Facts", systemImage: "star")
+            #if !os(macOS)
 			case .settings:
 				Label("Settings", systemImage: "gear")
-
+            #endif
 		}
 	}
 

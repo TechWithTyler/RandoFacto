@@ -16,6 +16,9 @@ enum AppPage : String, CaseIterable {
 
 	case favoriteFacts
 
+    #if !os(macOS)
+    // Don't include Settings as a page on macOS--it's accessed via the Settings option in the app menu.
 	case settings
-
+    #endif
+    
 }

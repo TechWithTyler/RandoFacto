@@ -84,6 +84,7 @@
 		8D8899E12AFDF80300BDDDFD /* ViewablePasswordField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewablePasswordField.swift; sourceTree = "<group>"; };
 		8D8899E32AFE095200BDDDFD /* Globals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Globals.swift; sourceTree = "<group>"; };
 		8D8F1AF72AFDF25600DB9B7D /* AuthenticationMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationMessageView.swift; sourceTree = "<group>"; };
+		8D8F41C42B15486400550899 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		8D992FB22B0737BA004AF5CB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		8DA2C40E292C1E1100705A2F /* RandoFacto.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RandoFacto.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8DA2C411292C1E1100705A2F /* RandoFactoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandoFactoApp.swift; sourceTree = "<group>"; };
@@ -181,6 +182,7 @@
 				8DF48E2E2936A62900152681 /* GoogleService-Info.plist */,
 				8D8899E32AFE095200BDDDFD /* Globals.swift */,
 				8D63D5FC2AFF4A180084BACF /* StringEmojiChecker.swift */,
+				8D8F41C42B15486400550899 /* PrivacyInfo.xcprivacy */,
 			);
 			path = "Supporting Files";
 			sourceTree = "<group>";

@@ -10,18 +10,15 @@ import Foundation
 
 enum RandoFactoError: LocalizedError, Equatable {
 
-	// MARK: - Error Case Definitions - Unknown
+    // MARK: - Error Case Definitions - Internet Connection
+    
+    // No internet connection.
+    case noInternet
 
-	// Unknown error, with the given reason.
-	case unknown(reason: String)
-
-	// MARK: - Error Case Definitions - Fact Generation
-
-	// No internet connection.
-	case noInternet
-
-	// Network connection lost.
-	case networkConnectionLost
+    // Network connection lost.
+    case networkConnectionLost
+    
+    // MARK: - Error Case Definitions - Fact Generation
 
 	// Bad HTTP response, with the given error domain.
 	case badHTTPResponse(domain: String)
@@ -37,18 +34,25 @@ enum RandoFactoError: LocalizedError, Equatable {
 	// Too many RandoFacto database requests (e.g. repeatedly favoriting and unfavoriting the same fact).
 	case randoFactoDatabaseQuotaExceeded
 
-	// Couldn't get data from server
+	// Couldn't get data from server.
 	case randoFactoDatabaseServerDataRetrievalError
 
-	// Account deletion failed, with the given reason.
+	// Password change or account deletion failed due to the user having logged into this device more than 5 minutes ago.
 	case tooLongSinceLastLogin
+    
+    // MARK: - Error Case Definitions - Unknown
+
+    // Unknown error, with the given reason.
+    case unknown(reason: String)
 
 	// MARK: - Error Description
 
+    // The description of the error to show in the error alert or authentication dialog.
 	var errorDescription: String? {
 		return chooseErrorDescriptionToLog()
 	}
 
+    // The ID of the error, which allows the error sound/haptics to be triggered when showing the error even if the same error is already displayed.
 	var id: UUID {
 		return UUID()
 	}
@@ -72,16 +76,10 @@ enum RandoFactoError: LocalizedError, Equatable {
 				return "Failed to download data from server. Using device data."
 			case .tooLongSinceLastLogin:
 				return "It's been too long since you last logged in on this device. If you're trying to delete your account, please re-login and try again. If you're trying to change your password, please enter your email address and press \"\(forgotPasswordButtonTitle)\" to send a password reset email."
-			case let .unknown(reason):
+            // This can be written as either case .name(let propertyName) or case let .name(propertyName).
+			case .unknown(let reason):
 				return reason
 		}
-	}
-
-	// MARK: - Inequality Check
-
-	// This method compares the UUID of 2 RandoFactoError objects to see if they're not equal.
-	static func !=(lError: RandoFactoError, rError: RandoFactoError) -> Bool {
-		return lError.id != rError.id
 	}
 
 }

@@ -14,7 +14,8 @@ extension HTTPURLResponse {
 
 	// Whether the HTTP response indicates a failure (the code is not in the 2xx range).
 	var isUnsuccessful: Bool {
-		return statusCode < 200 || statusCode > 299
+        let range = 200...299
+        return !range.contains(statusCode)
 	}
 
 	// MARK: - HTTP Response Status Code To Error Domain String
@@ -42,7 +43,9 @@ extension HTTPURLResponse {
 	func logAsError(completionHandler: ((Error) -> Void)) {
 		let responseMessage = errorDomainForResponseCode
 		let responseCode = statusCode
-		let error = NSError(domain: "\(responseMessage): HTTP Response Status Code \(responseCode)", code: responseCode + 33000)
+        let errorDomain = "\(responseMessage): HTTP Response Status Code \(responseCode)"
+        let errorCode = responseCode + 33000 // e.g. 33404 (FD404)
+		let error = NSError(domain: errorDomain, code: errorCode)
 		completionHandler(error)
 	}
 
