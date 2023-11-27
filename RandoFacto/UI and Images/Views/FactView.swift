@@ -49,6 +49,7 @@ struct FactView: View {
             Text("Favorite facts database powered by Google Firebase.")
         }
         .font(.footnote)
+        .multilineTextAlignment(.center)
         .foregroundColor(.secondary)
         .padding(.horizontal)
     }
