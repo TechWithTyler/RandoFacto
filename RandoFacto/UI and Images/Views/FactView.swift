@@ -44,7 +44,7 @@ struct FactView: View {
     
     var footer: some View {
         VStack {
-            Text("Facts provided by [uselessfacts.jsph.pl](https://uselessfacts.jsph.pl).")
+            Text("Facts provided by [uselessfacts.jsph.pl](https://uselessfacts.jsph.pl). Facts are provided for entertainment purposes only and might not be correct.")
             Text("Favorite facts database powered by Google Firebase.")
         }
         .font(.footnote)
