@@ -40,7 +40,7 @@ struct RandoFactoCommands: Commands {
                 .disabled(!viewModel.online || viewModel.notDisplayingFact)
                 .keyboardShortcut(KeyboardShortcut(KeyEquivalent("g"), modifiers: [.command, .control]))
                 Button(getRandomFavoriteFactButtonTitle) {
-                    viewModel.factText = viewModel.getRandomFavoriteFact()
+                    viewModel.getRandomFavoriteFact()
                 }
                 .keyboardShortcut(KeyboardShortcut(KeyEquivalent("g"), modifiers: [.command, .control, .shift]))
                 .disabled(!viewModel.favoriteFactsAvailable || viewModel.notDisplayingFact)

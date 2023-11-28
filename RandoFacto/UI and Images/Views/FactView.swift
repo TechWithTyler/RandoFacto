@@ -62,27 +62,34 @@ struct FactView: View {
         ConditionalHVStack {
             if viewModel.favoriteFactsAvailable {
                 Button {
-                    DispatchQueue.main.async {
-                        // Sets factText to a random fact from the favorite facts list.
-                        viewModel.factText = viewModel.getRandomFavoriteFact()
-                    }
+                    viewModel.getRandomFavoriteFact()
                 } label: {
                     Text(getRandomFavoriteFactButtonTitle)
+                        .frame(width: 200)
                 }
                 .disabled(viewModel.userDeletionStage != nil)
 #if os(iOS)
                 .padding()
 #endif
+                .buttonStyle(.bordered)
+                #if os(iOS)
+                .hoverEffect(.highlight)
+                #endif
             }
             if viewModel.online {
                 Button {
                     viewModel.generateRandomFact()
                 } label: {
                     Text(generateRandomFactButtonTitle)
+                        .frame(width: 200)
                 }
 #if os(iOS)
                 .padding()
 #endif
+                .buttonStyle(.bordered)
+                #if os(iOS)
+                .hoverEffect(.highlight)
+                #endif
             }
         }
         .disabled(viewModel.notDisplayingFact)

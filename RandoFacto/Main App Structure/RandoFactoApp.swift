@@ -29,7 +29,7 @@ struct RandoFactoApp: App {
     var body: some Scene {
         WindowGroup {
 			ContentView(viewModel: viewModel)
-				.frame(minWidth: 400, minHeight: 300, alignment: .center)
+				.frame(minWidth: 800, minHeight: 300, alignment: .center)
 				.ignoresSafeArea(edges: .all)
 		}
         .commands {

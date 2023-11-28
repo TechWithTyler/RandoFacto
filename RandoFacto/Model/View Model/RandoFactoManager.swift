@@ -143,9 +143,7 @@ class RandoFactoManager: ObservableObject {
             if initialFact == 0 || favoriteFacts.isEmpty || !userLoggedIn {
                 generateRandomFact()
             } else {
-                DispatchQueue.main.async { [self] in
-                    factText = getRandomFavoriteFact()
-                }
+                    getRandomFavoriteFact()
             }
         }
     }
@@ -280,11 +278,21 @@ extension RandoFactoManager {
         }
     }
     
-    // MARK: - Favorite Facts - Get Random Favorite Fact
+    // MARK: - Favorite Facts - Display Favorite Fact
     
-    // This method gets a random fact from the favorite facts list and returns it.
-    func getRandomFavoriteFact() -> String {
-        return favoriteFacts.randomElement()?.text ?? factUnavailableString
+    // This method gets a random fact from the favorite facts list and sets factText to its text.
+    func getRandomFavoriteFact() {
+        let favoriteFact = favoriteFacts.randomElement()?.text ?? factUnavailableString
+        DispatchQueue.main.async { [self] in
+            factText = favoriteFact
+        }
+    }
+    
+    func displayFavoriteFact(_ favorite: String) {
+        DispatchQueue.main.async { [self] in
+            factText = favorite
+            selectedPage = .randomFact
+        }
     }
     
     // MARK: - Favorite Facts - Unavailable Handler

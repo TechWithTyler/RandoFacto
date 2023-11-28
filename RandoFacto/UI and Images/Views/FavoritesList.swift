@@ -56,10 +56,7 @@ struct FavoritesList: View {
                         ForEach(searchResults.sorted(by: >), id: \.self) {
                             favorite in
                             Button {
-                                DispatchQueue.main.async { [self] in
-                                    viewModel.factText = favorite
-                                    viewModel.selectedPage = .randomFact
-                                }
+                                viewModel.displayFavoriteFact(favorite)
                             } label: {
                                 Text(favorite)
                                     .lineLimit(nil)
