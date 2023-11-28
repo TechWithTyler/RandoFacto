@@ -46,7 +46,9 @@ struct FactView: View {
         VStack {
             // To include a clickable link in a string, use the format [text](URL), where text is the text to be displayed and URL is the URL the link goes to.
             Text("Facts provided by [uselessfacts.jsph.pl](https://uselessfacts.jsph.pl). Facts are provided for entertainment purposes only and might not be correct.")
-            Text("Favorite facts database powered by Google Firebase.")
+            if viewModel.userLoggedIn {
+                Text("Favorite facts database powered by [Firebase](https://firebase.google.com).")
+            }
         }
         .font(.footnote)
         .multilineTextAlignment(.center)
