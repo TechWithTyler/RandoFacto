@@ -45,6 +45,10 @@ class RandoFactoManager: ObservableObject {
     // The page currently selected in the sidebar/top-level view. On macOS, the settings view is accessed by the Settings menu item in the app menu instead of as a page.
     @Published var selectedPage: AppPage? = .randomFact
     
+    #if os(macOS)
+    @AppStorage("selectedSettingsPage") var selectedSettingsPage: SettingsPage = .account
+    #endif
+    
     // MARK: - Properties - Authentication Form Type
     
     // The authentication form to display, or nil if none are to be displayed.
@@ -724,13 +728,14 @@ extension RandoFactoManager {
                 errorToShow = .randoFactoDatabaseServerDataRetrievalError
             case AuthErrorCode.requiresRecentLogin.rawValue:
                 logoutCurrentUser()
-                authenticationFormType = .login
+                authenticationFormType = nil
                 errorToShow = .tooLongSinceLastLogin
             case AuthErrorCode.quotaExceeded.rawValue:
                 errorToShow = .randoFactoDatabaseQuotaExceeded
             default:
                 // Other errors
-                errorToShow = .unknown(reason: nsError.localizedDescription)
+                let reason = nsError.localizedDescription
+                errorToShow = .unknown(reason: reason)
             }
             // 3. Show the error in the login/signup dialog if they're open, otherwise show it as an alert.
             if authenticationFormType != nil {

@@ -75,7 +75,7 @@ enum RandoFactoError: LocalizedError, Equatable {
 			case .randoFactoDatabaseServerDataRetrievalError:
 				return "Failed to download data from server. Using device data."
 			case .tooLongSinceLastLogin:
-				return "It's been too long since you last logged in on this device. If you're trying to delete your account, please re-login and try again. If you're trying to change your password, please enter your email address and press \"\(forgotPasswordButtonTitle)\" to send a password reset email."
+				return "It's been too long since you last logged in on this device. Please re-login and try the operation again."
             // This can be written as either case .name(let propertyName) or case let .name(propertyName).
 			case .unknown(let reason):
 				return reason

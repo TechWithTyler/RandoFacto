@@ -135,10 +135,8 @@ struct AuthenticationFormView: View {
 		}
 		.onDisappear {
 			password.removeAll()
-			if viewModel.errorToShow == nil {
-				viewModel.authenticationErrorText = nil
-				viewModel.authenticationFormType = nil
-			}
+            viewModel.authenticationErrorText = nil
+            viewModel.authenticationFormType = nil
 		}
 #if os(macOS)
 		.frame(minWidth: 400, maxWidth: 400, minHeight: 400, maxHeight: 400)

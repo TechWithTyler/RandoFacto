@@ -18,10 +18,11 @@ struct SettingsView: View {
 
     var body: some View {
 #if os(macOS)
-        TabView {
+        TabView(selection: $viewModel.selectedSettingsPage) {
             Form {
                 accountSection
             }
+            .fixedSize()
             .formStyle(.grouped)
             .tabItem {
                 Label("Account", systemImage: "person.circle")
@@ -30,6 +31,7 @@ struct SettingsView: View {
             Form {
                 displaySection
             }
+            .fixedSize()
             .formStyle(.grouped)
             .tabItem {
                 Label("Display", systemImage: "textformat.size")

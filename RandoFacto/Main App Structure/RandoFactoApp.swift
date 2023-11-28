@@ -29,7 +29,9 @@ struct RandoFactoApp: App {
     var body: some Scene {
         WindowGroup {
 			ContentView(viewModel: viewModel)
+            #if os(macOS)
 				.frame(minWidth: 800, minHeight: 300, alignment: .center)
+            #endif
 				.ignoresSafeArea(edges: .all)
 		}
         .commands {
@@ -39,7 +41,6 @@ struct RandoFactoApp: App {
         // On macOS, Settings are presented as a window instead of as one of the app's pages.
 		Settings {
 			SettingsView(viewModel: viewModel)
-				.frame(width: 400, height: 400)
 		}
 		#endif
 	}
