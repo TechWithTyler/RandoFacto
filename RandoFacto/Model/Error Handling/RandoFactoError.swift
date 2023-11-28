@@ -19,6 +19,9 @@ enum RandoFactoError: LocalizedError, Equatable {
     case networkConnectionLost
     
     // MARK: - Error Case Definitions - Fact Generation
+    
+    // Fact generation/screening timeout
+    case factGenerationTimedOut
 
 	// Bad HTTP response, with the given error domain.
 	case badHTTPResponse(domain: String)
@@ -57,13 +60,15 @@ enum RandoFactoError: LocalizedError, Equatable {
 		return UUID()
 	}
 
-	// This method chooses the error's description based on the error.
+	// This method chooses the error's description based on the error. Most of these errors already have messages provided, usually by their localized descriptions, but they're usually not user-friendly. This method returns a friendlier message based on which error case was chosen.
 	func chooseErrorDescriptionToLog() -> String? {
 		switch self {
 			case .noInternet:
 				return "No internet connection. Running in offline mode."
 			case .networkConnectionLost:
 				return "Internet connection lost."
+            case .factGenerationTimedOut:
+                return "Fact generation took too long. Please try again later."
 			case let .badHTTPResponse(domain):
 				return domain
 			case .noFactText:

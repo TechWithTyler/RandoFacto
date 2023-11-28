@@ -8,6 +8,7 @@
 
 import SwiftUI
 import Firebase
+import SheftAppsStylishUI
 
 @main
 // This is the simplest way to create an app in SwiftUI--you get a fully-functional app just with this one struct!
@@ -22,12 +23,20 @@ struct RandoFactoApp: App {
 
 	// The main model object for the app, which supplies data for its views.
 	@ObservedObject var viewModel: RandoFactoManager
+    
+    var windowTitle: String {
+        var appName = (Bundle.main.infoDictionary?[kCFBundleNameKey as String] as? String)!
+        #if DEBUG && os(macOS)
+        appName.appendSheftAppsTeamInternalBuildDesignation()
+        #endif
+        return appName
+    }
 
 	// MARK: - Windows and Views
 
 	// The windows and views in the app.
     var body: some Scene {
-        WindowGroup {
+        WindowGroup(windowTitle) {
 			ContentView(viewModel: viewModel)
             #if os(macOS)
 				.frame(minWidth: 800, minHeight: 300, alignment: .center)

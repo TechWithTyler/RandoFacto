@@ -231,16 +231,15 @@ extension RandoFactoManager {
     
     // This method asynchronously loads all the favorite facts associated with the current user. Firestore doesn't have a way to associate data with the user that created it, so we have to add a "user" key to each favorite fact so when a user deletes their account, their favorite facts, but no one else's, are deleted.
     func loadFavoriteFactsForCurrentUser(completionHandler: @escaping (() -> Void)) {
-        DispatchQueue.main.async { [self] in
-            guard userLoggedIn else {
-                completionHandler()
-                return
-            }
-            // 1. Make sure we can get the current user.
-            guard let user = firebaseAuthentication.currentUser, let userEmail = user.email else {
-                completionHandler()
-                return
-            }
+        // 1. Make sure we can get the current user.
+        guard userLoggedIn else {
+            completionHandler()
+            return
+        }
+        guard let user = firebaseAuthentication.currentUser, let userEmail = user.email else {
+            completionHandler()
+            return
+        }
             // 2. Get the Firestore collection containing favorite facts.
             favoriteFactsListener = firestore.collection(favoriteFactsCollectionName)
             // 3. Filter the result to include only the current user's favorite facts.
@@ -257,16 +256,19 @@ extension RandoFactoManager {
                             completionHandler()
                             return
                         }
-                        // 7. If a change was successfully detected, update the app's favorite facts array.
+                        // 7. Check if the snapshot is from the cache (device data for use offline).
+                        if snapshot.metadata.isFromCache && online {
+                            // Skip the callback if it's from the cache and the device is online.
+                            return
+                        }
+                        // 8. If a change was successfully detected, update the app's favorite facts array.
                         updateFavoriteFactsList(from: snapshot, completionHandler: completionHandler)
                     }
-                }
         }
     }
     
     // This method updates the app's favorite facts list with snapshot's data.
     func updateFavoriteFactsList(from snapshot: QuerySnapshot, completionHandler: @escaping (() -> Void)) {
-        DispatchQueue.main.async { [self] in
             // 1. Try to replace the data in favoriteFacts with snapshot's data by decoding it to a FavoriteFact object.
             do {
                 // compactMap is marked throws so you can call throwing functions in its closure. Errors are then "rethrown" so the catch block of this do statement can handle them.
@@ -278,8 +280,8 @@ extension RandoFactoManager {
                 // 2. If that fails, log an error.
                 showError(error)
             }
+        // This gets called twice
             completionHandler()
-        }
     }
     
     // MARK: - Favorite Facts - Display Favorite Fact
@@ -708,7 +710,10 @@ extension RandoFactoManager {
         DispatchQueue.main.async { [self] in
             // 1. Convert the error to NSError and print it.
             let nsError = error as NSError
+            #if DEBUG
+            // If an unfamiliar error appears, check its code in the console and add a friendlier message if necessary.
             print("Error: \(nsError)")
+            #endif
             // 2. Check the error code to choose which error to show.
             switch nsError.code {
                 // Network errors
@@ -716,8 +721,10 @@ extension RandoFactoManager {
                 errorToShow = .noInternet
             case URLError.networkConnectionLost.rawValue:
                 errorToShow = .networkConnectionLost
+            case URLError.timedOut.rawValue:
+                errorToShow = .factGenerationTimedOut
                 // Fact data errors
-            case 33000...33999 /*HTTP response code + 33000 to add 33 (FD) to the beginning*/:
+            case 33000...33999: /*HTTP response code + 33000 to add 33 (FD) to the beginning*/
                 errorToShow = .badHTTPResponse(domain: nsError.domain)
             case FactGenerator.ErrorCode.noText.rawValue:
                 errorToShow = .noFactText
@@ -734,6 +741,7 @@ extension RandoFactoManager {
                 errorToShow = .randoFactoDatabaseQuotaExceeded
             default:
                 // Other errors
+                // If we get an error that hasn't been customized with a friendly message, log the localized description as is.
                 let reason = nsError.localizedDescription
                 errorToShow = .unknown(reason: reason)
             }
