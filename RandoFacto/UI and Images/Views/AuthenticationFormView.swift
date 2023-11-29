@@ -61,7 +61,6 @@ struct AuthenticationFormView: View {
 				}
 			}
 			.formStyle(.grouped)
-			.padding(.horizontal)
 			.navigationTitle(viewModel.authenticationFormType?.titleText ?? Authentication.FormType.login.titleText)
 #if os(iOS)
 			.navigationBarTitleDisplayMode(.automatic)

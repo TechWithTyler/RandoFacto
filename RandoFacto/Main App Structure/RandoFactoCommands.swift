@@ -18,6 +18,12 @@ struct RandoFactoCommands: Commands {
         CommandGroup(replacing: .importExport) {}
         CommandGroup(replacing: .printItem) {}
         CommandGroup(replacing: .textEditing) {}
+        CommandGroup(replacing: .help) {
+            Button("RandoFacto Help") {
+                showHelp()
+            }
+            .keyboardShortcut(KeyEquivalent("?"), modifiers: [.command])
+        }
         CommandGroup(replacing: .textFormatting) {
             Section {
                 Button("Increase Fact Text Size") {

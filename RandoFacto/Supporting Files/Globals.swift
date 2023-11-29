@@ -9,6 +9,17 @@
 import Foundation
 import Firebase
 
+// MARK: - Functions
+
+func showHelp() {
+    let helpURL = URL(string: "https://techwithtyler20.weebly.com/randofactohelp")!
+    #if os(macOS)
+    NSWorkspace.shared.open(helpURL)
+    #else
+    UIApplication.shared.open(helpURL)
+    #endif
+}
+
 // MARK: - Typealiases
 
 typealias Authentication = Auth

@@ -49,6 +49,9 @@ struct SettingsView: View {
         Form {
                 accountSection
                 displaySection
+            Button("Help…") {
+                showHelp()
+            }
         }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.automatic)
