@@ -36,6 +36,11 @@ struct AuthenticationFormView: View {
 	var body: some View {
 		NavigationStack {
 			Form {
+                if viewModel.authenticationFormType == .passwordChange {
+                    Text(((viewModel.firebaseAuthentication.currentUser?.email)!))
+                        .font(.system(size: 24))
+                        .fontWeight(.bold)
+                }
 				credentialFields
 				if viewModel.authenticationFormType == .login && !email.isEmpty && password.isEmpty {
 					Button(forgotPasswordButtonTitle) {

@@ -13,6 +13,7 @@
 		8D5511402B059B3D00BB61D4 /* FactGeneratorErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D55113F2B059B3D00BB61D4 /* FactGeneratorErrors.swift */; };
 		8D63D5F92AFF1D470084BACF /* UserDeletionStage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D63D5F82AFF1D470084BACF /* UserDeletionStage.swift */; };
 		8D63D5FD2AFF4A180084BACF /* StringEmojiChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D63D5FC2AFF4A180084BACF /* StringEmojiChecker.swift */; };
+		8D6DD17D2B16FCD900CA2F20 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 8D6DD17C2B16FCD900CA2F20 /* FirebaseCrashlytics */; };
 		8D86430E2AEC594F0084C772 /* AuthenticationFormType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D86430D2AEC594F0084C772 /* AuthenticationFormType.swift */; };
 		8D86FF052AF56CA600239DEE /* HTTPResponseExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D86FF042AF56CA600239DEE /* HTTPResponseExtension.swift */; };
 		8D87C7CC2B02D97F009BBE56 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D87C7CB2B02D97F009BBE56 /* AppDelegate.swift */; };
@@ -85,7 +86,7 @@
 		8D8899E32AFE095200BDDDFD /* Globals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Globals.swift; sourceTree = "<group>"; };
 		8D8F1AF72AFDF25600DB9B7D /* AuthenticationMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationMessageView.swift; sourceTree = "<group>"; };
 		8D8F41C42B15486400550899 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		8D992FB22B0737BA004AF5CB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		8D992FB22B0737BA004AF5CB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8DA2C40E292C1E1100705A2F /* RandoFacto.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RandoFacto.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8DA2C411292C1E1100705A2F /* RandoFactoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandoFactoApp.swift; sourceTree = "<group>"; };
 		8DA2C415292C1E1200705A2F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -116,6 +117,7 @@
 				8D87C8102B02FBA7009BBE56 /* FirebaseAuth in Frameworks */,
 				8D87C83A2B02FEEA009BBE56 /* SheftAppsStylishUI.framework in Frameworks */,
 				8D87C8222B02FBA7009BBE56 /* FirebaseFunctions in Frameworks */,
+				8D6DD17D2B16FCD900CA2F20 /* FirebaseCrashlytics in Frameworks */,
 				8D87C8122B02FBA7009BBE56 /* FirebaseAuthCombine-Community in Frameworks */,
 				8D87C81E2B02FBA7009BBE56 /* FirebaseFirestoreCombine-Community in Frameworks */,
 			);
@@ -178,8 +180,9 @@
 		8D91FEA12AE22CB600ACB743 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				8DA2C417292C1E1200705A2F /* RandoFacto.entitlements */,
+				8D992FB22B0737BA004AF5CB /* Info.plist */,
 				8DF48E2E2936A62900152681 /* GoogleService-Info.plist */,
+				8DA2C417292C1E1200705A2F /* RandoFacto.entitlements */,
 				8D8899E32AFE095200BDDDFD /* Globals.swift */,
 				8D63D5FC2AFF4A180084BACF /* StringEmojiChecker.swift */,
 				8D8F41C42B15486400550899 /* PrivacyInfo.xcprivacy */,
@@ -217,7 +220,6 @@
 		8DA2C410292C1E1100705A2F /* RandoFacto */ = {
 			isa = PBXGroup;
 			children = (
-				8D992FB22B0737BA004AF5CB /* Info.plist */,
 				8D992FB12B073549004AF5CB /* Main App Structure */,
 				8D91FEA02AE22C8C00ACB743 /* UI and Images */,
 				8DA2F333296E38C40068F761 /* Model */,
@@ -291,6 +293,7 @@
 				8DA2C40B292C1E1100705A2F /* Frameworks */,
 				8DA2C40C292C1E1100705A2F /* Resources */,
 				8D87C83C2B02FEEA009BBE56 /* Embed Frameworks */,
+				8D6DD17B2B16F96B00CA2F20 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -305,6 +308,7 @@
 				8D87C81F2B02FBA7009BBE56 /* FirebaseFirestoreSwift */,
 				8D87C8212B02FBA7009BBE56 /* FirebaseFunctions */,
 				8D87C8232B02FBA7009BBE56 /* FirebaseFunctionsCombine-Community */,
+				8D6DD17C2B16FCD900CA2F20 /* FirebaseCrashlytics */,
 			);
 			productName = RandoFacto;
 			productReference = 8DA2C40E292C1E1100705A2F /* RandoFacto.app */;
@@ -358,6 +362,31 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		8D6DD17B2B16F96B00CA2F20 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
+				"$(SRCROOT)/${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
+				"$(SRCROOT)/${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
+				"$(SRCROOT)/$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
+				"$(SRCROOT)/$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		8DA2C40A292C1E1100705A2F /* Sources */ = {
@@ -524,13 +553,15 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 200;
 				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"RandoFacto/UI and Images/Preview Content\"";
 				DEVELOPMENT_TEAM = 3B6G4T54X3;
 				ENABLE_HARDENED_RUNTIME = NO;
 				"ENABLE_HARDENED_RUNTIME[sdk=macosx*]" = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = RandoFacto/Info.plist;
+				INFOPLIST_FILE = "RandoFacto/Supporting Files/Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022-2023 SheftApps. All rights reserved.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -539,6 +570,7 @@
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UIRequiredDeviceCapabilities = "";
 				INFOPLIST_KEY_UIRequiresFullScreen = NO;
 				INFOPLIST_KEY_UIStatusBarHidden = NO;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
@@ -550,6 +582,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 2023.12;
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.tylersheft.RandoFacto;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -579,8 +612,9 @@
 				ENABLE_HARDENED_RUNTIME = NO;
 				"ENABLE_HARDENED_RUNTIME[sdk=macosx*]" = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = RandoFacto/Info.plist;
+				INFOPLIST_FILE = "RandoFacto/Supporting Files/Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022-2023 SheftApps. All rights reserved.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -589,6 +623,7 @@
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UIRequiredDeviceCapabilities = "";
 				INFOPLIST_KEY_UIRequiresFullScreen = NO;
 				INFOPLIST_KEY_UIStatusBarHidden = NO;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
@@ -600,6 +635,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 2023.12;
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.tylersheft.RandoFacto;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -647,6 +683,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		8D6DD17C2B16FCD900CA2F20 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8DD72BC02AC60FFE0032AAB2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
 		8D87C80F2B02FBA7009BBE56 /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = FirebaseAuth;
