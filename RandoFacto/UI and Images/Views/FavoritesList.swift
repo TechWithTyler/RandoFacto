@@ -95,7 +95,7 @@ struct FavoritesList: View {
         Button(role: .destructive) {
             viewModel.deleteFromFavorites(factText: favorite)
         } label: {
-            Label("Unfavorite", image: "star.slash")
+            Label("Unfavorite", systemImage: "star.slash")
         }
     }
     
