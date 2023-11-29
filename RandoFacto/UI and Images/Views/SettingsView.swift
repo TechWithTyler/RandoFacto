@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import SheftAppsStylishUI
 
 struct SettingsView: View {
 
@@ -19,26 +20,30 @@ struct SettingsView: View {
     var body: some View {
 #if os(macOS)
         TabView(selection: $viewModel.selectedSettingsPage) {
-            Form {
-                accountSection
+            SAMVisualEffectViewSwiftUIRepresentable {
+                Form {
+                    accountSection
+                }
             }
-            .frame(width: 400)
-            .fixedSize(horizontal: false, vertical: true)
-            .formStyle(.grouped)
-            .tabItem {
-                Label("Account", systemImage: "person.circle")
+                .frame(width: 400)
+                .fixedSize(horizontal: false, vertical: true)
+                .formStyle(.grouped)
+                .tabItem {
+                    Label("Account", systemImage: "person.circle")
+                }
+                .tag(SettingsPage.account)
+            SAMVisualEffectViewSwiftUIRepresentable {
+                Form {
+                    displaySection
+                }
             }
-            .tag(SettingsPage.account)
-            Form {
-                displaySection
-            }
-            .frame(width: 400)
-            .fixedSize(horizontal: false, vertical: true)
-            .formStyle(.grouped)
-            .tabItem {
-                Label("Display", systemImage: "textformat.size")
-            }
-            .tag(SettingsPage.display)
+                .frame(width: 400)
+                .fixedSize(horizontal: false, vertical: true)
+                .formStyle(.grouped)
+                .tabItem {
+                    Label("Display", systemImage: "textformat.size")
+                }
+                .tag(SettingsPage.display)
         }
 #else
         Form {
@@ -70,11 +75,13 @@ struct SettingsView: View {
 						viewModel.authenticationFormType = .passwordChange
 					}
 				}
-				Section {
-					Button("Logout") {
-						viewModel.logoutCurrentUser()
-					}
-					Button("Delete Account…") {
+                Section {
+                    Button("Logout") {
+                        viewModel.logoutCurrentUser()
+                    }
+                }
+                Section {
+                    Button("Delete Account…", role: .destructive) {
 						viewModel.showingDeleteAccount = true
 					}
 				}
