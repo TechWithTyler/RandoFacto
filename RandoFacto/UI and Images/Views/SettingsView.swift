@@ -22,7 +22,8 @@ struct SettingsView: View {
             Form {
                 accountSection
             }
-            .fixedSize()
+            .frame(width: 400)
+            .fixedSize(horizontal: false, vertical: true)
             .formStyle(.grouped)
             .tabItem {
                 Label("Account", systemImage: "person.circle")
@@ -31,7 +32,8 @@ struct SettingsView: View {
             Form {
                 displaySection
             }
-            .fixedSize()
+            .frame(width: 400)
+            .fixedSize(horizontal: false, vertical: true)
             .formStyle(.grouped)
             .tabItem {
                 Label("Display", systemImage: "textformat.size")

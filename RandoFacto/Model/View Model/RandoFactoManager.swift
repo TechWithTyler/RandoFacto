@@ -399,11 +399,11 @@ extension RandoFactoManager {
                                 break
                             }
                         }
-                        // 9. Notify the DispatchGroup on the main thread and call the completion handler.
-                        group.notify(queue: .main) {
-                            completionHandler(deletionError)
-                        }
                     }
+                    // 9. Notify the DispatchGroup on the main thread and call the completion handler.
+                }
+                group.notify(queue: .main) {
+                    completionHandler(deletionError)
                 }
             }
     }
@@ -690,11 +690,11 @@ extension RandoFactoManager {
                                 deletionError = error
                             }
                             group.leave()
-                            group.notify(queue: .main) {
-                                completionHandler(deletionError)
-                            }
                         }
                     }
+                }
+                group.notify(queue: .main) {
+                    completionHandler(deletionError)
                 }
             }
     }
@@ -718,7 +718,9 @@ extension RandoFactoManager {
             switch nsError.code {
                 // Network errors
             case URLError.notConnectedToInternet.rawValue:
-                errorToShow = .noInternet
+                errorToShow = .noInternetFactGeneration
+            case AuthErrorCode.networkError.rawValue:
+                errorToShow = .noInternetAuthentication
             case URLError.networkConnectionLost.rawValue:
                 errorToShow = .networkConnectionLost
             case URLError.timedOut.rawValue:
