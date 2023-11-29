@@ -67,7 +67,6 @@ struct FactView: View {
                     Text(getRandomFavoriteFactButtonTitle)
                         .frame(width: 200)
                 }
-                .disabled(viewModel.userDeletionStage != nil)
 #if os(iOS)
                 .padding()
 #endif

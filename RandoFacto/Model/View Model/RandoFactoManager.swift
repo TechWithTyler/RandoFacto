@@ -86,7 +86,7 @@ class RandoFactoManager: ObservableObject {
     
     // Whether favorite facts are available to be displayed.
     var favoriteFactsAvailable: Bool {
-        return userLoggedIn && !favoriteFacts.isEmpty
+        return userLoggedIn && !favoriteFacts.isEmpty && userDeletionStage == nil
     }
     
     // Whether the fact text view is displaying something other than a fact (i.e., a loading or error message).
