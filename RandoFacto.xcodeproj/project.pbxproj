@@ -170,6 +170,7 @@
 		8D91FEA02AE22C8C00ACB743 /* UI and Images */ = {
 			isa = PBXGroup;
 			children = (
+				8DCE5DE62B08272B00DD3CE7 /* RandoFactoCommands.swift */,
 				8DA2F332296E38AA0068F761 /* Views */,
 				8DA2C418292C1E1200705A2F /* Preview Content */,
 				8DA2C415292C1E1200705A2F /* Assets.xcassets */,
@@ -195,7 +196,6 @@
 			children = (
 				8DA2C411292C1E1100705A2F /* RandoFactoApp.swift */,
 				8D87C7CB2B02D97F009BBE56 /* AppDelegate.swift */,
-				8DCE5DE62B08272B00DD3CE7 /* RandoFactoCommands.swift */,
 			);
 			path = "Main App Structure";
 			sourceTree = "<group>";
