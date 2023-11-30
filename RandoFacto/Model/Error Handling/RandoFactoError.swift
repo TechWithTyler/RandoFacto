@@ -40,6 +40,15 @@ enum RandoFactoError: LocalizedError, Equatable {
     // Couldn't get data from server.
     case randoFactoDatabaseServerDataRetrievalError
     
+    // A login to an invalid/missing account was attempted.
+    case invalidAccount
+    
+    // The password is incorrect.
+    case incorrectPassword
+    
+    // The email address wasn't in the format email@example.xyz.
+    case invalidEmailFormat
+    
     // Password change or account deletion failed due to the user having logged into this device more than 5 minutes ago.
     case tooLongSinceLastLogin
     
@@ -81,8 +90,14 @@ enum RandoFactoError: LocalizedError, Equatable {
             return "Too many favorite fact database requests at once. Try again later."
         case .randoFactoDatabaseServerDataRetrievalError:
             return "Failed to download data from server. Using device data."
+        case .invalidAccount:
+            return "There is no account with that email address."
+        case .invalidEmailFormat:
+            return "The email address must be in the format email@example.xyz."
+        case .incorrectPassword:
+            return "Incorrect password. If you forgot your password, clear the password field and press \"\(forgotPasswordButtonTitle)\"."
         case .tooLongSinceLastLogin:
-            return "It's been too long since you last logged in on this device. Please re-login and try the operation again."
+            return "It's been more than 5 minutes since you last logged in on this device. Please re-login and try the operation again."
             // This can be written as either case .name(let propertyName) or case let .name(propertyName).
         case .unknown(let reason):
             return reason

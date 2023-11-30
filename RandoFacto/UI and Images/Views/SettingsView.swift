@@ -25,8 +25,7 @@ struct SettingsView: View {
                     accountSection
                 }
             }
-                .frame(width: 400)
-                .fixedSize(horizontal: false, vertical: true)
+            .frame(width: 400, height: viewModel.userLoggedIn ? 400 : 260)
                 .formStyle(.grouped)
                 .tabItem {
                     Label("Account", systemImage: "person.circle")

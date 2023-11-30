@@ -140,14 +140,16 @@ class RandoFactoManager: ObservableObject {
         // 1. Configure the network path monitor.
         configureNetworkPathMonitor()
         // 2. Load all the favorite facts into the app.
-        addRegisteredUsersHandler()
-        loadFavoriteFactsForCurrentUser { [self] in
-            guard notDisplayingFact else { return }
-            // 3. Generate a random fact.
-            if initialFact == 0 || favoriteFacts.isEmpty || !userLoggedIn {
-                generateRandomFact()
-            } else {
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) { [self] in
+            addRegisteredUsersHandler()
+            loadFavoriteFactsForCurrentUser { [self] in
+                guard notDisplayingFact else { return }
+                // 3. Generate a random fact.
+                if initialFact == 0 || favoriteFacts.isEmpty || !userLoggedIn {
+                    generateRandomFact()
+                } else {
                     getRandomFavoriteFact()
+                }
             }
         }
     }
@@ -164,7 +166,7 @@ class RandoFactoManager: ObservableObject {
                 goOffline()
             }
         }
-        let dispatchQueue = DispatchQueue(label: "Network Monitor")
+        let dispatchQueue = DispatchQueue(label: "Network Path Monitor")
         networkPathMonitor.start(queue: dispatchQueue)
     }
     
@@ -257,8 +259,8 @@ extension RandoFactoManager {
                             return
                         }
                         // 7. Check if the snapshot is from the cache (device data for use offline).
-                        if snapshot.metadata.isFromCache && online {
-                            // Skip the callback if it's from the cache and the device is online.
+                        if snapshot.metadata.isFromCache && online && !notDisplayingFact {
+                            // Skip the callback if it's from the cache, the device is online, and a fact is already being displayed.
                             return
                         }
                         // 8. If a change was successfully detected, update the app's favorite facts array.
@@ -280,7 +282,6 @@ extension RandoFactoManager {
                 // 2. If that fails, log an error.
                 showError(error)
             }
-        // This gets called twice
             completionHandler()
     }
     
@@ -735,6 +736,12 @@ extension RandoFactoManager {
             case FirestoreErrorCode.unavailable.rawValue:
                 // Database errors
                 errorToShow = .randoFactoDatabaseServerDataRetrievalError
+            case AuthErrorCode.userNotFound.rawValue:
+                errorToShow = .invalidAccount
+            case AuthErrorCode.wrongPassword.rawValue:
+                errorToShow = .incorrectPassword
+            case AuthErrorCode.invalidEmail.rawValue:
+                errorToShow = .invalidEmailFormat
             case AuthErrorCode.requiresRecentLogin.rawValue:
                 logoutCurrentUser()
                 authenticationFormType = nil
