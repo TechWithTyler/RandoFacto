@@ -733,8 +733,8 @@ extension RandoFactoManager {
                 errorToShow = .noFactText
             case FactGenerator.ErrorCode.failedToGetData.rawValue:
                 errorToShow = .factDataError
-            case FirestoreErrorCode.unavailable.rawValue:
                 // Database errors
+            case FirestoreErrorCode.unavailable.rawValue:
                 errorToShow = .randoFactoDatabaseServerDataRetrievalError
             case AuthErrorCode.userNotFound.rawValue:
                 errorToShow = .invalidAccount
