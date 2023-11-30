@@ -46,6 +46,7 @@ class RandoFactoManager: ObservableObject {
     @Published var selectedPage: AppPage? = .randomFact
     
     #if os(macOS)
+    // THe page currently selected in the Settings window on macOS.
     @AppStorage("selectedSettingsPage") var selectedSettingsPage: SettingsPage = .account
     #endif
     
@@ -135,11 +136,11 @@ class RandoFactoManager: ObservableObject {
     
     // MARK: - Initialization
     
-    // This initializer sets up the network path monitor and Firestore listeners, and displays a fact to the user.
+    // This initializer sets up the network path monitor and Firestore listeners, then displays a fact to the user.
     init() {
         // 1. Configure the network path monitor.
         configureNetworkPathMonitor()
-        // 2. Load all the favorite facts into the app.
+        // 2. After waiting a second for the network path monitor to configure and detect the current network connection status, load all the favorite facts into the app.
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) { [self] in
             addRegisteredUsersHandler()
             loadFavoriteFactsForCurrentUser { [self] in
