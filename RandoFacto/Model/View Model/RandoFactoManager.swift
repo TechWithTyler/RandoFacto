@@ -3,7 +3,7 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 11/29/22.
-//  Copyright © 2022-2023 SheftApps. All rights reserved.
+//  Copyright © 2022-2024 SheftApps. All rights reserved.
 //
 
 import SwiftUI
@@ -38,7 +38,7 @@ class RandoFactoManager: ObservableObject {
     @AppStorage("initialFact") var initialFact: Int = 0
     
     // The text size for facts.
-    @AppStorage("factTextSize") var factTextSize: Double = 13
+    @AppStorage("factTextSize") var factTextSize: Double = minFontSize
     
     // MARK: - Properties - Pages
     
@@ -47,7 +47,7 @@ class RandoFactoManager: ObservableObject {
     
     #if os(macOS)
     // THe page currently selected in the Settings window on macOS.
-    @AppStorage("selectedSettingsPage") var selectedSettingsPage: SettingsPage = .account
+    @AppStorage("selectedSettingsPage") var selectedSettingsPage: SettingsPage = .display
     #endif
     
     // MARK: - Properties - Authentication Form Type

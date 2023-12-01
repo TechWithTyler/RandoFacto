@@ -3,7 +3,7 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 11/9/23.
-//  Copyright © 2022-2023 SheftApps. All rights reserved.
+//  Copyright © 2022-2024 SheftApps. All rights reserved.
 //
 
 import Foundation
@@ -35,12 +35,17 @@ let generatingString = "Generating random fact…"
 // Displayed when a FactGenerator error occurs.
 let factUnavailableString = "Fact unavailable"
 
+// The title of the button/menu item used to generate a random fact.
 let generateRandomFactButtonTitle = "Generate Random Fact"
 
+// The title of the button/menu item used to get a random favorite fact.
 let getRandomFavoriteFactButtonTitle = "Get Random Favorite Fact"
 
 // The title of the button used to send a password reset email.
 let forgotPasswordButtonTitle = "Forgot Password"
+
+// The title of the "Fact on Launch" option to start the app with a random fact.
+let randomFactSettingTitle = "Random Fact"
 
 // The title of the login dialog/buttons.
 let loginText = "Login"
@@ -65,6 +70,6 @@ let emailKeyName = "email"
 
 // MARK: - Properties - Doubles
 
-var minFontSize: Double = 13
+var minFontSize: Double = 14
 
 var maxFontSize: Double = 48

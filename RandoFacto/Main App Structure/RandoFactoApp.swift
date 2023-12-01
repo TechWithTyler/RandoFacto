@@ -3,7 +3,7 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 11/21/22.
-//  Copyright © 2022-2023 SheftApps. All rights reserved.
+//  Copyright © 2022-2024 SheftApps. All rights reserved.
 //
 
 import SwiftUI
@@ -36,7 +36,7 @@ struct RandoFactoApp: App {
 
 	// The windows and views in the app.
     var body: some Scene {
-        WindowGroup(windowTitle) {
+        WindowGroup {
 			ContentView(viewModel: viewModel)
             #if os(macOS)
 				.frame(minWidth: 800, minHeight: 300, alignment: .center)

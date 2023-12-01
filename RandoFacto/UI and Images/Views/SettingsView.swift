@@ -3,7 +3,7 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 11/7/23.
-//  Copyright © 2022-2023 SheftApps. All rights reserved.
+//  Copyright © 2022-2024 SheftApps. All rights reserved.
 //
 
 import SwiftUI
@@ -21,35 +21,42 @@ struct SettingsView: View {
 #if os(macOS)
         TabView(selection: $viewModel.selectedSettingsPage) {
             SAMVisualEffectViewSwiftUIRepresentable {
-                Form {
-                    accountSection
-                }
-            }
-            .frame(width: 400, height: viewModel.userLoggedIn ? 400 : 260)
-                .formStyle(.grouped)
-                .tabItem {
-                    Label("Account", systemImage: "person.circle")
-                }
-                .tag(SettingsPage.account)
-            SAMVisualEffectViewSwiftUIRepresentable {
-                Form {
                     displaySection
-                }
             }
-                .frame(width: 400)
-                .fixedSize(horizontal: false, vertical: true)
+            .frame(width: 400, height: viewModel.userLoggedIn ? 390 : 280)
                 .formStyle(.grouped)
                 .tabItem {
-                    Label("Display", systemImage: "textformat.size")
+                    Label(SettingsPage.display.rawValue.capitalized, systemImage: "textformat.size")
                 }
                 .tag(SettingsPage.display)
+            SAMVisualEffectViewSwiftUIRepresentable {
+                    accountSection
+            }
+            .frame(width: 400, height: 260)
+                .formStyle(.grouped)
+                .tabItem {
+                    Label(SettingsPage.account.rawValue.capitalized, systemImage: "person.circle")
+                }
+                .tag(SettingsPage.account)
         }
 #else
-        Form {
-                accountSection
-                displaySection
-            Button("Help…") {
-                showHelp()
+        NavigationStack {
+            Form {
+                Section {
+                    NavigationLink(SettingsPage.display.rawValue.capitalized) {
+                        displaySection
+                            .navigationTitle(SettingsPage.display.rawValue.capitalized)
+                    }
+                    NavigationLink(SettingsPage.account.rawValue.capitalized) {
+                        accountSection
+                            .navigationTitle(SettingsPage.account.rawValue.capitalized)
+                    }
+                }
+                Section {
+                    Button("Help…") {
+                        showHelp()
+                    }
+                }
             }
         }
             .navigationTitle("Settings")
@@ -59,19 +66,13 @@ struct SettingsView: View {
     }
 
 	var accountSection: some View {
-		Group {
+		Form {
 			Text((viewModel.firebaseAuthentication.currentUser?.email) ?? "Login to your RandoFacto account to save favorite facts to view on all your devices, even while offline.")
 				.font(.system(size: 24))
 				.fontWeight(.bold)
 			if let deletionStage = viewModel.userDeletionStage {
 				LoadingIndicator(text: "Deleting \(deletionStage)…")
 			} else if viewModel.userLoggedIn {
-				Section {
-					Picker("Fact on Launch", selection: $viewModel.initialFact) {
-						Text("Random Fact").tag(0)
-						Text("Random Favorite Fact").tag(1)
-					}
-				}
 				Section {
 					Button("Change Password…") {
 						viewModel.authenticationFormType = .passwordChange
@@ -124,18 +125,34 @@ struct SettingsView: View {
 	}
     
     var displaySection: some View {
-        Section {
-            #if os(macOS)
-            textSizeSlider
-            #else
-            HStack {
-                Text(sliderText)
-                Spacer(minLength: 20)
+        Form {
+            if viewModel.userLoggedIn {
+                Section {
+                    Picker("Fact on Launch", selection: $viewModel.initialFact) {
+                        Text(randomFactSettingTitle).tag(0)
+                        Text("Random Favorite Fact").tag(1)
+                    }
+                } footer: {
+                    Text("This setting will reset to \"\(randomFactSettingTitle)\" when you logout or delete your account.")
+                }
+                }
+            Section {
+#if os(macOS)
                 textSizeSlider
+#else
+                HStack {
+                    Text(sliderText)
+                    Spacer(minLength: 20)
+                    textSizeSlider
+                }
+#endif
             }
-            #endif
+            Section {
+                Text("RandoFacto was coded in Swift by Tyler Sheft!")
+                    .font(.system(size: CGFloat(viewModel.factTextSize)))
+            }
+            .formStyle(.grouped)
         }
-        .formStyle(.grouped)
     }
     
     var textSizeSlider: some View {
