@@ -29,12 +29,13 @@ class RandoFactoManager: ObservableObject {
     
     // MARK: - Properties - Integers
     
+    // The current fact text size as an Int.
     var fontSizeValue: Int {
         return Int(factTextSize)
     }
     
     // Whether to display one of the user's favorite facts or generate a random fact when the app launches. This setting resets to 0 (Random Fact), and is hidden, when the user logs out or deletes their account.
-    // The @AppStorage property wrapper ties a property to the given UserDefaults key name. Such properties behave the same as UserDefaults get/set properties such as the "5- or 10-frame" setting in SkippyNums, but with the added benefit of automatic UI refreshing.
+    // The @AppStorage property wrapper binds a property to the given UserDefaults key name. Such properties behave the same as UserDefaults get/set properties such as the "5- or 10-frame" setting in SkippyNums, but with the added benefit of automatic UI refreshing.
     @AppStorage("initialFact") var initialFact: Int = 0
     
     // The text size for facts.
@@ -67,13 +68,13 @@ class RandoFactoManager: ObservableObject {
     
     // MARK: - Properties - Booleans
     
-    // Whether an error alert is displayed.
+    // Whether an error alert should be displayed.
     @Published var showingErrorAlert: Bool = false
     
-    // Whether the "delete account" alert is displayed.
+    // Whether the "delete account" alert should be displayed.
     @Published var showingDeleteAccount: Bool = false
     
-    // Whether the "delete all favorite facts" alert is displayed.
+    // Whether the "delete all favorite facts" alert should be displayed.
     @Published var showingDeleteAllFavoriteFacts: Bool = false
     
     // Whether the AuthenticationFormView should show a confirmation that a password reset email has been sent to the entered email address.
@@ -107,7 +108,7 @@ class RandoFactoManager: ObservableObject {
     
     // MARK: - Properties - Favorite Facts Array
     
-    // The favorite facts loaded from the Firestore database. Storing the data in this array makes getting favorite facts easier than getting the corresponding Firestore data each time, which could cause errors.
+    // The current user's favorite facts loaded from the Firestore database. Storing the data in this array makes getting favorite facts easier than getting the corresponding Firestore data each time, which could cause errors.
     @Published var favoriteFacts: [FavoriteFact] = []
     
     // MARK: - Properties - Network Monitor
@@ -159,14 +160,18 @@ class RandoFactoManager: ObservableObject {
     
     // This method configures the network path monitor's path update handler, which tells the app to enable or disable online mode, showing or hiding internet-connection-required UI based on network connection.
     func configureNetworkPathMonitor() {
+        // 1. Configure the network path monitor's path update handler.
         networkPathMonitor.pathUpdateHandler = {
             [self] path in
             if path.status == .satisfied {
+                // 2. If the path status is satisfied, the device is online, so enable online mode.
                 goOnline()
             } else {
+                // 3. Otherwise, the device is offline, so enable offline mode.
                 goOffline()
             }
         }
+        // 4. Start the network path monitor, using a separate DispatchQueue for it.
         let dispatchQueue = DispatchQueue(label: "Network Path Monitor")
         networkPathMonitor.start(queue: dispatchQueue)
     }
@@ -175,11 +180,14 @@ class RandoFactoManager: ObservableObject {
     
     // This method enables online mode.
     func goOnline() {
+        // 1. Try to enable Firestore's network features.
         firestore.enableNetwork {
             [self] error in
+            // 2. If that fails, log an error.
             if let error = error {
                 showError(error)
             } else {
+                // 3. If successful, tell the app that the device is online.
                 // Updating a published property must be done on the main thread, so we use DispatchQueue.main.async to run any code that sets such properties.
                 DispatchQueue.main.async { [self] in
                     online = true
@@ -192,11 +200,14 @@ class RandoFactoManager: ObservableObject {
     
     // This method enables offline mode.
     func goOffline() {
+        // 1. Try to disable Firestore's network features.
         firestore.disableNetwork {
             [self] error in
+            // 2. If that fails, log an error.
             if let error = error {
                 showError(error)
             } else {
+                // 3. If successful, tell the app that the device is offline.
                 DispatchQueue.main.async { [self] in
                     online = false
                 }
@@ -208,8 +219,9 @@ class RandoFactoManager: ObservableObject {
     
     // This method tries to access a random facts API URL and parse JSON data it gives back. It then feeds the fact through another API URL to check if it contains inappropriate words. We do it this way so we don't have to include inappropriate words in the app/code itself. If everything is successful, the fact is displayed to the user, or if an error occurs, it's logged.
     func generateRandomFact() {
-        // Asks the fact generator to perform its URL requests to generate a random fact.
+        // 1. Ask the fact generator to perform its URL requests to generate a random fact.
         factGenerator.generateRandomFact {
+            // 2. Display a message before starting fact generation.
             DispatchQueue.main.async { [self] in
                 factText = generatingString
             }
@@ -217,8 +229,10 @@ class RandoFactoManager: ObservableObject {
             fact, error in
             DispatchQueue.main.async { [self] in
                 if let fact = fact {
+                    // 3. If we get a fact, display it.
                     factText = fact
                 } else if let error = error {
+                    // 4. If an error occurs, log it.
                     factText = factUnavailableString
                     showError(error)
                 }
@@ -296,10 +310,11 @@ extension RandoFactoManager {
         }
     }
     
+    // This method displays favorite and switches to the "Random Fact" page.
     func displayFavoriteFact(_ favorite: String) {
         DispatchQueue.main.async { [self] in
             factText = favorite
-            selectedPage = .randomFact
+            dismissFavoriteFacts()
         }
     }
     
@@ -374,12 +389,13 @@ extension RandoFactoManager {
         guard let userEmail = firebaseAuthentication.currentUser?.email else {
             return }
         var deletionError: Error?
+        let factStorageSource: FirestoreSource = deletingUser ? .server : .cache
         // 2. Create a DispatchGroup.
         let group = DispatchGroup()
         // 3. Get all favorite facts associated with the current user. If deleting their account, get from the server instead of the cache to ensure the server data is wiped before deletion continues.
         firestore.collection(favoriteFactsCollectionName)
             .whereField(userKeyName, isEqualTo: userEmail)
-            .getDocuments(source: deletingUser ? .server : .cache) { (snapshot, error) in
+            .getDocuments(source: factStorageSource) { (snapshot, error) in
                 // 4. If that fails, log an error.
                 if let error = error {
                     deletionError = error
@@ -402,8 +418,8 @@ extension RandoFactoManager {
                             }
                         }
                     }
-                    // 9. Notify the DispatchGroup on the main thread and call the completion handler.
                 }
+                // 9. Notify the DispatchGroup on the main thread and call the completion handler.
                 group.notify(queue: .main) {
                     completionHandler(deletionError)
                 }
@@ -421,7 +437,7 @@ extension RandoFactoManager {
         DispatchQueue.main.async { [self] in
             // 1. Make sure the current user is logged in.
             guard let currentUser = firebaseAuthentication.currentUser, let email = currentUser.email else {
-                logoutMissingUser()
+                logoutCurrentUser()
                 return
             }
             // 2. Get all registered users.
@@ -454,7 +470,7 @@ extension RandoFactoManager {
         }
     }
     
-    // MARK: - Authentication - Signup/Login Request Handler
+    // MARK: - Authentication - Post-Signup/Login Request Handler
     
     // This method loads the user's favorite facts if authentication is successful. Otherwise, it logs an error.
     func handleAuthenticationRequest(with result: AuthDataResult?, error: Error?, isSignup: Bool, successHandler: @escaping ((Bool) -> Void)) {
@@ -472,7 +488,7 @@ extension RandoFactoManager {
             showError(error)
             successHandler(false)
         } else {
-            // 3. IF successful, add the user reference if signing up, or check for the user reference when logging in, adding it if it doesn't exist. If that's successful, call the success block.
+            // 3. If successful, add the user reference if signing up, or check for the user reference when logging in, adding it if it doesn't exist. If that's successful, call the success block.
             if isSignup {
                 if let email = result?.user.email, let id = result?.user.uid {
                     addUserReference(email: email, id: id) { [self] error in
@@ -556,6 +572,7 @@ extension RandoFactoManager {
     
     // This method takes the user's credentials and tries to sign them up for a RandoFacto database account.
     func signup(email: String, password: String, successHandler: @escaping ((Bool) -> Void)) {
+        isAuthenticating = true
         firebaseAuthentication.createUser(withEmail: email, password: password) { [self] result, error in
             self.handleAuthenticationRequest(with: result, error: error, isSignup: true, successHandler: successHandler)
         }
@@ -565,6 +582,7 @@ extension RandoFactoManager {
     
     // This method takes the user's credentials and tries to log them into their RandoFacto database account.
     func login(email: String, password: String, successHandler: @escaping ((Bool) -> Void)) {
+        isAuthenticating = true
         firebaseAuthentication.signIn(withEmail: email, password: password) { [self] result, error in
             handleAuthenticationRequest(with: result, error: error, isSignup: false, successHandler: successHandler)
         }
@@ -574,7 +592,9 @@ extension RandoFactoManager {
     
     // This method sends a password reset email to email. The message body is customized in RandoFacto's Firebase console.
     func sendPasswordResetLink(toEmail email: String) {
+        isAuthenticating = true
         firebaseAuthentication.sendPasswordReset(withEmail: email, actionCodeSettings: ActionCodeSettings(), completion: { [self] error in
+            isAuthenticating = false
             if let error = error {
                 showError(error)
             } else {
