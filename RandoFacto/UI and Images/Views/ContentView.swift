@@ -46,7 +46,7 @@ struct ContentView: View {
 #endif
 		} detail: {
 			switch viewModel.selectedPage {
-				case .randomFact:
+				case .randomFact, nil:
 					FactView(viewModel: viewModel)
 				case .favoriteFacts:
 					FavoritesList(viewModel: viewModel)
@@ -54,8 +54,6 @@ struct ContentView: View {
 				case .settings:
 					SettingsView(viewModel: viewModel)
                 #endif
-				case .none:
-					EmptyView()
 			}
 		}
 		// Error alert
@@ -113,9 +111,10 @@ struct ContentView: View {
 		}
 	}
 
+    @ViewBuilder
 	func label(for tab: AppPage) -> some View {
 		switch tab {
-			case .randomFact:
+            case .randomFact:
 				Label("Random Fact", systemImage: "questionmark")
 			case .favoriteFacts:
 				Label("Favorite Facts", systemImage: "star")

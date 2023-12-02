@@ -150,16 +150,26 @@ struct AuthenticationFormView: View {
 	// MARK: - Credential Fields
 
 	var credentialFields: some View {
-		Section {
-			if viewModel.authenticationFormType != .passwordChange {
-				FormTextField("Email", text: $email)
-					.textContentType(.username)
+        Section {
+            if viewModel.authenticationFormType != .passwordChange {
+                HStack {
+                    FormTextField("Email", text: $email)
+                        .textContentType(.username)
 #if os(iOS)
-					.keyboardType(.emailAddress)
+                        .keyboardType(.emailAddress)
 #endif
-			}
-			ViewablePasswordField("Password", text: $password, signup: viewModel.authenticationFormType == .signup)
-		}
+                    if viewModel.invalidCredentialField == 0 {
+                        InvalidCredentialsImage()
+                    }
+                }
+            }
+            HStack {
+                ViewablePasswordField("Password", text: $password, signup: viewModel.authenticationFormType == .signup)
+            }
+            if viewModel.invalidCredentialField == 0 {
+                InvalidCredentialsImage()
+            }
+        }
 	}
 
 }

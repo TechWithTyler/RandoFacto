@@ -91,6 +91,7 @@ struct FavoritesList: View {
         .frame(minWidth: 400, minHeight: 300)
     }
     
+    @ViewBuilder
     func unfavoriteAction(for favorite: String) -> some View {
         Button(role: .destructive) {
             viewModel.deleteFromFavorites(factText: favorite)

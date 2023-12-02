@@ -56,6 +56,22 @@ class RandoFactoManager: ObservableObject {
     // The authentication form to display, or nil if none are to be displayed.
     @Published var authenticationFormType: Authentication.FormType? = nil
     
+    // MARK: - Properties - Colors
+    
+    var invalidCredentialField: Int? {
+        if let errorText = authenticationErrorText {
+            if errorText.lowercased().contains("email") {
+                return 0
+            } else if errorText.lowercased().contains("password") {
+                return 1
+            } else {
+                return nil
+            }
+        } else {
+            return nil
+        }
+    }
+    
     // MARK: - Properties - RandoFacto Error
     
     // The error to show to the user as an alert or in the authentication dialog.
