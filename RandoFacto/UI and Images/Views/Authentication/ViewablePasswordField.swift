@@ -3,6 +3,7 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 11/9/23.
+//  Copyright © 2022-2024 SheftApps. All rights reserved.
 //
 
 import SwiftUI
@@ -37,17 +38,14 @@ struct ViewablePasswordField: View {
             Button {
                 showPassword.toggle()
             } label: {
-                VStack {
-                    Image(systemName: showPassword ? "eye.slash" : "eye")
-                        .frame(minHeight: 20)
-                    Text(showPassword ? "Hide" : "Show")
-                }
-                .frame(minWidth: 50, maxWidth: 50)
+                Label(showPassword ? "Hide" : "Show", systemImage: showPassword ? "eye.slash" : "eye")
+                    .labelStyle(.topIconBottomTitle)
             }
                 .buttonStyle(.borderless)
             #if os(iOS)
                 .hoverEffect(.highlight)
             #endif
+                .tint(.primary)
         }
     }
 }

@@ -42,7 +42,7 @@ let generateRandomFactButtonTitle = "Generate Random Fact"
 let getRandomFavoriteFactButtonTitle = "Get Random Favorite Fact"
 
 // The title of the button used to send a password reset email.
-let forgotPasswordButtonTitle = "Forgot Password"
+let forgotPasswordButtonTitle = "Forgot"
 
 // The title of the "Fact on Launch" option to start the app with a random fact.
 let randomFactSettingTitle = "Random Fact"

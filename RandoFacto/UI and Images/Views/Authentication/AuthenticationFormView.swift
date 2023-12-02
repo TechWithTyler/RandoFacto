@@ -132,7 +132,7 @@ struct AuthenticationFormView: View {
             viewModel.authenticationFormType = nil
         }
 #if os(macOS)
-        .frame(minWidth: 395, maxWidth: 395, minHeight: 395, maxHeight: 395)
+        .frame(minWidth: 495, maxWidth: 495, minHeight: 365, maxHeight: 365)
 #endif
     }
     
@@ -152,26 +152,32 @@ struct AuthenticationFormView: View {
                     }
                 }
             }
-            VStack(alignment: .leading) {
                 HStack {
                     ViewablePasswordField("Password", text: $password, signup: viewModel.authenticationFormType == .signup)
+                    if viewModel.authenticationFormType == .login && !email.isEmpty && password.isEmpty {
+                        Divider()
+                        Button {
+                            viewModel.errorToShow = nil
+                            viewModel.showingResetPasswordEmailSent = false
+                            viewModel.authenticationErrorText = nil
+                            viewModel.sendPasswordResetLink(toEmail: email)
+                        } label: {
+                            Label("Forgot", systemImage: "questionmark.circle.fill")
+                                .labelStyle(.topIconBottomTitle)
+                                .buttonStyle(.borderless)
+                            #if os(iOS)
+                                .hoverEffect(.highlight)
+                            #endif
+                                .tint(.primary)
+                        }
+                        .disabled(viewModel.isAuthenticating)
+#if os(macOS)
+                        .buttonStyle(.link)
+#endif
+                    }
                     if viewModel.invalidCredentialField == 1 {
                         FieldNeedsAttentionButton()
                     }
-                }
-                if viewModel.authenticationFormType == .login && !email.isEmpty && password.isEmpty {
-                    Divider()
-                    Button(forgotPasswordButtonTitle) {
-                        viewModel.errorToShow = nil
-                        viewModel.showingResetPasswordEmailSent = false
-                        viewModel.authenticationErrorText = nil
-                        viewModel.sendPasswordResetLink(toEmail: email)
-                    }
-                    .disabled(viewModel.isAuthenticating)
-#if os(macOS)
-                    .buttonStyle(.link)
-#endif
-                }
             }
         }
         .disabled(viewModel.isAuthenticating)
