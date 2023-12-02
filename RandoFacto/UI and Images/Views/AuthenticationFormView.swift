@@ -143,7 +143,7 @@ struct AuthenticationFormView: View {
             viewModel.authenticationFormType = nil
 		}
 #if os(macOS)
-		.frame(minWidth: 400, maxWidth: 400, minHeight: 400, maxHeight: 400)
+		.frame(minWidth: 325, maxWidth: 325, minHeight: 410, maxHeight: 410)
 #endif
 	}
 

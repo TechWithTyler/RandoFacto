@@ -79,8 +79,8 @@ struct SettingsView: View {
 					}
 				}
                 Section {
-                    Button("Logout") {
-                        viewModel.logoutCurrentUser()
+                    Button("Logout…") {
+                        viewModel.showingLogout = true
                     }
                 }
                 Section {
@@ -99,7 +99,18 @@ struct SettingsView: View {
 		}
 		.formStyle(.grouped)
 		// Delete account alert
-		.alert("Delete your account?", isPresented: $viewModel.showingDeleteAccount, actions: {
+        .alert("Logout?", isPresented: $viewModel.showingLogout, actions: {
+            Button("Cancel", role: .cancel) {
+                viewModel.showingLogout = false
+            }
+            Button("Logout") {
+                viewModel.logoutCurrentUser()
+                viewModel.showingLogout = false
+            }
+        }, message: {
+            Text("You won't be able to save favorite facts to view offline until you login again!")
+        })
+		.alert("Are you sure you REALLY want to delete your account?", isPresented: $viewModel.showingDeleteAccount, actions: {
 			Button("Cancel", role: .cancel) {
 				viewModel.showingDeleteAccount = false
 			}
@@ -113,7 +124,7 @@ struct SettingsView: View {
 				}
 			}
 		}, message: {
-			Text("You won't be able to save favorite facts to view offline!")
+			Text("You won't be able to save favorite facts to view offline! This can't be undone!")
 		})
 		#if os(macOS)
 		.dialogSeverity(.critical)

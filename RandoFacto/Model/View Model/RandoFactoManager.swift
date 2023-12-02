@@ -71,6 +71,9 @@ class RandoFactoManager: ObservableObject {
     // Whether an error alert should be displayed.
     @Published var showingErrorAlert: Bool = false
     
+    // Whether the "logout" alert should be displayed.
+    @Published var showingLogout: Bool = false
+    
     // Whether the "delete account" alert should be displayed.
     @Published var showingDeleteAccount: Bool = false
     
@@ -322,7 +325,7 @@ extension RandoFactoManager {
     
     // This method switches the current page from favoriteFacts to randomFact if a user logs out or is being deleted.
     func dismissFavoriteFacts() {
-        if (!userLoggedIn || userDeletionStage != nil) && selectedPage == .favoriteFacts {
+        if selectedPage == .favoriteFacts {
             DispatchQueue.main.async { [self] in
                 selectedPage = .randomFact
             }

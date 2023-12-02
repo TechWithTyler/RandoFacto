@@ -92,10 +92,14 @@ struct ContentView: View {
 		}
 		// User login state change/user deletion
 		.onChange(of: viewModel.userDeletionStage) { value in
-			viewModel.dismissFavoriteFacts()
+            if value != nil {
+                viewModel.dismissFavoriteFacts()
+            }
 		}
 		.onChange(of: viewModel.userLoggedIn) { value in
-			viewModel.dismissFavoriteFacts()
+            if value == false {
+                viewModel.dismissFavoriteFacts()
+            }
 		}
 		// Error sound/haptics
 		.onChange(of: viewModel.errorToShow) { value in
