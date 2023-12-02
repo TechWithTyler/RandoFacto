@@ -99,17 +99,6 @@ struct SettingsView: View {
 		}
 		.formStyle(.grouped)
 		// Delete account alert
-        .alert("Logout?", isPresented: $viewModel.showingLogout, actions: {
-            Button("Cancel", role: .cancel) {
-                viewModel.showingLogout = false
-            }
-            Button("Logout") {
-                viewModel.logoutCurrentUser()
-                viewModel.showingLogout = false
-            }
-        }, message: {
-            Text("You won't be able to save favorite facts to view offline until you login again!")
-        })
 		.alert("Are you sure you REALLY want to delete your account?", isPresented: $viewModel.showingDeleteAccount, actions: {
 			Button("Cancel", role: .cancel) {
 				viewModel.showingDeleteAccount = false
@@ -129,6 +118,18 @@ struct SettingsView: View {
 		#if os(macOS)
 		.dialogSeverity(.critical)
 		#endif
+        // Logout alert
+        .alert("Logout?", isPresented: $viewModel.showingLogout, actions: {
+            Button("Cancel", role: .cancel) {
+                viewModel.showingLogout = false
+            }
+            Button("Logout") {
+                viewModel.logoutCurrentUser()
+                viewModel.showingLogout = false
+            }
+        }, message: {
+            Text("You won't be able to save favorite facts to view offline until you login again!")
+        })
 		// Authentication form
 		.sheet(item: $viewModel.authenticationFormType) {_ in 
 			AuthenticationFormView(viewModel: viewModel)

@@ -20,22 +20,21 @@ struct AuthenticationMessageView: View {
     }
 
     var body: some View {
-        Section {
             HStack {
+                Spacer()
                 Image(systemName: type == .confirmation ? "checkmark.circle.fill" : errorSymbolName)
                     .symbolRenderingMode(.palette)
                     .foregroundStyle(.white, color)
                     .imageScale(.large)
                     .accessibilityLabel(type == .confirmation ? "Success" : "Error")
-                    .padding()
-                Spacer()
+                    .padding(5)
                 Text(text)
                     .font(.system(size: 18))
                     .lineLimit(10)
                     .multilineTextAlignment(.leading)
-                    .padding()
+                    .padding(5)
+                Spacer()
             }
-        }
         .foregroundStyle(color)
         .background(color.opacity(0.25))
         .containerShape(.rect(cornerRadius: 5))

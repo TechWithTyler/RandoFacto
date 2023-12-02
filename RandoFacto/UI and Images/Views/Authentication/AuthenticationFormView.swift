@@ -36,17 +36,19 @@ struct AuthenticationFormView: View {
     var body: some View {
         NavigationStack {
             Form {
-                if viewModel.authenticationFormType == .passwordChange {
-                    Text(((viewModel.firebaseAuthentication.currentUser?.email)!))
-                        .font(.system(size: 24))
-                        .fontWeight(.bold)
-                }
-                credentialFields
-                if viewModel.showingResetPasswordEmailSent {
-                    AuthenticationMessageView(text: "A password reset email has been sent to \"\(email)\". Follow the instructions to reset your password.", type: .confirmation)
-                }
-                if let errorText = viewModel.authenticationErrorText {
-                    AuthenticationMessageView(text: errorText, type: .error)
+                Section {
+                    if viewModel.authenticationFormType == .passwordChange {
+                        Text(((viewModel.firebaseAuthentication.currentUser?.email)!))
+                            .font(.system(size: 24))
+                            .fontWeight(.bold)
+                    }
+                    credentialFields
+                    if viewModel.showingResetPasswordEmailSent {
+                        AuthenticationMessageView(text: "A password reset email has been sent to \"\(email)\". Follow the instructions to reset your password.", type: .confirmation)
+                    }
+                    if let errorText = viewModel.authenticationErrorText {
+                        AuthenticationMessageView(text: errorText, type: .error)
+                    }
                 }
             }
             .formStyle(.grouped)
@@ -139,44 +141,36 @@ struct AuthenticationFormView: View {
     // MARK: - Credential Fields
     
     var credentialFields: some View {
-        Section {
+        Group {
             if viewModel.authenticationFormType != .passwordChange {
-                HStack {
+                VStack {
                     FormTextField("Email", text: $email)
                         .textContentType(.username)
 #if os(iOS)
                         .keyboardType(.emailAddress)
 #endif
                     if viewModel.invalidCredentialField == 0 {
-                        FieldNeedsAttentionButton()
+                        FieldNeedsAttentionView()
                     }
                 }
             }
-                HStack {
                     ViewablePasswordField("Password", text: $password, signup: viewModel.authenticationFormType == .signup)
                     if viewModel.authenticationFormType == .login && !email.isEmpty && password.isEmpty {
-                        Divider()
                         Button {
                             viewModel.errorToShow = nil
                             viewModel.showingResetPasswordEmailSent = false
                             viewModel.authenticationErrorText = nil
                             viewModel.sendPasswordResetLink(toEmail: email)
                         } label: {
-                            Label("Forgot", systemImage: "questionmark.circle.fill")
-                                .labelStyle(.topIconBottomTitle)
-                                .buttonStyle(.borderless)
-                            #if os(iOS)
-                                .hoverEffect(.highlight)
-                            #endif
-                                .tint(.primary)
+                            Label(forgotPasswordButtonTitle, systemImage: "questionmark.circle.fill")
+                                .labelStyle(.titleAndIcon)
                         }
                         .disabled(viewModel.isAuthenticating)
 #if os(macOS)
                         .buttonStyle(.link)
 #endif
-                    }
                     if viewModel.invalidCredentialField == 1 {
-                        FieldNeedsAttentionButton()
+                        FieldNeedsAttentionView()
                     }
             }
         }
