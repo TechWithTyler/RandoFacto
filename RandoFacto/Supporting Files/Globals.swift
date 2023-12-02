@@ -68,6 +68,10 @@ let userKeyName = "user"
 // The key name of a registered user's email.
 let emailKeyName = "email"
 
+let fieldNeedsAttentionString = "This field needs your attention."
+
+let errorSymbolName = "exclamationmark.circle.fill"
+
 // MARK: - Properties - Doubles
 
 var minFontSize: Double = 14

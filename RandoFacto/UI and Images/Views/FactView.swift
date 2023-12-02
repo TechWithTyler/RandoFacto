@@ -40,6 +40,7 @@ struct FactView: View {
                 .font(.system(size: CGFloat(viewModel.factTextSize)))
                 .isTextSelectable(!(viewModel.notDisplayingFact || viewModel.factText == factUnavailableString))
                 .multilineTextAlignment(.center)
+                .animation(.default, value: viewModel.factTextSize)
     }
     
     var footer: some View {

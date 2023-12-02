@@ -162,6 +162,7 @@ struct SettingsView: View {
                 Text("RandoFacto was coded in Swift by Tyler Sheft!")
                     .font(.system(size: CGFloat(viewModel.factTextSize)))
             }
+            .animation(.default, value: viewModel.factTextSize)
             .formStyle(.grouped)
         }
     }

@@ -587,6 +587,13 @@ extension RandoFactoManager {
             }
     }
     
+    // MARK: - Authentication - Credential Field Change Handler
+    
+    func credentialFieldsChanged() {
+        errorToShow = nil
+        authenticationErrorText = nil
+    }
+    
     // MARK: - Authentication - Signup
     
     // This method takes the user's credentials and tries to sign them up for a RandoFacto database account.
