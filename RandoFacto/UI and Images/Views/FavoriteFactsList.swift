@@ -1,5 +1,5 @@
 //
-//  FavoritesList.swift
+//  FavoriteFactsList.swift
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 1/23/23.
@@ -9,35 +9,18 @@
 import SwiftUI
 import SheftAppsStylishUI
 
-struct FavoritesList: View {
+struct FavoriteFactsList: View {
+    
+    // MARK: - Properties - View Model
     
     @ObservedObject var viewModel: RandoFactoManager
     
-    @State private var searchText = String()
-    
-    var searchResults: [String] {
-        let content = viewModel.favoriteFacts
-        let factText = content.map { $0.text }
-        if searchText.isEmpty {
-            return factText
-        } else {
-            let searchTermRegex = "\\b.*" + NSRegularExpression.escapedPattern(for: searchText) + ".*\\b"
-            let regex = try? NSRegularExpression(pattern: searchTermRegex, options: .caseInsensitive)
-            return factText.filter { text in
-                if let regex = regex {
-                    let range = NSRange(location: 0, length: text.utf16.count)
-                    return regex.firstMatch(in: text, options: [], range: range) != nil
-                } else {
-                    return false
-                }
-            }
-        }
-    }
-
+    // MARK: - Body
     
     var body: some View {
         VStack {
             if viewModel.favoriteFacts.isEmpty {
+                // Favorite facts empty display
                 VStack {
                     Text("No Favorites")
                         .font(.largeTitle)
@@ -46,7 +29,8 @@ struct FavoritesList: View {
                 }
                 .foregroundColor(.secondary)
                 .padding()
-            } else if searchResults.isEmpty {
+            } else if viewModel.searchResults.isEmpty {
+                // No matches display
                 VStack {
                     Text("No Matches")
                         .font(.largeTitle)
@@ -56,23 +40,10 @@ struct FavoritesList: View {
                 .foregroundColor(.secondary)
                 .padding()
             } else {
+                // Favorite facts list
                 List {
-                    Section(header:
-                                HStack {
-                        Spacer()
-                        VStack(alignment: .center) {
-                            Text("Favorite facts: \(searchResults.count)")
-                                .multilineTextAlignment(.center)
-                                .padding(10)
-                                .font(.title)
-                            Text("Select a favorite fact to display it.")
-                                .multilineTextAlignment(.center)
-                                .padding(10)
-                                .font(.callout)
-                        }
-                        Spacer()
-                    }) {
-                        ForEach(searchResults.sorted(by: >), id: \.self) {
+                    Section(header: header) {
+                        ForEach(viewModel.sortedFavoriteFacts, id: \.self) {
                             favorite in
                             Button {
                                 viewModel.displayFavoriteFact(favorite)
@@ -97,18 +68,49 @@ struct FavoritesList: View {
                 }
             }
         }
-        .animation(.default, value: searchResults)
-        .searchable(text: $searchText, placement: .toolbar, prompt: "Search Favorite Facts")
+        .animation(.default, value: viewModel.sortedFavoriteFacts)
+        .searchable(text: $viewModel.searchText, placement: .toolbar, prompt: "Search Favorite Facts")
         // Toolbar
         .toolbar {
             ToolbarItem(placement: .automatic) {
-                UnfavoriteAllButton(viewModel: viewModel)
-                    .help("Unfavorite All")
+                Menu {
+                    Picker("Sort", selection: $viewModel.sortFavoriteFactsAscending) {
+                        Text("Sort Ascending (A-Z)").tag(true)
+                        Text("Sort Descending (Z-A)").tag(false)
+                    }
+                    .pickerStyle(.menu)
+                    Divider()
+                    UnfavoriteAllButton(viewModel: viewModel)
+                        .help("Unfavorite All")
+                } label: {
+                    OptionsMenuLabel()
+                }
             }
         }
         .navigationTitle("Favorite Facts List")
         .frame(minWidth: 400, minHeight: 300)
     }
+    
+    // MARK: - Header
+    
+    var header: some View {
+        HStack {
+            Spacer()
+            VStack(alignment: .center) {
+                Text("Favorite facts: \(viewModel.searchResults.count)")
+                    .multilineTextAlignment(.center)
+                    .padding(10)
+                    .font(.title)
+                Text("Select a favorite fact to display it.")
+                    .multilineTextAlignment(.center)
+                    .padding(10)
+                    .font(.callout)
+            }
+            Spacer()
+        }
+    }
+    
+    // MARK: - Unfavorite Action
     
     @ViewBuilder
     func unfavoriteAction(for favorite: String) -> some View {
@@ -122,5 +124,5 @@ struct FavoritesList: View {
 }
 
 #Preview {
-    FavoritesList(viewModel: RandoFactoManager())
+    FavoriteFactsList(viewModel: RandoFactoManager())
 }

@@ -49,7 +49,7 @@ struct ContentView: View {
 				case .randomFact, nil:
 					FactView(viewModel: viewModel)
 				case .favoriteFacts:
-					FavoritesList(viewModel: viewModel)
+					FavoriteFactsList(viewModel: viewModel)
                 #if !os(macOS)
 				case .settings:
 					SettingsView(viewModel: viewModel)
