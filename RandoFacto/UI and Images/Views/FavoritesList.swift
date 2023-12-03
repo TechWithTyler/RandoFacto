@@ -21,17 +21,36 @@ struct FavoritesList: View {
         if searchText.isEmpty {
             return factText
         } else {
-            return factText.filter { $0.lowercased().contains(searchText.lowercased()) }
+            let searchTermRegex = "\\b.*" + NSRegularExpression.escapedPattern(for: searchText) + ".*\\b"
+            let regex = try? NSRegularExpression(pattern: searchTermRegex, options: .caseInsensitive)
+            return factText.filter { text in
+                if let regex = regex {
+                    let range = NSRange(location: 0, length: text.utf16.count)
+                    return regex.firstMatch(in: text, options: [], range: range) != nil
+                } else {
+                    return false
+                }
+            }
         }
     }
+
     
     var body: some View {
         VStack {
-            if searchResults.isEmpty {
+            if viewModel.favoriteFacts.isEmpty {
                 VStack {
                     Text("No Favorites")
                         .font(.largeTitle)
                     Text("Save facts to view offline by pressing the \(Image(systemName: "star")) button.")
+                        .font(.callout)
+                }
+                .foregroundColor(.secondary)
+                .padding()
+            } else if searchResults.isEmpty {
+                VStack {
+                    Text("No Matches")
+                        .font(.largeTitle)
+                    Text("Please check your search terms.")
                         .font(.callout)
                 }
                 .foregroundColor(.secondary)
