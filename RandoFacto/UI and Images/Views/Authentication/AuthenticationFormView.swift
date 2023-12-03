@@ -154,7 +154,12 @@ struct AuthenticationFormView: View {
                     }
                 }
             }
-                    ViewablePasswordField("Password", text: $password, signup: viewModel.authenticationFormType == .signup)
+            VStack {
+                ViewablePasswordField("Password", text: $password, signup: viewModel.authenticationFormType == .signup)
+                if viewModel.invalidCredentialField == 1 {
+                    FieldNeedsAttentionView()
+                }
+            }
                     if viewModel.authenticationFormType == .login && !email.isEmpty && password.isEmpty {
                         Button {
                             viewModel.errorToShow = nil
@@ -169,9 +174,6 @@ struct AuthenticationFormView: View {
 #if os(macOS)
                         .buttonStyle(.link)
 #endif
-                    if viewModel.invalidCredentialField == 1 {
-                        FieldNeedsAttentionView()
-                    }
             }
         }
         .disabled(viewModel.isAuthenticating)

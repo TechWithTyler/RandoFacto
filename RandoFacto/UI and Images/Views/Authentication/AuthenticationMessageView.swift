@@ -26,7 +26,7 @@ struct AuthenticationMessageView: View {
                     .symbolRenderingMode(.palette)
                     .foregroundStyle(.white, color)
                     .imageScale(.large)
-                    .accessibilityLabel(type == .confirmation ? "Success" : "Error")
+                    .accessibilityHidden(true)
                     .padding(5)
                 Text(text)
                     .font(.system(size: 18))

@@ -31,7 +31,7 @@ struct FavoritesList: View {
                 VStack {
                     Text("No Favorites")
                         .font(.largeTitle)
-                    Text("Save facts to view offline by pressing the star button.")
+                    Text("Save facts to view offline by pressing the \(Image(systemName: "star")) button.")
                         .font(.callout)
                 }
                 .foregroundColor(.secondary)
