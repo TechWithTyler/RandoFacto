@@ -27,7 +27,7 @@ class RandoFactoManager: ObservableObject {
     // The text to display in the authentication error label in the authentication (login/signup/password change) dialogs.
     @Published var authenticationErrorText: String? = nil
     
-    // The search text.
+    // The FavoriteFactsList search text.
     @Published var searchText = String()
     
     // The favorite facts that match searchText.
@@ -58,6 +58,7 @@ class RandoFactoManager: ObservableObject {
         }
     }
     
+    // The favorite facts list, sorted in either A-Z or Z-A order.
     var sortedFavoriteFacts: [String] {
         return searchResults.sorted { a, z in
             return sortFavoriteFactsAscending ? a < z : a > z
@@ -69,6 +70,23 @@ class RandoFactoManager: ObservableObject {
     // The current fact text size as an Int.
     var fontSizeValue: Int {
         return Int(factTextSize)
+    }
+    
+    // the credential field pertaining to an authentication error.
+    var invalidCredentialField: Int? {
+        if let errorText = authenticationErrorText {
+            let emailError = errorText.lowercased().contains("email")
+            let passwordError = errorText.lowercased().contains("password")
+            if emailError {
+                return 0
+            } else if passwordError {
+                return 1
+            } else {
+                return nil
+            }
+        } else {
+            return nil
+        }
     }
     
     // Whether to display one of the user's favorite facts or generate a random fact when the app launches. This setting resets to 0 (Random Fact), and is hidden, when the user logs out or deletes their account.
@@ -92,22 +110,6 @@ class RandoFactoManager: ObservableObject {
     
     // The authentication form to display, or nil if none are to be displayed.
     @Published var authenticationFormType: Authentication.FormType? = nil
-    
-    // MARK: - Properties - Colors
-    
-    var invalidCredentialField: Int? {
-        if let errorText = authenticationErrorText {
-            if errorText.lowercased().contains("email") {
-                return 0
-            } else if errorText.lowercased().contains("password") {
-                return 1
-            } else {
-                return nil
-            }
-        } else {
-            return nil
-        }
-    }
     
     // MARK: - Properties - RandoFacto Error
     
