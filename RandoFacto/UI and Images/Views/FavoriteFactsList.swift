@@ -13,13 +13,13 @@ struct FavoriteFactsList: View {
     
     // MARK: - Properties - View Model
     
-    @ObservedObject var viewModel: RandoFactoManager
+    @ObservedObject var viewModel: RandoFactoViewModel
     
     // MARK: - Body
     
     var body: some View {
         VStack {
-            if viewModel.favoriteFacts.isEmpty {
+            if viewModel.favoriteFactsDatabase.favoriteFacts.isEmpty {
                 // Favorite facts empty display
                 VStack {
                     Text("No Favorites")
@@ -29,7 +29,7 @@ struct FavoriteFactsList: View {
                 }
                 .foregroundColor(.secondary)
                 .padding()
-            } else if viewModel.searchResults.isEmpty {
+            } else if viewModel.favoriteFactsSearchManager.searchResults.isEmpty {
                 // No matches display
                 VStack {
                     Text("No Matches")
@@ -43,7 +43,7 @@ struct FavoriteFactsList: View {
                 // Favorite facts list
                 List {
                     Section(header: header) {
-                        ForEach(viewModel.sortedFavoriteFacts, id: \.self) {
+                        ForEach(viewModel.favoriteFactsSearchManager.sortedFavoriteFacts, id: \.self) {
                             favorite in
                             Button {
                                 viewModel.displayFavoriteFact(favorite)
@@ -68,13 +68,13 @@ struct FavoriteFactsList: View {
                 }
             }
         }
-        .animation(.default, value: viewModel.sortedFavoriteFacts)
-        .searchable(text: $viewModel.searchText, placement: .toolbar, prompt: "Search Favorite Facts")
+        .animation(.default, value: viewModel.favoriteFactsSearchManager.sortedFavoriteFacts)
+        .searchable(text: $viewModel.favoriteFactsSearchManager.searchText, placement: .toolbar, prompt: "Search Favorite Facts")
         // Toolbar
         .toolbar {
             ToolbarItem(placement: .automatic) {
                 Menu {
-                    Picker("Sort", selection: $viewModel.sortFavoriteFactsAscending) {
+                    Picker("Sort", selection: $viewModel.favoriteFactsSearchManager.sortFavoriteFactsAscending) {
                         Text("Sort Ascending (A-Z)").tag(true)
                         Text("Sort Descending (Z-A)").tag(false)
                     }
@@ -97,7 +97,7 @@ struct FavoriteFactsList: View {
         HStack {
             Spacer()
             VStack(alignment: .center) {
-                Text("Favorite facts: \(viewModel.searchResults.count)")
+                Text("Favorite facts: \(viewModel.favoriteFactsSearchManager.searchResults.count)")
                     .multilineTextAlignment(.center)
                     .padding(10)
                     .font(.title)
@@ -115,7 +115,7 @@ struct FavoriteFactsList: View {
     @ViewBuilder
     func unfavoriteAction(for favorite: String) -> some View {
         Button(role: .destructive) {
-            viewModel.deleteFromFavorites(factText: favorite)
+            viewModel.favoriteFactsDatabase.deleteFromFavorites(factText: favorite)
         } label: {
             Label("Unfavorite", systemImage: "star.slash")
         }
@@ -124,5 +124,5 @@ struct FavoriteFactsList: View {
 }
 
 #Preview {
-    FavoriteFactsList(viewModel: RandoFactoManager())
+    FavoriteFactsList(viewModel: RandoFactoViewModel())
 }

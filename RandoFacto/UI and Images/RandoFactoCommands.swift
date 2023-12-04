@@ -9,7 +9,7 @@ import SwiftUI
 
 struct RandoFactoCommands: Commands {
     
-    @ObservedObject var viewModel: RandoFactoManager
+    @ObservedObject var viewModel: RandoFactoViewModel
     
     // MARK: - Menu Commands
     
@@ -43,29 +43,29 @@ struct RandoFactoCommands: Commands {
                 Button(generateRandomFactButtonTitle) {
                     viewModel.generateRandomFact()
                 }
-                .disabled(!viewModel.online || viewModel.notDisplayingFact)
+                .disabled(!viewModel.networkManager.online || viewModel.notDisplayingFact)
                 .keyboardShortcut(KeyboardShortcut(KeyEquivalent("g"), modifiers: [.command, .control]))
                 Button(getRandomFavoriteFactButtonTitle) {
                     viewModel.getRandomFavoriteFact()
                 }
                 .keyboardShortcut(KeyboardShortcut(KeyEquivalent("g"), modifiers: [.command, .control, .shift]))
-                .disabled(!viewModel.favoriteFactsAvailable || viewModel.notDisplayingFact)
+                .disabled(!viewModel.favoriteFactsDatabase.favoriteFactsAvailable || viewModel.notDisplayingFact)
             }
             Section {
-                if !viewModel.notDisplayingFact && viewModel.userLoggedIn && viewModel.displayedFactIsSaved {
+                if !viewModel.notDisplayingFact && viewModel.authenticationManager.userLoggedIn && viewModel.displayedFactIsSaved {
                     Button("Delete Current Fact From Favorites") {
-                        viewModel.deleteFromFavorites(factText: viewModel.factText)
+                        viewModel.favoriteFactsDatabase.deleteFromFavorites(factText: viewModel.factText)
                     }
                     .keyboardShortcut(KeyboardShortcut(KeyEquivalent("f"), modifiers: [.command, .shift]))
                 } else {
                     Button("Save Current Fact to Favorites") {
-                        viewModel.saveToFavorites(factText: viewModel.factText)
+                        viewModel.favoriteFactsDatabase.saveToFavorites(factText: viewModel.factText)
                     }
                     .keyboardShortcut(KeyboardShortcut(KeyEquivalent("f"), modifiers: [.command, .shift]))
-                    .disabled(viewModel.notDisplayingFact || viewModel.factText == factUnavailableString || !viewModel.userLoggedIn)
+                    .disabled(viewModel.notDisplayingFact || viewModel.factText == factUnavailableString || !viewModel.authenticationManager.userLoggedIn)
                 }
             }
-            if viewModel.userLoggedIn {
+            if viewModel.authenticationManager.userLoggedIn {
                 Section {
                     UnfavoriteAllButton(viewModel: viewModel)
                 }

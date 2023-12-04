@@ -22,7 +22,7 @@ struct RandoFactoApp: App {
 	#endif
 
 	// The main model object for the app, which supplies data for its views.
-	@ObservedObject var viewModel: RandoFactoManager
+	@ObservedObject var viewModel: RandoFactoViewModel
     
     var windowTitle: String {
         var appName = (Bundle.main.infoDictionary?[kCFBundleNameKey as String] as? String)!
@@ -80,7 +80,7 @@ struct RandoFactoApp: App {
 		settings.dispatchQueue = .main
 		firestore.settings = settings
 		// 5. Configure the RandoFacto view model.
-		viewModel = RandoFactoManager()
+		viewModel = RandoFactoViewModel()
 	}
 
 }

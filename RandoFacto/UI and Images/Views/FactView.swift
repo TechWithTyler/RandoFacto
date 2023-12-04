@@ -13,7 +13,7 @@ struct FactView: View {
     
     // MARK: - Properties - Objects
     
-    @ObservedObject var viewModel: RandoFactoManager
+    @ObservedObject var viewModel: RandoFactoViewModel
     
     // MARK: - View
     
@@ -47,7 +47,7 @@ struct FactView: View {
         VStack {
             // To include a clickable link in a string, use the format [text](URL), where text is the text to be displayed and URL is the URL the link goes to.
             Text("Facts provided by [uselessfacts.jsph.pl](https://uselessfacts.jsph.pl).")
-            if viewModel.userLoggedIn {
+            if viewModel.authenticationManager.userLoggedIn {
                 Text("Favorite facts database powered by [Firebase](https://firebase.google.com).")
             }
         }
@@ -61,7 +61,7 @@ struct FactView: View {
     
     var buttons: some View {
         ConditionalHVStack {
-            if viewModel.favoriteFactsAvailable {
+            if viewModel.favoriteFactsDatabase.favoriteFactsAvailable {
                 Button {
                     viewModel.getRandomFavoriteFact()
                 } label: {
@@ -76,7 +76,7 @@ struct FactView: View {
                 .hoverEffect(.highlight)
                 #endif
             }
-            if viewModel.online {
+            if viewModel.networkManager.online {
                 Button {
                     viewModel.generateRandomFact()
                 } label: {
@@ -106,14 +106,14 @@ struct FactView: View {
                 LoadingIndicator()
             }
         } else {
-            if viewModel.factText != factUnavailableString && viewModel.userLoggedIn {
+            if viewModel.factText != factUnavailableString && viewModel.authenticationManager.userLoggedIn {
                 ToolbarItem(placement: .automatic) {
                     Button {
                         DispatchQueue.main.async {
                             if viewModel.displayedFactIsSaved {
-                                viewModel.deleteFromFavorites(factText: viewModel.factText)
+                                viewModel.favoriteFactsDatabase.deleteFromFavorites(factText: viewModel.factText)
                             } else {
-                                viewModel.saveToFavorites(factText: viewModel.factText)
+                                viewModel.favoriteFactsDatabase.saveToFavorites(factText: viewModel.factText)
                             }
                         }
                     } label: {
@@ -127,7 +127,7 @@ struct FactView: View {
                         }
                     }
                     .help(viewModel.displayedFactIsSaved ? "Unfavorite" : "Favorite")
-                    .disabled(viewModel.factText == factUnavailableString || viewModel.userDeletionStage != nil)
+                    .disabled(viewModel.factText == factUnavailableString || viewModel.authenticationManager.userDeletionStage != nil)
                 }
             }
         }
@@ -136,5 +136,5 @@ struct FactView: View {
 }
 
 #Preview {
-    ContentView(viewModel: RandoFactoManager())
+    ContentView(viewModel: RandoFactoViewModel())
 }

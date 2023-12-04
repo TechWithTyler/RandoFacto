@@ -11,7 +11,7 @@ import SheftAppsStylishUI
 
 struct ContentView: View {
 
-	@ObservedObject var viewModel: RandoFactoManager
+	@ObservedObject var viewModel: RandoFactoViewModel
 
 	@Environment(\.horizontalSizeClass) var horizontalSizeClass
 
@@ -25,10 +25,10 @@ struct ContentView: View {
 				NavigationLink(value: AppPage.randomFact) {
 					label(for: .randomFact)
 				}
-				if viewModel.userLoggedIn && viewModel.userDeletionStage == nil {
+                if viewModel.authenticationManager.userLoggedIn && viewModel.authenticationManager.userDeletionStage == nil {
 					NavigationLink(value: AppPage.favoriteFacts) {
 						label(for: .favoriteFacts)
-							.badge(viewModel.favoriteFacts.count)
+                            .badge(viewModel.favoriteFactsDatabase.favoriteFacts.count)
 					}
                     .contextMenu {
                         UnfavoriteAllButton(viewModel: viewModel)
@@ -57,10 +57,10 @@ struct ContentView: View {
 			}
 		}
 		// Error alert
-		.alert(isPresented: $viewModel.showingErrorAlert, error: viewModel.errorToShow, actions: {
+        .alert(isPresented: $viewModel.errorManager.showingErrorAlert, error: viewModel.errorManager.errorToShow, actions: {
 			Button {
-				viewModel.showingErrorAlert = false
-				viewModel.errorToShow = nil
+                viewModel.errorManager.showingErrorAlert = false
+                viewModel.errorManager.errorToShow = nil
 			} label: {
 				Text("OK")
 			}
@@ -69,17 +69,17 @@ struct ContentView: View {
 		.dialogSeverity(.critical)
 		#endif
         // Unfavorite all facts alert
-        .alert("Unfavorite all facts?", isPresented: $viewModel.showingDeleteAllFavoriteFacts, actions: {
+        .alert("Unfavorite all facts?", isPresented: $viewModel.favoriteFactsDatabase.showingDeleteAllFavoriteFacts, actions: {
             Button("Unfavorite", role: .destructive) {
-                viewModel.deleteAllFavoriteFactsForCurrentUser { error in
+                viewModel.favoriteFactsDatabase.deleteAllFavoriteFactsForCurrentUser { error in
                     if let error = error {
-                        viewModel.showError(error)
+                        viewModel.errorManager.showError(error)
                     }
-                    viewModel.showingDeleteAllFavoriteFacts = false
+                    viewModel.favoriteFactsDatabase.showingDeleteAllFavoriteFacts = false
                 }
             }
             Button("Cancel", role: .cancel) {
-                viewModel.showingDeleteAllFavoriteFacts = false
+                viewModel.favoriteFactsDatabase.showingDeleteAllFavoriteFacts = false
             }
         })
 		// Nil selection catcher
@@ -89,18 +89,18 @@ struct ContentView: View {
 			}
 		}
 		// User login state change/user deletion
-		.onChange(of: viewModel.userDeletionStage) { value in
+        .onChange(of: viewModel.authenticationManager.userDeletionStage) { value in
             if value != nil {
                 viewModel.dismissFavoriteFacts()
             }
 		}
-		.onChange(of: viewModel.userLoggedIn) { value in
+        .onChange(of: viewModel.authenticationManager.userLoggedIn) { value in
             if value == false {
                 viewModel.dismissFavoriteFacts()
             }
 		}
 		// Error sound/haptics
-		.onChange(of: viewModel.errorToShow) { value in
+        .onChange(of: viewModel.errorManager.errorToShow) { value in
 			if value != nil {
 #if os(macOS)
 				NSSound.beep()
@@ -128,5 +128,5 @@ struct ContentView: View {
 }
 
 #Preview {
-	ContentView(viewModel: RandoFactoManager())
+	ContentView(viewModel: RandoFactoViewModel())
 }

@@ -11,7 +11,7 @@ import SheftAppsStylishUI
 
 struct SettingsView: View {
 
-	@ObservedObject var viewModel: RandoFactoManager
+	@ObservedObject var viewModel: RandoFactoViewModel
     
     var sliderText: String {
         return "Fact Text Size: \(viewModel.fontSizeValue)"
@@ -23,7 +23,7 @@ struct SettingsView: View {
             SAMVisualEffectViewSwiftUIRepresentable {
                     displaySection
             }
-            .frame(width: 400, height: viewModel.userLoggedIn ? 390 : 280)
+            .frame(width: 400, height: viewModel.authenticationManager.userLoggedIn ? 390 : 280)
                 .formStyle(.grouped)
                 .tabItem {
                     Label(SettingsPage.display.rawValue.capitalized, systemImage: "textformat.size")
@@ -67,49 +67,49 @@ struct SettingsView: View {
 
 	var accountSection: some View {
 		Form {
-			Text((viewModel.firebaseAuthentication.currentUser?.email) ?? "Login to your RandoFacto account to save favorite facts to view on all your devices, even while offline.")
+            Text((viewModel.authenticationManager.firebaseAuthentication.currentUser?.email) ?? "Login to your RandoFacto account to save favorite facts to view on all your devices, even while offline.")
 				.font(.system(size: 24))
 				.fontWeight(.bold)
-			if let deletionStage = viewModel.userDeletionStage {
+            if let deletionStage = viewModel.authenticationManager.userDeletionStage {
 				LoadingIndicator(text: "Deleting \(deletionStage)…")
-			} else if viewModel.userLoggedIn {
+            } else if (viewModel.authenticationManager.userLoggedIn) {
 				Section {
 					Button("Change Password…") {
-						viewModel.authenticationFormType = .passwordChange
+                        viewModel.authenticationManager.authenticationFormType = .passwordChange
 					}
 				}
                 Section {
                     Button("Logout…") {
-                        viewModel.showingLogout = true
+                        viewModel.authenticationManager.showingLogout = true
                     }
                 }
                 Section {
                     Button("Delete Account…", role: .destructive) {
-						viewModel.showingDeleteAccount = true
+                        viewModel.authenticationManager.showingDeleteAccount = true
 					}
 				}
 			} else {
 				Button(loginText) {
-					viewModel.authenticationFormType = .login
+                    viewModel.authenticationManager.authenticationFormType = .login
 				}
 				Button(signupText) {
-					viewModel.authenticationFormType = .signup
+                    viewModel.authenticationManager.authenticationFormType = .signup
 				}
 			}
 		}
 		.formStyle(.grouped)
 		// Delete account alert
-		.alert("Are you sure you REALLY want to delete your account?", isPresented: $viewModel.showingDeleteAccount, actions: {
+        .alert("Are you sure you REALLY want to delete your account?", isPresented: $viewModel.authenticationManager.showingDeleteAccount, actions: {
 			Button("Cancel", role: .cancel) {
-				viewModel.showingDeleteAccount = false
+                viewModel.authenticationManager.showingDeleteAccount = false
 			}
 			Button("Delete", role: .destructive) {
-				viewModel.deleteCurrentUser {
+                viewModel.authenticationManager.deleteCurrentUser {
 					[self] error in
 					if let error = error {
-						viewModel.showError(error)
+                        viewModel.errorManager.showError(error)
 					}
-					viewModel.showingDeleteAccount = false
+                    viewModel.authenticationManager.showingDeleteAccount = false
 				}
 			}
 		}, message: {
@@ -119,26 +119,26 @@ struct SettingsView: View {
 		.dialogSeverity(.critical)
 		#endif
         // Logout alert
-        .alert("Logout?", isPresented: $viewModel.showingLogout, actions: {
+        .alert("Logout?", isPresented: $viewModel.authenticationManager.showingLogout, actions: {
             Button("Cancel", role: .cancel) {
-                viewModel.showingLogout = false
+                viewModel.authenticationManager.showingLogout = false
             }
             Button("Logout") {
-                viewModel.logoutCurrentUser()
-                viewModel.showingLogout = false
+                viewModel.authenticationManager.logoutCurrentUser()
+                viewModel.authenticationManager.showingLogout = false
             }
         }, message: {
             Text("You won't be able to save favorite facts to view offline until you login again!")
         })
 		// Authentication form
-		.sheet(item: $viewModel.authenticationFormType) {_ in 
+        .sheet(item: $viewModel.authenticationManager.authenticationFormType) {_ in
 			AuthenticationFormView(viewModel: viewModel)
 		}
 	}
     
     var displaySection: some View {
         Form {
-            if viewModel.userLoggedIn {
+            if viewModel.authenticationManager.userLoggedIn {
                 Section {
                     Picker("Fact on Launch", selection: $viewModel.initialFact) {
                         Text(randomFactSettingTitle).tag(0)
@@ -182,5 +182,5 @@ struct SettingsView: View {
 }
 
 #Preview {
-	SettingsView(viewModel: RandoFactoManager())
+	SettingsView(viewModel: RandoFactoViewModel())
 }
