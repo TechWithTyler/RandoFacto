@@ -303,6 +303,7 @@ class RandoFactoManager: ObservableObject {
     
 }
 
+// This is the extension which contains the network functions.
 extension RandoFactoManager {
     
     // MARK: - Favorite Facts - Loading
@@ -489,6 +490,7 @@ extension RandoFactoManager {
     
 }
 
+// This is the extension which contains the favorite facts database functions.
 extension RandoFactoManager {
     
     // MARK: - Authentication - Registered Users Handler
@@ -791,6 +793,7 @@ extension RandoFactoManager {
     
 }
 
+// This is the extension which contains the authentication/account management functions.
 extension RandoFactoManager {
     
     // MARK: - Error Handling
