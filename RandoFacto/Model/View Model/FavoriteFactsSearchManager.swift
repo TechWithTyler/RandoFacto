@@ -1,14 +1,14 @@
 //
-//  FavoriteFactSearchManager.swift
+//  FavoriteFactsSearchManager.swift
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 12/3/23.
-
+//  Copyright © 2022-2024 SheftApps. All rights reserved.
 //
 
 import SwiftUI
 
-class FavoriteFactSearchManager {
+class FavoriteFactsSearchManager {
     
     var favoriteFactsDatabase: FavoriteFactsDatabase?
     

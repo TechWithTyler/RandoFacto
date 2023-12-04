@@ -22,7 +22,7 @@ class RandoFactoViewModel: ObservableObject {
     
     @Published var favoriteFactsDatabase: FavoriteFactsDatabase 
     
-    @Published var favoriteFactsSearchManager: FavoriteFactSearchManager
+    @Published var favoriteFactsSearchManager: FavoriteFactsSearchManager
     
     @Published var errorManager: ErrorManager
     
@@ -85,7 +85,7 @@ class RandoFactoViewModel: ObservableObject {
         self.favoriteFactsDatabase = manager2
         self.networkManager = manager3
         self.errorManager = manager4
-        let manager5 = FavoriteFactSearchManager(favoriteFactsDatabase: manager2)
+        let manager5 = FavoriteFactsSearchManager(favoriteFactsDatabase: manager2)
         self.favoriteFactsSearchManager = manager5
         // 4. After waiting a second for the network path monitor to configure and detect the current network connection status, load all the favorite facts into the app.
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) { [self] in
