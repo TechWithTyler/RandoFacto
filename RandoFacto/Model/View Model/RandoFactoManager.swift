@@ -18,7 +18,8 @@ class RandoFactoManager: ObservableObject {
     // The fact generator.
     var factGenerator = FactGenerator()
     
-    @Published var favoriteFactSearchManager: FavoriteFactSearchManager
+    // Handles searching and sorting of favorite facts.
+    @Published var favoriteFactSearcher: FavoriteFactSearcher
     
     // MARK: - Properties - Strings
     
@@ -161,7 +162,7 @@ class RandoFactoManager: ObservableObject {
     
     // This initializer sets up the network path monitor and Firestore listeners, then displays a fact to the user.
     init() {
-        favoriteFactSearchManager = FavoriteFactSearchManager()
+        favoriteFactSearcher = FavoriteFactSearcher()
         // 1. Configure the network path monitor.
         configureNetworkPathMonitor()
         // 2. After waiting a second for the network path monitor to configure and detect the current network connection status, load all the favorite facts into the app.
@@ -317,7 +318,7 @@ extension RandoFactoManager {
                     // data(as:) handles the decoding of the data, so we don't need to use a Decoder object.
                     return try document.data(as: FavoriteFact.self)
                 }
-                favoriteFactSearchManager.favoriteFacts = favoriteFacts
+                favoriteFactSearcher.favoriteFacts = favoriteFacts
             } catch {
                 // 2. If that fails, log an error.
                 showError(error)

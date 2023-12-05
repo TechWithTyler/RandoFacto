@@ -1,5 +1,5 @@
 //
-//  FavoriteFactSearchManager.swift
+//  FavoriteFactSearcher.swift
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 12/5/23.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct FavoriteFactSearchManager {
+struct FavoriteFactSearcher {
     
     // MARK: - Properties - Favorite Facts List
     
