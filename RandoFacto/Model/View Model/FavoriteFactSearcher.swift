@@ -12,6 +12,7 @@ struct FavoriteFactSearcher {
     
     // MARK: - Properties - Favorite Facts List
     
+    // The favorite facts to be searched.
     var favoriteFacts: [FavoriteFact] = []
     
     // MARK: - Properties - Searching
