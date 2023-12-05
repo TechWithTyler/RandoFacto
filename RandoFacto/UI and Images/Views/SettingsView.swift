@@ -73,28 +73,37 @@ struct SettingsView: View {
 			if let deletionStage = viewModel.userDeletionStage {
 				LoadingIndicator(text: "Deleting \(deletionStage)…")
 			} else if viewModel.userLoggedIn {
-				Section {
-					Button("Change Password…") {
-						viewModel.authenticationFormType = .passwordChange
-					}
-				}
+                if viewModel.online {
+                    Section {
+                        Button("Change Password…") {
+                            viewModel.authenticationFormType = .passwordChange
+                        }
+                    }
+                }
                 Section {
                     Button("Logout…") {
                         viewModel.showingLogout = true
                     }
                 }
-                Section {
-                    Button("Delete Account…", role: .destructive) {
-						viewModel.showingDeleteAccount = true
-					}
-				}
+                if viewModel.online {
+                    Section {
+                        Button("Delete Account…", role: .destructive) {
+                            viewModel.showingDeleteAccount = true
+                        }
+                    }
+                }
 			} else {
-				Button(loginText) {
-					viewModel.authenticationFormType = .login
-				}
-				Button(signupText) {
-					viewModel.authenticationFormType = .signup
-				}
+                if viewModel.online {
+                    Button(loginText) {
+                        viewModel.authenticationFormType = .login
+                    }
+                    Button(signupText) {
+                        viewModel.authenticationFormType = .signup
+                    }
+                } else {
+                    Text("Authentication unavailable. Please check your internet connection")
+                        .font(.system(size: 24))
+                }
 			}
 		}
 		.formStyle(.grouped)

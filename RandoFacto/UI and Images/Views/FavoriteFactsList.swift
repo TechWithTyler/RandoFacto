@@ -29,7 +29,7 @@ struct FavoriteFactsList: View {
                 }
                 .foregroundColor(.secondary)
                 .padding()
-            } else if viewModel.searchResults.isEmpty {
+            } else if viewModel.favoriteFactSearcher.searchResults.isEmpty {
                 // No matches display
                 VStack {
                     Text("No Matches")
@@ -43,7 +43,7 @@ struct FavoriteFactsList: View {
                 // Favorite facts list
                 List {
                     Section(header: header) {
-                        ForEach(viewModel.sortedFavoriteFacts, id: \.self) {
+                        ForEach(viewModel.favoriteFactSearcher.sortedFavoriteFacts, id: \.self) {
                             favorite in
                             Button {
                                 viewModel.displayFavoriteFact(favorite)
@@ -68,13 +68,13 @@ struct FavoriteFactsList: View {
                 }
             }
         }
-        .animation(.default, value: viewModel.sortedFavoriteFacts)
-        .searchable(text: $viewModel.searchText, placement: .toolbar, prompt: "Search Favorite Facts")
+        .animation(.default, value: viewModel.favoriteFactSearcher.sortedFavoriteFacts)
+        .searchable(text: $viewModel.favoriteFactSearcher.searchText, placement: .toolbar, prompt: "Search Favorite Facts")
         // Toolbar
         .toolbar {
             ToolbarItem(placement: .automatic) {
                 Menu {
-                    Picker("Sort", selection: $viewModel.sortFavoriteFactsAscending) {
+                    Picker("Sort", selection: $viewModel.favoriteFactSearcher.sortFavoriteFactsAscending) {
                         Text("Sort Ascending (A-Z)").tag(true)
                         Text("Sort Descending (Z-A)").tag(false)
                     }
@@ -97,7 +97,7 @@ struct FavoriteFactsList: View {
         HStack {
             Spacer()
             VStack(alignment: .center) {
-                Text("Favorite facts: \(viewModel.searchResults.count)")
+                Text("Favorite facts: \(viewModel.favoriteFactSearcher.sortedFavoriteFacts.count)")
                     .multilineTextAlignment(.center)
                     .padding(10)
                     .font(.title)

@@ -89,28 +89,22 @@ struct AuthenticationFormView: View {
                         viewModel.authenticationErrorText = nil
                         email = email.lowercased()
                         if viewModel.authenticationFormType == .signup {
-                            viewModel.isAuthenticating = true
                             viewModel.signup(email: email, password: password) {
                                 success in
-                                viewModel.isAuthenticating = false
                                 if success {
                                     dismiss()
                                 }
                             }
                         } else if viewModel.authenticationFormType == .passwordChange {
-                            viewModel.isAuthenticating = true
                             viewModel.updatePasswordForCurrentUser(to: password) {
                                 success in
-                                viewModel.isAuthenticating = false
                                 if success {
                                     dismiss()
                                 }
                             }
                         } else {
-                            viewModel.isAuthenticating = true
                             viewModel.login(email: email, password: password) {
                                 success in
-                                viewModel.isAuthenticating = false
                                 if success {
                                     dismiss()
                                 }
@@ -129,6 +123,7 @@ struct AuthenticationFormView: View {
             }
         }
         .onDisappear {
+            email.removeAll()
             password.removeAll()
             viewModel.authenticationErrorText = nil
             viewModel.authenticationFormType = nil

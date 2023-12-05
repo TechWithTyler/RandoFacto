@@ -18,6 +18,9 @@ class RandoFactoManager: ObservableObject {
     // The fact generator.
     var factGenerator = FactGenerator()
     
+    // Handles searching and sorting of favorite facts.
+    @Published var favoriteFactSearcher = FavoriteFactSearcher()
+    
     // MARK: - Properties - Strings
     
     // The text to display in the fact text view.
@@ -26,44 +29,6 @@ class RandoFactoManager: ObservableObject {
     
     // The text to display in the authentication error label in the authentication (login/signup/password change) dialogs.
     @Published var authenticationErrorText: String? = nil
-    
-    // The FavoriteFactsList search text.
-    @Published var searchText = String()
-    
-    // The favorite facts that match searchText.
-    var searchResults: [String] {
-        // 1. Define the content being searched.
-        let content = favoriteFacts
-        // 2. Get the text from each FavoriteFact object.
-        let facts = content.map { $0.text }
-        // 3. If searchText is empty, return all facts. Otherwise, continue on to filter the results based on searchText.
-        if searchText.isEmpty {
-            return facts
-        } else {
-            return facts.filter { factText in
-                // 4. Construct a regular expression pattern with word boundaries and ".*" for partial matching.
-                let searchTermRegex = "\\b.*" + NSRegularExpression.escapedPattern(for: searchText) + ".*\\b"
-                // 5. Create an instance of NSRegularExpression with the constructed pattern and case-insensitive option
-                let regex = try? NSRegularExpression(pattern: searchTermRegex, options: .caseInsensitive)
-                // 6. Filter the facts array based on whether each fact's text matches the regular expression.
-                if let regex = regex {
-                    let range = NSRange(location: 0, length: factText.utf16.count)
-                    // 7. Check if the text contains a match for the regular expression
-                    return regex.firstMatch(in: factText, options: [], range: range) != nil
-                } else {
-                    // 8. If the text doesn't contain a match, return false to exclude this fact.
-                    return false
-                }
-            }
-        }
-    }
-    
-    // The favorite facts list, sorted in either A-Z or Z-A order.
-    var sortedFavoriteFacts: [String] {
-        return searchResults.sorted { a, z in
-            return sortFavoriteFactsAscending ? a < z : a > z
-        }
-    }
     
     // MARK: - Properties - Integers
     
@@ -163,9 +128,6 @@ class RandoFactoManager: ObservableObject {
     var userLoggedIn: Bool {
         return firebaseAuthentication.currentUser != nil
     }
-    
-    // The sort order of the favorite facts list.
-    @AppStorage("sortFavoriteFactsAscending") var sortFavoriteFactsAscending: Bool = false
     
     // MARK: - Properties - Favorite Facts Array
     
@@ -303,7 +265,7 @@ class RandoFactoManager: ObservableObject {
     
 }
 
-// This is the extension which contains the network functions.
+// This is the extension which contains the favorite facts database functions.
 extension RandoFactoManager {
     
     // MARK: - Favorite Facts - Loading
@@ -355,6 +317,7 @@ extension RandoFactoManager {
                     // data(as:) handles the decoding of the data, so we don't need to use a Decoder object.
                     return try document.data(as: FavoriteFact.self)
                 }
+                favoriteFactSearcher.favoriteFacts = favoriteFacts
             } catch {
                 // 2. If that fails, log an error.
                 showError(error)
@@ -490,7 +453,7 @@ extension RandoFactoManager {
     
 }
 
-// This is the extension which contains the favorite facts database functions.
+// This is the extension which contains the authentication/account management functions.
 extension RandoFactoManager {
     
     // MARK: - Authentication - Registered Users Handler
@@ -542,6 +505,7 @@ extension RandoFactoManager {
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [self] in
                 loadFavoriteFactsForCurrentUser { [self] in
                     addRegisteredUsersHandler()
+                    isAuthenticating = false
                     successHandler(true)
                 }
             }
@@ -549,6 +513,7 @@ extension RandoFactoManager {
         // 2. Log an error if unsuccessful.
         if let error = error {
             showError(error)
+            isAuthenticating = false
             successHandler(false)
         } else {
             // 3. If successful, add the user reference if signing up, or check for the user reference when logging in, adding it if it doesn't exist. If that's successful, call the success block.
@@ -563,6 +528,7 @@ extension RandoFactoManager {
                         }
                     }
                 } else {
+                    isAuthenticating = false
                     successHandler(false)
                 }
             } else {
@@ -570,12 +536,14 @@ extension RandoFactoManager {
                     addMissingUserReference(email: email, id: id) { [self] error in
                         if let error = error {
                             showError(error)
+                            isAuthenticating = false
                             successHandler(false)
                         } else {
                             successBlock()
                         }
                     }
                 } else {
+                    isAuthenticating = false
                     successHandler(false)
                 }
             }
@@ -676,7 +644,9 @@ extension RandoFactoManager {
     // This method updates the current user's password to newPassword.
     func updatePasswordForCurrentUser(to newPassword: String, completionHandler: @escaping ((Bool) -> Void)) {
         guard let user = firebaseAuthentication.currentUser else { return }
+        isAuthenticating = true
         user.updatePassword(to: newPassword) { [self] error in
+            isAuthenticating = false
             if let error = error {
                 showError(error)
                 completionHandler(false)
@@ -793,7 +763,7 @@ extension RandoFactoManager {
     
 }
 
-// This is the extension which contains the authentication/account management functions.
+// This is the extension that contains the error handling function.
 extension RandoFactoManager {
     
     // MARK: - Error Handling
