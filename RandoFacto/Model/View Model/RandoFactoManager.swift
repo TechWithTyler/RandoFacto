@@ -18,6 +18,8 @@ class RandoFactoManager: ObservableObject {
     // The fact generator.
     var factGenerator = FactGenerator()
     
+    @Published var favoriteFactSearchManager: FavoriteFactSearchManager
+    
     // MARK: - Properties - Strings
     
     // The text to display in the fact text view.
@@ -26,21 +28,6 @@ class RandoFactoManager: ObservableObject {
     
     // The text to display in the authentication error label in the authentication (login/signup/password change) dialogs.
     @Published var authenticationErrorText: String? = nil
-    
-    // The FavoriteFactsList search text.
-    @Published var searchText = String()
-    
-    // The favorite facts that match searchText.
-    var searchResults: [String] {
-        FactSearchHandler.searchFacts(facts: favoriteFacts.map { $0.text }, searchText: searchText)
-    }
-    
-    // The favorite facts list, sorted in either A-Z or Z-A order.
-    var sortedFavoriteFacts: [String] {
-        return searchResults.sorted { a, z in
-            return sortFavoriteFactsAscending ? a < z : a > z
-        }
-    }
     
     // MARK: - Properties - Integers
     
@@ -141,9 +128,6 @@ class RandoFactoManager: ObservableObject {
         return firebaseAuthentication.currentUser != nil
     }
     
-    // The sort order of the favorite facts list.
-    @AppStorage("sortFavoriteFactsAscending") var sortFavoriteFactsAscending: Bool = false
-    
     // MARK: - Properties - Favorite Facts Array
     
     // The current user's favorite facts loaded from the Firestore database. Storing the data in this array makes getting favorite facts easier than getting the corresponding Firestore data each time, which could cause errors.
@@ -177,6 +161,7 @@ class RandoFactoManager: ObservableObject {
     
     // This initializer sets up the network path monitor and Firestore listeners, then displays a fact to the user.
     init() {
+        favoriteFactSearchManager = FavoriteFactSearchManager()
         // 1. Configure the network path monitor.
         configureNetworkPathMonitor()
         // 2. After waiting a second for the network path monitor to configure and detect the current network connection status, load all the favorite facts into the app.
@@ -280,7 +265,7 @@ class RandoFactoManager: ObservableObject {
     
 }
 
-// This is the extension which contains the network functions.
+// This is the extension which contains the favorite facts database functions.
 extension RandoFactoManager {
     
     // MARK: - Favorite Facts - Loading
@@ -332,6 +317,7 @@ extension RandoFactoManager {
                     // data(as:) handles the decoding of the data, so we don't need to use a Decoder object.
                     return try document.data(as: FavoriteFact.self)
                 }
+                favoriteFactSearchManager.favoriteFacts = favoriteFacts
             } catch {
                 // 2. If that fails, log an error.
                 showError(error)
@@ -467,7 +453,7 @@ extension RandoFactoManager {
     
 }
 
-// This is the extension which contains the favorite facts database functions.
+// This is the extension which contains the authentication/account management functions.
 extension RandoFactoManager {
     
     // MARK: - Authentication - Registered Users Handler
@@ -519,6 +505,7 @@ extension RandoFactoManager {
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [self] in
                 loadFavoriteFactsForCurrentUser { [self] in
                     addRegisteredUsersHandler()
+                    isAuthenticating = false
                     successHandler(true)
                 }
             }
@@ -526,6 +513,7 @@ extension RandoFactoManager {
         // 2. Log an error if unsuccessful.
         if let error = error {
             showError(error)
+            isAuthenticating = false
             successHandler(false)
         } else {
             // 3. If successful, add the user reference if signing up, or check for the user reference when logging in, adding it if it doesn't exist. If that's successful, call the success block.
@@ -540,6 +528,7 @@ extension RandoFactoManager {
                         }
                     }
                 } else {
+                    isAuthenticating = false
                     successHandler(false)
                 }
             } else {
@@ -547,12 +536,14 @@ extension RandoFactoManager {
                     addMissingUserReference(email: email, id: id) { [self] error in
                         if let error = error {
                             showError(error)
+                            isAuthenticating = false
                             successHandler(false)
                         } else {
                             successBlock()
                         }
                     }
                 } else {
+                    isAuthenticating = false
                     successHandler(false)
                 }
             }
@@ -653,7 +644,9 @@ extension RandoFactoManager {
     // This method updates the current user's password to newPassword.
     func updatePasswordForCurrentUser(to newPassword: String, completionHandler: @escaping ((Bool) -> Void)) {
         guard let user = firebaseAuthentication.currentUser else { return }
+        isAuthenticating = true
         user.updatePassword(to: newPassword) { [self] error in
+            isAuthenticating = false
             if let error = error {
                 showError(error)
                 completionHandler(false)
@@ -770,7 +763,7 @@ extension RandoFactoManager {
     
 }
 
-// This is the extension which contains the authentication/account management functions.
+// This is the extension that contains the error handling function.
 extension RandoFactoManager {
     
     // MARK: - Error Handling
