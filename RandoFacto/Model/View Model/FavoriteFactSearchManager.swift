@@ -24,24 +24,15 @@ struct FavoriteFactSearchManager {
         let content = favoriteFacts
         // 2. Get the text from each FavoriteFact object.
         let facts = content.map { $0.text }
-        // 3. If searchText is empty, return all facts. Otherwise, continue on to filter the results based on searchText.
+        // 3. If searchText is empty, return all facts.
         if searchText.isEmpty {
             return facts
         } else {
-            return facts.filter { factText in
-                // 4. Construct a regular expression pattern with word boundaries and ".*" for partial matching.
-                let searchTermRegex = "\\b.*" + NSRegularExpression.escapedPattern(for: searchText) + ".*\\b"
-                // 5. Create an instance of NSRegularExpression with the constructed pattern and case-insensitive option
-                let regex = try? NSRegularExpression(pattern: searchTermRegex, options: .caseInsensitive)
-                // 6. Filter the facts array based on whether each fact's text matches the regular expression.
-                if let regex = regex {
-                    let range = NSRange(location: 0, length: factText.utf16.count)
-                    // 7. Check if the text contains a match for the regular expression
-                    return regex.firstMatch(in: factText, options: [], range: range) != nil
-                } else {
-                    // 8. If the text doesn't contain a match, return false to exclude this fact.
-                    return false
-                }
+            // 4. Return facts that contain all or part of the search text.
+            return facts.filter { fact in
+                let range = fact.range(of: searchText, options: .caseInsensitive)
+                let textMatchesSearchTerm = range != nil
+                return textMatchesSearchTerm
             }
         }
     }
