@@ -19,12 +19,12 @@ class RandoFactoManager: ObservableObject {
     var factGenerator = FactGenerator()
     
     // Handles searching and sorting of favorite facts.
+    // Properties with the @Published property wrapper will trigger updates to SwiftUI views when they're changed. Their values must be value types (i.e. structs), not reference types (i.e. classes).
     @Published var favoriteFactSearcher = FavoriteFactSearcher()
     
     // MARK: - Properties - Strings
     
     // The text to display in the fact text view.
-    // Properties with the @Published property wrapper will trigger updates to SwiftUI views when they're changed. Their values must be value types (i.e. structs), not reference types (i.e. classes).
     @Published var factText: String = loadingString
     
     // The text to display in the authentication error label in the authentication (login/signup/password change) dialogs.
