@@ -57,10 +57,10 @@ struct ContentView: View {
 			}
 		}
 		// Error alert
-		.alert(isPresented: $viewModel.showingErrorAlert, error: viewModel.errorToShow, actions: {
+        .alert(isPresented: $viewModel.errorManager.showingErrorAlert, error: viewModel.errorManager.errorToShow, actions: {
 			Button {
-				viewModel.showingErrorAlert = false
-				viewModel.errorToShow = nil
+				viewModel.errorManager.showingErrorAlert = false
+				viewModel.errorManager.errorToShow = nil
 			} label: {
 				Text("OK")
 			}
@@ -73,7 +73,9 @@ struct ContentView: View {
             Button("Unfavorite", role: .destructive) {
                 viewModel.deleteAllFavoriteFactsForCurrentUser { error in
                     if let error = error {
-                        viewModel.showError(error)
+                        DispatchQueue.main.async { [self] in
+                            viewModel.errorManager.showError(error)
+                        }
                     }
                     viewModel.showingDeleteAllFavoriteFacts = false
                 }
@@ -100,7 +102,7 @@ struct ContentView: View {
             }
 		}
 		// Error sound/haptics
-		.onChange(of: viewModel.errorToShow) { value in
+		.onChange(of: viewModel.errorManager.errorToShow) { value in
 			if value != nil {
 #if os(macOS)
 				NSSound.beep()

@@ -70,7 +70,7 @@ struct AuthenticationFormView: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button {
                         viewModel.showingResetPasswordEmailSent = false
-                        viewModel.errorToShow = nil
+                        viewModel.errorManager.errorToShow = nil
                         viewModel.authenticationErrorText = nil
                         dismiss()
                     } label: {
@@ -85,7 +85,7 @@ struct AuthenticationFormView: View {
                             return
                         }
                         viewModel.showingResetPasswordEmailSent = false
-                        viewModel.errorToShow = nil
+                        viewModel.errorManager.errorToShow = nil
                         viewModel.authenticationErrorText = nil
                         email = email.lowercased()
                         if viewModel.authenticationFormType == .signup {
@@ -157,7 +157,7 @@ struct AuthenticationFormView: View {
             }
                     if viewModel.authenticationFormType == .login && !email.isEmpty && password.isEmpty {
                         Button {
-                            viewModel.errorToShow = nil
+                            viewModel.errorManager.errorToShow = nil
                             viewModel.showingResetPasswordEmailSent = false
                             viewModel.authenticationErrorText = nil
                             viewModel.sendPasswordResetLink(toEmail: email)

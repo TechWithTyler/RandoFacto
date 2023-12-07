@@ -22,6 +22,8 @@ class RandoFactoManager: ObservableObject {
     // Properties with the @Published property wrapper will trigger updates to SwiftUI views when they're changed. Their values must be value types (i.e. structs), not reference types (i.e. classes).
     @Published var favoriteFactSearcher = FavoriteFactSearcher()
     
+    @Published var errorManager = ErrorManager()
+    
     // MARK: - Properties - Strings
     
     // The text to display in the fact text view.
@@ -76,20 +78,12 @@ class RandoFactoManager: ObservableObject {
     // The authentication form to display, or nil if none are to be displayed.
     @Published var authenticationFormType: Authentication.FormType? = nil
     
-    // MARK: - Properties - RandoFacto Error
-    
-    // The error to show to the user as an alert or in the authentication dialog.
-    @Published var errorToShow: RandoFactoError?
-    
     // MARK: - Properties - Account Deletion Stage
     
     // The current stage of user deletion. Deleting a user deletes their favorite facts and reference first, then their actual account. If the user is still able to login after deletion, the actual account failed to be deleted, so the user reference will be put back.
     @Published var userDeletionStage: User.AccountDeletionStage? = nil
     
     // MARK: - Properties - Booleans
-    
-    // Whether an error alert should be displayed.
-    @Published var showingErrorAlert: Bool = false
     
     // Whether the "logout" alert should be displayed.
     @Published var showingLogout: Bool = false
@@ -208,7 +202,9 @@ class RandoFactoManager: ObservableObject {
             [self] error in
             // 2. If that fails, log an error.
             if let error = error {
-                showError(error)
+                DispatchQueue.main.async { [self] in
+                    errorManager.showError(error)
+                }
             } else {
                 // 3. If successful, tell the app that the device is online.
                 // Updating a published property must be done on the main thread, so we use DispatchQueue.main.async to run any code that sets such properties.
@@ -228,7 +224,9 @@ class RandoFactoManager: ObservableObject {
             [self] error in
             // 2. If that fails, log an error.
             if let error = error {
-                showError(error)
+                DispatchQueue.main.async { [self] in
+                    errorManager.showError(error)
+                }
             } else {
                 // 3. If successful, tell the app that the device is offline.
                 DispatchQueue.main.async { [self] in
@@ -243,7 +241,7 @@ class RandoFactoManager: ObservableObject {
     // This method tries to access a random facts API URL and parse JSON data it gives back. It then feeds the fact through another API URL to check if it contains inappropriate words. We do it this way so we don't have to include inappropriate words in the app/code itself. If everything is successful, the fact is displayed to the user, or if an error occurs, it's logged.
     func generateRandomFact() {
         // 1. Ask the fact generator to perform its URL requests to generate a random fact.
-        factGenerator.generateRandomFact {
+        factGenerator.generateRandomFact { [self] in
             // 2. Display a message before starting fact generation.
             DispatchQueue.main.async { [self] in
                 factText = generatingString
@@ -257,7 +255,7 @@ class RandoFactoManager: ObservableObject {
                 } else if let error = error {
                     // 4. If an error occurs, log it.
                     factText = factUnavailableString
-                    showError(error)
+                    errorManager.showError(error)
                 }
             }
         }
@@ -272,15 +270,16 @@ extension RandoFactoManager {
     
     // This method asynchronously loads all the favorite facts associated with the current user. Firestore doesn't have a way to associate data with the user that created it, so we have to add a "user" key to each favorite fact so when a user deletes their account, their favorite facts, but no one else's, are deleted.
     func loadFavoriteFactsForCurrentUser(completionHandler: @escaping (() -> Void)) {
-        // 1. Make sure we can get the current user.
-        guard userLoggedIn else {
-            completionHandler()
-            return
-        }
-        guard let user = firebaseAuthentication.currentUser, let userEmail = user.email else {
-            completionHandler()
-            return
-        }
+        DispatchQueue.main.async { [self] in
+            // 1. Make sure we can get the current user.
+            guard userLoggedIn else {
+                completionHandler()
+                return
+            }
+            guard let user = firebaseAuthentication.currentUser, let userEmail = user.email else {
+                completionHandler()
+                return
+            }
             // 2. Get the Firestore collection containing favorite facts.
             favoriteFactsListener = firestore.collection(favoriteFactsCollectionName)
             // 3. Filter the result to include only the current user's favorite facts.
@@ -289,8 +288,8 @@ extension RandoFactoManager {
                 .addSnapshotListener(includeMetadataChanges: true) { [self] snapshot, error in
                     // 5. Log any errors.
                     if let error = error {
-                        showError(error)
-                        completionHandler()
+                        errorManager.showError(error)
+                            completionHandler()
                     } else {
                         // 6. If no data can be found, return.
                         guard let snapshot = snapshot else {
@@ -305,6 +304,7 @@ extension RandoFactoManager {
                         // 8. If a change was successfully detected, update the app's favorite facts array.
                         updateFavoriteFactsList(from: snapshot, completionHandler: completionHandler)
                     }
+                }
         }
     }
     
@@ -320,7 +320,7 @@ extension RandoFactoManager {
                 favoriteFactSearcher.favoriteFacts = favoriteFacts
             } catch {
                 // 2. If that fails, log an error.
-                showError(error)
+                errorManager.showError(error)
             }
             completionHandler()
     }
@@ -366,7 +366,9 @@ extension RandoFactoManager {
         do {
             try firestore.collection(favoriteFactsCollectionName).addDocument(from: fact)
         } catch {
-            showError(error)
+            DispatchQueue.main.async { [self] in
+                errorManager.showError(error)
+            }
         }
     }
     
@@ -379,7 +381,7 @@ extension RandoFactoManager {
                 .getDocuments(source: .cache) { [self] snapshot, error in
                     // 2. If that fails, log an error.
                     if let error = error {
-                        showError(error)
+                        errorManager.showError(error)
                     } else {
                         // 3. Or if we're error-free, get the snapshot and delete.
                         getFavoriteFactSnapshotAndDelete(snapshot)
@@ -398,12 +400,12 @@ extension RandoFactoManager {
                     error in
                     // 3. Log an error if deletion fails.
                     if let error = error {
-                        showError(error)
+                        errorManager.showError(error)
                     }
                 }
             } else {
                 // 4. If we can't get the snapshot or corresponding data, log an error.
-                showError(favoriteFactReferenceError)
+                errorManager.showError(favoriteFactReferenceError)
             }
         }
     }
@@ -474,7 +476,13 @@ extension RandoFactoManager {
                 .addSnapshotListener(includeMetadataChanges: true) { [self] documentSnapshot, error in
                     if let error = error {
                         // 5. If that fails, log an error.
-                        showError(error)
+                        if authenticationFormType != nil {
+                        errorManager.showError(error) { [self] randoFactoError in
+                                authenticationErrorText = randoFactoError.localizedDescription
+                            }
+                        } else {
+                            errorManager.showError(error)
+                        }
                     } else {
                         // 6. Logout the user if they've been deleted from another device. We need to make sure the snapshot is from the server, not the cache, to prevent the detection of a missing user reference when logging in on a new device for the first time. We also need to make sure a user isn't currently being logged in or deleted on this device, otherwise a missing user would be detected and logged out, causing the operation to never complete.
                         guard userDeletionStage == nil && !isAuthenticating else { return }
@@ -512,17 +520,21 @@ extension RandoFactoManager {
         }
         // 2. Log an error if unsuccessful.
         if let error = error {
-            showError(error)
+            errorManager.showError(error) { [self] randoFactoError in
+                authenticationErrorText = randoFactoError.localizedDescription
             isAuthenticating = false
             successHandler(false)
+            }
         } else {
             // 3. If successful, add the user reference if signing up, or check for the user reference when logging in, adding it if it doesn't exist. If that's successful, call the success block.
             if isSignup {
                 if let email = result?.user.email, let id = result?.user.uid {
                     addUserReference(email: email, id: id) { [self] error in
                         if let error = error {
-                            showError(error)
-                            successHandler(false)
+                            errorManager.showError(error) { [self] randoFactoError in
+                                authenticationErrorText = randoFactoError.localizedDescription
+                                successHandler(false)
+                            }
                         } else {
                             successBlock()
                         }
@@ -535,9 +547,11 @@ extension RandoFactoManager {
                 if let email = result?.user.email, let id = result?.user.uid {
                     addMissingUserReference(email: email, id: id) { [self] error in
                         if let error = error {
-                            showError(error)
-                            isAuthenticating = false
-                            successHandler(false)
+                            errorManager.showError(error) { [self] randoFactoError in
+                                authenticationErrorText = randoFactoError.localizedDescription
+                                isAuthenticating = false
+                                successHandler(false)
+                            }
                         } else {
                             successBlock()
                         }
@@ -602,17 +616,21 @@ extension RandoFactoManager {
     // MARK: - Authentication - Credential Field Change Handler
     
     func credentialFieldsChanged() {
-        errorToShow = nil
-        authenticationErrorText = nil
+        DispatchQueue.main.async { [self] in
+            errorManager.errorToShow = nil
+            authenticationErrorText = nil
+        }
     }
     
     // MARK: - Authentication - Signup
     
     // This method takes the user's credentials and tries to sign them up for a RandoFacto database account.
     func signup(email: String, password: String, successHandler: @escaping ((Bool) -> Void)) {
-        isAuthenticating = true
-        firebaseAuthentication.createUser(withEmail: email, password: password) { [self] result, error in
-            self.handleAuthenticationRequest(with: result, error: error, isSignup: true, successHandler: successHandler)
+        DispatchQueue.main.async { [self] in
+            isAuthenticating = true
+            firebaseAuthentication.createUser(withEmail: email, password: password) { [self] result, error in
+                self.handleAuthenticationRequest(with: result, error: error, isSignup: true, successHandler: successHandler)
+            }
         }
     }
     
@@ -620,9 +638,11 @@ extension RandoFactoManager {
     
     // This method takes the user's credentials and tries to log them into their RandoFacto database account.
     func login(email: String, password: String, successHandler: @escaping ((Bool) -> Void)) {
-        isAuthenticating = true
-        firebaseAuthentication.signIn(withEmail: email, password: password) { [self] result, error in
-            handleAuthenticationRequest(with: result, error: error, isSignup: false, successHandler: successHandler)
+        DispatchQueue.main.async { [self] in
+            isAuthenticating = true
+            firebaseAuthentication.signIn(withEmail: email, password: password) { [self] result, error in
+                handleAuthenticationRequest(with: result, error: error, isSignup: false, successHandler: successHandler)
+            }
         }
     }
     
@@ -630,28 +650,36 @@ extension RandoFactoManager {
     
     // This method sends a password reset email to email. The message body is customized in RandoFacto's Firebase console.
     func sendPasswordResetLink(toEmail email: String) {
-        isAuthenticating = true
-        firebaseAuthentication.sendPasswordReset(withEmail: email, actionCodeSettings: ActionCodeSettings(), completion: { [self] error in
-            isAuthenticating = false
-            if let error = error {
-                showError(error)
-            } else {
-                showingResetPasswordEmailSent = true
-            }
-        })
+        DispatchQueue.main.async { [self] in
+            isAuthenticating = true
+            firebaseAuthentication.sendPasswordReset(withEmail: email, actionCodeSettings: ActionCodeSettings(), completion: { [self] error in
+                isAuthenticating = false
+                if let error = error {
+                    errorManager.showError(error) { [self] randoFactoError in
+                        authenticationErrorText = randoFactoError.localizedDescription
+                    }
+                } else {
+                    showingResetPasswordEmailSent = true
+                }
+            })
+        }
     }
     
     // This method updates the current user's password to newPassword.
     func updatePasswordForCurrentUser(to newPassword: String, completionHandler: @escaping ((Bool) -> Void)) {
         guard let user = firebaseAuthentication.currentUser else { return }
-        isAuthenticating = true
-        user.updatePassword(to: newPassword) { [self] error in
-            isAuthenticating = false
-            if let error = error {
-                showError(error)
-                completionHandler(false)
-            } else {
-                completionHandler(true)
+        DispatchQueue.main.async { [self] in
+            isAuthenticating = true
+            user.updatePassword(to: newPassword) { [self] error in
+                isAuthenticating = false
+                if let error = error {
+                    errorManager.showError(error) { [self] randoFactoError in
+                        authenticationErrorText = randoFactoError.localizedDescription
+                        completionHandler(false)
+                    }
+                } else {
+                    completionHandler(true)
+                }
             }
         }
     }
@@ -674,21 +702,25 @@ extension RandoFactoManager {
             favoriteFactsListener = nil
         } catch {
             // 3. If unsuccessful, log an error.
-            showError(error)
+            DispatchQueue.main.async { [self] in
+                errorManager.showError(error)
+            }
         }
     }
     
     // This method logs out the current user after deletion or if their reference goes missing. If the account itself still exists, logging in will put the missing reference back.
     func logoutMissingUser() {
         // 1. Delete all the missing user's favorite facts, getting the data from the server instead of the cache.
-        deleteAllFavoriteFactsForCurrentUser(forUserDeletion: true) { [self] error in
-            if let error = error {
-                // 2. If that fails, log an error.
-                showError(error)
-                return
-            } else {
-                // 3. If successful, log the user out.
-                logoutCurrentUser()
+        DispatchQueue.main.async { [self] in
+            deleteAllFavoriteFactsForCurrentUser(forUserDeletion: true) { [self] error in
+                if let error = error {
+                    // 2. If that fails, log an error.
+                    errorManager.showError(error)
+                    return
+                } else {
+                    // 3. If successful, log the user out.
+                    logoutCurrentUser()
+                }
             }
         }
     }
@@ -759,70 +791,6 @@ extension RandoFactoManager {
                     completionHandler(deletionError)
                 }
             }
-    }
-    
-}
-
-// This is the extension that contains the error handling function.
-extension RandoFactoManager {
-    
-    // MARK: - Error Handling
-    
-    // This method shows error's localizedDescription as an alert or in the authentication form.
-    func showError(_ error: Error) {
-        DispatchQueue.main.async { [self] in
-            // 1. Convert the error to NSError and print it.
-            let nsError = error as NSError
-            #if DEBUG
-            // If an unfamiliar error appears, check its code in the console and add a friendlier message if necessary.
-            print("Error: \(nsError)")
-            #endif
-            // 2. Check the error code to choose which error to show.
-            switch nsError.code {
-                // Network errors
-            case URLError.notConnectedToInternet.rawValue:
-                errorToShow = .noInternetFactGeneration
-            case AuthErrorCode.networkError.rawValue:
-                errorToShow = .noInternetAuthentication
-            case URLError.networkConnectionLost.rawValue:
-                errorToShow = .networkConnectionLost
-            case URLError.timedOut.rawValue:
-                errorToShow = .factGenerationTimedOut
-                // Fact data errors
-            case 33000...33999: /*HTTP response code + 33000 to add 33 (FD) to the beginning*/
-                errorToShow = .badHTTPResponse(domain: nsError.domain)
-            case FactGenerator.ErrorCode.noText.rawValue:
-                errorToShow = .noFactText
-            case FactGenerator.ErrorCode.failedToGetData.rawValue:
-                errorToShow = .factDataError
-                // Database errors
-            case FirestoreErrorCode.unavailable.rawValue:
-                errorToShow = .randoFactoDatabaseServerDataRetrievalError
-            case AuthErrorCode.userNotFound.rawValue:
-                errorToShow = .invalidAccount
-            case AuthErrorCode.wrongPassword.rawValue:
-                errorToShow = .incorrectPassword
-            case AuthErrorCode.invalidEmail.rawValue:
-                errorToShow = .invalidEmailFormat
-            case AuthErrorCode.requiresRecentLogin.rawValue:
-                logoutCurrentUser()
-                authenticationFormType = nil
-                errorToShow = .tooLongSinceLastLogin
-            case AuthErrorCode.quotaExceeded.rawValue:
-                errorToShow = .randoFactoDatabaseQuotaExceeded
-            default:
-                // Other errors
-                // If we get an error that hasn't been customized with a friendly message, log the localized description as is.
-                let reason = nsError.localizedDescription
-                errorToShow = .unknown(reason: reason)
-            }
-            // 3. Show the error in the login/signup dialog if they're open, otherwise show it as an alert.
-            if authenticationFormType != nil {
-                authenticationErrorText = errorToShow?.errorDescription
-            } else {
-                showingErrorAlert = true
-            }
-        }
     }
     
 }

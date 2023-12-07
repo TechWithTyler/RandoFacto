@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum RandoFactoError: LocalizedError, Equatable {
+enum RandoFactoError: LocalizedError, Equatable, Identifiable {
     
     // MARK: - Error Case Definitions - Internet Connection
     

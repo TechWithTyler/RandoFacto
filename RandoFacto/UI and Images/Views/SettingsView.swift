@@ -116,7 +116,9 @@ struct SettingsView: View {
 				viewModel.deleteCurrentUser {
 					[self] error in
 					if let error = error {
-						viewModel.showError(error)
+                        DispatchQueue.main.async { [self] in
+                            viewModel.errorManager.showError(error)
+                        }
 					}
 					viewModel.showingDeleteAccount = false
 				}
