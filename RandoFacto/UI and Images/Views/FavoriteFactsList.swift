@@ -13,7 +13,11 @@ struct FavoriteFactsList: View {
     
     // MARK: - Properties - View Model
     
-    @ObservedObject var viewModel: RandoFactoManager
+    @EnvironmentObject var viewModel: RandoFactoManager
+    
+    @EnvironmentObject var networkManager: NetworkManager
+    
+    @EnvironmentObject var errorManager: ErrorManager
     
     // MARK: - Body
     
@@ -80,7 +84,8 @@ struct FavoriteFactsList: View {
                     }
                     .pickerStyle(.menu)
                     Divider()
-                    UnfavoriteAllButton(viewModel: viewModel)
+                    UnfavoriteAllButton()
+                        .environmentObject(viewModel)
                         .help("Unfavorite All")
                 } label: {
                     OptionsMenuLabel()
@@ -124,5 +129,5 @@ struct FavoriteFactsList: View {
 }
 
 #Preview {
-    FavoriteFactsList(viewModel: RandoFactoManager())
+    FavoriteFactsList()
 }

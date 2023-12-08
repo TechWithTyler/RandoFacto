@@ -11,7 +11,11 @@ import SheftAppsStylishUI
 
 struct ContentView: View {
 
-	@ObservedObject var viewModel: RandoFactoManager
+    @EnvironmentObject var viewModel: RandoFactoManager
+    
+    @EnvironmentObject var networkManager: NetworkManager
+    
+    @EnvironmentObject var errorManager: ErrorManager
 
 	@Environment(\.horizontalSizeClass) var horizontalSizeClass
 
@@ -31,7 +35,8 @@ struct ContentView: View {
 							.badge(viewModel.favoriteFacts.count)
 					}
                     .contextMenu {
-                        UnfavoriteAllButton(viewModel: viewModel)
+                        UnfavoriteAllButton()
+                            .environmentObject(viewModel)
                     }
 				}
 				#if !os(macOS)
@@ -47,20 +52,29 @@ struct ContentView: View {
 		} detail: {
 			switch viewModel.selectedPage {
 				case .randomFact, nil:
-					FactView(viewModel: viewModel)
+					FactView()
+                    .environmentObject(viewModel)
+                    .environmentObject(networkManager)
+                    .environmentObject(errorManager)
 				case .favoriteFacts:
-					FavoriteFactsList(viewModel: viewModel)
+					FavoriteFactsList()
+                    .environmentObject(viewModel)
+                    .environmentObject(networkManager)
+                    .environmentObject(errorManager)
                 #if !os(macOS)
 				case .settings:
-					SettingsView(viewModel: viewModel)
+					SettingsView()
+                    .environmentObject(viewModel)
+                    .environmentObject(networkManager)
+                    .environmentObject(errorManager)
                 #endif
 			}
 		}
 		// Error alert
-        .alert(isPresented: $viewModel.errorManager.showingErrorAlert, error: viewModel.errorManager.errorToShow, actions: {
+        .alert(isPresented: $errorManager.showingErrorAlert, error: errorManager.errorToShow, actions: {
 			Button {
-				viewModel.errorManager.showingErrorAlert = false
-				viewModel.errorManager.errorToShow = nil
+				errorManager.showingErrorAlert = false
+				errorManager.errorToShow = nil
 			} label: {
 				Text("OK")
 			}
@@ -74,7 +88,7 @@ struct ContentView: View {
                 viewModel.deleteAllFavoriteFactsForCurrentUser { error in
                     if let error = error {
                         DispatchQueue.main.async { [self] in
-                            viewModel.errorManager.showError(error)
+                            errorManager.showError(error)
                         }
                     }
                     viewModel.showingDeleteAllFavoriteFacts = false
@@ -102,7 +116,7 @@ struct ContentView: View {
             }
 		}
 		// Error sound/haptics
-		.onChange(of: viewModel.errorManager.errorToShow) { value in
+		.onChange(of: errorManager.errorToShow) { value in
 			if value != nil {
 #if os(macOS)
 				NSSound.beep()
@@ -130,5 +144,5 @@ struct ContentView: View {
 }
 
 #Preview {
-	ContentView(viewModel: RandoFactoManager())
+	ContentView()
 }
