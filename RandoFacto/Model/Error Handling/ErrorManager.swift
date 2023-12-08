@@ -8,20 +8,20 @@
 import SwiftUI
 import Firebase
 
-struct ErrorManager {
+class ErrorManager: ObservableObject {
     
     // Whether an error alert should be displayed.
-    var showingErrorAlert: Bool = false
+    @Published var showingErrorAlert: Bool = false
     
     // MARK: - Properties - RandoFacto Error
     
     // The error to show to the user as an alert or in the authentication dialog.
-    var errorToShow: RandoFactoError? = nil
+    @Published var errorToShow: RandoFactoError? = nil
     
     // MARK: - Error Handling
     
     // This method shows error's localizedDescription as an alert or in the authentication form.
-    mutating func showError(_ error: Error, completionHandler: ((RandoFactoError) -> Void)? = nil) {
+    func showError(_ error: Error, completionHandler: ((RandoFactoError) -> Void)? = nil) {
             // 1. Convert the error to NSError and print it.
             let nsError = error as NSError
             #if DEBUG

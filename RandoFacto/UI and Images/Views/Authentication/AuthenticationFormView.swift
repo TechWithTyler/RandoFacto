@@ -13,7 +13,11 @@ struct AuthenticationFormView: View {
     
     // MARK: - Properties - View Model
     
-    @ObservedObject var viewModel: RandoFactoManager
+    @EnvironmentObject var viewModel: RandoFactoManager
+    
+    @EnvironmentObject var networkManager: NetworkManager
+    
+    @EnvironmentObject var errorManager: ErrorManager
     
     // MARK: - Properties - Strings
     
@@ -70,7 +74,7 @@ struct AuthenticationFormView: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button {
                         viewModel.showingResetPasswordEmailSent = false
-                        viewModel.errorManager.errorToShow = nil
+                        errorManager.errorToShow = nil
                         viewModel.authenticationErrorText = nil
                         dismiss()
                     } label: {
@@ -85,7 +89,7 @@ struct AuthenticationFormView: View {
                             return
                         }
                         viewModel.showingResetPasswordEmailSent = false
-                        viewModel.errorManager.errorToShow = nil
+                        errorManager.errorToShow = nil
                         viewModel.authenticationErrorText = nil
                         email = email.lowercased()
                         if viewModel.authenticationFormType == .signup {
@@ -157,7 +161,7 @@ struct AuthenticationFormView: View {
             }
                     if viewModel.authenticationFormType == .login && !email.isEmpty && password.isEmpty {
                         Button {
-                            viewModel.errorManager.errorToShow = nil
+                            errorManager.errorToShow = nil
                             viewModel.showingResetPasswordEmailSent = false
                             viewModel.authenticationErrorText = nil
                             viewModel.sendPasswordResetLink(toEmail: email)
@@ -183,5 +187,5 @@ struct AuthenticationFormView: View {
 }
 
 #Preview {
-    AuthenticationFormView(viewModel: RandoFactoManager())
+    AuthenticationFormView()
 }

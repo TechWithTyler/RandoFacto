@@ -13,7 +13,11 @@ struct FactView: View {
     
     // MARK: - Properties - Objects
     
-    @ObservedObject var viewModel: RandoFactoManager
+    @EnvironmentObject var viewModel: RandoFactoManager
+    
+    @EnvironmentObject var networkManager: NetworkManager
+    
+    @EnvironmentObject var errorManager: ErrorManager
     
     // MARK: - View
     
@@ -76,7 +80,7 @@ struct FactView: View {
                 .hoverEffect(.highlight)
                 #endif
             }
-            if viewModel.online {
+            if networkManager.online {
                 Button {
                     viewModel.generateRandomFact()
                 } label: {
@@ -136,5 +140,5 @@ struct FactView: View {
 }
 
 #Preview {
-    ContentView(viewModel: RandoFactoManager())
+    ContentView()
 }

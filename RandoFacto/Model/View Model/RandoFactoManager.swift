@@ -8,7 +8,6 @@
 
 import SwiftUI
 import Firebase
-import Network
 
 // This object manages the data storage and authentication in this app.
 class RandoFactoManager: ObservableObject {
@@ -22,7 +21,9 @@ class RandoFactoManager: ObservableObject {
     // Properties with the @Published property wrapper will trigger updates to SwiftUI views when they're changed. Their values must be value types (i.e. structs), not reference types (i.e. classes).
     @Published var favoriteFactSearcher = FavoriteFactSearcher()
     
-    @Published var errorManager = ErrorManager()
+    var errorManager: ErrorManager
+    
+    var networkManager: NetworkManager
     
     // MARK: - Properties - Strings
     
@@ -97,9 +98,6 @@ class RandoFactoManager: ObservableObject {
     // Whether the AuthenticationFormView should show a confirmation that a password reset email has been sent to the entered email address.
     @Published var showingResetPasswordEmailSent: Bool = false
     
-    // Whether the device is online.
-    @Published var online: Bool = false
-    
     // Whether an authentication request is in progress.
     @Published var isAuthenticating: Bool = false
     
@@ -128,15 +126,10 @@ class RandoFactoManager: ObservableObject {
     // The current user's favorite facts loaded from the Firestore database. Storing the data in this array makes getting favorite facts easier than getting the corresponding Firestore data each time, which could cause errors.
     @Published var favoriteFacts: [FavoriteFact] = []
     
-    // MARK: - Properties - Network Monitor
-    
-    // Observes changes to the device's network connection to tell the app whether it should run in online or offline mode.
-    private var networkPathMonitor = NWPathMonitor()
-    
     // MARK: - Properties - Firebase
     
     // The app's Firestore database.
-    private var firestore = Firestore.firestore()
+    var firestore = Firestore.firestore()
     
     // Listens for changes to the references for registered users.
     var userListener: ListenerRegistration? = nil
@@ -155,9 +148,10 @@ class RandoFactoManager: ObservableObject {
     // MARK: - Initialization
     
     // This initializer sets up the network path monitor and Firestore listeners, then displays a fact to the user.
-    init() {
+    init(errorManager: ErrorManager, networkManager: NetworkManager) {
         // 1. Configure the network path monitor.
-        configureNetworkPathMonitor()
+        self.errorManager = errorManager
+        self.networkManager = networkManager
         // 2. After waiting a second for the network path monitor to configure and detect the current network connection status, load all the favorite facts into the app.
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) { [self] in
             addRegisteredUsersHandler()
@@ -168,69 +162,6 @@ class RandoFactoManager: ObservableObject {
                     generateRandomFact()
                 } else {
                     getRandomFavoriteFact()
-                }
-            }
-        }
-    }
-    
-    // MARK: - Network - Path Monitor Configuration
-    
-    // This method configures the network path monitor's path update handler, which tells the app to enable or disable online mode, showing or hiding internet-connection-required UI based on network connection.
-    func configureNetworkPathMonitor() {
-        // 1. Configure the network path monitor's path update handler.
-        networkPathMonitor.pathUpdateHandler = {
-            [self] path in
-            if path.status == .satisfied {
-                // 2. If the path status is satisfied, the device is online, so enable online mode.
-                goOnline()
-            } else {
-                // 3. Otherwise, the device is offline, so enable offline mode.
-                goOffline()
-            }
-        }
-        // 4. Start the network path monitor, using a separate DispatchQueue for it.
-        let dispatchQueue = DispatchQueue(label: "Network Path Monitor")
-        networkPathMonitor.start(queue: dispatchQueue)
-    }
-    
-    // MARK: - Network - Online
-    
-    // This method enables online mode.
-    func goOnline() {
-        // 1. Try to enable Firestore's network features.
-        firestore.enableNetwork {
-            [self] error in
-            // 2. If that fails, log an error.
-            if let error = error {
-                DispatchQueue.main.async { [self] in
-                    errorManager.showError(error)
-                }
-            } else {
-                // 3. If successful, tell the app that the device is online.
-                // Updating a published property must be done on the main thread, so we use DispatchQueue.main.async to run any code that sets such properties.
-                DispatchQueue.main.async { [self] in
-                    online = true
-                }
-            }
-        }
-    }
-    
-    // MARK: - Network - Offline
-    
-    // This method enables offline mode.
-    func goOffline() {
-        // 1. Try to disable Firestore's network features.
-        firestore.disableNetwork {
-            [self] error in
-            // 2. If that fails, log an error.
-            if let error = error {
-                DispatchQueue.main.async { [self] in
-                    errorManager.showError(error)
-                }
-            } else {
-                // 3. If successful, tell the app that the device is offline.
-                DispatchQueue.main.async { [self] in
-                    online = false
                 }
             }
         }
@@ -297,7 +228,7 @@ extension RandoFactoManager {
                             return
                         }
                         // 7. Check if the snapshot is from the cache (device data for use offline).
-                        if snapshot.metadata.isFromCache && online && !notDisplayingFact {
+                        if snapshot.metadata.isFromCache && networkManager.online && !notDisplayingFact {
                             // Skip the callback if it's from the cache, the device is online, and a fact is already being displayed.
                             return
                         }

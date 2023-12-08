@@ -21,8 +21,14 @@ struct RandoFactoApp: App {
 	@NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 	#endif
 
+    var firestore: Firestore
+    
 	// The main model object for the app, which supplies data for its views.
 	@ObservedObject var viewModel: RandoFactoManager
+    
+    @ObservedObject var networkManager: NetworkManager
+    
+    @ObservedObject var errorManager: ErrorManager
     
     var windowTitle: String {
         var appName = (Bundle.main.infoDictionary?[kCFBundleNameKey as String] as? String)!
@@ -37,19 +43,25 @@ struct RandoFactoApp: App {
 	// The windows and views in the app.
     var body: some Scene {
         WindowGroup {
-			ContentView(viewModel: viewModel)
+			ContentView()
+                .environmentObject(viewModel)
+                .environmentObject(networkManager)
+                .environmentObject(errorManager)
             #if os(macOS)
 				.frame(minWidth: 800, minHeight: 300, alignment: .center)
             #endif
 				.ignoresSafeArea(edges: .all)
 		}
         .commands {
-            RandoFactoCommands(viewModel: viewModel)
+            RandoFactoCommands(viewModel: viewModel, networkManager: networkManager, errorManager: errorManager)
         }
         #if os(macOS)
         // On macOS, Settings are presented as a window instead of as one of the app's pages.
 		Settings {
-			SettingsView(viewModel: viewModel)
+			SettingsView()
+                .environmentObject(viewModel)
+                .environmentObject(networkManager)
+                .environmentObject(errorManager)
 		}
 		#endif
 	}
@@ -58,21 +70,23 @@ struct RandoFactoApp: App {
 
 	init() {
 		// 1. Make sure the GoogleService-Info.plist file is present in the app bundle.
-		guard let googleServicePlist = Bundle.main.url(forResource: "GoogleService-Info", withExtension: "plist") else {
-			fatalError("Firebase configuration file not found")
-		}
-		// 2. Create a FirebaseOptions object with the API key.
-		guard let options = FirebaseOptions(contentsOfFile: googleServicePlist.path) else {
-			fatalError("Failed to load options from Firebase configuration file")
-		}
-		// Create a separate Swift file to hold a constant called firebaseAPIKey, and include its path in your git repository's .gitignore file to make sure it doesn't get committed. We set up the API key here, instead of in GoogleService-Info.plist, so anyone looking at that file in the app bundle's Contents/Resources directory on macOS won't be able to see the API key.
-		options.apiKey = firebaseAPIKey
-		// 3. Initialize Firebase with the custom options.
-		FirebaseApp.configure(options: options)
-		// 4. Enable syncing Firestore data to the device for use offline.
-		let firestore = Firestore.firestore()
-		let settings = FirestoreSettings()
-		// Persistent cache must be at least 1,048,576 bytes (1024KB or 1MB). Here we use unlimited storage.
+        let errorManager = ErrorManager()
+        guard let googleServicePlist = Bundle.main.url(forResource: "GoogleService-Info", withExtension: "plist") else {
+            fatalError("Firebase configuration file not found")
+        }
+        // 2. Create a FirebaseOptions object with the API key.
+        guard let options = FirebaseOptions(contentsOfFile: googleServicePlist.path) else {
+            fatalError("Failed to load options from Firebase configuration file")
+        }
+        // Create a separate Swift file to hold a constant called firebaseAPIKey, and include its path in your git repository's .gitignore file to make sure it doesn't get committed. We set up the API key here, instead of in GoogleService-Info.plist, so anyone looking at that file in the app bundle's Contents/Resources directory on macOS won't be able to see the API key.
+        options.apiKey = firebaseAPIKey
+        // 3. Initialize Firebase with the custom options.
+        FirebaseApp.configure(options: options)
+        // 4. Enable syncing Firestore data to the device for use offline.
+        self.firestore = Firestore.firestore()
+        let networkManager = NetworkManager(errorManager: errorManager, firestore: firestore)
+        let settings = FirestoreSettings()
+        // Persistent cache must be at least 1,048,576 bytes (1024KB or 1MB). Here we use unlimited storage.
 		let persistentCacheSizeBytes = FirestoreCacheSizeUnlimited as NSNumber
 		let persistentCache = PersistentCacheSettings(sizeBytes: persistentCacheSizeBytes)
 		settings.cacheSettings = persistentCache
@@ -80,7 +94,9 @@ struct RandoFactoApp: App {
 		settings.dispatchQueue = .main
 		firestore.settings = settings
 		// 5. Configure the RandoFacto view model.
-		viewModel = RandoFactoManager()
+        self.errorManager = errorManager
+        self.networkManager = NetworkManager(errorManager: errorManager, firestore: firestore)
+        self.viewModel = RandoFactoManager(errorManager: errorManager, networkManager: networkManager)
 	}
 
 }

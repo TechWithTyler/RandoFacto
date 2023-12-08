@@ -11,7 +11,11 @@ import SheftAppsStylishUI
 
 struct SettingsView: View {
 
-	@ObservedObject var viewModel: RandoFactoManager
+    @EnvironmentObject var viewModel: RandoFactoManager
+    
+    @EnvironmentObject var networkManager: NetworkManager
+    
+    @EnvironmentObject var errorManager: ErrorManager
     
     var sliderText: String {
         return "Fact Text Size: \(viewModel.fontSizeValue)"
@@ -73,7 +77,7 @@ struct SettingsView: View {
 			if let deletionStage = viewModel.userDeletionStage {
 				LoadingIndicator(text: "Deleting \(deletionStage)…")
 			} else if viewModel.userLoggedIn {
-                if viewModel.online {
+                if networkManager.online {
                     Section {
                         Button("Change Password…") {
                             viewModel.authenticationFormType = .passwordChange
@@ -85,7 +89,7 @@ struct SettingsView: View {
                         viewModel.showingLogout = true
                     }
                 }
-                if viewModel.online {
+                if networkManager.online {
                     Section {
                         Button("Delete Account…", role: .destructive) {
                             viewModel.showingDeleteAccount = true
@@ -93,7 +97,7 @@ struct SettingsView: View {
                     }
                 }
 			} else {
-                if viewModel.online {
+                if networkManager.online {
                     Button(loginText) {
                         viewModel.authenticationFormType = .login
                     }
@@ -117,7 +121,7 @@ struct SettingsView: View {
 					[self] error in
 					if let error = error {
                         DispatchQueue.main.async { [self] in
-                            viewModel.errorManager.showError(error)
+                            errorManager.showError(error)
                         }
 					}
 					viewModel.showingDeleteAccount = false
@@ -143,7 +147,10 @@ struct SettingsView: View {
         })
 		// Authentication form
 		.sheet(item: $viewModel.authenticationFormType) {_ in 
-			AuthenticationFormView(viewModel: viewModel)
+			AuthenticationFormView()
+                .environmentObject(viewModel)
+                .environmentObject(networkManager)
+                .environmentObject(errorManager)
 		}
 	}
     
@@ -193,5 +200,5 @@ struct SettingsView: View {
 }
 
 #Preview {
-	SettingsView(viewModel: RandoFactoManager())
+	SettingsView()
 }

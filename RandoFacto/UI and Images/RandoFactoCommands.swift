@@ -11,6 +11,10 @@ struct RandoFactoCommands: Commands {
     
     @ObservedObject var viewModel: RandoFactoManager
     
+    @ObservedObject var networkManager: NetworkManager
+    
+    @ObservedObject var errorManager: ErrorManager
+    
     // MARK: - Menu Commands
     
     @CommandsBuilder var body: some Commands {
@@ -43,7 +47,7 @@ struct RandoFactoCommands: Commands {
                 Button(generateRandomFactButtonTitle) {
                     viewModel.generateRandomFact()
                 }
-                .disabled(!viewModel.online || viewModel.notDisplayingFact)
+                .disabled(!networkManager.online || viewModel.notDisplayingFact)
                 .keyboardShortcut(KeyboardShortcut(KeyEquivalent("g"), modifiers: [.command, .control]))
                 Button(getRandomFavoriteFactButtonTitle) {
                     viewModel.getRandomFavoriteFact()
@@ -67,7 +71,8 @@ struct RandoFactoCommands: Commands {
             }
             if viewModel.userLoggedIn {
                 Section {
-                    UnfavoriteAllButton(viewModel: viewModel)
+                    UnfavoriteAllButton()
+                        .environmentObject(viewModel)
                 }
             }
         }
