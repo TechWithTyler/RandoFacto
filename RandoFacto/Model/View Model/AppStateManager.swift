@@ -69,21 +69,19 @@ class AppStateManager: ObservableObject {
     
     // MARK: - Initialization
     
-    // This initializer sets up the network path monitor and Firestore listeners, then displays a fact to the user.
     init(errorManager: ErrorManager, networkManager: NetworkManager, favoriteFactsDatabase: FavoriteFactsDatabase, authenticationManager: AuthenticationManager) {
         // 1. Configure the network path monitor.
         self.errorManager = errorManager
         self.networkManager = networkManager
         self.favoriteFactsDatabase = favoriteFactsDatabase
         self.authenticationManager = authenticationManager
-        // 2. After waiting 2 seconds for network connection checking and favorite facts database loading to complete, display a fact to the user..
-        authenticationManager.addRegisteredUsersHandler()
-        favoriteFactsDatabase.loadFavoriteFactsForCurrentUser()
+        // 2. After waiting 2 seconds for network connection checking and favorite facts database loading to complete, display a fact to the user.
         displayInitialFact()
     }
     
     // MARK: - Fact Generation
     
+    // This method either generates a random fact or displays a random favorite fact to the user based on authentication state and settings.
     func displayInitialFact() {
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [self] in
             if favoriteFactsDatabase.initialFact == 0 || favoriteFactsDatabase.favoriteFacts.isEmpty || !authenticationManager.userLoggedIn {

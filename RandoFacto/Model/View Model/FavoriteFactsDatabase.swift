@@ -11,6 +11,8 @@ import Firebase
 // The favorite facts Firestore database.
 class FavoriteFactsDatabase: ObservableObject {
     
+    // MARK: - Properties - Objects
+    
     var firestore: Firestore
     
     var authenticationManager: AuthenticationManager? = nil
@@ -26,6 +28,8 @@ class FavoriteFactsDatabase: ObservableObject {
     // The current user's favorite facts loaded from the Firestore database. Storing the data in this array makes getting favorite facts easier than getting the corresponding Firestore data each time, which could cause errors.
     @Published var favoriteFacts: [FavoriteFact] = []
     
+    // MARK: - Properties - Favorite Facts Listener
+    
     // Listens for changes to the current user's favorite facts.
     var favoriteFactsListener: ListenerRegistration? = nil
     
@@ -34,25 +38,35 @@ class FavoriteFactsDatabase: ObservableObject {
     // The error logged if the RandoFacto database is unable to get the document (data) from the corresponding favorite fact QuerySnapshot.
     private let favoriteFactReferenceError = NSError(domain: "Favorite fact reference not found", code: 144)
     
+    // MARK: - Properties - Booleans
+    
     // Whether the "delete this favorite fact" alert should be displayed.
     @Published var showingDeleteFavoriteFact: Bool = false
     
     // Whether the "delete all favorite facts" alert should be displayed.
     @Published var showingDeleteAllFavoriteFacts: Bool = false
     
+    // MARK: - Properties - Strings
+    
+    // The favorite fact to be deleted when pressing "Delete" in the alert.
     var favoriteFactToDelete: String? = nil
+    
+    // MARK: - Properties - Integers
     
     // Whether to display one of the user's favorite facts or generate a random fact when the app launches. This setting resets to 0 (Random Fact), and is hidden, when the user logs out or deletes their account.
     @AppStorage("initialFact") var initialFact: Int = 0
+    
+    // MARK: - Initialization
     
     init(firestore: Firestore, networkManager: NetworkManager, errorManager: ErrorManager, favoriteFactSearcher: FavoriteFactSearcher) {
         self.firestore = firestore
         self.networkManager = networkManager
         self.errorManager = errorManager
         self.favoriteFactSearcher = favoriteFactSearcher
+        loadFavoriteFactsForCurrentUser()
     }
     
-    // MARK: - Favorite Facts - Loading
+    // MARK: - Loading
     
     // This method asynchronously loads all the favorite facts associated with the current user. Firestore doesn't have a way to associate data with the user that created it, so we have to add a "user" key to each favorite fact so when a user deletes their account, their favorite facts, but no one else's, are deleted.
     func loadFavoriteFactsForCurrentUser() {
@@ -98,7 +112,7 @@ class FavoriteFactsDatabase: ObservableObject {
         }
     }
     
-    // MARK: - Favorite Facts - Saving/Deleting
+    // MARK: - Saving/Deleting
     
     // This method creates a FavoriteFact from factText and saves it to the RandoFacto database.
     func saveToFavorites(factText: String) {

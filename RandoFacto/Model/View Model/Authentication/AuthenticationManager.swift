@@ -11,6 +11,8 @@ import Firebase
 // Handles authentication and user accounts.
 class AuthenticationManager: ObservableObject {
     
+    // MARK: - Properties - Objects
+    
     @Published var firebaseAuthentication: Authentication
     
     var favoriteFactsDatabase: FavoriteFactsDatabase? = nil
@@ -19,8 +21,12 @@ class AuthenticationManager: ObservableObject {
     
     var errorManager: ErrorManager
     
+    // MARK: - Properties - Strings
+    
     // The text to display in the authentication error label in the authentication (login/signup/password change) dialogs.
     @Published var authenticationErrorText: String? = nil
+    
+    // MARK: - Properties - Integers
     
     // the credential field pertaining to an authentication error.
     var invalidCredentialField: Int? {
@@ -68,16 +74,21 @@ class AuthenticationManager: ObservableObject {
         return firebaseAuthentication.currentUser != nil
     }
     
+    // MARK: - Properties - Registered Users Listener
+    
     // Listens for changes to the references for registered users.
-    var userListener: ListenerRegistration? = nil
+    var registeredUsersListener: ListenerRegistration? = nil
+    
+    // MARK: - Initialization
     
     init(firebaseAuthentication: Authentication, networkManager: NetworkManager, errorManager: ErrorManager) {
         self.firebaseAuthentication = firebaseAuthentication
         self.networkManager = networkManager
         self.errorManager = errorManager
+        addRegisteredUsersHandler()
     }
     
-    // MARK: - Authentication - Registered Users Handler
+    // MARK: - Registered Users Handler
     
     // This method sets up the app to listen for changes to registered user references. The email addresses and IDs of registered users get added to a Firestore collection called "users" when they signup, because Firebase doesn't yet have an ability to immediately notify the app of creations/deletions of accounts or checking whether they exist.
     func addRegisteredUsersHandler() {
@@ -88,7 +99,7 @@ class AuthenticationManager: ObservableObject {
                 return
             }
             // 2. Get all registered users.
-            userListener = favoriteFactsDatabase?.firestore.collection(usersCollectionName)
+            registeredUsersListener = favoriteFactsDatabase?.firestore.collection(usersCollectionName)
             // 3. Filter the results to include only the current user.
                 .whereField(emailKeyName, isEqualTo: email)
             // 4. Listen for any changes made to the "users" collection.
@@ -123,7 +134,7 @@ class AuthenticationManager: ObservableObject {
         }
     }
     
-    // MARK: - Authentication - Post-Signup/Login Request Handler
+    // MARK: - Post-Signup/Login Request Handler
     
     // This method loads the user's favorite facts if authentication is successful. Otherwise, it logs an error.
     func handleAuthenticationRequest(with result: AuthDataResult?, error: Error?, isSignup: Bool, successHandler: @escaping ((Bool) -> Void)) {
@@ -182,7 +193,7 @@ class AuthenticationManager: ObservableObject {
         }
     }
     
-    // MARK: - Authentication - User References
+    // MARK: - User References
     
     // This method adds a reference for the current user once they signup or login and such reference is missing.
     func addUserReference(email: String, id: String, completionHandler: @escaping ((Error?) -> Void)) {
@@ -231,7 +242,7 @@ class AuthenticationManager: ObservableObject {
             }
     }
     
-    // MARK: - Authentication - Credential Field Change Handler
+    // MARK: - Credential Field Change Handler
     
     func credentialFieldsChanged() {
         DispatchQueue.main.async { [self] in
@@ -264,7 +275,48 @@ class AuthenticationManager: ObservableObject {
         }
     }
     
-    // MARK: - Authentication - Password Reset/Update
+    // MARK: - Authentication - Logout
+    
+    // This method tries to logout the current user, clearing the app's favorite facts list if successful.
+    func logoutCurrentUser() {
+        do {
+            // 1. Try to logout the current user.
+            try firebaseAuthentication.signOut()
+            // 2. If successful, clear the favorite facts list, remove the user listener and favorite facts listener, and reset the Fact on Launch setting to "Random Fact".
+            DispatchQueue.main.async { [self] in
+                favoriteFactsDatabase?.favoriteFacts.removeAll()
+            }
+            favoriteFactsDatabase?.initialFact = 0
+            registeredUsersListener?.remove()
+            registeredUsersListener = nil
+            favoriteFactsDatabase?.favoriteFactsListener?.remove()
+            favoriteFactsDatabase?.favoriteFactsListener = nil
+        } catch {
+            // 3. If unsuccessful, log an error.
+            DispatchQueue.main.async { [self] in
+                errorManager.showError(error)
+            }
+        }
+    }
+    
+    // This method logs out the current user after deletion or if their reference goes missing. If the account itself still exists, logging in will put the missing reference back.
+    func logoutMissingUser() {
+        // 1. Delete all the missing user's favorite facts, getting the data from the server instead of the cache.
+        DispatchQueue.main.async { [self] in
+            favoriteFactsDatabase?.deleteAllFavoriteFactsForCurrentUser(forUserDeletion: true) { [self] error in
+                if let error = error {
+                    // 2. If that fails, log an error.
+                    errorManager.showError(error)
+                    return
+                } else {
+                    // 3. If successful, log the user out.
+                    logoutCurrentUser()
+                }
+            }
+        }
+    }
+    
+    // MARK: - Account Management - Password Reset/Update
     
     // This method sends a password reset email to email. The message body is customized in RandoFacto's Firebase console.
     func sendPasswordResetLink(toEmail email: String) {
@@ -307,48 +359,7 @@ class AuthenticationManager: ObservableObject {
         }
     }
     
-    // MARK: - Authentication - Logout
-    
-    // This method tries to logout the current user, clearing the app's favorite facts list if successful.
-    func logoutCurrentUser() {
-        do {
-            // 1. Try to logout the current user.
-            try firebaseAuthentication.signOut()
-            // 2. If successful, clear the favorite facts list, remove the user listener and favorite facts listener, and reset the Fact on Launch setting to "Random Fact".
-            DispatchQueue.main.async { [self] in
-                favoriteFactsDatabase?.favoriteFacts.removeAll()
-            }
-            favoriteFactsDatabase?.initialFact = 0
-            userListener?.remove()
-            userListener = nil
-            favoriteFactsDatabase?.favoriteFactsListener?.remove()
-            favoriteFactsDatabase?.favoriteFactsListener = nil
-        } catch {
-            // 3. If unsuccessful, log an error.
-            DispatchQueue.main.async { [self] in
-                errorManager.showError(error)
-            }
-        }
-    }
-    
-    // This method logs out the current user after deletion or if their reference goes missing. If the account itself still exists, logging in will put the missing reference back.
-    func logoutMissingUser() {
-        // 1. Delete all the missing user's favorite facts, getting the data from the server instead of the cache.
-        DispatchQueue.main.async { [self] in
-            favoriteFactsDatabase?.deleteAllFavoriteFactsForCurrentUser(forUserDeletion: true) { [self] error in
-                if let error = error {
-                    // 2. If that fails, log an error.
-                    errorManager.showError(error)
-                    return
-                } else {
-                    // 3. If successful, log the user out.
-                    logoutCurrentUser()
-                }
-            }
-        }
-    }
-    
-    // MARK: - Authentication - Delete User
+    // MARK: - Account Management - Delete User
     
     // This method deletes the current user's favorite facts, their reference, and then their account.
     func deleteCurrentUser(completionHandler: @escaping (Error?) -> Void) {
