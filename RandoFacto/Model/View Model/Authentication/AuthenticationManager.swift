@@ -8,6 +8,7 @@
 import SwiftUI
 import Firebase
 
+// Handles authentication and user accounts.
 class AuthenticationManager: ObservableObject {
     
     @Published var firebaseAuthentication: Authentication
@@ -291,6 +292,11 @@ class AuthenticationManager: ObservableObject {
                 isAuthenticating = false
                 if let error = error {
                     errorManager.showError(error) { [self] randoFactoError in
+                        if randoFactoError == .tooLongSinceLastLogin {
+                            authenticationFormType = nil
+                            logoutCurrentUser()
+                            errorManager.showingErrorAlert = true
+                        }
                         authenticationErrorText = randoFactoError.localizedDescription
                         completionHandler(false)
                     }

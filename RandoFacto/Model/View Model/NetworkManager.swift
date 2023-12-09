@@ -9,6 +9,7 @@ import SwiftUI
 import Network
 import Firebase
 
+// Handles network connection.
 class NetworkManager: ObservableObject {
     
     // MARK: - Properties - Network Monitor

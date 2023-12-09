@@ -125,7 +125,16 @@ struct SettingsView: View {
 					[self] error in
 					if let error = error {
                         DispatchQueue.main.async { [self] in
-                            errorManager.showError(error)
+                            errorManager.showError(error) {
+                                randoFactoError in
+                                if randoFactoError == .tooLongSinceLastLogin {
+                                    authenticationManager.authenticationFormType = nil
+                                    authenticationManager.logoutCurrentUser()
+                                    errorManager.showingErrorAlert = true
+                                } else {
+                                    errorManager.showingErrorAlert = true
+                                }
+                            }
                         }
 					}
 					authenticationManager.showingDeleteAccount = false

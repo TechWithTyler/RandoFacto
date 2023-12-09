@@ -94,6 +94,16 @@ struct ContentView: View {
 		#if os(macOS)
 		.dialogSeverity(.critical)
 		#endif
+        .alert("Unfavorite this fact?", isPresented: $favoriteFactsDatabase.showingDeleteFavoriteFact, presenting: $favoriteFactsDatabase.favoriteFactToDelete, actions: { factText in
+            Button("Unfavorite", role: .destructive) {
+                favoriteFactsDatabase.deleteFromFavorites(factText: factText.wrappedValue!)
+            }
+            Button("Cancel", role: .cancel) {
+                favoriteFactsDatabase.showingDeleteFavoriteFact = false
+                favoriteFactsDatabase.favoriteFactToDelete = nil
+            }
+            
+        })
         // Unfavorite all facts alert
         .alert("Unfavorite all facts?", isPresented: $favoriteFactsDatabase.showingDeleteAllFavoriteFacts, actions: {
             Button("Unfavorite", role: .destructive) {

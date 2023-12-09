@@ -59,20 +59,23 @@ struct RandoFactoCommands: Commands {
                 .keyboardShortcut(KeyboardShortcut(KeyEquivalent("g"), modifiers: [.command, .control, .shift]))
                 .disabled(!appStateManager.favoriteFactsAvailable || appStateManager.notDisplayingFact)
             }
+            .disabled(appStateManager.selectedPage != .randomFact)
             Section {
                 if !appStateManager.notDisplayingFact && authenticationManager.userLoggedIn && appStateManager.displayedFactIsSaved {
-                    Button("Delete Current Fact From Favorites") {
-                        favoriteFactsDatabase.deleteFromFavorites(factText: appStateManager.factText)
+                    Button("Unfavorite Current Fact…") {
+                        favoriteFactsDatabase.favoriteFactToDelete = appStateManager.factText
+                        favoriteFactsDatabase.showingDeleteFavoriteFact = true
                     }
                     .keyboardShortcut(KeyboardShortcut(KeyEquivalent("f"), modifiers: [.command, .shift]))
                 } else {
-                    Button("Save Current Fact to Favorites") {
+                    Button("Favorite Current Fact") {
                         favoriteFactsDatabase.saveToFavorites(factText: appStateManager.factText)
                     }
                     .keyboardShortcut(KeyboardShortcut(KeyEquivalent("f"), modifiers: [.command, .shift]))
                     .disabled(appStateManager.notDisplayingFact || appStateManager.factText == factUnavailableString || !authenticationManager.userLoggedIn)
                 }
             }
+            .disabled(appStateManager.selectedPage != .randomFact)
             if authenticationManager.userLoggedIn {
                 Section {
                     UnfavoriteAllButton()

@@ -8,6 +8,7 @@
 
 import SwiftUI
 
+// Handles searching of favorite facts.
 class FavoriteFactSearcher: ObservableObject {
     
     // MARK: - Properties - Favorite Facts List

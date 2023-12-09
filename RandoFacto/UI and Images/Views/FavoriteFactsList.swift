@@ -90,7 +90,6 @@ struct FavoriteFactsList: View {
                     Divider()
                     UnfavoriteAllButton()
                         .environmentObject(favoriteFactsDatabase)
-                        .help("Unfavorite All")
                 } label: {
                     OptionsMenuLabel()
                 }
@@ -124,7 +123,8 @@ struct FavoriteFactsList: View {
     @ViewBuilder
     func unfavoriteAction(for favorite: String) -> some View {
         Button(role: .destructive) {
-            favoriteFactsDatabase.deleteFromFavorites(factText: favorite)
+            favoriteFactsDatabase.favoriteFactToDelete = favorite
+            favoriteFactsDatabase.showingDeleteFavoriteFact = true
         } label: {
             Label("Unfavorite", systemImage: "star.slash")
         }

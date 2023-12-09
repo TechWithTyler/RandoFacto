@@ -119,7 +119,8 @@ struct FactView: View {
                     Button {
                         DispatchQueue.main.async {
                             if appStateManager.displayedFactIsSaved {
-                                favoriteFactsDatabase.deleteFromFavorites(factText: appStateManager.factText)
+                                favoriteFactsDatabase.favoriteFactToDelete = appStateManager.factText
+                                favoriteFactsDatabase.showingDeleteFavoriteFact = true
                             } else {
                                 favoriteFactsDatabase.saveToFavorites(factText: appStateManager.factText)
                             }

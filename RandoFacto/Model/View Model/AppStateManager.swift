@@ -9,7 +9,7 @@
 import SwiftUI
 import Firebase
 
-// This object manages the data storage and authentication in this app.
+// Manages the fact generation/display and pages.
 class AppStateManager: ObservableObject {
     
     // MARK: - Properties - Fact Generator

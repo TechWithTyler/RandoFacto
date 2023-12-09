@@ -8,6 +8,7 @@
 import SwiftUI
 import Firebase
 
+// The favorite facts Firestore database.
 class FavoriteFactsDatabase: ObservableObject {
     
     var firestore: Firestore
@@ -33,8 +34,13 @@ class FavoriteFactsDatabase: ObservableObject {
     // The error logged if the RandoFacto database is unable to get the document (data) from the corresponding favorite fact QuerySnapshot.
     private let favoriteFactReferenceError = NSError(domain: "Favorite fact reference not found", code: 144)
     
+    // Whether the "delete this favorite fact" alert should be displayed.
+    @Published var showingDeleteFavoriteFact: Bool = false
+    
     // Whether the "delete all favorite facts" alert should be displayed.
     @Published var showingDeleteAllFavoriteFacts: Bool = false
+    
+    var favoriteFactToDelete: String? = nil
     
     // Whether to display one of the user's favorite facts or generate a random fact when the app launches. This setting resets to 0 (Random Fact), and is hidden, when the user logs out or deletes their account.
     @AppStorage("initialFact") var initialFact: Int = 0
