@@ -9,11 +9,15 @@ import SwiftUI
 
 struct RandoFactoCommands: Commands {
     
-    @ObservedObject var viewModel: RandoFactoManager
+    @ObservedObject var appStateManager: AppStateManager
     
     @ObservedObject var networkManager: NetworkManager
     
     @ObservedObject var errorManager: ErrorManager
+    
+    @ObservedObject var authenticationManager: AuthenticationManager
+    
+    @ObservedObject var favoriteFactsDatabase: FavoriteFactsDatabase
     
     // MARK: - Menu Commands
     
@@ -31,48 +35,48 @@ struct RandoFactoCommands: Commands {
         CommandGroup(replacing: .textFormatting) {
             Section {
                 Button("Increase Fact Text Size") {
-                    viewModel.factTextSize += 1
+                    appStateManager.factTextSize += 1
                 }
-                .disabled(viewModel.factTextSize == maxFontSize)
+                .disabled(appStateManager.factTextSize == maxFontSize)
                 .keyboardShortcut(KeyEquivalent("+"), modifiers: .command)
                 Button("Decrease Fact Text Size") {
-                    viewModel.factTextSize -= 1
+                    appStateManager.factTextSize -= 1
                 }
-                .disabled(viewModel.factTextSize == minFontSize)
+                .disabled(appStateManager.factTextSize == minFontSize)
                 .keyboardShortcut(KeyEquivalent("-"), modifiers: .command)
             }
         }
         CommandMenu("Fact") {
             Section {
                 Button(generateRandomFactButtonTitle) {
-                    viewModel.generateRandomFact()
+                    appStateManager.generateRandomFact()
                 }
-                .disabled(!networkManager.online || viewModel.notDisplayingFact)
+                .disabled(!networkManager.online || appStateManager.notDisplayingFact)
                 .keyboardShortcut(KeyboardShortcut(KeyEquivalent("g"), modifiers: [.command, .control]))
                 Button(getRandomFavoriteFactButtonTitle) {
-                    viewModel.getRandomFavoriteFact()
+                    appStateManager.getRandomFavoriteFact()
                 }
                 .keyboardShortcut(KeyboardShortcut(KeyEquivalent("g"), modifiers: [.command, .control, .shift]))
-                .disabled(!viewModel.favoriteFactsAvailable || viewModel.notDisplayingFact)
+                .disabled(!appStateManager.favoriteFactsAvailable || appStateManager.notDisplayingFact)
             }
             Section {
-                if !viewModel.notDisplayingFact && viewModel.userLoggedIn && viewModel.displayedFactIsSaved {
+                if !appStateManager.notDisplayingFact && authenticationManager.userLoggedIn && appStateManager.displayedFactIsSaved {
                     Button("Delete Current Fact From Favorites") {
-                        viewModel.deleteFromFavorites(factText: viewModel.factText)
+                        favoriteFactsDatabase.deleteFromFavorites(factText: appStateManager.factText)
                     }
                     .keyboardShortcut(KeyboardShortcut(KeyEquivalent("f"), modifiers: [.command, .shift]))
                 } else {
                     Button("Save Current Fact to Favorites") {
-                        viewModel.saveToFavorites(factText: viewModel.factText)
+                        favoriteFactsDatabase.saveToFavorites(factText: appStateManager.factText)
                     }
                     .keyboardShortcut(KeyboardShortcut(KeyEquivalent("f"), modifiers: [.command, .shift]))
-                    .disabled(viewModel.notDisplayingFact || viewModel.factText == factUnavailableString || !viewModel.userLoggedIn)
+                    .disabled(appStateManager.notDisplayingFact || appStateManager.factText == factUnavailableString || !authenticationManager.userLoggedIn)
                 }
             }
-            if viewModel.userLoggedIn {
+            if authenticationManager.userLoggedIn {
                 Section {
                     UnfavoriteAllButton()
-                        .environmentObject(viewModel)
+                        .environmentObject(favoriteFactsDatabase)
                 }
             }
         }

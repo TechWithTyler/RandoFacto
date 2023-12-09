@@ -13,7 +13,11 @@ struct FavoriteFactsList: View {
     
     // MARK: - Properties - View Model
     
-    @EnvironmentObject var viewModel: RandoFactoManager
+    @EnvironmentObject var appStateManager: AppStateManager
+    
+    @EnvironmentObject var favoriteFactsDatabase: FavoriteFactsDatabase
+    
+    @EnvironmentObject var favoriteFactSearcher: FavoriteFactSearcher
     
     @EnvironmentObject var networkManager: NetworkManager
     
@@ -23,7 +27,7 @@ struct FavoriteFactsList: View {
     
     var body: some View {
         VStack {
-            if viewModel.favoriteFacts.isEmpty {
+            if favoriteFactsDatabase.favoriteFacts.isEmpty {
                 // Favorite facts empty display
                 VStack {
                     Text("No Favorites")
@@ -33,7 +37,7 @@ struct FavoriteFactsList: View {
                 }
                 .foregroundColor(.secondary)
                 .padding()
-            } else if viewModel.favoriteFactSearcher.searchResults.isEmpty {
+            } else if favoriteFactsDatabase.favoriteFactSearcher.searchResults.isEmpty {
                 // No matches display
                 VStack {
                     Text("No Matches")
@@ -47,14 +51,14 @@ struct FavoriteFactsList: View {
                 // Favorite facts list
                 List {
                     Section(header: header) {
-                        ForEach(viewModel.favoriteFactSearcher.sortedFavoriteFacts, id: \.self) {
+                        ForEach(favoriteFactSearcher.sortedFavoriteFacts, id: \.self) {
                             favorite in
                             Button {
-                                viewModel.displayFavoriteFact(favorite)
+                                appStateManager.displayFavoriteFact(favorite)
                             } label: {
                                 Text(favorite)
                                     .lineLimit(nil)
-                                    .font(.system(size: CGFloat(viewModel.factTextSize)))
+                                    .font(.system(size: CGFloat(appStateManager.factTextSize)))
                                     .multilineTextAlignment(.leading)
                                     .foregroundColor(.primary)
                                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -72,20 +76,20 @@ struct FavoriteFactsList: View {
                 }
             }
         }
-        .animation(.default, value: viewModel.favoriteFactSearcher.sortedFavoriteFacts)
-        .searchable(text: $viewModel.favoriteFactSearcher.searchText, placement: .toolbar, prompt: "Search Favorite Facts")
+        .animation(.default, value: favoriteFactSearcher.sortedFavoriteFacts)
+        .searchable(text: $favoriteFactSearcher.searchText, placement: .toolbar, prompt: "Search Favorite Facts")
         // Toolbar
         .toolbar {
             ToolbarItem(placement: .automatic) {
                 Menu {
-                    Picker("Sort", selection: $viewModel.favoriteFactSearcher.sortFavoriteFactsAscending) {
+                    Picker("Sort", selection: $favoriteFactSearcher.sortFavoriteFactsAscending) {
                         Text("Sort Ascending (A-Z)").tag(true)
                         Text("Sort Descending (Z-A)").tag(false)
                     }
                     .pickerStyle(.menu)
                     Divider()
                     UnfavoriteAllButton()
-                        .environmentObject(viewModel)
+                        .environmentObject(favoriteFactsDatabase)
                         .help("Unfavorite All")
                 } label: {
                     OptionsMenuLabel()
@@ -102,7 +106,7 @@ struct FavoriteFactsList: View {
         HStack {
             Spacer()
             VStack(alignment: .center) {
-                Text("Favorite facts: \(viewModel.favoriteFactSearcher.sortedFavoriteFacts.count)")
+                Text("Favorite facts: \(favoriteFactSearcher.sortedFavoriteFacts.count)")
                     .multilineTextAlignment(.center)
                     .padding(10)
                     .font(.title)
@@ -120,7 +124,7 @@ struct FavoriteFactsList: View {
     @ViewBuilder
     func unfavoriteAction(for favorite: String) -> some View {
         Button(role: .destructive) {
-            viewModel.deleteFromFavorites(factText: favorite)
+            favoriteFactsDatabase.deleteFromFavorites(factText: favorite)
         } label: {
             Label("Unfavorite", systemImage: "star.slash")
         }

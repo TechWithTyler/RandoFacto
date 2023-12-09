@@ -13,7 +13,9 @@ struct AuthenticationFormView: View {
     
     // MARK: - Properties - View Model
     
-    @EnvironmentObject var viewModel: RandoFactoManager
+    @EnvironmentObject var appStateManager: AppStateManager
+    
+    @EnvironmentObject var authenticationManager: AuthenticationManager
     
     @EnvironmentObject var networkManager: NetworkManager
     
@@ -28,7 +30,7 @@ struct AuthenticationFormView: View {
     @State private var password: String = String()
     
     var isFormInvalid: Bool {
-        return viewModel.authenticationFormType == .passwordChange ? password.isEmpty : email.isEmpty || password.isEmpty
+        return authenticationManager.authenticationFormType == .passwordChange ? password.isEmpty : email.isEmpty || password.isEmpty
     }
     
     // MARK: - Dismiss
@@ -41,28 +43,28 @@ struct AuthenticationFormView: View {
         NavigationStack {
             Form {
                 Section {
-                    if viewModel.authenticationFormType == .passwordChange {
-                        Text(((viewModel.firebaseAuthentication.currentUser?.email)!))
+                    if authenticationManager.authenticationFormType == .passwordChange {
+                        Text(((authenticationManager.firebaseAuthentication.currentUser?.email)!))
                             .font(.system(size: 24))
                             .fontWeight(.bold)
                     }
                     credentialFields
-                    if viewModel.showingResetPasswordEmailSent {
+                    if authenticationManager.showingResetPasswordEmailSent {
                         AuthenticationMessageView(text: "A password reset email has been sent to \"\(email)\". Follow the instructions to reset your password.", type: .confirmation)
                     }
-                    if let errorText = viewModel.authenticationErrorText {
+                    if let errorText = authenticationManager.authenticationErrorText {
                         AuthenticationMessageView(text: errorText, type: .error)
                     }
                 }
             }
             .formStyle(.grouped)
-            .navigationTitle(viewModel.authenticationFormType?.titleText ?? Authentication.FormType.login.titleText)
+            .navigationTitle(authenticationManager.authenticationFormType?.titleText ?? Authentication.FormType.login.titleText)
 #if os(iOS)
             .navigationBarTitleDisplayMode(.automatic)
 #endif
-            .interactiveDismissDisabled(viewModel.isAuthenticating)
+            .interactiveDismissDisabled(authenticationManager.isAuthenticating)
             .toolbar {
-                if viewModel.isAuthenticating {
+                if authenticationManager.isAuthenticating {
                     ToolbarItem(placement: .automatic) {
 #if os(macOS)
                         LoadingIndicator(text: "Please wait…")
@@ -73,41 +75,41 @@ struct AuthenticationFormView: View {
                 }
                 ToolbarItem(placement: .cancellationAction) {
                     Button {
-                        viewModel.showingResetPasswordEmailSent = false
+                        authenticationManager.showingResetPasswordEmailSent = false
                         errorManager.errorToShow = nil
-                        viewModel.authenticationErrorText = nil
+                        authenticationManager.authenticationErrorText = nil
                         dismiss()
                     } label: {
                         Text("Cancel")
                     }
-                    .disabled(viewModel.isAuthenticating)
+                    .disabled(authenticationManager.isAuthenticating)
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button {
                         guard !password.containsEmoji else {
-                            viewModel.authenticationErrorText = "Passwords can't contain emoji."
+                            authenticationManager.authenticationErrorText = "Passwords can't contain emoji."
                             return
                         }
-                        viewModel.showingResetPasswordEmailSent = false
+                        authenticationManager.showingResetPasswordEmailSent = false
                         errorManager.errorToShow = nil
-                        viewModel.authenticationErrorText = nil
+                        authenticationManager.authenticationErrorText = nil
                         email = email.lowercased()
-                        if viewModel.authenticationFormType == .signup {
-                            viewModel.signup(email: email, password: password) {
+                        if authenticationManager.authenticationFormType == .signup {
+                            authenticationManager.signup(email: email, password: password) {
                                 success in
                                 if success {
                                     dismiss()
                                 }
                             }
-                        } else if viewModel.authenticationFormType == .passwordChange {
-                            viewModel.updatePasswordForCurrentUser(to: password) {
+                        } else if authenticationManager.authenticationFormType == .passwordChange {
+                            authenticationManager.updatePasswordForCurrentUser(to: password) {
                                 success in
                                 if success {
                                     dismiss()
                                 }
                             }
                         } else {
-                            viewModel.login(email: email, password: password) {
+                            authenticationManager.login(email: email, password: password) {
                                 success in
                                 if success {
                                     dismiss()
@@ -115,22 +117,22 @@ struct AuthenticationFormView: View {
                             }
                         }
                     } label: {
-                        Text(viewModel.authenticationFormType?.confirmButtonText ?? Authentication.FormType.login.confirmButtonText)
+                        Text(authenticationManager.authenticationFormType?.confirmButtonText ?? Authentication.FormType.login.confirmButtonText)
                     }
-                    .disabled(isFormInvalid || viewModel.isAuthenticating)
+                    .disabled(isFormInvalid || authenticationManager.isAuthenticating)
                 }
             }
         }
         .onAppear {
-            if viewModel.authenticationFormType == .passwordChange {
-                email = (viewModel.firebaseAuthentication.currentUser?.email)!
+            if authenticationManager.authenticationFormType == .passwordChange {
+                email = (authenticationManager.firebaseAuthentication.currentUser?.email)!
             }
         }
         .onDisappear {
             email.removeAll()
             password.removeAll()
-            viewModel.authenticationErrorText = nil
-            viewModel.authenticationFormType = nil
+            authenticationManager.authenticationErrorText = nil
+            authenticationManager.authenticationFormType = nil
         }
 #if os(macOS)
         .frame(minWidth: 495, maxWidth: 495, minHeight: 365, maxHeight: 365)
@@ -141,46 +143,46 @@ struct AuthenticationFormView: View {
     
     var credentialFields: some View {
         Group {
-            if viewModel.authenticationFormType != .passwordChange {
+            if authenticationManager.authenticationFormType != .passwordChange {
                 VStack {
                     FormTextField("Email", text: $email)
                         .textContentType(.username)
 #if os(iOS)
                         .keyboardType(.emailAddress)
 #endif
-                    if viewModel.invalidCredentialField == 0 {
+                    if authenticationManager.invalidCredentialField == 0 {
                         FieldNeedsAttentionView()
                     }
                 }
             }
             VStack {
-                ViewablePasswordField("Password", text: $password, signup: viewModel.authenticationFormType == .signup)
-                if viewModel.invalidCredentialField == 1 {
+                ViewablePasswordField("Password", text: $password, signup: authenticationManager.authenticationFormType == .signup)
+                if authenticationManager.invalidCredentialField == 1 {
                     FieldNeedsAttentionView()
                 }
             }
-                    if viewModel.authenticationFormType == .login && !email.isEmpty && password.isEmpty {
+                    if authenticationManager.authenticationFormType == .login && !email.isEmpty && password.isEmpty {
                         Button {
                             errorManager.errorToShow = nil
-                            viewModel.showingResetPasswordEmailSent = false
-                            viewModel.authenticationErrorText = nil
-                            viewModel.sendPasswordResetLink(toEmail: email)
+                            authenticationManager.showingResetPasswordEmailSent = false
+                            authenticationManager.authenticationErrorText = nil
+                            authenticationManager.sendPasswordResetLink(toEmail: email)
                         } label: {
                             Label(forgotPasswordButtonTitle, systemImage: "questionmark.circle.fill")
                                 .labelStyle(.titleAndIcon)
                         }
-                        .disabled(viewModel.isAuthenticating)
+                        .disabled(authenticationManager.isAuthenticating)
 #if os(macOS)
                         .buttonStyle(.link)
 #endif
             }
         }
-        .disabled(viewModel.isAuthenticating)
+        .disabled(authenticationManager.isAuthenticating)
         .onChange(of: email) { value in
-            viewModel.credentialFieldsChanged()
+            authenticationManager.credentialFieldsChanged()
         }
         .onChange(of: password) { value in
-            viewModel.credentialFieldsChanged()
+            authenticationManager.credentialFieldsChanged()
         }
     }
     

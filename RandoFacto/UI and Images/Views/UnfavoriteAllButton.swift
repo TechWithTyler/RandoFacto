@@ -10,11 +10,11 @@ import SwiftUI
 
 struct UnfavoriteAllButton: View {
     
-    @EnvironmentObject var viewModel: RandoFactoManager
+    @EnvironmentObject var favoriteFactsDatabase: FavoriteFactsDatabase
     
     var body: some View {
         Button(role: .destructive) {
-            viewModel.showingDeleteAllFavoriteFacts = true
+            favoriteFactsDatabase.showingDeleteAllFavoriteFacts = true
         } label: {
             Label("Unfavorite All…", systemImage: "star.slash.fill")
         }

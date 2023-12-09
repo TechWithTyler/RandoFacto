@@ -1,44 +1,25 @@
 //
-//  RandoFactoManager.swift
+//  AuthenticationManager.swift
 //  RandoFacto
 //
-//  Created by Tyler Sheft on 11/29/22.
-//  Copyright © 2022-2024 SheftApps. All rights reserved.
+//  Created by Tyler Sheft on 12/8/23.
 //
 
 import SwiftUI
 import Firebase
 
-// This object manages the data storage and authentication in this app.
-class RandoFactoManager: ObservableObject {
+class AuthenticationManager: ObservableObject {
     
-    // MARK: - Properties - Fact Generator
+    @Published var firebaseAuthentication: Authentication
     
-    // The fact generator.
-    var factGenerator = FactGenerator()
-    
-    // Handles searching and sorting of favorite facts.
-    // Properties with the @Published property wrapper will trigger updates to SwiftUI views when they're changed. Their values must be value types (i.e. structs), not reference types (i.e. classes).
-    @Published var favoriteFactSearcher = FavoriteFactSearcher()
-    
-    var errorManager: ErrorManager
+    var favoriteFactsDatabase: FavoriteFactsDatabase? = nil
     
     var networkManager: NetworkManager
     
-    // MARK: - Properties - Strings
-    
-    // The text to display in the fact text view.
-    @Published var factText: String = loadingString
+    var errorManager: ErrorManager
     
     // The text to display in the authentication error label in the authentication (login/signup/password change) dialogs.
     @Published var authenticationErrorText: String? = nil
-    
-    // MARK: - Properties - Integers
-    
-    // The current fact text size as an Int.
-    var fontSizeValue: Int {
-        return Int(factTextSize)
-    }
     
     // the credential field pertaining to an authentication error.
     var invalidCredentialField: Int? {
@@ -56,23 +37,6 @@ class RandoFactoManager: ObservableObject {
             return nil
         }
     }
-    
-    // Whether to display one of the user's favorite facts or generate a random fact when the app launches. This setting resets to 0 (Random Fact), and is hidden, when the user logs out or deletes their account.
-    // The @AppStorage property wrapper binds a property to the given UserDefaults key name. Such properties behave the same as UserDefaults get/set properties such as the "5- or 10-frame" setting in SkippyNums, but with the added benefit of automatic UI refreshing.
-    @AppStorage("initialFact") var initialFact: Int = 0
-    
-    // The text size for facts.
-    @AppStorage("factTextSize") var factTextSize: Double = minFontSize
-    
-    // MARK: - Properties - Pages
-    
-    // The page currently selected in the sidebar/top-level view. On macOS, the settings view is accessed by the Settings menu item in the app menu instead of as a page.
-    @Published var selectedPage: AppPage? = .randomFact
-    
-    #if os(macOS)
-    // THe page currently selected in the Settings window on macOS.
-    @AppStorage("selectedSettingsPage") var selectedSettingsPage: SettingsPage = .display
-    #endif
     
     // MARK: - Properties - Authentication Form Type
     
@@ -92,302 +56,25 @@ class RandoFactoManager: ObservableObject {
     // Whether the "delete account" alert should be displayed.
     @Published var showingDeleteAccount: Bool = false
     
-    // Whether the "delete all favorite facts" alert should be displayed.
-    @Published var showingDeleteAllFavoriteFacts: Bool = false
-    
     // Whether the AuthenticationFormView should show a confirmation that a password reset email has been sent to the entered email address.
     @Published var showingResetPasswordEmailSent: Bool = false
     
     // Whether an authentication request is in progress.
     @Published var isAuthenticating: Bool = false
     
-    // Whether favorite facts are available to be displayed.
-    var favoriteFactsAvailable: Bool {
-        return userLoggedIn && !favoriteFacts.isEmpty && userDeletionStage == nil
-    }
-    
-    // Whether the fact text view is displaying something other than a fact (i.e., a loading or error message).
-    var notDisplayingFact: Bool {
-        return factText == loadingString || factText == generatingString
-    }
-    
-    // Whether the displayed fact is saved as a favorite.
-    var displayedFactIsSaved: Bool {
-        return !favoriteFacts.filter({$0.text == factText}).isEmpty
-    }
-    
     // Whether a user is logged in.
     var userLoggedIn: Bool {
         return firebaseAuthentication.currentUser != nil
     }
     
-    // MARK: - Properties - Favorite Facts Array
-    
-    // The current user's favorite facts loaded from the Firestore database. Storing the data in this array makes getting favorite facts easier than getting the corresponding Firestore data each time, which could cause errors.
-    @Published var favoriteFacts: [FavoriteFact] = []
-    
-    // MARK: - Properties - Firebase
-    
-    // The app's Firestore database.
-    var firestore = Firestore.firestore()
-    
     // Listens for changes to the references for registered users.
     var userListener: ListenerRegistration? = nil
     
-    // Listens for changes to the current user's favorite facts.
-    var favoriteFactsListener: ListenerRegistration? = nil
-    
-    // Used to get the current user or to perform authentication tasks, such as to login, logout, or delete an account.
-    @Published var firebaseAuthentication = Authentication.auth()
-    
-    // MARK: - Properties - Errors
-    
-    // The error logged if the RandoFacto database is unable to get the document (data) from the corresponding favorite fact QuerySnapshot.
-    private let favoriteFactReferenceError = NSError(domain: "Favorite fact reference not found", code: 144)
-    
-    // MARK: - Initialization
-    
-    // This initializer sets up the network path monitor and Firestore listeners, then displays a fact to the user.
-    init(errorManager: ErrorManager, networkManager: NetworkManager) {
-        // 1. Configure the network path monitor.
-        self.errorManager = errorManager
+    init(firebaseAuthentication: Authentication, networkManager: NetworkManager, errorManager: ErrorManager) {
+        self.firebaseAuthentication = firebaseAuthentication
         self.networkManager = networkManager
-        // 2. After waiting a second for the network path monitor to configure and detect the current network connection status, load all the favorite facts into the app.
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) { [self] in
-            addRegisteredUsersHandler()
-            loadFavoriteFactsForCurrentUser { [self] in
-                guard notDisplayingFact else { return }
-                // 3. Generate a random fact.
-                if initialFact == 0 || favoriteFacts.isEmpty || !userLoggedIn {
-                    generateRandomFact()
-                } else {
-                    getRandomFavoriteFact()
-                }
-            }
-        }
+        self.errorManager = errorManager
     }
-    
-    // MARK: - Fact Generation
-    
-    // This method tries to access a random facts API URL and parse JSON data it gives back. It then feeds the fact through another API URL to check if it contains inappropriate words. We do it this way so we don't have to include inappropriate words in the app/code itself. If everything is successful, the fact is displayed to the user, or if an error occurs, it's logged.
-    func generateRandomFact() {
-        // 1. Ask the fact generator to perform its URL requests to generate a random fact.
-        factGenerator.generateRandomFact { [self] in
-            // 2. Display a message before starting fact generation.
-            DispatchQueue.main.async { [self] in
-                factText = generatingString
-            }
-        } completionHandler: { [self]
-            fact, error in
-            DispatchQueue.main.async { [self] in
-                if let fact = fact {
-                    // 3. If we get a fact, display it.
-                    factText = fact
-                } else if let error = error {
-                    // 4. If an error occurs, log it.
-                    factText = factUnavailableString
-                    errorManager.showError(error)
-                }
-            }
-        }
-    }
-    
-}
-
-// This is the extension which contains the favorite facts database functions.
-extension RandoFactoManager {
-    
-    // MARK: - Favorite Facts - Loading
-    
-    // This method asynchronously loads all the favorite facts associated with the current user. Firestore doesn't have a way to associate data with the user that created it, so we have to add a "user" key to each favorite fact so when a user deletes their account, their favorite facts, but no one else's, are deleted.
-    func loadFavoriteFactsForCurrentUser(completionHandler: @escaping (() -> Void)) {
-        DispatchQueue.main.async { [self] in
-            // 1. Make sure we can get the current user.
-            guard userLoggedIn else {
-                completionHandler()
-                return
-            }
-            guard let user = firebaseAuthentication.currentUser, let userEmail = user.email else {
-                completionHandler()
-                return
-            }
-            // 2. Get the Firestore collection containing favorite facts.
-            favoriteFactsListener = firestore.collection(favoriteFactsCollectionName)
-            // 3. Filter the result to include only the current user's favorite facts.
-                .whereField(userKeyName, isEqualTo: userEmail)
-            // 4. Listen for any changes made to the favorite facts list on the Firebase end, such as by RandoFacto on another device.
-                .addSnapshotListener(includeMetadataChanges: true) { [self] snapshot, error in
-                    // 5. Log any errors.
-                    if let error = error {
-                        errorManager.showError(error)
-                            completionHandler()
-                    } else {
-                        // 6. If no data can be found, return.
-                        guard let snapshot = snapshot else {
-                            completionHandler()
-                            return
-                        }
-                        // 7. Check if the snapshot is from the cache (device data for use offline).
-                        if snapshot.metadata.isFromCache && networkManager.online && !notDisplayingFact {
-                            // Skip the callback if it's from the cache, the device is online, and a fact is already being displayed.
-                            return
-                        }
-                        // 8. If a change was successfully detected, update the app's favorite facts array.
-                        updateFavoriteFactsList(from: snapshot, completionHandler: completionHandler)
-                    }
-                }
-        }
-    }
-    
-    // This method updates the app's favorite facts list with snapshot's data.
-    func updateFavoriteFactsList(from snapshot: QuerySnapshot, completionHandler: @escaping (() -> Void)) {
-            // 1. Try to replace the data in favoriteFacts with snapshot's data by decoding it to a FavoriteFact object.
-            do {
-                // compactMap is marked throws so you can call throwing functions in its closure. Errors are then "rethrown" so the catch block of this do statement can handle them.
-                favoriteFacts = try snapshot.documents.compactMap { document in
-                    // data(as:) handles the decoding of the data, so we don't need to use a Decoder object.
-                    return try document.data(as: FavoriteFact.self)
-                }
-                favoriteFactSearcher.favoriteFacts = favoriteFacts
-            } catch {
-                // 2. If that fails, log an error.
-                errorManager.showError(error)
-            }
-            completionHandler()
-    }
-    
-    // MARK: - Favorite Facts - Display Favorite Fact
-    
-    // This method gets a random fact from the favorite facts list and sets factText to its text.
-    func getRandomFavoriteFact() {
-        let favoriteFact = favoriteFacts.randomElement()?.text ?? factUnavailableString
-        DispatchQueue.main.async { [self] in
-            factText = favoriteFact
-        }
-    }
-    
-    // This method displays favorite and switches to the "Random Fact" page.
-    func displayFavoriteFact(_ favorite: String) {
-        DispatchQueue.main.async { [self] in
-            factText = favorite
-            dismissFavoriteFacts()
-        }
-    }
-    
-    // MARK: - Favorite Facts - Unavailable Handler
-    
-    // This method switches the current page from favoriteFacts to randomFact if a user logs out or is being deleted.
-    func dismissFavoriteFacts() {
-        if selectedPage == .favoriteFacts {
-            DispatchQueue.main.async { [self] in
-                selectedPage = .randomFact
-            }
-        }
-    }
-    
-    // MARK: - Favorite Facts - Saving/Deleting
-    
-    // This method creates a FavoriteFact from factText and saves it to the RandoFacto database.
-    func saveToFavorites(factText: String) {
-        // 1. Make sure the fact doesn't already exist and that the current user has an email (who would have an account but no email?!).
-        guard let email = firebaseAuthentication.currentUser?.email else { return }
-        let fact = FavoriteFact(text: factText, user: email)
-        guard !favoriteFacts.contains(fact) else { return }
-        // 2. Create a FavoriteFact object with the fact text and the current user's email, and try to create a new document with that data in the favorite facts Firestore collection.
-        do {
-            try firestore.collection(favoriteFactsCollectionName).addDocument(from: fact)
-        } catch {
-            DispatchQueue.main.async { [self] in
-                errorManager.showError(error)
-            }
-        }
-    }
-    
-    // This method finds a favorite fact in the database and deletes it if its text matches factText.
-    func deleteFromFavorites(factText: String) {
-        // 1. Get facts with text that matches the given fact text (there should only be 1).
-        DispatchQueue.main.async { [self] in
-            firestore.collection(favoriteFactsCollectionName)
-                .whereField(factTextKeyName, isEqualTo: factText)
-                .getDocuments(source: .cache) { [self] snapshot, error in
-                    // 2. If that fails, log an error.
-                    if let error = error {
-                        errorManager.showError(error)
-                    } else {
-                        // 3. Or if we're error-free, get the snapshot and delete.
-                        getFavoriteFactSnapshotAndDelete(snapshot)
-                    }
-                }
-        }
-    }
-    
-    // This method gets the data from snapshot and deletes it.
-    func getFavoriteFactSnapshotAndDelete(_ snapshot: QuerySnapshot?) {
-        DispatchQueue.main.async { [self] in
-            // 1. Make sure the snapshot and the corresponding data is there.
-            if let snapshot = snapshot, let document = snapshot.documents.first {
-                // 2. Delete the corresponding document.
-                document.reference.delete { [self]
-                    error in
-                    // 3. Log an error if deletion fails.
-                    if let error = error {
-                        errorManager.showError(error)
-                    }
-                }
-            } else {
-                // 4. If we can't get the snapshot or corresponding data, log an error.
-                errorManager.showError(favoriteFactReferenceError)
-            }
-        }
-    }
-    
-    // This method deletes all of the current user's favorite facts from the database.
-    func deleteAllFavoriteFactsForCurrentUser(forUserDeletion deletingUser: Bool = false, completionHandler: @escaping ((Error?) -> Void)) {
-        // 1. Make sure we can get the current user.
-        guard let userEmail = firebaseAuthentication.currentUser?.email else {
-            return }
-        var deletionError: Error?
-        let factStorageSource: FirestoreSource = deletingUser ? .server : .cache
-        // 2. Create a DispatchGroup.
-        let group = DispatchGroup()
-        // 3. Get all favorite facts associated with the current user. If deleting their account, get from the server instead of the cache to ensure the server data is wiped before deletion continues.
-        firestore.collection(favoriteFactsCollectionName)
-            .whereField(userKeyName, isEqualTo: userEmail)
-            .getDocuments(source: factStorageSource) { (snapshot, error) in
-                // 4. If that fails, log an error.
-                if let error = error {
-                    deletionError = error
-                } else {
-                    // 5. Loop through each favorite fact.
-                    if let documents = snapshot?.documents {
-                        for document in documents {
-                            // 6. Enter the DispatchGroup before attempting deletion.
-                            group.enter()
-                            // 7. Try to delete this favorite fact, leaving the DispatchGroup when done. If an error occurs, log it.
-                            document.reference.delete { error in
-                                if let error = error {
-                                    deletionError = error
-                                }
-                                group.leave()
-                            }
-                            // 8. Get out of the loop and cancel deletion if deletion of this favorite fact fails.
-                            if deletionError != nil {
-                                break
-                            }
-                        }
-                    }
-                }
-                // 9. Notify the DispatchGroup on the main thread and call the completion handler.
-                group.notify(queue: .main) {
-                    completionHandler(deletionError)
-                }
-            }
-    }
-    
-}
-
-// This is the extension which contains the authentication/account management functions.
-extension RandoFactoManager {
     
     // MARK: - Authentication - Registered Users Handler
     
@@ -400,7 +87,7 @@ extension RandoFactoManager {
                 return
             }
             // 2. Get all registered users.
-            userListener = firestore.collection(usersCollectionName)
+            userListener = favoriteFactsDatabase?.firestore.collection(usersCollectionName)
             // 3. Filter the results to include only the current user.
                 .whereField(emailKeyName, isEqualTo: email)
             // 4. Listen for any changes made to the "users" collection.
@@ -442,11 +129,10 @@ extension RandoFactoManager {
         // 1. Create the block which will be performed if authentication is successful. This block loads the user's favorite facts, adds the registered users handler, and calls the completion handler.
         let successBlock: (() -> Void) = { [self] in
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [self] in
-                loadFavoriteFactsForCurrentUser { [self] in
-                    addRegisteredUsersHandler()
-                    isAuthenticating = false
-                    successHandler(true)
-                }
+                favoriteFactsDatabase?.loadFavoriteFactsForCurrentUser()
+                addRegisteredUsersHandler()
+                isAuthenticating = false
+                successHandler(true)
             }
         }
         // 2. Log an error if unsuccessful.
@@ -503,7 +189,7 @@ extension RandoFactoManager {
         let userReference = User.Reference(email: email)
         // 2. Try to add the data from this object as a new document whose document ID is that of the user. Matching the document ID with the user ID makes deleting it easier.
         do {
-            try firestore.collection(usersCollectionName).document(id).setData(from: userReference)
+            try favoriteFactsDatabase?.firestore.collection(usersCollectionName).document(id).setData(from: userReference)
             completionHandler(nil)
         } catch {
             // 3. If that fails, log an error.
@@ -524,7 +210,7 @@ extension RandoFactoManager {
             }
         }
         // 2. Check if the current user has a reference.
-        firestore.collection(usersCollectionName)
+        favoriteFactsDatabase?.firestore.collection(usersCollectionName)
             .whereField(emailKeyName, isEqualTo: email)
             .getDocuments(source: .server) { snapshot, error in
                 // 3. If that fails, log an error.
@@ -624,13 +310,13 @@ extension RandoFactoManager {
             try firebaseAuthentication.signOut()
             // 2. If successful, clear the favorite facts list, remove the user listener and favorite facts listener, and reset the Fact on Launch setting to "Random Fact".
             DispatchQueue.main.async { [self] in
-                favoriteFacts.removeAll()
+                favoriteFactsDatabase?.favoriteFacts.removeAll()
             }
-            initialFact = 0
+            favoriteFactsDatabase?.initialFact = 0
             userListener?.remove()
             userListener = nil
-            favoriteFactsListener?.remove()
-            favoriteFactsListener = nil
+            favoriteFactsDatabase?.favoriteFactsListener?.remove()
+            favoriteFactsDatabase?.favoriteFactsListener = nil
         } catch {
             // 3. If unsuccessful, log an error.
             DispatchQueue.main.async { [self] in
@@ -643,7 +329,7 @@ extension RandoFactoManager {
     func logoutMissingUser() {
         // 1. Delete all the missing user's favorite facts, getting the data from the server instead of the cache.
         DispatchQueue.main.async { [self] in
-            deleteAllFavoriteFactsForCurrentUser(forUserDeletion: true) { [self] error in
+            favoriteFactsDatabase?.deleteAllFavoriteFactsForCurrentUser(forUserDeletion: true) { [self] error in
                 if let error = error {
                     // 2. If that fails, log an error.
                     errorManager.showError(error)
@@ -668,7 +354,7 @@ extension RandoFactoManager {
         }
         // 2. Delete all their favorite facts, getting data from the server instead of the cache.
         userDeletionStage = .data
-        deleteAllFavoriteFactsForCurrentUser(forUserDeletion: true) { [self] error in
+        favoriteFactsDatabase?.deleteAllFavoriteFactsForCurrentUser(forUserDeletion: true) { [self] error in
             // 3. If that fails, log an error and cancel deletion.
             if let error = error {
                 userDeletionStage = nil
@@ -702,7 +388,7 @@ extension RandoFactoManager {
         var deletionError: Error?
         // 2. Create a DispatchGroup and delete the user reference the same way we delete all favorite facts.
         let group = DispatchGroup()
-        self.firestore.collection(usersCollectionName)
+        favoriteFactsDatabase?.firestore.collection(usersCollectionName)
             .whereField(emailKeyName, isEqualTo: userEmail)
             .getDocuments(source: .server) { (snapshot, error) in
                 if let error = error {

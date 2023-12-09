@@ -11,7 +11,13 @@ import SheftAppsStylishUI
 
 struct ContentView: View {
 
-    @EnvironmentObject var viewModel: RandoFactoManager
+    @EnvironmentObject var appStateManager: AppStateManager
+    
+    @EnvironmentObject var authenticationManager: AuthenticationManager
+    
+    @EnvironmentObject var favoriteFactsDatabase: FavoriteFactsDatabase
+    
+    @EnvironmentObject var favoriteFactSearcher: FavoriteFactSearcher
     
     @EnvironmentObject var networkManager: NetworkManager
     
@@ -25,18 +31,18 @@ struct ContentView: View {
 
 	var body: some View {
 		NavigationSplitView {
-			List(selection: $viewModel.selectedPage) {
+			List(selection: $appStateManager.selectedPage) {
 				NavigationLink(value: AppPage.randomFact) {
 					label(for: .randomFact)
 				}
-				if viewModel.userLoggedIn && viewModel.userDeletionStage == nil {
+				if authenticationManager.userLoggedIn && authenticationManager.userDeletionStage == nil {
 					NavigationLink(value: AppPage.favoriteFacts) {
 						label(for: .favoriteFacts)
-							.badge(viewModel.favoriteFacts.count)
+							.badge(favoriteFactsDatabase.favoriteFacts.count)
 					}
                     .contextMenu {
                         UnfavoriteAllButton()
-                            .environmentObject(viewModel)
+                            .environmentObject(favoriteFactsDatabase)
                     }
 				}
 				#if !os(macOS)
@@ -50,23 +56,29 @@ struct ContentView: View {
 			.navigationBarTitleDisplayMode(.automatic)
 #endif
 		} detail: {
-			switch viewModel.selectedPage {
+			switch appStateManager.selectedPage {
 				case .randomFact, nil:
 					FactView()
-                    .environmentObject(viewModel)
+                    .environmentObject(appStateManager)
                     .environmentObject(networkManager)
                     .environmentObject(errorManager)
+                    .environmentObject(favoriteFactsDatabase)
+                    .environmentObject(authenticationManager)
 				case .favoriteFacts:
 					FavoriteFactsList()
-                    .environmentObject(viewModel)
+                    .environmentObject(appStateManager)
                     .environmentObject(networkManager)
                     .environmentObject(errorManager)
+                    .environmentObject(favoriteFactsDatabase)
+                    .environmentObject(favoriteFactSearcher)
                 #if !os(macOS)
 				case .settings:
 					SettingsView()
-                    .environmentObject(viewModel)
+                    .environmentObject(appStateManager)
                     .environmentObject(networkManager)
                     .environmentObject(errorManager)
+                    .environmentObject(authenticationManager)
+                    .environmentObject(favoriteFactsDatabase)
                 #endif
 			}
 		}
@@ -83,36 +95,36 @@ struct ContentView: View {
 		.dialogSeverity(.critical)
 		#endif
         // Unfavorite all facts alert
-        .alert("Unfavorite all facts?", isPresented: $viewModel.showingDeleteAllFavoriteFacts, actions: {
+        .alert("Unfavorite all facts?", isPresented: $favoriteFactsDatabase.showingDeleteAllFavoriteFacts, actions: {
             Button("Unfavorite", role: .destructive) {
-                viewModel.deleteAllFavoriteFactsForCurrentUser { error in
+                favoriteFactsDatabase.deleteAllFavoriteFactsForCurrentUser { error in
                     if let error = error {
                         DispatchQueue.main.async { [self] in
                             errorManager.showError(error)
                         }
                     }
-                    viewModel.showingDeleteAllFavoriteFacts = false
+                    favoriteFactsDatabase.showingDeleteAllFavoriteFacts = false
                 }
             }
             Button("Cancel", role: .cancel) {
-                viewModel.showingDeleteAllFavoriteFacts = false
+                favoriteFactsDatabase.showingDeleteAllFavoriteFacts = false
             }
         })
 		// Nil selection catcher
-		.onChange(of: viewModel.selectedPage) { value in
+		.onChange(of: appStateManager.selectedPage) { value in
 			if value == nil && horizontalSizeClass == .regular {
-				viewModel.selectedPage = .randomFact
+				appStateManager.selectedPage = .randomFact
 			}
 		}
 		// User login state change/user deletion
-		.onChange(of: viewModel.userDeletionStage) { value in
+		.onChange(of: authenticationManager.userDeletionStage) { value in
             if value != nil {
-                viewModel.dismissFavoriteFacts()
+                appStateManager.dismissFavoriteFacts()
             }
 		}
-		.onChange(of: viewModel.userLoggedIn) { value in
+		.onChange(of: authenticationManager.userLoggedIn) { value in
             if value == false {
-                viewModel.dismissFavoriteFacts()
+                appStateManager.dismissFavoriteFacts()
             }
 		}
 		// Error sound/haptics

@@ -13,7 +13,11 @@ struct FactView: View {
     
     // MARK: - Properties - Objects
     
-    @EnvironmentObject var viewModel: RandoFactoManager
+    @EnvironmentObject var appStateManager: AppStateManager
+    
+    @EnvironmentObject var authenticationManager: AuthenticationManager
+    
+    @EnvironmentObject var favoriteFactsDatabase: FavoriteFactsDatabase
     
     @EnvironmentObject var networkManager: NetworkManager
     
@@ -40,18 +44,18 @@ struct FactView: View {
     }
     
     var factView: some View {
-            ScrollableText(viewModel.factText)
-                .font(.system(size: CGFloat(viewModel.factTextSize)))
-                .isTextSelectable(!(viewModel.notDisplayingFact || viewModel.factText == factUnavailableString))
+            ScrollableText(appStateManager.factText)
+                .font(.system(size: CGFloat(appStateManager.factTextSize)))
+                .isTextSelectable(!(appStateManager.notDisplayingFact || appStateManager.factText == factUnavailableString))
                 .multilineTextAlignment(.center)
-                .animation(.default, value: viewModel.factTextSize)
+                .animation(.default, value: appStateManager.factTextSize)
     }
     
     var footer: some View {
         VStack {
             // To include a clickable link in a string, use the format [text](URL), where text is the text to be displayed and URL is the URL the link goes to.
             Text("Facts provided by [uselessfacts.jsph.pl](https://uselessfacts.jsph.pl).")
-            if viewModel.userLoggedIn {
+            if authenticationManager.userLoggedIn {
                 Text("Favorite facts database powered by [Firebase](https://firebase.google.com).")
             }
         }
@@ -65,9 +69,9 @@ struct FactView: View {
     
     var buttons: some View {
         ConditionalHVStack {
-            if viewModel.favoriteFactsAvailable {
+            if appStateManager.favoriteFactsAvailable {
                 Button {
-                    viewModel.getRandomFavoriteFact()
+                    appStateManager.getRandomFavoriteFact()
                 } label: {
                     Text(getRandomFavoriteFactButtonTitle)
                         .frame(width: 200)
@@ -82,7 +86,7 @@ struct FactView: View {
             }
             if networkManager.online {
                 Button {
-                    viewModel.generateRandomFact()
+                    appStateManager.generateRandomFact()
                 } label: {
                     Text(generateRandomFactButtonTitle)
                         .frame(width: 200)
@@ -96,7 +100,7 @@ struct FactView: View {
                 #endif
             }
         }
-        .disabled(viewModel.notDisplayingFact)
+        .disabled(appStateManager.notDisplayingFact)
     }
     
     
@@ -104,24 +108,24 @@ struct FactView: View {
     
     @ToolbarContentBuilder
     var toolbarContent: some ToolbarContent {
-        let displayingLoadingMessage = viewModel.factText.last == "…" || viewModel.factText.isEmpty
+        let displayingLoadingMessage = appStateManager.factText.last == "…" || appStateManager.factText.isEmpty
         if displayingLoadingMessage {
             ToolbarItem(placement: .automatic) {
                 LoadingIndicator()
             }
         } else {
-            if viewModel.factText != factUnavailableString && viewModel.userLoggedIn {
+            if appStateManager.factText != factUnavailableString && authenticationManager.userLoggedIn {
                 ToolbarItem(placement: .automatic) {
                     Button {
                         DispatchQueue.main.async {
-                            if viewModel.displayedFactIsSaved {
-                                viewModel.deleteFromFavorites(factText: viewModel.factText)
+                            if appStateManager.displayedFactIsSaved {
+                                favoriteFactsDatabase.deleteFromFavorites(factText: appStateManager.factText)
                             } else {
-                                viewModel.saveToFavorites(factText: viewModel.factText)
+                                favoriteFactsDatabase.saveToFavorites(factText: appStateManager.factText)
                             }
                         }
                     } label: {
-                        if viewModel.displayedFactIsSaved {
+                        if appStateManager.displayedFactIsSaved {
                             Image(systemName: "star.fill")
                                 .symbolRenderingMode(.multicolor)
                                 .accessibilityLabel("Unfavorite")
@@ -130,8 +134,8 @@ struct FactView: View {
                                 .accessibilityLabel("Favorite")
                         }
                     }
-                    .help(viewModel.displayedFactIsSaved ? "Unfavorite" : "Favorite")
-                    .disabled(viewModel.factText == factUnavailableString || viewModel.userDeletionStage != nil)
+                    .help(appStateManager.displayedFactIsSaved ? "Unfavorite" : "Favorite")
+                    .disabled(appStateManager.factText == factUnavailableString || authenticationManager.userDeletionStage != nil)
                 }
             }
         }

@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct FavoriteFactSearcher {
+class FavoriteFactSearcher: ObservableObject {
     
     // MARK: - Properties - Favorite Facts List
     
@@ -18,7 +18,7 @@ struct FavoriteFactSearcher {
     // MARK: - Properties - Searching
     
     // The FavoriteFactsList search text.
-    var searchText = String()
+    @Published var searchText = String()
     
     // The favorite facts that match searchText.
     var searchResults: [String] {

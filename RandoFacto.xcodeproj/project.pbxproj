@@ -47,7 +47,9 @@
 		8DCE5DE92B084F6000DD3CE7 /* UnfavoriteAllButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCE5DE82B084F6000DD3CE7 /* UnfavoriteAllButton.swift */; };
 		8DCF671F297F58B7006DE41E /* FavoriteFactsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCF671E297F58B7006DE41E /* FavoriteFactsList.swift */; };
 		8DD7920F2A2E78F800C1B61C /* APIKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DD7920E2A2E78F800C1B61C /* APIKeys.swift */; };
-		8DF48E312936A80700152681 /* RandoFactoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF48E302936A80700152681 /* RandoFactoManager.swift */; };
+		8DEF074C2B241D5B00F0375F /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEF074B2B241D5B00F0375F /* AuthenticationManager.swift */; };
+		8DEF074E2B241DBA00F0375F /* FavoriteFactsDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEF074D2B241DBA00F0375F /* FavoriteFactsDatabase.swift */; };
+		8DF48E312936A80700152681 /* AppStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF48E302936A80700152681 /* AppStateManager.swift */; };
 		8DF48E392936B02900152681 /* RandoFactoError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF48E382936B02900152681 /* RandoFactoError.swift */; };
 		8DF8D9DF2A27DDA700874AFC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8DF48E2E2936A62900152681 /* GoogleService-Info.plist */; };
 		8DFEB0A32AFAF64800F57DB1 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DFEB0A22AFAF64800F57DB1 /* SettingsView.swift */; };
@@ -106,8 +108,10 @@
 		8DCE5DE82B084F6000DD3CE7 /* UnfavoriteAllButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnfavoriteAllButton.swift; sourceTree = "<group>"; };
 		8DCF671E297F58B7006DE41E /* FavoriteFactsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteFactsList.swift; sourceTree = "<group>"; };
 		8DD7920E2A2E78F800C1B61C /* APIKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKeys.swift; sourceTree = "<group>"; };
+		8DEF074B2B241D5B00F0375F /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
+		8DEF074D2B241DBA00F0375F /* FavoriteFactsDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteFactsDatabase.swift; sourceTree = "<group>"; };
 		8DF48E2E2936A62900152681 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		8DF48E302936A80700152681 /* RandoFactoManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandoFactoManager.swift; sourceTree = "<group>"; };
+		8DF48E302936A80700152681 /* AppStateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStateManager.swift; sourceTree = "<group>"; };
 		8DF48E382936B02900152681 /* RandoFactoError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandoFactoError.swift; sourceTree = "<group>"; };
 		8DFEB0A22AFAF64800F57DB1 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		8DFEB0A42AFAF6FD00F57DB1 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -148,6 +152,7 @@
 		8D63D5F72AFEBBE90084BACF /* Authentication */ = {
 			isa = PBXGroup;
 			children = (
+				8DEF074B2B241D5B00F0375F /* AuthenticationManager.swift */,
 				8D86430D2AEC594F0084C772 /* AuthenticationFormType.swift */,
 				8D8899DF2AFDF3D100BDDDFD /* AuthenticationMessageType.swift */,
 				8D63D5F82AFF1D470084BACF /* UserDeletionStage.swift */,
@@ -169,11 +174,12 @@
 		8D8899DE2AFDF3B100BDDDFD /* View Model */ = {
 			isa = PBXGroup;
 			children = (
-				8DF48E302936A80700152681 /* RandoFactoManager.swift */,
-				8DCE5DE32B080A8C00DD3CE7 /* Pages */,
-				8D63D5F72AFEBBE90084BACF /* Authentication */,
+				8DF48E302936A80700152681 /* AppStateManager.swift */,
+				8DEF074D2B241DBA00F0375F /* FavoriteFactsDatabase.swift */,
 				8D0A3C3E2B1FA6F500B7345D /* FavoriteFactSearcher.swift */,
 				8D5E9A292B226DE800C261B8 /* NetworkManager.swift */,
+				8DCE5DE32B080A8C00DD3CE7 /* Pages */,
+				8D63D5F72AFEBBE90084BACF /* Authentication */,
 			);
 			path = "View Model";
 			sourceTree = "<group>";
@@ -422,7 +428,7 @@
 				8D63D5F92AFF1D470084BACF /* UserDeletionStage.swift in Sources */,
 				8DCE5DE92B084F6000DD3CE7 /* UnfavoriteAllButton.swift in Sources */,
 				8DFEB0A32AFAF64800F57DB1 /* SettingsView.swift in Sources */,
-				8DF48E312936A80700152681 /* RandoFactoManager.swift in Sources */,
+				8DF48E312936A80700152681 /* AppStateManager.swift in Sources */,
 				8DFEB0A72AFAF77800F57DB1 /* FactView.swift in Sources */,
 				8DCE5DE52B080AA200DD3CE7 /* SettingsPage.swift in Sources */,
 				8D63D5FD2AFF4A180084BACF /* StringEmojiChecker.swift in Sources */,
@@ -438,9 +444,11 @@
 				8D051C5E2AFB15590064E90E /* AppPage.swift in Sources */,
 				8DAFBC842B1AB52400C0907F /* FieldNeedsAttentionView.swift in Sources */,
 				8D8899DD2AFDF39900BDDDFD /* GeneratedFact.swift in Sources */,
+				8DEF074E2B241DBA00F0375F /* FavoriteFactsDatabase.swift in Sources */,
 				8D86430E2AEC594F0084C772 /* AuthenticationFormType.swift in Sources */,
 				8D87C83E2B0306A7009BBE56 /* FavoriteFact.swift in Sources */,
 				8D87C8402B030890009BBE56 /* UserReference.swift in Sources */,
+				8DEF074C2B241D5B00F0375F /* AuthenticationManager.swift in Sources */,
 				8D8899E02AFDF3D100BDDDFD /* AuthenticationMessageType.swift in Sources */,
 				8D0A3C3F2B1FA6F500B7345D /* FavoriteFactSearcher.swift in Sources */,
 				8DA2C412292C1E1100705A2F /* RandoFactoApp.swift in Sources */,
