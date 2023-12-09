@@ -67,7 +67,7 @@ struct AuthenticationFormView: View {
                 if authenticationManager.isAuthenticating {
                     ToolbarItem(placement: .automatic) {
 #if os(macOS)
-                        LoadingIndicator(text: "Please wait…")
+                        LoadingIndicator(text: pleaseWaitString)
 #else
                         LoadingIndicator()
 #endif

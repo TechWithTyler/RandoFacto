@@ -26,77 +26,85 @@ struct FavoriteFactsList: View {
     // MARK: - Body
     
     var body: some View {
-        VStack {
-            if favoriteFactsDatabase.favoriteFacts.isEmpty {
-                // Favorite facts empty display
-                VStack {
-                    Text("No Favorites")
-                        .font(.largeTitle)
-                    Text("Save facts to view offline by pressing the \(Image(systemName: "star")) button.")
-                        .font(.callout)
-                }
-                .foregroundColor(.secondary)
-                .padding()
-            } else if favoriteFactsDatabase.favoriteFactSearcher.searchResults.isEmpty {
-                // No matches display
-                VStack {
-                    Text("No Matches")
-                        .font(.largeTitle)
-                    Text("Please check your search terms.")
-                        .font(.callout)
-                }
-                .foregroundColor(.secondary)
-                .padding()
+        ZStack {
+            if appStateManager.isLoading {
+                LoadingIndicator(text: "Loading favorite facts…")
+                    .font(.largeTitle)
+                    .foregroundStyle(.secondary)
+                    .padding()
             } else {
-                // Favorite facts list
-                List {
-                    Section(header: header) {
-                        ForEach(favoriteFactSearcher.sortedFavoriteFacts, id: \.self) {
-                            favorite in
-                            Button {
-                                appStateManager.displayFavoriteFact(favorite)
-                            } label: {
-                                Text(favorite)
-                                    .lineLimit(nil)
-                                    .font(.system(size: CGFloat(appStateManager.factTextSize)))
-                                    .multilineTextAlignment(.leading)
-                                    .foregroundColor(.primary)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .padding(.vertical)
+                VStack {
+                    if favoriteFactsDatabase.favoriteFacts.isEmpty {
+                        // Favorite facts empty display
+                        VStack {
+                            Text("No Favorites")
+                                .font(.largeTitle)
+                            Text("Save facts to view offline by pressing the \(Image(systemName: "star")) button.")
+                                .font(.callout)
+                        }
+                        .foregroundColor(.secondary)
+                        .padding()
+                    } else if favoriteFactsDatabase.favoriteFactSearcher.searchResults.isEmpty {
+                        // No matches display
+                        VStack {
+                            Text("No Matches")
+                                .font(.largeTitle)
+                            Text("Please check your search terms.")
+                                .font(.callout)
+                        }
+                        .foregroundColor(.secondary)
+                        .padding()
+                    } else {
+                        // Favorite facts list
+                        List {
+                            Section(header: header) {
+                                ForEach(favoriteFactSearcher.sortedFavoriteFacts, id: \.self) {
+                                    favorite in
+                                    Button {
+                                        appStateManager.displayFavoriteFact(favorite)
+                                    } label: {
+                                        Text(favorite)
+                                            .lineLimit(nil)
+                                            .font(.system(size: CGFloat(appStateManager.factTextSize)))
+                                            .multilineTextAlignment(.leading)
+                                            .foregroundColor(.primary)
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                            .padding(.vertical)
+                                    }
+                                    .buttonStyle(.borderless)
+                                    .contextMenu {
+                                        unfavoriteAction(for: favorite)
+                                    }
+                                    .swipeActions {
+                                        unfavoriteAction(for: favorite)
+                                    }
+                                }
                             }
-                            .buttonStyle(.borderless)
-                            .contextMenu {
-                                unfavoriteAction(for: favorite)
+                        }
+                    }
+                }
+                .animation(.default, value: favoriteFactSearcher.sortedFavoriteFacts)
+                .searchable(text: $favoriteFactSearcher.searchText, placement: .toolbar, prompt: "Search Favorite Facts")
+                // Toolbar
+                .toolbar {
+                    ToolbarItem(placement: .automatic) {
+                        Menu {
+                            Picker("Sort", selection: $favoriteFactSearcher.sortFavoriteFactsAscending) {
+                                Text("Sort Ascending (A-Z)").tag(true)
+                                Text("Sort Descending (Z-A)").tag(false)
                             }
-                            .swipeActions {
-                                unfavoriteAction(for: favorite)
-                            }
+                            .pickerStyle(.menu)
+                            Divider()
+                            UnfavoriteAllButton()
+                                .environmentObject(favoriteFactsDatabase)
+                        } label: {
+                            OptionsMenuLabel()
                         }
                     }
                 }
             }
         }
-        .animation(.default, value: favoriteFactSearcher.sortedFavoriteFacts)
-        .searchable(text: $favoriteFactSearcher.searchText, placement: .toolbar, prompt: "Search Favorite Facts")
-        // Toolbar
-        .toolbar {
-            ToolbarItem(placement: .automatic) {
-                Menu {
-                    Picker("Sort", selection: $favoriteFactSearcher.sortFavoriteFactsAscending) {
-                        Text("Sort Ascending (A-Z)").tag(true)
-                        Text("Sort Descending (Z-A)").tag(false)
-                    }
-                    .pickerStyle(.menu)
-                    Divider()
-                    UnfavoriteAllButton()
-                        .environmentObject(favoriteFactsDatabase)
-                } label: {
-                    OptionsMenuLabel()
-                }
-            }
-        }
         .navigationTitle("Favorite Facts List")
-        .frame(minWidth: 400, minHeight: 300)
     }
     
     // MARK: - Header

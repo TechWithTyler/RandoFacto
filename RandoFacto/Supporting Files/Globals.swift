@@ -29,6 +29,9 @@ typealias Authentication = Auth
 // Displayed while the app is loading.
 let loadingString = "Loading…"
 
+// Displayed while the settings window is loading or authentication is in progress.
+let pleaseWaitString = "Please wait…"
+
 // Displayed when generating a random fact.
 let generatingString = "Generating random fact…"
 

@@ -57,9 +57,14 @@ class AppStateManager: ObservableObject {
         return authenticationManager.userLoggedIn && !favoriteFactsDatabase.favoriteFacts.isEmpty && authenticationManager.userDeletionStage == nil
     }
     
+    // Whether the app is loading.
+    var isLoading: Bool {
+        return factText == loadingString
+    }
+    
     // Whether the fact text view is displaying something other than a fact (i.e., a loading or error message).
     var notDisplayingFact: Bool {
-        return factText == loadingString || factText == generatingString
+        return isLoading || factText == generatingString
     }
     
     // Whether the displayed fact is saved as a favorite.

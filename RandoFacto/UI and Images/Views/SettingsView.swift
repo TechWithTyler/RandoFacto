@@ -26,51 +26,62 @@ struct SettingsView: View {
     }
 
     var body: some View {
+        if appStateManager.isLoading {
 #if os(macOS)
-        TabView(selection: $appStateManager.selectedSettingsPage) {
             SAMVisualEffectViewSwiftUIRepresentable {
-                    displaySection
+                loadingSection
+                    .frame(width: 400, height: 280)
             }
-            .frame(width: 400, height: authenticationManager.userLoggedIn ? 390 : 280)
+            #else
+            loadingSection
+#endif
+        } else {
+#if os(macOS)
+            TabView(selection: $appStateManager.selectedSettingsPage) {
+                SAMVisualEffectViewSwiftUIRepresentable {
+                    displaySection
+                }
+                .frame(width: 400, height: authenticationManager.userLoggedIn ? 390 : 280)
                 .formStyle(.grouped)
                 .tabItem {
                     Label(SettingsPage.display.rawValue.capitalized, systemImage: "textformat.size")
                 }
                 .tag(SettingsPage.display)
-            SAMVisualEffectViewSwiftUIRepresentable {
+                SAMVisualEffectViewSwiftUIRepresentable {
                     accountSection
-            }
-            .frame(width: 400, height: 260)
+                }
+                .frame(width: 400, height: 260)
                 .formStyle(.grouped)
                 .tabItem {
                     Label(SettingsPage.account.rawValue.capitalized, systemImage: "person.circle")
                 }
                 .tag(SettingsPage.account)
-        }
+            }
 #else
-        NavigationStack {
-            Form {
-                Section {
-                    NavigationLink(SettingsPage.display.rawValue.capitalized) {
-                        displaySection
-                            .navigationTitle(SettingsPage.display.rawValue.capitalized)
+            NavigationStack {
+                Form {
+                    Section {
+                        NavigationLink(SettingsPage.display.rawValue.capitalized) {
+                            displaySection
+                                .navigationTitle(SettingsPage.display.rawValue.capitalized)
+                        }
+                        NavigationLink(SettingsPage.account.rawValue.capitalized) {
+                            accountSection
+                                .navigationTitle(SettingsPage.account.rawValue.capitalized)
+                        }
                     }
-                    NavigationLink(SettingsPage.account.rawValue.capitalized) {
-                        accountSection
-                            .navigationTitle(SettingsPage.account.rawValue.capitalized)
-                    }
-                }
-                Section {
-                    Button("Help…") {
-                        showHelp()
+                    Section {
+                        Button("Help…") {
+                            showHelp()
+                        }
                     }
                 }
             }
-        }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.automatic)
             .formStyle(.grouped)
 #endif
+        }
     }
 
 	var accountSection: some View {
@@ -197,6 +208,13 @@ struct SettingsView: View {
             }
             .animation(.default, value: appStateManager.factTextSize)
             .formStyle(.grouped)
+        }
+    }
+    
+    var loadingSection: some View {
+        Form {
+            LoadingIndicator(text: pleaseWaitString)
+                .padding()
         }
     }
     
