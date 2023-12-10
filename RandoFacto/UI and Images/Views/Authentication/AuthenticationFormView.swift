@@ -49,6 +49,15 @@ struct AuthenticationFormView: View {
                             .fontWeight(.bold)
                     }
                     credentialFields
+                    if authenticationManager.authenticationFormType == .passwordChange {
+                        HStack {
+                            Image(systemName: "info.circle")
+                                .accessibilityHidden(true)
+                            Text("Changing your password will log you out of your other devices within an hour.")
+                        }
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                    }
                     if authenticationManager.showingResetPasswordEmailSent {
                         AuthenticationMessageView(text: "A password reset email has been sent to \"\(email)\". Follow the instructions to reset your password.", type: .confirmation)
                     }
