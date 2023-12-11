@@ -253,7 +253,7 @@ class AuthenticationManager: ObservableObject {
     
     // MARK: - Authentication - Signup
     
-    // This method takes the user's credentials and tries to sign them up for a RandoFacto database account.
+    // This method takes the user's credentials and tries to sign them up for a RandoFacto account.
     func signup(email: String, password: String, successHandler: @escaping ((Bool) -> Void)) {
         DispatchQueue.main.async { [self] in
             isAuthenticating = true
@@ -265,7 +265,7 @@ class AuthenticationManager: ObservableObject {
     
     // MARK: - Authentication - Login
     
-    // This method takes the user's credentials and tries to log them into their RandoFacto database account.
+    // This method takes the user's credentials and tries to log them into their RandoFacto account.
     func login(email: String, password: String, successHandler: @escaping ((Bool) -> Void)) {
         DispatchQueue.main.async { [self] in
             isAuthenticating = true

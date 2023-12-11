@@ -32,16 +32,16 @@ enum RandoFactoError: LocalizedError, Equatable, Identifiable {
     // Fact generation/screening error.
     case factDataError
     
-    // MARK: - Error Case Definitions - RandoFacto Database
+    // MARK: - Error Case Definitions - Favorite Facts Database
     
-    // Too many RandoFacto database requests (e.g. repeatedly favoriting and unfavoriting the same fact).
-    case randoFactoDatabaseQuotaExceeded
+    // Too many favorite facts database requests.
+    case favoriteFactsDatabaseQuotaExceeded
     
     // Couldn't get data from server.
-    case randoFactoDatabaseServerDataRetrievalError
+    case favoriteFactsDatabaseServerDataRetrievalError
     
     // A login to an invalid/missing account was attempted.
-    case invalidAccount
+    case attemptToLoginToInvalidAccount
     
     // The password is incorrect.
     case incorrectPassword
@@ -86,11 +86,11 @@ enum RandoFactoError: LocalizedError, Equatable, Identifiable {
             return "Generated fact doesn't appear to contain text."
         case .factDataError:
             return "Failed to retrieve or decode fact data."
-        case .randoFactoDatabaseQuotaExceeded:
+        case .favoriteFactsDatabaseQuotaExceeded:
             return "Too many favorite fact database requests at once. Try again later."
-        case .randoFactoDatabaseServerDataRetrievalError:
+        case .favoriteFactsDatabaseServerDataRetrievalError:
             return "Failed to download data from server. Using device data."
-        case .invalidAccount:
+        case .attemptToLoginToInvalidAccount:
             return "There is no account with that email address."
         case .invalidEmailFormat:
             return "The email address must be in the format email@example.xyz."

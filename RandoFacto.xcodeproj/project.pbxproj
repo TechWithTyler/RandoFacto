@@ -160,10 +160,10 @@
 		8D55113E2B05976800BB61D4 /* Error Handling */ = {
 			isa = PBXGroup;
 			children = (
-				8DF48E382936B02900152681 /* RandoFactoError.swift */,
-				8D86FF042AF56CA600239DEE /* HTTPResponseExtension.swift */,
-				8D55113F2B059B3D00BB61D4 /* FactGeneratorErrors.swift */,
 				8D69ADE92B1FCC20002BA65E /* ErrorManager.swift */,
+				8DF48E382936B02900152681 /* RandoFactoError.swift */,
+				8D55113F2B059B3D00BB61D4 /* FactGeneratorErrors.swift */,
+				8D86FF042AF56CA600239DEE /* HTTPResponseExtension.swift */,
 			);
 			path = "Error Handling";
 			sourceTree = "<group>";
@@ -286,10 +286,10 @@
 				8DA2C420292C1E6000705A2F /* FactGenerator.swift */,
 				8DF48E302936A80700152681 /* AppStateManager.swift */,
 				8D5E9A292B226DE800C261B8 /* NetworkManager.swift */,
+				8D8899D92AFDF39900BDDDFD /* Decodable Data */,
 				8D8899DE2AFDF3B100BDDDFD /* Favorite Facts */,
 				8DCE5DE32B080A8C00DD3CE7 /* Pages */,
 				8D63D5F72AFEBBE90084BACF /* Authentication */,
-				8D8899D92AFDF39900BDDDFD /* Decodable Data */,
 				8D55113E2B05976800BB61D4 /* Error Handling */,
 			);
 			path = Model;

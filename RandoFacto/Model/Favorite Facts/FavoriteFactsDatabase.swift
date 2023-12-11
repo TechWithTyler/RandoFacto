@@ -35,7 +35,7 @@ class FavoriteFactsDatabase: ObservableObject {
     
     // MARK: - Properties - Errors
     
-    // The error logged if the RandoFacto database is unable to get the document (data) from the corresponding favorite fact QuerySnapshot.
+    // The error logged if the favorite facts database is unable to get the document (data) from the corresponding favorite fact QuerySnapshot.
     private let favoriteFactReferenceError = NSError(domain: "Favorite fact reference not found", code: 144)
     
     // MARK: - Properties - Booleans
@@ -114,7 +114,7 @@ class FavoriteFactsDatabase: ObservableObject {
     
     // MARK: - Saving/Deleting
     
-    // This method creates a FavoriteFact from factText and saves it to the RandoFacto database.
+    // This method creates a FavoriteFact from factText and saves it to the favorite facts database.
     func saveToFavorites(factText: String) {
         // 1. Make sure the fact doesn't already exist and that the current user has an email (who would have an account but no email?!).
         guard let email = authenticationManager?.firebaseAuthentication.currentUser?.email else { return }

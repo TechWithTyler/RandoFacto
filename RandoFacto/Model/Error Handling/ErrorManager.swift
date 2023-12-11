@@ -48,9 +48,9 @@ class ErrorManager: ObservableObject {
                 errorToShow = .factDataError
                 // Database errors
             case FirestoreErrorCode.unavailable.rawValue:
-                errorToShow = .randoFactoDatabaseServerDataRetrievalError
+                errorToShow = .favoriteFactsDatabaseServerDataRetrievalError
             case AuthErrorCode.userNotFound.rawValue:
-                errorToShow = .invalidAccount
+                errorToShow = .attemptToLoginToInvalidAccount
             case AuthErrorCode.wrongPassword.rawValue:
                 errorToShow = .incorrectPassword
             case AuthErrorCode.invalidEmail.rawValue:
@@ -58,7 +58,7 @@ class ErrorManager: ObservableObject {
             case AuthErrorCode.requiresRecentLogin.rawValue:
                 errorToShow = .tooLongSinceLastLogin
             case AuthErrorCode.quotaExceeded.rawValue:
-                errorToShow = .randoFactoDatabaseQuotaExceeded
+                errorToShow = .favoriteFactsDatabaseQuotaExceeded
             default:
                 // Other errors
                 // If we get an error that hasn't been customized with a friendly message, log the localized description as is.
