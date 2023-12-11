@@ -138,6 +138,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8D31D8542B27C0C0009F29EE /* Pages */ = {
+			isa = PBXGroup;
+			children = (
+				8DFEB0A62AFAF77800F57DB1 /* FactView.swift */,
+				8DCF671E297F58B7006DE41E /* FavoriteFactsList.swift */,
+				8DFEB0A22AFAF64800F57DB1 /* SettingsView.swift */,
+			);
+			path = Pages;
+			sourceTree = "<group>";
+		};
+		8D31D8552B27C0C9009F29EE /* Controls */ = {
+			isa = PBXGroup;
+			children = (
+				8D0312232AF9CAB100DBB2B2 /* LoadingIndicator.swift */,
+				8DCE5DE82B084F6000DD3CE7 /* UnfavoriteAllButton.swift */,
+			);
+			path = Controls;
+			sourceTree = "<group>";
+		};
 		8D55113E2B05976800BB61D4 /* Error Handling */ = {
 			isa = PBXGroup;
 			children = (
@@ -171,17 +190,13 @@
 			path = "Decodable Data";
 			sourceTree = "<group>";
 		};
-		8D8899DE2AFDF3B100BDDDFD /* View Model */ = {
+		8D8899DE2AFDF3B100BDDDFD /* Favorite Facts */ = {
 			isa = PBXGroup;
 			children = (
-				8DF48E302936A80700152681 /* AppStateManager.swift */,
 				8DEF074D2B241DBA00F0375F /* FavoriteFactsDatabase.swift */,
 				8D0A3C3E2B1FA6F500B7345D /* FavoriteFactSearcher.swift */,
-				8D5E9A292B226DE800C261B8 /* NetworkManager.swift */,
-				8DCE5DE32B080A8C00DD3CE7 /* Pages */,
-				8D63D5F72AFEBBE90084BACF /* Authentication */,
 			);
-			path = "View Model";
+			path = "Favorite Facts";
 			sourceTree = "<group>";
 		};
 		8D91FEA02AE22C8C00ACB743 /* UI and Images */ = {
@@ -258,11 +273,8 @@
 			isa = PBXGroup;
 			children = (
 				8DFEB0A42AFAF6FD00F57DB1 /* ContentView.swift */,
-				8DFEB0A62AFAF77800F57DB1 /* FactView.swift */,
-				8DCF671E297F58B7006DE41E /* FavoriteFactsList.swift */,
-				8D0312232AF9CAB100DBB2B2 /* LoadingIndicator.swift */,
-				8DFEB0A22AFAF64800F57DB1 /* SettingsView.swift */,
-				8DCE5DE82B084F6000DD3CE7 /* UnfavoriteAllButton.swift */,
+				8D31D8542B27C0C0009F29EE /* Pages */,
+				8D31D8552B27C0C9009F29EE /* Controls */,
 				8DAFBC852B1AD4BD00C0907F /* Authentication */,
 			);
 			path = Views;
@@ -272,7 +284,11 @@
 			isa = PBXGroup;
 			children = (
 				8DA2C420292C1E6000705A2F /* FactGenerator.swift */,
-				8D8899DE2AFDF3B100BDDDFD /* View Model */,
+				8DF48E302936A80700152681 /* AppStateManager.swift */,
+				8D5E9A292B226DE800C261B8 /* NetworkManager.swift */,
+				8D8899DE2AFDF3B100BDDDFD /* Favorite Facts */,
+				8DCE5DE32B080A8C00DD3CE7 /* Pages */,
+				8D63D5F72AFEBBE90084BACF /* Authentication */,
 				8D8899D92AFDF39900BDDDFD /* Decodable Data */,
 				8D55113E2B05976800BB61D4 /* Error Handling */,
 			);
