@@ -41,7 +41,7 @@ struct ContentView: View {
 	var body: some View {
 		NavigationSplitView {
 			sidebarContent
-                .navigationSplitViewColumnWidth(min: 250, ideal: 250, max: 250)
+                .navigationSplitViewColumnWidth(250)
         } detail: {
             mainContent
         }
@@ -83,30 +83,30 @@ struct ContentView: View {
             }
         }
 		// Nil selection catcher
-        .onChange(of: horizontalSizeClass) { value in
-            if appStateManager.selectedPage == nil && value != .compact {
+        .onChange(of: horizontalSizeClass) { sizeClass in
+            if appStateManager.selectedPage == nil && sizeClass != .compact {
                 appStateManager.selectedPage = .randomFact
             }
         }
-		.onChange(of: appStateManager.selectedPage) { value in
-			if value == nil && horizontalSizeClass == .regular {
+		.onChange(of: appStateManager.selectedPage) { page in
+			if page == nil && horizontalSizeClass == .regular {
 				appStateManager.selectedPage = .randomFact
 			}
 		}
 		// User login state change/user deletion
-		.onChange(of: authenticationManager.userDeletionStage) { value in
-            if value != nil {
+		.onChange(of: authenticationManager.userDeletionStage) { deletionStage in
+            if deletionStage != nil {
                 appStateManager.dismissFavoriteFacts()
             }
 		}
-		.onChange(of: authenticationManager.userLoggedIn) { value in
-            if value == false {
+		.onChange(of: authenticationManager.userLoggedIn) { loggedIn in
+            if !loggedIn {
                 appStateManager.dismissFavoriteFacts()
             }
 		}
 		// Error sound/haptics
-		.onChange(of: errorManager.errorToShow) { value in
-			if value != nil {
+		.onChange(of: errorManager.errorToShow) { error in
+			if error != nil {
 #if os(macOS)
 				NSSound.beep()
 #elseif os(iOS)
