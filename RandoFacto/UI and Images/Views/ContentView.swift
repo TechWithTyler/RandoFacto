@@ -83,6 +83,11 @@ struct ContentView: View {
             }
         }
 		// Nil selection catcher
+        .onChange(of: horizontalSizeClass) { value in
+            if appStateManager.selectedPage == nil && value != .compact {
+                appStateManager.selectedPage = .randomFact
+            }
+        }
 		.onChange(of: appStateManager.selectedPage) { value in
 			if value == nil && horizontalSizeClass == .regular {
 				appStateManager.selectedPage = .randomFact
