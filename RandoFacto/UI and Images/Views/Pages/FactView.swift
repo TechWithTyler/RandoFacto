@@ -122,7 +122,7 @@ struct FactView: View {
                                 favoriteFactsDatabase.favoriteFactToDelete = appStateManager.factText
                                 favoriteFactsDatabase.showingDeleteFavoriteFact = true
                             } else {
-                                favoriteFactsDatabase.saveToFavorites(factText: appStateManager.factText)
+                                favoriteFactsDatabase.saveFactToFavorites(appStateManager.factText)
                             }
                         }
                     } label: {

@@ -14,20 +14,29 @@ import SheftAppsStylishUI
 // This is the simplest way to create an app in SwiftUI--you get a fully-functional app just with this one struct!
 struct RandoFactoApp: App {
 
-	// MARK: - macOS AppDelegate Adaptor
+	// MARK: - Properties - macOS AppDelegate Adaptor
 
 	#if os(macOS)
 	// Sometimes you still need to use an app delegate in SwiftUI App-based apps. Here, we use the @NSApplicationDelegateAdaptor property wrapper with the AppDelegate class as an argument to supply an app delegate on macOS.
 	@NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 	#endif
+    
+    // MARK: - Properties - Firebase
+    
+    // Firebase objects are declared here without their initial values, because they can't be assigned prior to calling FirebaseApp.configure(options:). These are both done in the initializer.
 
+    // The app's Firestore database.
     var firestore: Firestore
     
+    // Handles Firebase authentication/user-related tasks.
     var firebaseAuthentication: Authentication
     
     // MARK: - Properties - Model Objects
     
+    // Due to some model objects relying on one another (also known as circular dependencies), managers are declared without their initial values here and initialized in init().
+    
     // Manages the app state (e.g. the fact to display, the page to display, the Settings page to display on macOS).
+    // The @ObservedObject property wrapper and ObservableObject protocol conformance allows SwiftUI views to update whenever any @Published property of an object changes. These objects are passed to SwiftUI views with the @EnvironmentObject property wrapper and the .environmentObject(_:) modifier, and to RandoFactoCommands with the @ObservedObject property wrapper.
 	@ObservedObject var appStateManager: AppStateManager
     
     // Manages the app's network features.
@@ -39,12 +48,13 @@ struct RandoFactoApp: App {
     // The favorite facts database.
     @ObservedObject var favoriteFactsDatabase: FavoriteFactsDatabase
     
-    // Handles errors.
-    @ObservedObject var errorManager: ErrorManager
-    
     // Handles searching and sorting of favorite facts.
     @ObservedObject var favoriteFactSearcher: FavoriteFactSearcher
     
+    // Handles errors.
+    @ObservedObject var errorManager: ErrorManager
+    
+    // The main window's title.
     var windowTitle: String {
         var appName = (Bundle.main.infoDictionary?[kCFBundleNameKey as String] as? String)!
         #if DEBUG && os(macOS)
@@ -57,8 +67,10 @@ struct RandoFactoApp: App {
 
 	// The windows and views in the app.
     var body: some Scene {
+        // Main window scene
         WindowGroup {
 			ContentView()
+            // Pass model objects to views using .environmentObject(<#object#>).
                 .environmentObject(appStateManager)
                 .environmentObject(networkManager)
                 .environmentObject(errorManager)
@@ -70,10 +82,12 @@ struct RandoFactoApp: App {
             #endif
 				.ignoresSafeArea(edges: .all)
 		}
+        // Menu/keyboard commands for the scene
         .commands {
             RandoFactoCommands(appStateManager: appStateManager, networkManager: networkManager, errorManager: errorManager, authenticationManager: authenticationManager, favoriteFactsDatabase: favoriteFactsDatabase)
         }
         #if os(macOS)
+        // Settings window scene
         // On macOS, Settings are presented as a window instead of as one of the app's pages.
 		Settings {
 			SettingsView()

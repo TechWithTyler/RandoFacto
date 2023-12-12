@@ -96,7 +96,7 @@ struct ContentView: View {
 		#endif
         .alert("Unfavorite this fact?", isPresented: $favoriteFactsDatabase.showingDeleteFavoriteFact, presenting: $favoriteFactsDatabase.favoriteFactToDelete, actions: { factText in
             Button("Unfavorite", role: .destructive) {
-                favoriteFactsDatabase.deleteFromFavorites(factText: factText.wrappedValue!)
+                favoriteFactsDatabase.unfavoriteFact(factText.wrappedValue!)
             }
             Button("Cancel", role: .cancel) {
                 favoriteFactsDatabase.showingDeleteFavoriteFact = false

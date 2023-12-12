@@ -115,7 +115,7 @@ class FavoriteFactsDatabase: ObservableObject {
     // MARK: - Saving/Deleting
     
     // This method creates a FavoriteFact from factText and saves it to the favorite facts database.
-    func saveToFavorites(factText: String) {
+    func saveFactToFavorites(_ factText: String) {
         // 1. Make sure the fact doesn't already exist and that the current user has an email (who would have an account but no email?!).
         guard let email = authenticationManager?.firebaseAuthentication.currentUser?.email else { return }
         let fact = FavoriteFact(text: factText, user: email)
@@ -131,7 +131,7 @@ class FavoriteFactsDatabase: ObservableObject {
     }
     
     // This method finds a favorite fact in the database and deletes it if its text matches factText.
-    func deleteFromFavorites(factText: String) {
+    func unfavoriteFact(_ factText: String) {
         // 1. Get facts with text that matches the given fact text (there should only be 1).
         DispatchQueue.main.async { [self] in
             firestore.collection(favoriteFactsCollectionName)
