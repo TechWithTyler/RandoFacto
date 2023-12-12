@@ -17,7 +17,7 @@ struct FavoriteFactsListView: View {
     
     @EnvironmentObject var favoriteFactsDatabase: FavoriteFactsDatabase
     
-    @EnvironmentObject var favoriteFactSearcher: FavoriteFactSearcher
+    @EnvironmentObject var favoriteFactsListDisplayManager: FavoriteFactsListDisplayManager
     
     @EnvironmentObject var networkManager: NetworkManager
     
@@ -33,14 +33,14 @@ struct FavoriteFactsListView: View {
                 VStack {
                     if favoriteFactsDatabase.favoriteFacts.isEmpty {
                        favoriteFactsEmptyDisplay
-                    } else if favoriteFactsDatabase.favoriteFactSearcher.searchResults.isEmpty {
+                    } else if favoriteFactsListDisplayManager.searchResults.isEmpty {
                         noMatchesDisplay
                     } else {
                         favoriteFactsList
                     }
                 }
-                .animation(.default, value: favoriteFactSearcher.sortedFavoriteFacts)
-                .searchable(text: $favoriteFactSearcher.searchText, placement: .toolbar, prompt: "Search Favorite Facts")
+                .animation(.default, value: favoriteFactsListDisplayManager.sortedFavoriteFacts)
+                .searchable(text: $favoriteFactsListDisplayManager.searchText, placement: .toolbar, prompt: "Search Favorite Facts")
                 // Toolbar
                 .toolbar {
                     toolbarContent
@@ -91,7 +91,7 @@ struct FavoriteFactsListView: View {
     var favoriteFactsList: some View {
         List {
             Section(header: header) {
-                ForEach(favoriteFactSearcher.sortedFavoriteFacts, id: \.self) {
+                ForEach(favoriteFactsListDisplayManager.sortedFavoriteFacts, id: \.self) {
                     favorite in
                     Button {
                         appStateManager.displayFavoriteFact(favorite)
@@ -122,7 +122,7 @@ struct FavoriteFactsListView: View {
         HStack {
             Spacer()
             VStack(alignment: .center) {
-                Text("Favorite facts: \(favoriteFactSearcher.sortedFavoriteFacts.count)")
+                Text("Favorite facts: \(favoriteFactsListDisplayManager.sortedFavoriteFacts.count)")
                     .multilineTextAlignment(.center)
                     .padding(10)
                     .font(.title)
@@ -153,7 +153,7 @@ struct FavoriteFactsListView: View {
     var toolbarContent: some ToolbarContent {
         ToolbarItem(placement: .automatic) {
             Menu {
-                Picker("Sort", selection: $favoriteFactSearcher.sortFavoriteFactsAscending) {
+                Picker("Sort", selection: $favoriteFactsListDisplayManager.sortFavoriteFactsAscending) {
                     Text("Sort Ascending (A-Z)").tag(true)
                     Text("Sort Descending (Z-A)").tag(false)
                 }

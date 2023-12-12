@@ -22,7 +22,7 @@ struct AuthenticationFormView: View {
     @EnvironmentObject var errorManager: ErrorManager
     
     var isFormInvalid: Bool {
-        return authenticationManager.authenticationFormType == .passwordChange ? authenticationManager.password.isEmpty : authenticationManager.email.isEmpty || authenticationManager.password.isEmpty
+        return authenticationManager.formType == .passwordChange ? authenticationManager.passwordFieldText.isEmpty : authenticationManager.emailFieldText.isEmpty || authenticationManager.passwordFieldText.isEmpty
     }
     
     // MARK: - Dismiss
@@ -35,13 +35,13 @@ struct AuthenticationFormView: View {
         NavigationStack {
             Form {
                 Section {
-                    if authenticationManager.authenticationFormType == .passwordChange {
+                    if authenticationManager.formType == .passwordChange {
                         Text(((authenticationManager.firebaseAuthentication.currentUser?.email)!))
                             .font(.system(size: 24))
                             .fontWeight(.bold)
                     }
                     credentialFields
-                    if authenticationManager.authenticationFormType == .passwordChange {
+                    if authenticationManager.formType == .passwordChange {
                         HStack {
                             Image(systemName: "info.circle")
                                 .accessibilityHidden(true)
@@ -51,15 +51,15 @@ struct AuthenticationFormView: View {
                         .foregroundStyle(.secondary)
                     }
                     if authenticationManager.showingResetPasswordEmailSent {
-                        AuthenticationMessageView(text: "A password reset email has been sent to \"\(authenticationManager.email)\". Follow the instructions to reset your password.", type: .confirmation)
+                        AuthenticationMessageView(text: "A password reset email has been sent to \"\(authenticationManager.emailFieldText)\". Follow the instructions to reset your password.", type: .confirmation)
                     }
-                    if let errorText = authenticationManager.authenticationErrorText {
+                    if let errorText = authenticationManager.formErrorText {
                         AuthenticationMessageView(text: errorText, type: .error)
                     }
                 }
             }
             .formStyle(.grouped)
-            .navigationTitle(authenticationManager.authenticationFormType?.titleText ?? Authentication.FormType.login.titleText)
+            .navigationTitle(authenticationManager.formType?.titleText ?? Authentication.FormType.login.titleText)
 #if os(iOS)
             .navigationBarTitleDisplayMode(.automatic)
 #endif
@@ -78,7 +78,7 @@ struct AuthenticationFormView: View {
                     Button {
                         authenticationManager.showingResetPasswordEmailSent = false
                         errorManager.errorToShow = nil
-                        authenticationManager.authenticationErrorText = nil
+                        authenticationManager.formErrorText = nil
                         dismiss()
                     } label: {
                         Text("Cancel")
@@ -87,22 +87,22 @@ struct AuthenticationFormView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button {
-                        guard !authenticationManager.password.containsEmoji else {
-                            authenticationManager.authenticationErrorText = "Passwords can't contain emoji."
+                        guard !authenticationManager.passwordFieldText.containsEmoji else {
+                            authenticationManager.formErrorText = "Passwords can't contain emoji."
                             return
                         }
                         authenticationManager.showingResetPasswordEmailSent = false
                         errorManager.errorToShow = nil
-                        authenticationManager.authenticationErrorText = nil
-                        authenticationManager.email = authenticationManager.email.lowercased()
-                        if authenticationManager.authenticationFormType == .signup {
+                        authenticationManager.formErrorText = nil
+                        authenticationManager.emailFieldText = authenticationManager.emailFieldText.lowercased()
+                        if authenticationManager.formType == .signup {
                             authenticationManager.signup {
                                 success in
                                 if success {
                                     dismiss()
                                 }
                             }
-                        } else if authenticationManager.authenticationFormType == .passwordChange {
+                        } else if authenticationManager.formType == .passwordChange {
                             authenticationManager.updatePasswordForCurrentUser {
                                 success in
                                 if success {
@@ -118,22 +118,22 @@ struct AuthenticationFormView: View {
                             }
                         }
                     } label: {
-                        Text(authenticationManager.authenticationFormType?.confirmButtonText ?? Authentication.FormType.login.confirmButtonText)
+                        Text(authenticationManager.formType?.confirmButtonText ?? Authentication.FormType.login.confirmButtonText)
                     }
                     .disabled(isFormInvalid || authenticationManager.isAuthenticating)
                 }
             }
         }
         .onAppear {
-            if authenticationManager.authenticationFormType == .passwordChange {
-                authenticationManager.email = (authenticationManager.firebaseAuthentication.currentUser?.email)!
+            if authenticationManager.formType == .passwordChange {
+                authenticationManager.emailFieldText = (authenticationManager.firebaseAuthentication.currentUser?.email)!
             }
         }
         .onDisappear {
-            authenticationManager.email.removeAll()
-            authenticationManager.password.removeAll()
-            authenticationManager.authenticationErrorText = nil
-            authenticationManager.authenticationFormType = nil
+            authenticationManager.emailFieldText.removeAll()
+            authenticationManager.passwordFieldText.removeAll()
+            authenticationManager.formErrorText = nil
+            authenticationManager.formType = nil
         }
 #if os(macOS)
         .frame(minWidth: 495, maxWidth: 495, minHeight: 365, maxHeight: 365)
@@ -144,9 +144,9 @@ struct AuthenticationFormView: View {
     
     var credentialFields: some View {
         Group {
-            if authenticationManager.authenticationFormType != .passwordChange {
+            if authenticationManager.formType != .passwordChange {
                 VStack {
-                    FormTextField("Email", text: $authenticationManager.email)
+                    FormTextField("Email", text: $authenticationManager.emailFieldText)
                         .textContentType(.username)
 #if os(iOS)
                         .keyboardType(.emailAddress)
@@ -157,16 +157,16 @@ struct AuthenticationFormView: View {
                 }
             }
             VStack {
-                ViewablePasswordField("Password", text: $authenticationManager.password, signup: authenticationManager.authenticationFormType == .signup)
+                ViewablePasswordField("Password", text: $authenticationManager.passwordFieldText, signup: authenticationManager.formType == .signup)
                 if authenticationManager.invalidCredentialField == 1 {
                     FieldNeedsAttentionView()
                 }
             }
-            if authenticationManager.authenticationFormType == .login && !authenticationManager.email.isEmpty && authenticationManager.password.isEmpty {
+            if authenticationManager.formType == .login && !authenticationManager.emailFieldText.isEmpty && authenticationManager.passwordFieldText.isEmpty {
                         Button {
                             errorManager.errorToShow = nil
                             authenticationManager.showingResetPasswordEmailSent = false
-                            authenticationManager.authenticationErrorText = nil
+                            authenticationManager.formErrorText = nil
                             authenticationManager.sendPasswordResetLink()
                         } label: {
                             Label(forgotPasswordButtonTitle, systemImage: "questionmark.circle.fill")
@@ -179,10 +179,10 @@ struct AuthenticationFormView: View {
             }
         }
         .disabled(authenticationManager.isAuthenticating)
-        .onChange(of: authenticationManager.email) { value in
+        .onChange(of: authenticationManager.emailFieldText) { value in
             authenticationManager.credentialFieldsChanged()
         }
-        .onChange(of: authenticationManager.password) { value in
+        .onChange(of: authenticationManager.passwordFieldText) { value in
             authenticationManager.credentialFieldsChanged()
         }
     }

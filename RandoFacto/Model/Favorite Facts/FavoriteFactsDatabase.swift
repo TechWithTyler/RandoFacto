@@ -21,8 +21,6 @@ class FavoriteFactsDatabase: ObservableObject {
     
     var errorManager: ErrorManager
     
-    var favoriteFactSearcher: FavoriteFactSearcher
-    
     // MARK: - Properties - Favorite Facts Array
     
     // The current user's favorite facts loaded from the Firestore database. Storing the data in this array makes getting favorite facts easier than getting the corresponding Firestore data each time, which could cause errors.
@@ -58,11 +56,10 @@ class FavoriteFactsDatabase: ObservableObject {
     
     // MARK: - Initialization
     
-    init(firestore: Firestore, networkManager: NetworkManager, errorManager: ErrorManager, favoriteFactSearcher: FavoriteFactSearcher) {
+    init(firestore: Firestore, networkManager: NetworkManager, errorManager: ErrorManager) {
         self.firestore = firestore
         self.networkManager = networkManager
         self.errorManager = errorManager
-        self.favoriteFactSearcher = favoriteFactSearcher
         loadFavoriteFactsForCurrentUser()
     }
     
@@ -76,6 +73,7 @@ class FavoriteFactsDatabase: ObservableObject {
                 return
             }
             // 2. Get the Firestore collection containing favorite facts.
+            // Firestore collection methods are chained onto one another just like SwiftUI view modifiers are, and are often on their own lines.
             favoriteFactsListener = firestore.collection(favoriteFactsCollectionName)
             // 3. Filter the result to include only the current user's favorite facts.
                 .whereField(userKeyName, isEqualTo: userEmail)
@@ -101,11 +99,11 @@ class FavoriteFactsDatabase: ObservableObject {
         // 1. Try to replace the data in favoriteFacts with snapshot's data by decoding it to a FavoriteFact object.
         do {
             // compactMap is marked throws so you can call throwing functions in its closure. Errors are then "rethrown" so the catch block of this do statement can handle them.
+            // compactMap throws out any documents where the data couldn't be decoded to a FavoriteFact object (the result of the transformation is nil).
             favoriteFacts = try snapshot.documents.compactMap { document in
                 // data(as:) handles the decoding of the data, so we don't need to use a Decoder object.
                 return try document.data(as: FavoriteFact.self)
             }
-            favoriteFactSearcher.favoriteFacts = favoriteFacts
         } catch {
             // 2. If that fails, log an error.
             errorManager.showError(error)

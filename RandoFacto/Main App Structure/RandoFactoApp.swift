@@ -49,7 +49,7 @@ struct RandoFactoApp: App {
     @ObservedObject var favoriteFactsDatabase: FavoriteFactsDatabase
     
     // Handles searching and sorting of favorite facts.
-    @ObservedObject var favoriteFactSearcher: FavoriteFactSearcher
+    @ObservedObject var favoriteFactsListDisplayManager: FavoriteFactsListDisplayManager
     
     // Handles errors.
     @ObservedObject var errorManager: ErrorManager
@@ -76,7 +76,7 @@ struct RandoFactoApp: App {
                 .environmentObject(errorManager)
                 .environmentObject(favoriteFactsDatabase)
                 .environmentObject(authenticationManager)
-                .environmentObject(favoriteFactSearcher)
+                .environmentObject(favoriteFactsListDisplayManager)
             #if os(macOS)
 				.frame(minWidth: 800, minHeight: 300, alignment: .center)
             #endif
@@ -136,9 +136,9 @@ struct RandoFactoApp: App {
         // 5. Configure the managers after having set Firestore's settings (you must set all desired Firestore settings BEFORE calling any other methods on it).
         let errorManager = ErrorManager()
         let networkManager = NetworkManager(errorManager: errorManager, firestore: firestore)
-        let favoriteFactSearcher = FavoriteFactSearcher()
         let authenticationManager = AuthenticationManager(firebaseAuthentication: firebaseAuthentication, networkManager: networkManager, errorManager: errorManager)
-        let favoriteFactsDatabase = FavoriteFactsDatabase(firestore: firestore, networkManager: networkManager, errorManager: errorManager, favoriteFactSearcher: favoriteFactSearcher)
+        let favoriteFactsDatabase = FavoriteFactsDatabase(firestore: firestore, networkManager: networkManager, errorManager: errorManager)
+        let favoriteFactsListDisplayManager = FavoriteFactsListDisplayManager(favoriteFactsDatabase: favoriteFactsDatabase)
         self.firebaseAuthentication = firebaseAuthentication
         self.authenticationManager = authenticationManager
         self.firestore = firestore
@@ -146,7 +146,7 @@ struct RandoFactoApp: App {
         self.errorManager = errorManager
         self.networkManager = NetworkManager(errorManager: errorManager, firestore: firestore)
         self.appStateManager = AppStateManager(errorManager: errorManager, networkManager: networkManager, favoriteFactsDatabase: favoriteFactsDatabase, authenticationManager: authenticationManager)
-        self.favoriteFactSearcher = favoriteFactSearcher
+        self.favoriteFactsListDisplayManager = favoriteFactsListDisplayManager
         self.favoriteFactsDatabase.authenticationManager = authenticationManager
         self.authenticationManager.favoriteFactsDatabase = favoriteFactsDatabase
 	}

@@ -1,5 +1,5 @@
 //
-//  FavoriteFactSearcher.swift
+//  FavoriteFactsListDisplayManager.swift
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 12/5/23.
@@ -8,13 +8,16 @@
 
 import SwiftUI
 
-// Handles searching of favorite facts.
-class FavoriteFactSearcher: ObservableObject {
+// Handles searching and sorting of the favorite facts list.
+class FavoriteFactsListDisplayManager: ObservableObject {
     
     // MARK: - Properties - Favorite Facts List
     
-    // The favorite facts to be searched.
-    var favoriteFacts: [FavoriteFact] = []
+    var favoriteFactsDatabase: FavoriteFactsDatabase
+    
+    init(favoriteFactsDatabase: FavoriteFactsDatabase) {
+        self.favoriteFactsDatabase = favoriteFactsDatabase
+    }
     
     // MARK: - Properties - Searching
     
@@ -24,7 +27,7 @@ class FavoriteFactSearcher: ObservableObject {
     // The favorite facts that match searchText.
     var searchResults: [String] {
         // 1. Define the content being searched.
-        let content = favoriteFacts
+        let content = favoriteFactsDatabase.favoriteFacts
         // 2. Get the text from each FavoriteFact object.
         let facts = content.map { $0.text }
         // 3. If searchText is empty, return all facts.

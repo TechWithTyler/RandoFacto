@@ -19,7 +19,7 @@ struct ContentView: View {
     
     @EnvironmentObject var favoriteFactsDatabase: FavoriteFactsDatabase
     
-    @EnvironmentObject var favoriteFactSearcher: FavoriteFactSearcher
+    @EnvironmentObject var favoriteFactSearcher: FavoriteFactsListDisplayManager
     
     @EnvironmentObject var networkManager: NetworkManager
     

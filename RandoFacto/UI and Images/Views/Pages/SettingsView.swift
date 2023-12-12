@@ -137,7 +137,7 @@ struct SettingsView: View {
                 if networkManager.online {
                     Section {
                         Button("Change Password…") {
-                            authenticationManager.authenticationFormType = .passwordChange
+                            authenticationManager.formType = .passwordChange
                         }
                     }
                 }
@@ -156,10 +156,10 @@ struct SettingsView: View {
 			} else {
                 if networkManager.online {
                     Button(loginText) {
-                        authenticationManager.authenticationFormType = .login
+                        authenticationManager.formType = .login
                     }
                     Button(signupText) {
-                        authenticationManager.authenticationFormType = .signup
+                        authenticationManager.formType = .signup
                     }
                 } else {
                     Text("Authentication unavailable. Please check your internet connection.")
@@ -181,7 +181,7 @@ struct SettingsView: View {
                             errorManager.showError(error) {
                                 randoFactoError in
                                 if randoFactoError == .tooLongSinceLastLogin {
-                                    authenticationManager.authenticationFormType = nil
+                                    authenticationManager.formType = nil
                                     authenticationManager.logoutCurrentUser()
                                     errorManager.showingErrorAlert = true
                                 } else {
@@ -212,7 +212,7 @@ struct SettingsView: View {
             Text("You won't be able to save favorite facts to view offline until you login again!")
         }
 		// Authentication form
-		.sheet(item: $authenticationManager.authenticationFormType) {_ in
+		.sheet(item: $authenticationManager.formType) {_ in
 			AuthenticationFormView()
                 .environmentObject(appStateManager)
                 .environmentObject(networkManager)

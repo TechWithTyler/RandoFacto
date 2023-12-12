@@ -24,19 +24,19 @@ class AuthenticationManager: ObservableObject {
     // MARK: - Properties - Strings
     
     // The email text field's text.
-    @Published var email: String = String()
+    @Published var emailFieldText: String = String()
     
     // The password text field's text.
-    @Published var password: String = String()
+    @Published var passwordFieldText: String = String()
     
     // The text to display in the authentication error label in the authentication (login/signup/password change) dialogs.
-    @Published var authenticationErrorText: String? = nil
+    @Published var formErrorText: String? = nil
     
     // MARK: - Properties - Integers
     
     // the credential field pertaining to an authentication error.
     var invalidCredentialField: Int? {
-        if let errorText = authenticationErrorText {
+        if let errorText = formErrorText {
             let emailError = errorText.lowercased().contains("email")
             let passwordError = errorText.lowercased().contains("password")
             if emailError {
@@ -54,7 +54,7 @@ class AuthenticationManager: ObservableObject {
     // MARK: - Properties - Authentication Form Type
     
     // The authentication form to display, or nil if none are to be displayed.
-    @Published var authenticationFormType: Authentication.FormType? = nil
+    @Published var formType: Authentication.FormType? = nil
     
     // MARK: - Properties - Account Deletion Stage
     
@@ -112,9 +112,9 @@ class AuthenticationManager: ObservableObject {
                 .addSnapshotListener(includeMetadataChanges: true) { [self] documentSnapshot, error in
                     if let error = error {
                         // 5. If that fails, log an error.
-                        if authenticationFormType != nil {
+                        if formType != nil {
                         errorManager.showError(error) { [self] randoFactoError in
-                                authenticationErrorText = randoFactoError.localizedDescription
+                                formErrorText = randoFactoError.localizedDescription
                             }
                         } else {
                             errorManager.showError(error)
@@ -156,7 +156,7 @@ class AuthenticationManager: ObservableObject {
         // 2. Log an error if unsuccessful.
         if let error = error {
             errorManager.showError(error) { [self] randoFactoError in
-                authenticationErrorText = randoFactoError.localizedDescription
+                formErrorText = randoFactoError.localizedDescription
             isAuthenticating = false
             successHandler(false)
             }
@@ -167,7 +167,7 @@ class AuthenticationManager: ObservableObject {
                     addUserReference(email: email, id: id) { [self] error in
                         if let error = error {
                             errorManager.showError(error) { [self] randoFactoError in
-                                authenticationErrorText = randoFactoError.localizedDescription
+                                formErrorText = randoFactoError.localizedDescription
                                 successHandler(false)
                             }
                         } else {
@@ -183,7 +183,7 @@ class AuthenticationManager: ObservableObject {
                     addMissingUserReference(email: email, id: id) { [self] error in
                         if let error = error {
                             errorManager.showError(error) { [self] randoFactoError in
-                                authenticationErrorText = randoFactoError.localizedDescription
+                                formErrorText = randoFactoError.localizedDescription
                                 isAuthenticating = false
                                 successHandler(false)
                             }
@@ -253,7 +253,7 @@ class AuthenticationManager: ObservableObject {
     func credentialFieldsChanged() {
         DispatchQueue.main.async { [self] in
             errorManager.errorToShow = nil
-            authenticationErrorText = nil
+            formErrorText = nil
         }
     }
     
@@ -263,7 +263,7 @@ class AuthenticationManager: ObservableObject {
     func signup(successHandler: @escaping ((Bool) -> Void)) {
         DispatchQueue.main.async { [self] in
             isAuthenticating = true
-            firebaseAuthentication.createUser(withEmail: email, password: password) { [self] result, error in
+            firebaseAuthentication.createUser(withEmail: emailFieldText, password: passwordFieldText) { [self] result, error in
                 self.handleAuthenticationRequest(with: result, error: error, isSignup: true, successHandler: successHandler)
             }
         }
@@ -275,7 +275,7 @@ class AuthenticationManager: ObservableObject {
     func login(successHandler: @escaping ((Bool) -> Void)) {
         DispatchQueue.main.async { [self] in
             isAuthenticating = true
-            firebaseAuthentication.signIn(withEmail: email, password: password) { [self] result, error in
+            firebaseAuthentication.signIn(withEmail: emailFieldText, password: passwordFieldText) { [self] result, error in
                 handleAuthenticationRequest(with: result, error: error, isSignup: false, successHandler: successHandler)
             }
         }
@@ -328,11 +328,11 @@ class AuthenticationManager: ObservableObject {
     func sendPasswordResetLink() {
         DispatchQueue.main.async { [self] in
             isAuthenticating = true
-            firebaseAuthentication.sendPasswordReset(withEmail: email, actionCodeSettings: ActionCodeSettings(), completion: { [self] error in
+            firebaseAuthentication.sendPasswordReset(withEmail: emailFieldText, actionCodeSettings: ActionCodeSettings(), completion: { [self] error in
                 isAuthenticating = false
                 if let error = error {
                     errorManager.showError(error) { [self] randoFactoError in
-                        authenticationErrorText = randoFactoError.localizedDescription
+                        formErrorText = randoFactoError.localizedDescription
                     }
                 } else {
                     showingResetPasswordEmailSent = true
@@ -346,16 +346,16 @@ class AuthenticationManager: ObservableObject {
         guard let user = firebaseAuthentication.currentUser else { return }
         DispatchQueue.main.async { [self] in
             isAuthenticating = true
-            user.updatePassword(to: password) { [self] error in
+            user.updatePassword(to: passwordFieldText) { [self] error in
                 isAuthenticating = false
                 if let error = error {
                     errorManager.showError(error) { [self] randoFactoError in
                         if randoFactoError == .tooLongSinceLastLogin {
-                            authenticationFormType = nil
+                            formType = nil
                             logoutCurrentUser()
                             errorManager.showingErrorAlert = true
                         }
-                        authenticationErrorText = randoFactoError.localizedDescription
+                        formErrorText = randoFactoError.localizedDescription
                         completionHandler(false)
                     }
                 } else {
