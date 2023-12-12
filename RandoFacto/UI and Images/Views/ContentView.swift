@@ -59,26 +59,11 @@ struct ContentView: View {
 			switch appStateManager.selectedPage {
 				case .randomFact, nil:
 					FactView()
-                    .environmentObject(appStateManager)
-                    .environmentObject(networkManager)
-                    .environmentObject(errorManager)
-                    .environmentObject(favoriteFactsDatabase)
-                    .environmentObject(authenticationManager)
 				case .favoriteFacts:
 					FavoriteFactsList()
-                    .environmentObject(appStateManager)
-                    .environmentObject(networkManager)
-                    .environmentObject(errorManager)
-                    .environmentObject(favoriteFactsDatabase)
-                    .environmentObject(favoriteFactSearcher)
                 #if !os(macOS)
 				case .settings:
 					SettingsView()
-                    .environmentObject(appStateManager)
-                    .environmentObject(networkManager)
-                    .environmentObject(errorManager)
-                    .environmentObject(authenticationManager)
-                    .environmentObject(favoriteFactsDatabase)
                 #endif
 			}
 		}

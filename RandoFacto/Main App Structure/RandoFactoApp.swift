@@ -70,7 +70,7 @@ struct RandoFactoApp: App {
         // Main window scene
         WindowGroup {
 			ContentView()
-            // Pass model objects to views using .environmentObject(<#object#>).
+            // Pass model objects to views using .environmentObject(<#object#>). You don't need to pass them to each child view--just pass them once and all child views have access.
                 .environmentObject(appStateManager)
                 .environmentObject(networkManager)
                 .environmentObject(errorManager)
