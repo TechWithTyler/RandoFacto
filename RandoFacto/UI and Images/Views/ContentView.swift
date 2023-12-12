@@ -41,9 +41,10 @@ struct ContentView: View {
 	var body: some View {
 		NavigationSplitView {
 			sidebarContent
-		} detail: {
-			mainContent
-		}
+                .navigationSplitViewColumnWidth(min: 250, ideal: 250, max: 250)
+        } detail: {
+            mainContent
+        }
 		// Error alert
         .alert(isPresented: $errorManager.showingErrorAlert, error: errorManager.errorToShow) {
 			Button {
