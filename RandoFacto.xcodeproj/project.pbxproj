@@ -46,7 +46,7 @@
 		8DCE5DE52B080AA200DD3CE7 /* SettingsPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCE5DE42B080AA200DD3CE7 /* SettingsPage.swift */; };
 		8DCE5DE72B08272B00DD3CE7 /* RandoFactoCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCE5DE62B08272B00DD3CE7 /* RandoFactoCommands.swift */; };
 		8DCE5DE92B084F6000DD3CE7 /* UnfavoriteAllButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCE5DE82B084F6000DD3CE7 /* UnfavoriteAllButton.swift */; };
-		8DCF671F297F58B7006DE41E /* FavoriteFactsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCF671E297F58B7006DE41E /* FavoriteFactsList.swift */; };
+		8DCF671F297F58B7006DE41E /* FavoriteFactsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCF671E297F58B7006DE41E /* FavoriteFactsListView.swift */; };
 		8DEF074C2B241D5B00F0375F /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEF074B2B241D5B00F0375F /* AuthenticationManager.swift */; };
 		8DEF074E2B241DBA00F0375F /* FavoriteFactsDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEF074D2B241DBA00F0375F /* FavoriteFactsDatabase.swift */; };
 		8DF48E312936A80700152681 /* AppStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF48E302936A80700152681 /* AppStateManager.swift */; };
@@ -107,7 +107,7 @@
 		8DCE5DE42B080AA200DD3CE7 /* SettingsPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPage.swift; sourceTree = "<group>"; };
 		8DCE5DE62B08272B00DD3CE7 /* RandoFactoCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandoFactoCommands.swift; sourceTree = "<group>"; };
 		8DCE5DE82B084F6000DD3CE7 /* UnfavoriteAllButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnfavoriteAllButton.swift; sourceTree = "<group>"; };
-		8DCF671E297F58B7006DE41E /* FavoriteFactsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteFactsList.swift; sourceTree = "<group>"; };
+		8DCF671E297F58B7006DE41E /* FavoriteFactsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteFactsListView.swift; sourceTree = "<group>"; };
 		8DEF074B2B241D5B00F0375F /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
 		8DEF074D2B241DBA00F0375F /* FavoriteFactsDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteFactsDatabase.swift; sourceTree = "<group>"; };
 		8DF48E2E2936A62900152681 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -142,7 +142,7 @@
 			isa = PBXGroup;
 			children = (
 				8DFEB0A62AFAF77800F57DB1 /* FactView.swift */,
-				8DCF671E297F58B7006DE41E /* FavoriteFactsList.swift */,
+				8DCF671E297F58B7006DE41E /* FavoriteFactsListView.swift */,
 				8DFEB0A22AFAF64800F57DB1 /* SettingsView.swift */,
 			);
 			path = Pages;
@@ -468,7 +468,7 @@
 				8D8899E02AFDF3D100BDDDFD /* AuthenticationMessageType.swift in Sources */,
 				8D0A3C3F2B1FA6F500B7345D /* FavoriteFactSearcher.swift in Sources */,
 				8DA2C412292C1E1100705A2F /* RandoFactoApp.swift in Sources */,
-				8DCF671F297F58B7006DE41E /* FavoriteFactsList.swift in Sources */,
+				8DCF671F297F58B7006DE41E /* FavoriteFactsListView.swift in Sources */,
 				8DCE5DE72B08272B00DD3CE7 /* RandoFactoCommands.swift in Sources */,
 				8D87C7CC2B02D97F009BBE56 /* AppDelegate.swift in Sources */,
 			);

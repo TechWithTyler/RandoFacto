@@ -8,9 +8,15 @@
 
 import SwiftUI
 
+// A loading indicator.
 struct LoadingIndicator: View {
+    
+    // MARK: - Properties - Text
 
-	var text: String?
+    // The text for the loading indicator to display, if desired.
+	var message: String?
+    
+    // MARK: - Body
 
     var body: some View {
 		HStack {
@@ -19,8 +25,8 @@ struct LoadingIndicator: View {
 #if os(macOS)
 				.controlSize(.small)
 #endif
-			if let text = text {
-				Text(text)
+			if let message = message {
+				Text(message)
 					.padding(.horizontal)
 			}
 		}
@@ -30,4 +36,10 @@ struct LoadingIndicator: View {
 
 #Preview {
     LoadingIndicator()
+        .previewDisplayName("Loading Indicator Without Label")
+}
+
+#Preview {
+    LoadingIndicator(message: loadingString)
+        .previewDisplayName("Loading Indicator With Label")
 }

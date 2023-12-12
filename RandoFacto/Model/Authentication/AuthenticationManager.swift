@@ -23,6 +23,12 @@ class AuthenticationManager: ObservableObject {
     
     // MARK: - Properties - Strings
     
+    // The email text field's text.
+    @Published var email: String = String()
+    
+    // The password text field's text.
+    @Published var password: String = String()
+    
     // The text to display in the authentication error label in the authentication (login/signup/password change) dialogs.
     @Published var authenticationErrorText: String? = nil
     
@@ -254,7 +260,7 @@ class AuthenticationManager: ObservableObject {
     // MARK: - Authentication - Signup
     
     // This method takes the user's credentials and tries to sign them up for a RandoFacto account.
-    func signup(email: String, password: String, successHandler: @escaping ((Bool) -> Void)) {
+    func signup(successHandler: @escaping ((Bool) -> Void)) {
         DispatchQueue.main.async { [self] in
             isAuthenticating = true
             firebaseAuthentication.createUser(withEmail: email, password: password) { [self] result, error in
@@ -266,7 +272,7 @@ class AuthenticationManager: ObservableObject {
     // MARK: - Authentication - Login
     
     // This method takes the user's credentials and tries to log them into their RandoFacto account.
-    func login(email: String, password: String, successHandler: @escaping ((Bool) -> Void)) {
+    func login(successHandler: @escaping ((Bool) -> Void)) {
         DispatchQueue.main.async { [self] in
             isAuthenticating = true
             firebaseAuthentication.signIn(withEmail: email, password: password) { [self] result, error in
@@ -319,7 +325,7 @@ class AuthenticationManager: ObservableObject {
     // MARK: - Account Management - Password Reset/Update
     
     // This method sends a password reset email to email. The message body is customized in RandoFacto's Firebase console.
-    func sendPasswordResetLink(toEmail email: String) {
+    func sendPasswordResetLink() {
         DispatchQueue.main.async { [self] in
             isAuthenticating = true
             firebaseAuthentication.sendPasswordReset(withEmail: email, actionCodeSettings: ActionCodeSettings(), completion: { [self] error in
@@ -336,11 +342,11 @@ class AuthenticationManager: ObservableObject {
     }
     
     // This method updates the current user's password to newPassword.
-    func updatePasswordForCurrentUser(to newPassword: String, completionHandler: @escaping ((Bool) -> Void)) {
+    func updatePasswordForCurrentUser(completionHandler: @escaping ((Bool) -> Void)) {
         guard let user = firebaseAuthentication.currentUser else { return }
         DispatchQueue.main.async { [self] in
             isAuthenticating = true
-            user.updatePassword(to: newPassword) { [self] error in
+            user.updatePassword(to: password) { [self] error in
                 isAuthenticating = false
                 if let error = error {
                     errorManager.showError(error) { [self] randoFactoError in

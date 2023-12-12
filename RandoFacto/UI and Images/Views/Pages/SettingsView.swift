@@ -10,6 +10,8 @@ import SwiftUI
 import SheftAppsStylishUI
 
 struct SettingsView: View {
+    
+    // MARK: - Properties - Objects
 
     @EnvironmentObject var appStateManager: AppStateManager
     
@@ -21,25 +23,29 @@ struct SettingsView: View {
     
     @EnvironmentObject var favoriteFactsDatabase: FavoriteFactsDatabase
     
-    var sliderText: String {
+    // MARK: - Properties - Fact Text Size Slider Text
+    
+    var factTextSizeSliderText: String {
         return "Fact Text Size: \(appStateManager.fontSizeValue)"
     }
+    
+    // MARK: - Body
 
     var body: some View {
         if appStateManager.isLoading {
 #if os(macOS)
             SAMVisualEffectViewSwiftUIRepresentable {
-                loadingSection
+                loadingDisplay
                     .frame(width: 400, height: 280)
             }
             #else
-            loadingSection
+            loadingDisplay
 #endif
         } else {
 #if os(macOS)
             TabView(selection: $appStateManager.selectedSettingsPage) {
                 SAMVisualEffectViewSwiftUIRepresentable {
-                    displaySection
+                    displayPage
                 }
                 .frame(width: 400, height: authenticationManager.userLoggedIn ? 390 : 280)
                 .formStyle(.grouped)
@@ -48,7 +54,7 @@ struct SettingsView: View {
                 }
                 .tag(SettingsPage.display)
                 SAMVisualEffectViewSwiftUIRepresentable {
-                    accountSection
+                    accountPage
                 }
                 .frame(width: 400, height: 260)
                 .formStyle(.grouped)
@@ -62,11 +68,11 @@ struct SettingsView: View {
                 Form {
                     Section {
                         NavigationLink(SettingsPage.display.rawValue.capitalized) {
-                            displaySection
+                            displayPage
                                 .navigationTitle(SettingsPage.display.rawValue.capitalized)
                         }
                         NavigationLink(SettingsPage.account.rawValue.capitalized) {
-                            accountSection
+                            accountPage
                                 .navigationTitle(SettingsPage.account.rawValue.capitalized)
                         }
                     }
@@ -83,14 +89,50 @@ struct SettingsView: View {
 #endif
         }
     }
+    
+    // MARK: - Display Page
+    
+    var displayPage: some View {
+        Form {
+            if authenticationManager.userLoggedIn {
+                Section {
+                    Picker("Fact on Launch", selection: $favoriteFactsDatabase.initialFact) {
+                        Text(randomFactSettingTitle).tag(0)
+                        Text("Random Favorite Fact").tag(1)
+                    }
+                } footer: {
+                    Text("This setting will reset to \"\(randomFactSettingTitle)\" when you logout or delete your account.")
+                }
+                }
+            Section {
+#if os(macOS)
+                factTextSizeSlider
+#else
+                HStack {
+                    Text(factTextSizeSliderText)
+                    Spacer(minLength: 20)
+                    factTextSizeSlider
+                }
+#endif
+            }
+            Section {
+                Text("RandoFacto was coded in Swift by Tyler Sheft!")
+                    .font(.system(size: CGFloat(appStateManager.factTextSize)))
+            }
+            .animation(.default, value: appStateManager.factTextSize)
+            .formStyle(.grouped)
+        }
+    }
+    
+    // MARK: - Account Page
 
-	var accountSection: some View {
+	var accountPage: some View {
 		Form {
 			Text((authenticationManager.firebaseAuthentication.currentUser?.email) ?? "Login to your RandoFacto account to save favorite facts to view on all your devices, even while offline.")
 				.font(.system(size: 24))
 				.fontWeight(.bold)
 			if let deletionStage = authenticationManager.userDeletionStage {
-				LoadingIndicator(text: "Deleting \(deletionStage)…")
+				LoadingIndicator(message: "Deleting \(deletionStage)…")
 			} else if authenticationManager.userLoggedIn {
                 if networkManager.online {
                     Section {
@@ -106,7 +148,7 @@ struct SettingsView: View {
                 }
                 if networkManager.online {
                     Section {
-                        Button("Delete Account…", role: .destructive) {
+                        Button("DELETE ACCOUNT…", role: .destructive) {
                             authenticationManager.showingDeleteAccount = true
                         }
                     }
@@ -120,14 +162,14 @@ struct SettingsView: View {
                         authenticationManager.authenticationFormType = .signup
                     }
                 } else {
-                    Text("Authentication unavailable. Please check your internet connection")
+                    Text("Authentication unavailable. Please check your internet connection.")
                         .font(.system(size: 24))
                 }
 			}
 		}
 		.formStyle(.grouped)
 		// Delete account alert
-		.alert("Are you sure you REALLY want to delete your account?", isPresented: $authenticationManager.showingDeleteAccount, actions: {
+		.alert("Are you sure you REALLY want to delete your account?", isPresented: $authenticationManager.showingDeleteAccount) {
 			Button("Cancel", role: .cancel) {
 				authenticationManager.showingDeleteAccount = false
 			}
@@ -151,14 +193,14 @@ struct SettingsView: View {
 					authenticationManager.showingDeleteAccount = false
 				}
 			}
-		}, message: {
+		} message: {
 			Text("You won't be able to save favorite facts to view offline! This can't be undone!")
-		})
+		}
 		#if os(macOS)
 		.dialogSeverity(.critical)
 		#endif
         // Logout alert
-        .alert("Logout?", isPresented: $authenticationManager.showingLogout, actions: {
+        .alert("Logout?", isPresented: $authenticationManager.showingLogout) {
             Button("Cancel", role: .cancel) {
                 authenticationManager.showingLogout = false
             }
@@ -166,9 +208,9 @@ struct SettingsView: View {
                 authenticationManager.logoutCurrentUser()
                 authenticationManager.showingLogout = false
             }
-        }, message: {
+        } message: {
             Text("You won't be able to save favorite facts to view offline until you login again!")
-        })
+        }
 		// Authentication form
 		.sheet(item: $authenticationManager.authenticationFormType) {_ in
 			AuthenticationFormView()
@@ -179,48 +221,20 @@ struct SettingsView: View {
 		}
 	}
     
-    var displaySection: some View {
-        Form {
-            if authenticationManager.userLoggedIn {
-                Section {
-                    Picker("Fact on Launch", selection: $favoriteFactsDatabase.initialFact) {
-                        Text(randomFactSettingTitle).tag(0)
-                        Text("Random Favorite Fact").tag(1)
-                    }
-                } footer: {
-                    Text("This setting will reset to \"\(randomFactSettingTitle)\" when you logout or delete your account.")
-                }
-                }
-            Section {
-#if os(macOS)
-                textSizeSlider
-#else
-                HStack {
-                    Text(sliderText)
-                    Spacer(minLength: 20)
-                    textSizeSlider
-                }
-#endif
-            }
-            Section {
-                Text("RandoFacto was coded in Swift by Tyler Sheft!")
-                    .font(.system(size: CGFloat(appStateManager.factTextSize)))
-            }
-            .animation(.default, value: appStateManager.factTextSize)
-            .formStyle(.grouped)
-        }
-    }
+    // MARK: - Loading Display
     
-    var loadingSection: some View {
+    var loadingDisplay: some View {
         Form {
-            LoadingIndicator(text: pleaseWaitString)
+            LoadingIndicator(message: pleaseWaitString)
                 .padding()
         }
     }
     
-    var textSizeSlider: some View {
+    // MARK: - Fact Text Size Slider
+    
+    var factTextSizeSlider: some View {
         Slider(value: $appStateManager.factTextSize, in: minFontSize...maxFontSize, step: 1) {
-            Text(sliderText)
+            Text(factTextSizeSliderText)
         } minimumValueLabel: {
             Text("\(Int(minFontSize))")
         } maximumValueLabel: {

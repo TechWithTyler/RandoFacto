@@ -10,6 +10,8 @@ import SwiftUI
 import SheftAppsStylishUI
 
 struct ContentView: View {
+    
+    // MARK: - Properties - Objects
 
     @EnvironmentObject var appStateManager: AppStateManager
     
@@ -22,64 +24,39 @@ struct ContentView: View {
     @EnvironmentObject var networkManager: NetworkManager
     
     @EnvironmentObject var errorManager: ErrorManager
+    
+    // MARK: - Properties - Horizontal Size Class
 
+    // The horizontal size class of the view (how wide it is).
 	@Environment(\.horizontalSizeClass) var horizontalSizeClass
 
+    // MARK: - Properties - iPhone Haptics
+    
 #if os(iOS)
 	var haptics = UINotificationFeedbackGenerator()
 #endif
+    
+    // MARK: - Body
 
 	var body: some View {
 		NavigationSplitView {
-			List(selection: $appStateManager.selectedPage) {
-				NavigationLink(value: AppPage.randomFact) {
-					label(for: .randomFact)
-				}
-				if authenticationManager.userLoggedIn && authenticationManager.userDeletionStage == nil {
-					NavigationLink(value: AppPage.favoriteFacts) {
-						label(for: .favoriteFacts)
-							.badge(favoriteFactsDatabase.favoriteFacts.count)
-					}
-                    .contextMenu {
-                        UnfavoriteAllButton()
-                            .environmentObject(favoriteFactsDatabase)
-                    }
-				}
-				#if !os(macOS)
-				NavigationLink(value: AppPage.settings) {
-					label(for: .settings)
-				}
-				#endif
-			}
-			.navigationTitle("RandoFacto")
-#if os(iOS)
-			.navigationBarTitleDisplayMode(.automatic)
-#endif
+			sidebarContent
 		} detail: {
-			switch appStateManager.selectedPage {
-				case .randomFact, nil:
-					FactView()
-				case .favoriteFacts:
-					FavoriteFactsList()
-                #if !os(macOS)
-				case .settings:
-					SettingsView()
-                #endif
-			}
+			mainContent
 		}
 		// Error alert
-        .alert(isPresented: $errorManager.showingErrorAlert, error: errorManager.errorToShow, actions: {
+        .alert(isPresented: $errorManager.showingErrorAlert, error: errorManager.errorToShow) {
 			Button {
 				errorManager.showingErrorAlert = false
 				errorManager.errorToShow = nil
 			} label: {
 				Text("OK")
 			}
-		})
+		}
 		#if os(macOS)
 		.dialogSeverity(.critical)
 		#endif
-        .alert("Unfavorite this fact?", isPresented: $favoriteFactsDatabase.showingDeleteFavoriteFact, presenting: $favoriteFactsDatabase.favoriteFactToDelete, actions: { factText in
+        .alert("Unfavorite this fact?", isPresented: $favoriteFactsDatabase.showingDeleteFavoriteFact, presenting: $favoriteFactsDatabase.favoriteFactToDelete) { factText in
             Button("Unfavorite", role: .destructive) {
                 favoriteFactsDatabase.unfavoriteFact(factText.wrappedValue!)
             }
@@ -87,10 +64,9 @@ struct ContentView: View {
                 favoriteFactsDatabase.showingDeleteFavoriteFact = false
                 favoriteFactsDatabase.favoriteFactToDelete = nil
             }
-            
-        })
+        }
         // Unfavorite all facts alert
-        .alert("Unfavorite all facts?", isPresented: $favoriteFactsDatabase.showingDeleteAllFavoriteFacts, actions: {
+        .alert("Unfavorite all facts?", isPresented: $favoriteFactsDatabase.showingDeleteAllFavoriteFacts) {
             Button("Unfavorite", role: .destructive) {
                 favoriteFactsDatabase.deleteAllFavoriteFactsForCurrentUser { error in
                     if let error = error {
@@ -104,7 +80,7 @@ struct ContentView: View {
             Button("Cancel", role: .cancel) {
                 favoriteFactsDatabase.showingDeleteAllFavoriteFacts = false
             }
-        })
+        }
 		// Nil selection catcher
 		.onChange(of: appStateManager.selectedPage) { value in
 			if value == nil && horizontalSizeClass == .regular {
@@ -133,10 +109,60 @@ struct ContentView: View {
 			}
 		}
 	}
-
+    
+    // MARK: - Sidebar
+    
     @ViewBuilder
-	func label(for tab: AppPage) -> some View {
-		switch tab {
+    var sidebarContent: some View {
+        List(selection: $appStateManager.selectedPage) {
+            NavigationLink(value: AppPage.randomFact) {
+                label(for: .randomFact)
+            }
+            if authenticationManager.userLoggedIn && authenticationManager.userDeletionStage == nil {
+                NavigationLink(value: AppPage.favoriteFacts) {
+                    label(for: .favoriteFacts)
+                        .badge(favoriteFactsDatabase.favoriteFacts.count)
+                }
+                .disabled(appStateManager.factText == generatingString)
+                .contextMenu {
+                    UnfavoriteAllButton()
+                        .environmentObject(favoriteFactsDatabase)
+                }
+            }
+            #if !os(macOS)
+            NavigationLink(value: AppPage.settings) {
+                label(for: .settings)
+            }
+            #endif
+        }
+        .navigationTitle("RandoFacto")
+#if os(iOS)
+        .navigationBarTitleDisplayMode(.automatic)
+#endif
+    }
+    
+    // MARK: - Main Content
+    
+    @ViewBuilder
+    var mainContent: some View {
+        switch appStateManager.selectedPage {
+            case .randomFact, nil:
+                FactView()
+            case .favoriteFacts:
+                FavoriteFactsListView()
+            #if !os(macOS)
+            case .settings:
+                SettingsView()
+            #endif
+        }
+    }
+    
+    // MARK: - Sidebar Item Labels
+
+    // This method applies a label to a navigation link based on page.
+    @ViewBuilder
+	func label(for page: AppPage) -> some View {
+		switch page {
             case .randomFact:
 				Label("Random Fact", systemImage: "questionmark")
 			case .favoriteFacts:

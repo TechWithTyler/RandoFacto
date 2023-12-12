@@ -23,13 +23,13 @@ struct FactView: View {
     
     @EnvironmentObject var errorManager: ErrorManager
     
-    // MARK: - View
+    // MARK: - Body
     
     var body: some View {
         TranslucentFooterVStack {
-            factView
+            factTextView
         } translucentFooterContent: {
-            buttons
+            factGenerationButtons
             Divider()
             footer
         }
@@ -43,7 +43,9 @@ struct FactView: View {
         }
     }
     
-    var factView: some View {
+    // MARK: - Fact Text View
+    
+    var factTextView: some View {
             ScrollableText(appStateManager.factText)
                 .font(.system(size: CGFloat(appStateManager.factTextSize)))
                 .isTextSelectable(!(appStateManager.notDisplayingFact || appStateManager.factText == factUnavailableString))
@@ -51,23 +53,9 @@ struct FactView: View {
                 .animation(.default, value: appStateManager.factTextSize)
     }
     
-    var footer: some View {
-        VStack {
-            // To include a clickable link in a string, use the format [text](URL), where text is the text to be displayed and URL is the URL the link goes to.
-            Text("Facts provided by [uselessfacts.jsph.pl](https://uselessfacts.jsph.pl).")
-            if authenticationManager.userLoggedIn {
-                Text("Favorite facts database powered by [Firebase](https://firebase.google.com).")
-            }
-        }
-        .font(.footnote)
-        .multilineTextAlignment(.center)
-        .foregroundColor(.secondary)
-        .padding(.horizontal)
-    }
+    // MARK: - Fact Generation Buttons
     
-    // MARK: - Buttons
-    
-    var buttons: some View {
+    var factGenerationButtons: some View {
         ConditionalHVStack {
             if appStateManager.favoriteFactsAvailable {
                 Button {
@@ -103,6 +91,21 @@ struct FactView: View {
         .disabled(appStateManager.notDisplayingFact)
     }
     
+    // MARK: - Footer
+    
+    var footer: some View {
+        VStack {
+            // To include a clickable link in a string, use the format [text](URL), where text is the text to be displayed and URL is the URL the link goes to.
+            Text("Facts provided by [uselessfacts.jsph.pl](https://uselessfacts.jsph.pl).")
+            if authenticationManager.userLoggedIn {
+                Text("Favorite facts database powered by [Firebase](https://firebase.google.com).")
+            }
+        }
+        .font(.footnote)
+        .multilineTextAlignment(.center)
+        .foregroundColor(.secondary)
+        .padding(.horizontal)
+    }
     
     // MARK: - Toolbar
     

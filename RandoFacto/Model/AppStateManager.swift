@@ -103,6 +103,7 @@ class AppStateManager: ObservableObject {
         factGenerator.generateRandomFact { [self] in
             // 2. Display a message before starting fact generation.
             DispatchQueue.main.async { [self] in
+                dismissFavoriteFacts()
                 factText = generatingString
             }
         } completionHandler: { [self]

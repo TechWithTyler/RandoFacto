@@ -77,6 +77,7 @@ struct FactGenerator {
 		dataTask.resume()
 	}
 
+    // This method parses the JSON data returned by the fact generator web API and creates a GeneratedFact object from it, returning the resulting fact text String.
 	func parseJSON(data: Data?) -> String? {
 		// 1. If data is nil, log an error.
 		guard let data = data else {
@@ -95,6 +96,7 @@ struct FactGenerator {
 
 	// MARK: - Fact Text Correction
 
+    // This method replaces incorrect characters in the generated fact text.
 	func correctedFactText(_ fact: String) -> String {
 		// Replace incorrect characters.
 		let correctedFact = fact.replacingOccurrences(of: "`", with: "'")
@@ -103,6 +105,7 @@ struct FactGenerator {
 
 	// MARK: - Inappropriate Words Checker
 
+    // This method screens a fact to make sure it doesn't contain inappropriate words. If it does, fact generation is retried.
 	func screenFact(fact: String, completionHandler: @escaping ((String?, Error?) -> Void)) {
 		// 1. Create constants.
 		guard let url = URL(string: inappropriateWordsCheckerURLString) else {
@@ -134,6 +137,7 @@ struct FactGenerator {
 		dataTask.resume()
 	}
 
+    // This method creates the inappropriate words checker URL request.
 	func createHTTPRequest(with url: URL, toScreenFact fact: String) -> URLRequest? {
 		// Create the URL request.
 		var request = URLRequest(url: url)
@@ -151,6 +155,7 @@ struct FactGenerator {
 		}
 	}
 
+    // This method parses the JSON data returned by the inappropriate words checker web API and creates an InappropriateWordsCheckerData object from it, returning the resulting Bool indicating whether the fact contains inappropriate words.
 	func parseFilterJSON(data: Data?) -> Bool {
 		// 1. If data is nil, be on the safe side and treat the fact as inappropriate.
 		guard let data = data else {
