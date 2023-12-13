@@ -101,10 +101,10 @@ struct FactView: View {
                 Text("Favorite facts database powered by [Firebase](https://firebase.google.com).")
             }
         }
+        .padding(.top, 1)
         .font(.footnote)
         .multilineTextAlignment(.center)
         .foregroundColor(.secondary)
-        .padding(.horizontal)
     }
     
     // MARK: - Toolbar
