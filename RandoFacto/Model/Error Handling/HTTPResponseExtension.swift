@@ -15,7 +15,8 @@ extension HTTPURLResponse {
 	// Whether the HTTP response indicates a failure (the code is not in the 2xx range).
 	var isUnsuccessful: Bool {
         let range = 200...299
-        return !range.contains(statusCode)
+        let unsuccessful = !range.contains(statusCode)
+        return unsuccessful
 	}
 
 	// MARK: - HTTP Response Status Code To Error Domain String

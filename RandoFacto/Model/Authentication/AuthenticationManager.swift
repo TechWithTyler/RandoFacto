@@ -207,7 +207,9 @@ class AuthenticationManager: ObservableObject {
         let userReference = User.Reference(email: email)
         // 2. Try to add the data from this object as a new document whose document ID is that of the user. Matching the document ID with the user ID makes deleting it easier.
         do {
-            try favoriteFactsDatabase?.firestore.collection(usersCollectionName).document(id).setData(from: userReference)
+            try favoriteFactsDatabase?.firestore.collection(usersCollectionName)
+                .document(id)
+                .setData(from: userReference)
             completionHandler(nil)
         } catch {
             // 3. If that fails, log an error.

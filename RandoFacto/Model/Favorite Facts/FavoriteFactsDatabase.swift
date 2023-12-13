@@ -73,7 +73,7 @@ class FavoriteFactsDatabase: ObservableObject {
                 return
             }
             // 2. Get the Firestore collection containing favorite facts.
-            // Firestore collection methods are chained onto one another just like SwiftUI view modifiers are, often on their own lines.
+            // Firestore collection methods are chained onto one another, often on their own lines, just like SwiftUI view modifiers are.
             favoriteFactsListener = firestore.collection(favoriteFactsCollectionName)
             // 3. Filter the result to include only the current user's favorite facts.
                 .whereField(userKeyName, isEqualTo: userEmail)

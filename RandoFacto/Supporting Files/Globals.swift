@@ -20,7 +20,7 @@ func showHelp() {
     #endif
 }
 
-// MARK: - Typealiases
+// MARK: - Type Aliases
 
 typealias Authentication = Auth
 
