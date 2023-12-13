@@ -73,11 +73,11 @@ class FavoriteFactsDatabase: ObservableObject {
                 return
             }
             // 2. Get the Firestore collection containing favorite facts.
-            // Firestore collection methods are chained onto one another just like SwiftUI view modifiers are, and are often on their own lines.
+            // Firestore collection methods are chained onto one another just like SwiftUI view modifiers are, often on their own lines.
             favoriteFactsListener = firestore.collection(favoriteFactsCollectionName)
             // 3. Filter the result to include only the current user's favorite facts.
                 .whereField(userKeyName, isEqualTo: userEmail)
-            // 4. Listen for any changes made to the favorite facts list on the Firebase end, such as by RandoFacto on another device.
+            // 4. Listen for any changes made to the favorite facts list, whether it's on this device, another device, or the Firebase console.
                 .addSnapshotListener(includeMetadataChanges: true) { [self] snapshot, error in
                     // 5. Log any errors.
                     if let error = error {
@@ -120,7 +120,8 @@ class FavoriteFactsDatabase: ObservableObject {
         guard !favoriteFacts.contains(fact) else { return }
         // 2. Create a FavoriteFact object with the fact text and the current user's email, and try to create a new document with that data in the favorite facts Firestore collection.
         do {
-            try firestore.collection(favoriteFactsCollectionName).addDocument(from: fact)
+            try firestore.collection(favoriteFactsCollectionName)
+                .addDocument(from: fact)
         } catch {
             DispatchQueue.main.async { [self] in
                 errorManager.showError(error)

@@ -147,8 +147,8 @@ class AuthenticationManager: ObservableObject {
         // 1. Create the block which will be performed if authentication is successful. This block loads the user's favorite facts, adds the registered users handler, and calls the completion handler.
         let successBlock: (() -> Void) = { [self] in
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [self] in
-                favoriteFactsDatabase?.loadFavoriteFactsForCurrentUser()
                 addRegisteredUsersHandler()
+                favoriteFactsDatabase?.loadFavoriteFactsForCurrentUser()
                 isAuthenticating = false
                 successHandler(true)
             }
@@ -324,7 +324,7 @@ class AuthenticationManager: ObservableObject {
     
     // MARK: - Account Management - Password Reset/Update
     
-    // This method sends a password reset email to email. The message body is customized in RandoFacto's Firebase console.
+    // This method sends a password reset email to the entered email address. The message body is customized in RandoFacto's Firebase console.
     func sendPasswordResetLink() {
         DispatchQueue.main.async { [self] in
             isAuthenticating = true

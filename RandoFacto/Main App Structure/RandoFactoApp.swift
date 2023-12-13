@@ -125,14 +125,14 @@ struct RandoFactoApp: App {
         // To make the Firebase authentication object, Auth, easier to understand, we use a custom type alias called Authentication.
         let firebaseAuthentication = Authentication.auth()
         // 4. Enable syncing Firestore data to the device for use offline.
-        let settings = FirestoreSettings()
+        let firestoreSettings = FirestoreSettings()
         // Persistent cache must be at least 1,048,576 bytes/1024KB/1MB. Here we use unlimited storage.
         let persistentCacheSizeBytes = FirestoreCacheSizeUnlimited as NSNumber
         let persistentCache = PersistentCacheSettings(sizeBytes: persistentCacheSizeBytes)
-        settings.cacheSettings = persistentCache
-        settings.isSSLEnabled = true
-        settings.dispatchQueue = .main
-        firestore.settings = settings
+        firestoreSettings.cacheSettings = persistentCache
+        firestoreSettings.isSSLEnabled = true
+        firestoreSettings.dispatchQueue = .main
+        firestore.settings = firestoreSettings
         // 5. Configure the managers after having set Firestore's settings (you must set all desired Firestore settings BEFORE calling any other methods on it).
         let errorManager = ErrorManager()
         let networkManager = NetworkManager(errorManager: errorManager, firestore: firestore)
