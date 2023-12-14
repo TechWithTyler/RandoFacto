@@ -12,9 +12,9 @@ struct FactGenerator {
     
     // MARK: - Properties - Type Aliases
     
-    typealias FactGeneratorResultType = Result<String, Error>
+    typealias FactGeneratorJSONParsingResultType = Result<String, Error>
     
-    typealias InappropriateWordsCheckerResultType = Result<Bool, Error>
+    typealias InappropriateWordsCheckerJSONParsingResultType = Result<Bool, Error>
     
     typealias InappropriateWordsCheckerHTTPRequestResultType = Result<URLRequest, Error>
     
@@ -61,6 +61,7 @@ struct FactGenerator {
     
     // MARK: - Properties - Errors
     
+    // The error logged when a Result returns a Failure.
     let factDataError = NSError(domain: FactGenerator.ErrorDomain.failedToGetData.rawValue, code: FactGenerator.ErrorCode.failedToGetData.rawValue)
     
     // MARK: - Fact Generation
@@ -78,7 +79,7 @@ struct FactGenerator {
         }
         let urlRequest = createFactGeneratorHTTPRequest(with: url)
         let urlSession = URLSession(configuration: .default)
-        // 3. Create the data task with the fact URL.
+        // 3. Create the data task with the fact URL and handle the request.
         let dataTask = urlSession.dataTask(with: urlRequest) { [self] data, response, error in
             handleFactGenerationDataTaskResult(didBeginHandler: didBeginHandler, data: data, response: response, error: error, completionHandler: completionHandler)
         }
@@ -140,7 +141,7 @@ struct FactGenerator {
     }
     
     // This method parses the JSON data returned by the fact generator web API and creates a GeneratedFact object from it, returning the resulting fact text String.
-    func parseFactDataJSON(data: Data?) -> FactGeneratorResultType {
+    func parseFactDataJSON(data: Data?) -> FactGeneratorJSONParsingResultType {
         // 1. If data is nil, log an error.
         guard let data = data else {
             return .failure(factDataError)
@@ -232,7 +233,7 @@ struct FactGenerator {
     }
     
     // This method parses the JSON data returned by the inappropriate words checker web API and creates an InappropriateWordsCheckerData object from it, returning the resulting Bool indicating whether the fact contains inappropriate words.
-    func parseInappropriateWordsCheckerJSON(data: Data?) -> InappropriateWordsCheckerResultType {
+    func parseInappropriateWordsCheckerJSON(data: Data?) -> InappropriateWordsCheckerJSONParsingResultType {
         // 1. If data is nil, log an error.
         guard let data = data else {
             return .failure(factDataError)
