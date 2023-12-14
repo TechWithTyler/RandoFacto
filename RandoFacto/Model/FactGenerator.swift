@@ -20,20 +20,19 @@ struct FactGenerator {
     private var factURLString: String {
         // 1. The scheme specifies the protocol used to access the resource. In this case, it's "https" (Hypertext Transfer Protocol Secure). This indicates that the data transferred between the app and the server is encrypted for security.
         let scheme = "https"
-        // 2. The domain or host is the main part of the URL that identifies the server where the resource is located. In this case, the domain is "uselessfacts.jsph.pl", created by Joeseph Paul, which is what jsph.pl stands for (usually "pl" means a website in Poland).
+        // 2. The domain and subdomain are the main parts of the URL that identify the server where the resource is located. In this case, the domain is "jsph.pl" and the subdomain is "uselessfacts". "jsph.pl" in this case stands for Joeseph Paul, the creator of this API and others (usually "pl" means a website in Poland).
         let subdomain = "uselessfacts"
         let domain = "jsph.pl"
-        // 3. The path indicates the specific resource or location on the server that the client is requesting. In this URL, the path is "/api/vX/facts/random", where X represents the API version.
+        // 3. The path indicates the specific resource or location on the server that the client (RandoFacto) is requesting. In this URL, the path is "/api/vX/facts/random", where X represents the API version.
         let apiVersion = 2
         let randomFactPath = "api/v\(apiVersion)/facts/random"
-        // 4. Query parameters are additional information provided in the URL to modify the request. They follow a question mark (?) and are separated by ampersands (&). In this URL, there is one query parameter, "language=en", indicating that the client is requesting a fact in English.
+        // 4. Query parameters are additional information provided in the URL to modify the request. They follow a question mark (?) and are separated by ampersands (&). In this URL, there is one query parameter, "language=en", indicating that the client is requesting a fact in English. Sometimes, parts of the request are modified by setting one or more HTTP header fields.
         let lowercaseLanguageCode = "en"
         let languageQueryParameter = "language=\(lowercaseLanguageCode)"
         // 5. Put the components together to create the full URL string to return.
         let urlString = "\(scheme)://\(subdomain).\(domain)/\(randomFactPath)?\(languageQueryParameter)"
         return urlString
     }
-
     
     // The URL of the inappropriate words checker API.
     private let inappropriateWordsCheckerURLString: String = "https://language-checker.vercel.app/api/check-language"
@@ -42,19 +41,19 @@ struct FactGenerator {
     
     // This method uses a random facts web API which returns JSON data to generate a random fact.
     func generateRandomFact(didBeginHandler: @escaping (() -> Void), completionHandler: @escaping ((String?, Error?) -> Void)) {
-        // 1. Create constants.
+        // 1. Call the "did begin" handler.
+        didBeginHandler()
+        // 2. Create the URL, URL request, and URL session.
         guard let url = URL(string: factURLString) else {
             logFactDataError { error in
                 completionHandler(nil, error)
             }
             return
         }
+        let urlRequest = createFactGeneratorHTTPRequest(with: url)
         let urlSession = URLSession(configuration: .default)
-        let request = createFactGeneratorHTTPRequest(with: url)
-        // 2. Call the "did begin" handler.
-        didBeginHandler()
         // 3. Create the data task with the fact URL.
-        let dataTask = urlSession.dataTask(with: request) { [self] data, response, error in
+        let dataTask = urlSession.dataTask(with: urlRequest) { [self] data, response, error in
             // 4. If an HTTP response is returned and its code isn't within the 2xx range, log it as an error.
             if let httpResponse = response as? HTTPURLResponse, httpResponse.isUnsuccessful {
                 httpResponse.logAsError {
@@ -137,7 +136,7 @@ struct FactGenerator {
     
     // This method screens a fact to make sure it doesn't contain inappropriate words. If it does, fact generation is retried.
     func screenFact(fact: String, completionHandler: @escaping ((String?, Error?) -> Void)) {
-        // 1. Create constants.
+        // 1. Create the URL and URL session.
         guard let url = URL(string: inappropriateWordsCheckerURLString) else {
             completionHandler(nil, nil)
             return }
