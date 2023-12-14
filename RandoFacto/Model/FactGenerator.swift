@@ -10,13 +10,30 @@ import Foundation
 
 struct FactGenerator {
     
+    // MARK: - Properties - Content Type
+    
+    let jsonContentType = "application/json"
+    
     // MARK: - Properties - URLs
     
     // The URL of the random facts API.
     private var factURLString: String {
+        // 1. The scheme specifies the protocol used to access the resource. In this case, it's "https" (Hypertext Transfer Protocol Secure). This indicates that the data transferred between the app and the server is encrypted for security.
+        let scheme = "https"
+        // 2. The domain or host is the main part of the URL that identifies the server where the resource is located. In this case, the domain is "uselessfacts.jsph.pl", created by Joeseph Paul, which is what jsph.pl stands for (usually "pl" means a website in Poland).
+        let subdomain = "uselessfacts"
+        let domain = "jsph.pl"
+        // 3. The path indicates the specific resource or location on the server that the client is requesting. In this URL, the path is "/api/vX/facts/random", where X represents the API version.
         let apiVersion = 2
-        return "https://uselessfacts.jsph.pl/api/v\(apiVersion)/facts/random?language=en"
+        let randomFactPath = "api/v\(apiVersion)/facts/random"
+        // 4. Query parameters are additional information provided in the URL to modify the request. They follow a question mark (?) and are separated by ampersands (&). In this URL, there is one query parameter, "language=en", indicating that the client is requesting a fact in English.
+        let lowercaseLanguageCode = "en"
+        let languageQueryParameter = "language=\(lowercaseLanguageCode)"
+        // 5. Put the components together to create the full URL string to return.
+        let urlString = "\(scheme)://\(subdomain).\(domain)/\(randomFactPath)?\(languageQueryParameter)"
+        return urlString
     }
+
     
     // The URL of the inappropriate words checker API.
     private let inappropriateWordsCheckerURLString: String = "https://language-checker.vercel.app/api/check-language"
@@ -26,14 +43,14 @@ struct FactGenerator {
     // This method uses a random facts web API which returns JSON data to generate a random fact.
     func generateRandomFact(didBeginHandler: @escaping (() -> Void), completionHandler: @escaping ((String?, Error?) -> Void)) {
         // 1. Create constants.
-        guard let url = URL(string: factURLString) else { 
+        guard let url = URL(string: factURLString) else {
             logFactDataError { error in
                 completionHandler(nil, error)
             }
             return
         }
         let urlSession = URLSession(configuration: .default)
-        let request = URLRequest(url: url)
+        let request = createFactGeneratorHTTPRequest(with: url)
         // 2. Call the "did begin" handler.
         didBeginHandler()
         // 3. Create the data task with the fact URL.
@@ -80,6 +97,16 @@ struct FactGenerator {
         dataTask.resume()
     }
     
+    // This method creates the fact generator URL request.
+    func createFactGeneratorHTTPRequest(with url: URL) -> URLRequest {
+        // 1. Create the URL request.
+        var request = URLRequest(url: url)
+        // 2. Specify the type of content to give back.
+        request.setValue(jsonContentType, forHTTPHeaderField: "Accept")
+        // 3. Return the created request.
+        return request
+    }
+    
     // This method parses the JSON data returned by the fact generator web API and creates a GeneratedFact object from it, returning the resulting fact text String.
     func parseJSON(data: Data?) -> String? {
         // 1. If data is nil, log an error.
@@ -116,7 +143,7 @@ struct FactGenerator {
             return }
         let urlSession = URLSession(configuration: .default)
         // 2. Create the URL request.
-        guard let request = createHTTPRequest(with: url, toScreenFact: fact) else {
+        guard let request = createInappropriateWordsCheckerHTTPRequest(with: url, toScreenFact: fact) else {
             completionHandler(nil, nil)
             return
         }
@@ -141,17 +168,18 @@ struct FactGenerator {
     }
     
     // This method creates the inappropriate words checker URL request.
-    func createHTTPRequest(with url: URL, toScreenFact fact: String) -> URLRequest? {
-        // Create the URL request.
+    func createInappropriateWordsCheckerHTTPRequest(with url: URL, toScreenFact fact: String) -> URLRequest? {
+        // 1. Create the URL request.
         var request = URLRequest(url: url)
-        // 2. Specify the data model that you want to send.
+        // 2. Specify the type of content to give back.
+        request.setValue(jsonContentType, forHTTPHeaderField: "Content-Type")
+        // 3. Specify the data model that you want to send.
         let body = ["content": fact]
-        // 3. Try to convert model to JSON data. If conversion fails, log an error.
+        // 4. Try to convert model to JSON data and return the created request. If conversion fails, log an error.
         do {
             let jsonData = try JSONSerialization.data(withJSONObject: body, options: [.fragmentsAllowed])
             request.httpMethod = "POST"
             request.httpBody = jsonData
-            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             return request
         } catch {
             return nil
