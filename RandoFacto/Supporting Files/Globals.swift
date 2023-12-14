@@ -33,10 +33,10 @@ let loadingString = "Loading…"
 let pleaseWaitString = "Please wait…"
 
 // Displayed when generating a random fact.
-let generatingString = "Generating random fact…"
+let generatingRandomFactString = "Generating random fact…"
 
 // Displayed when a FactGenerator error occurs.
-let factUnavailableString = "Fact unavailable"
+let factUnavailableString = "Fact unavailable. Please try again later."
 
 // The title of the button/menu item used to generate a random fact.
 let generateRandomFactButtonTitle = "Generate Random Fact"
@@ -56,25 +56,28 @@ let loginText = "Login"
 // The title of the signup dialog/buttons.
 let signupText = "Signup"
 
+// The name of the filled-circle exclamation mark SF Symbol used for errors.
+let errorSymbolName = "exclamationmark.circle.fill"
+
 // The name of the collection containing all registered users in the Firestore database.
-let usersCollectionName = "users"
+let usersFirestoreCollectionName = "users"
 
 // The name of the collection containing favorite facts in the Firestore database.
-let favoriteFactsCollectionName = "favoriteFacts"
+let favoriteFactsFirestoreCollectionName = "favoriteFacts"
 
 // The key name of a fact's text in the Firestore database.
-let factTextKeyName = "text"
+let factTextFirestoreKeyName = "text"
 
 // The key name of a fact's associated user.
-let userKeyName = "user"
+let userFirestoreKeyName = "user"
 
 // The key name of a registered user's email.
-let emailKeyName = "email"
-
-let errorSymbolName = "exclamationmark.circle.fill"
+let emailFirestoreKeyName = "email"
 
 // MARK: - Properties - Doubles
 
+// The app's minimum font size.
 var minFontSize: Double = 14
 
+// The app's maximum font size.
 var maxFontSize: Double = 48

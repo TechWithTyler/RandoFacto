@@ -129,7 +129,7 @@ struct ContentView: View {
                     label(for: .favoriteFacts)
                         .badge(favoriteFactsDatabase.favoriteFacts.count)
                 }
-                .disabled(appStateManager.factText == generatingString)
+                .disabled(appStateManager.factText == generatingRandomFactString)
                 .contextMenu {
                     UnfavoriteAllButton()
                         .environmentObject(favoriteFactsDatabase)

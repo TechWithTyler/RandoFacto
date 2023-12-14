@@ -105,9 +105,9 @@ class AuthenticationManager: ObservableObject {
                 return
             }
             // 2. Get all registered users.
-            registeredUsersListener = favoriteFactsDatabase?.firestore.collection(usersCollectionName)
+            registeredUsersListener = favoriteFactsDatabase?.firestore.collection(usersFirestoreCollectionName)
             // 3. Filter the results to include only the current user.
-                .whereField(emailKeyName, isEqualTo: email)
+                .whereField(emailFirestoreKeyName, isEqualTo: email)
             // 4. Listen for any changes made to the "users" collection.
                 .addSnapshotListener(includeMetadataChanges: true) { [self] documentSnapshot, error in
                     if let error = error {
@@ -207,7 +207,7 @@ class AuthenticationManager: ObservableObject {
         let userReference = User.Reference(email: email)
         // 2. Try to add the data from this object as a new document whose document ID is that of the user. Matching the document ID with the user ID makes deleting it easier.
         do {
-            try favoriteFactsDatabase?.firestore.collection(usersCollectionName)
+            try favoriteFactsDatabase?.firestore.collection(usersFirestoreCollectionName)
                 .document(id)
                 .setData(from: userReference)
             completionHandler(nil)
@@ -230,8 +230,8 @@ class AuthenticationManager: ObservableObject {
             }
         }
         // 2. Check if the current user has a reference.
-        favoriteFactsDatabase?.firestore.collection(usersCollectionName)
-            .whereField(emailKeyName, isEqualTo: email)
+        favoriteFactsDatabase?.firestore.collection(usersFirestoreCollectionName)
+            .whereField(emailFirestoreKeyName, isEqualTo: email)
             .getDocuments(source: .server) { snapshot, error in
                 // 3. If that fails, log an error.
                 if let error = error {
@@ -413,8 +413,8 @@ class AuthenticationManager: ObservableObject {
         var deletionError: Error?
         // 2. Create a DispatchGroup and delete the user reference the same way we delete all favorite facts.
         let group = DispatchGroup()
-        favoriteFactsDatabase?.firestore.collection(usersCollectionName)
-            .whereField(emailKeyName, isEqualTo: userEmail)
+        favoriteFactsDatabase?.firestore.collection(usersFirestoreCollectionName)
+            .whereField(emailFirestoreKeyName, isEqualTo: userEmail)
             .getDocuments(source: .server) { (snapshot, error) in
                 if let error = error {
                     deletionError = error

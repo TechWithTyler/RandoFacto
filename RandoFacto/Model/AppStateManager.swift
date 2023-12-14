@@ -64,7 +64,7 @@ class AppStateManager: ObservableObject {
     
     // Whether the fact text view is displaying something other than a fact (i.e., a loading or error message).
     var notDisplayingFact: Bool {
-        return isLoading || factText == generatingString
+        return isLoading || factText == generatingRandomFactString
     }
     
     // Whether the displayed fact is saved as a favorite.
@@ -104,7 +104,7 @@ class AppStateManager: ObservableObject {
             // 2. Display a message before starting fact generation.
             DispatchQueue.main.async { [self] in
                 dismissFavoriteFacts()
-                factText = generatingString
+                factText = generatingRandomFactString
             }
         } completionHandler: { [self]
             fact, error in
