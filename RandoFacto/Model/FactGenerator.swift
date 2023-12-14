@@ -13,10 +13,13 @@ struct FactGenerator {
 	// MARK: - Properties - URLs
 
 	// The URL of the random facts API.
-	private let factURLString = "https://uselessfacts.jsph.pl/api/v2/facts/random?language=en"
+    private var factURLString: String {
+        let apiVersion = 2
+        return "https://uselessfacts.jsph.pl/api/v\(apiVersion)/facts/random?language=en"
+    }
 
 	// The URL of the inappropriate words checker API.
-	private let inappropriateWordsCheckerURLString = "https://language-checker.vercel.app/api/check-language"
+    private let inappropriateWordsCheckerURLString: String = "https://language-checker.vercel.app/api/check-language"
 
 	// MARK: - Fact Generation
 
