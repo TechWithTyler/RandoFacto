@@ -12,6 +12,7 @@ struct FactGenerator {
     
     // MARK: - Properties - Content Type
     
+    // Specifies that the fact generator and inappropriate words checker APIs should return JSON data.
     let jsonContentType = "application/json"
     
     // MARK: - Properties - URLs
@@ -36,6 +37,11 @@ struct FactGenerator {
     
     // The URL of the inappropriate words checker API.
     private let inappropriateWordsCheckerURLString: String = "https://language-checker.vercel.app/api/check-language"
+    
+    // MARK: - Properties - URL Request Timeout Interval
+    
+    // The timeout interval of URL requests, which determines the maximum number of seconds they can try to run before a "request timed out" error is thrown if unsuccessful.
+    let urlRequestTimeoutInterval: TimeInterval = 5
     
     // MARK: - Fact Generation
     
@@ -100,9 +106,12 @@ struct FactGenerator {
     func createFactGeneratorHTTPRequest(with url: URL) -> URLRequest {
         // 1. Create the URL request.
         var request = URLRequest(url: url)
-        // 2. Specify the type of content to give back.
+        // 2. Specify the HTTP method and the type of content to give back.
+        request.httpMethod = "GET"
         request.setValue(jsonContentType, forHTTPHeaderField: "Accept")
-        // 3. Return the created request.
+        // 3. Set the timeout interval for the URL request, after which an error will be thrown if the request can't complete.
+        request.timeoutInterval = urlRequestTimeoutInterval
+        // 4. Return the created request.
         return request
     }
     
@@ -170,14 +179,16 @@ struct FactGenerator {
     func createInappropriateWordsCheckerHTTPRequest(with url: URL, toScreenFact fact: String) -> URLRequest? {
         // 1. Create the URL request.
         var request = URLRequest(url: url)
-        // 2. Specify the type of content to give back.
+        // 2. Specify the HTTP method and the type of content to give back.
+        request.httpMethod = "POST"
         request.setValue(jsonContentType, forHTTPHeaderField: "Content-Type")
-        // 3. Specify the data model that you want to send.
+        // 3. Set the timeout interval for the URL request, after which an error will be thrown if the request can't complete.
+        request.timeoutInterval = urlRequestTimeoutInterval
+        // 4. Specify the data model that you want to send.
         let body = ["content": fact]
-        // 4. Try to convert model to JSON data and return the created request. If conversion fails, log an error.
+        // 5. Try to convert model to JSON data and return the created request. If conversion fails, log an error.
         do {
             let jsonData = try JSONSerialization.data(withJSONObject: body, options: [.fragmentsAllowed])
-            request.httpMethod = "POST"
             request.httpBody = jsonData
             return request
         } catch {
