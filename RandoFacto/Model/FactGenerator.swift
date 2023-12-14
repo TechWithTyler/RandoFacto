@@ -10,6 +10,14 @@ import Foundation
 
 struct FactGenerator {
     
+    // MARK: - Properties - Type Aliases
+    
+    typealias FactGeneratorResultType = Result<String, Error>
+    
+    typealias InappropriateWordsCheckerResultType = Result<Bool, Error>
+    
+    typealias InappropriateWordsCheckerHTTPRequestResultType = Result<URLRequest, Error>
+    
     // MARK: - Properties - Content Type
     
     // Specifies that the fact generator and inappropriate words checker APIs should return JSON data.
@@ -36,12 +44,24 @@ struct FactGenerator {
     }
     
     // The URL of the inappropriate words checker API.
-    private let inappropriateWordsCheckerURLString: String = "https://language-checker.vercel.app/api/check-language"
+    private var inappropriateWordsCheckerURLString: String {
+        // This URL is much simpler than the fact generator one above.
+        let scheme = "https"
+        let subdomain = "language-checker"
+        let domain = "vercel.app"
+        let languageCheckerPath = "api/check-language"
+        let urlString = "\(scheme)://\(subdomain).\(domain)/\(languageCheckerPath)"
+        return urlString
+    }
     
     // MARK: - Properties - URL Request Timeout Interval
     
     // The timeout interval of URL requests, which determines the maximum number of seconds they can try to run before a "request timed out" error is thrown if unsuccessful.
     let urlRequestTimeoutInterval: TimeInterval = 5
+    
+    // MARK: - Properties - Errors
+    
+    let factDataError = NSError(domain: FactGenerator.ErrorDomain.failedToGetData.rawValue, code: FactGenerator.ErrorCode.failedToGetData.rawValue)
     
     // MARK: - Fact Generation
     
@@ -73,28 +93,28 @@ struct FactGenerator {
                 return
             } else {
                 // 6. Make sure we can get the fact text. If we can't, an error is logged.
-                guard let factText = parseJSON(data: data) else {
-                    logFactDataError { error in
-                        completionHandler(nil, error)
-                    }
-                    return
-                }
-                // 7. Screen the fact to make sure it doesn't contain inappropriate words. If we get an error or an HTTP response with a code that's not in the 2xx range, log an error. If we get a fact, we know the fact is safe and we can display it. If we get nothing, keep trying to generate a fact until we get a safe one. Once a safe fact is generated, give it to the view.
-                screenFact(fact: factText) { fact, error in
-                    if let error = error {
-                        completionHandler(nil, error)
-                    } else if let fact = fact {
-                        if fact.isEmpty {
-                            logNoTextError {
-                                error in
-                                completionHandler(nil, error)
+                let jsonParsingResult = parseJSON(data: data)
+                switch jsonParsingResult {
+                case .success(let factText):
+                    // 7. Screen the fact to make sure it doesn't contain inappropriate words. If we get an error or an HTTP response with a code that's not in the 2xx range, log an error. If we get a fact, we know the fact is safe and we can display it. If we get nothing, keep trying to generate a fact until we get a safe one. Once a safe fact is generated, give it to the view.
+                    screenFact(fact: factText) { fact, error in
+                        if let error = error {
+                            completionHandler(nil, error)
+                        } else if let fact = fact {
+                            if fact.isEmpty {
+                                logNoTextError {
+                                    error in
+                                    completionHandler(nil, error)
+                                }
+                            } else {
+                                completionHandler(fact, nil)
                             }
                         } else {
-                            completionHandler(fact, nil)
+                            generateRandomFact(didBeginHandler: didBeginHandler, completionHandler: completionHandler)
                         }
-                    } else {
-                        generateRandomFact(didBeginHandler: didBeginHandler, completionHandler: completionHandler)
                     }
+                case .failure(let error):
+                    completionHandler(nil, error)
                 }
             }
         }
@@ -116,19 +136,19 @@ struct FactGenerator {
     }
     
     // This method parses the JSON data returned by the fact generator web API and creates a GeneratedFact object from it, returning the resulting fact text String.
-    func parseJSON(data: Data?) -> String? {
+    func parseJSON(data: Data?) -> FactGeneratorResultType {
         // 1. If data is nil, log an error.
         guard let data = data else {
-            return nil
+            return .failure(factDataError)
         }
         // 2. Try to decode the JSON data to create a GeneratedFact object, and get the text from it, correcting punctuation as necessary. If decoding fails, log an error.
         let decoder = JSONDecoder()
         do {
             // Since we're using a type name, not an instance of that type, we use TypeName.self instead of TypeName().
             let factObject = try decoder.decode(GeneratedFact.self, from: data)
-            return correctedFactText(factObject.text)
+            return .success(correctedFactText(factObject.text))
         } catch {
-            return nil
+            return .failure(error)
         }
     }
     
@@ -151,32 +171,39 @@ struct FactGenerator {
             return }
         let urlSession = URLSession(configuration: .default)
         // 2. Create the URL request.
-        guard let request = createInappropriateWordsCheckerHTTPRequest(with: url, toScreenFact: fact) else {
-            completionHandler(nil, nil)
-            return
-        }
-        // 3. Create the data task with the inappropriate words checker URL, handling errors and HTTP responses just as we did in generateRandomFact(didBeginHandler:completionHandler:) above.
-        let dataTask = urlSession.dataTask(with: request) { [self] data, response, error in
-            if let error = error {
-                completionHandler(nil, error)
-            }
-            if let httpResponse = response as? HTTPURLResponse, httpResponse.isUnsuccessful {
-                httpResponse.logAsError { error in
+        let httpRequestResult = createInappropriateWordsCheckerHTTPRequest(with: url, toScreenFact: fact)
+        switch httpRequestResult {
+        case .success(let request):
+            // 3. Create the data task with the inappropriate words checker URL, handling errors and HTTP responses just as we did in generateRandomFact(didBeginHandler:completionHandler:) above.
+            let dataTask = urlSession.dataTask(with: request) { [self] data, response, error in
+                if let error = error {
+                    completionHandler(nil, error)
+                }
+                if let httpResponse = response as? HTTPURLResponse, httpResponse.isUnsuccessful {
+                    httpResponse.logAsError { error in
+                        completionHandler(nil, error)
+                    }
+                }
+                let jsonParsingResult = parseFilterJSON(data: data)
+                switch jsonParsingResult {
+                case .success(let factIsInappropriate):
+                    if !factIsInappropriate {
+                        completionHandler(fact, nil)
+                    } else {
+                        completionHandler(nil, nil)
+                    }
+                case .failure(let error):
                     completionHandler(nil, error)
                 }
             }
-            let factIsInappropriate = parseFilterJSON(data: data)
-            if !factIsInappropriate {
-                completionHandler(fact, nil)
-            } else {
-                completionHandler(nil, nil)
-            }
+            dataTask.resume()
+        case .failure(let error):
+            completionHandler(nil, error)
         }
-        dataTask.resume()
     }
     
     // This method creates the inappropriate words checker URL request.
-    func createInappropriateWordsCheckerHTTPRequest(with url: URL, toScreenFact fact: String) -> URLRequest? {
+    func createInappropriateWordsCheckerHTTPRequest(with url: URL, toScreenFact fact: String) -> InappropriateWordsCheckerHTTPRequestResultType {
         // 1. Create the URL request.
         var request = URLRequest(url: url)
         // 2. Specify the HTTP method and the type of content to give back.
@@ -190,25 +217,25 @@ struct FactGenerator {
         do {
             let jsonData = try JSONSerialization.data(withJSONObject: body, options: [.fragmentsAllowed])
             request.httpBody = jsonData
-            return request
+            return .success(request)
         } catch {
-            return nil
+            return .failure(error)
         }
     }
     
     // This method parses the JSON data returned by the inappropriate words checker web API and creates an InappropriateWordsCheckerData object from it, returning the resulting Bool indicating whether the fact contains inappropriate words.
-    func parseFilterJSON(data: Data?) -> Bool {
+    func parseFilterJSON(data: Data?) -> InappropriateWordsCheckerResultType {
         // 1. If data is nil, be on the safe side and treat the fact as inappropriate.
         guard let data = data else {
-            return true
+            return .failure(factDataError)
         }
         // 2. Try to decode the JSON data to create an InappropriateWordsCheckerData object, and get whether the fact is inappropriate from it, returning the fact if it's appropriate. If decoding fails, be on the safe side and treat the fact as inappropriate.
         let decoder = JSONDecoder()
         do {
             let factObject = try decoder.decode(InappropriateWordsCheckerData.self, from: data)
-            return factObject.containsInappropriateWords
+            return .success(factObject.containsInappropriateWords)
         } catch {
-            return true
+            return .failure(error)
         }
     }
     
