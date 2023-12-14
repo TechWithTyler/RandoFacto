@@ -80,46 +80,50 @@ struct FactGenerator {
         let urlSession = URLSession(configuration: .default)
         // 3. Create the data task with the fact URL.
         let dataTask = urlSession.dataTask(with: urlRequest) { [self] data, response, error in
-            // 4. If an HTTP response is returned and its code isn't within the 2xx range, log it as an error.
-            if let httpResponse = response as? HTTPURLResponse, httpResponse.isUnsuccessful {
-                httpResponse.logAsError {
-                    error in
-                    completionHandler(nil, error)
-                }
-            }
-            // 5. Log any errors.
-            else if let error = error {
-                completionHandler(nil, error)
-                return
-            } else {
-                // 6. Make sure we can get the fact text. If we can't, an error is logged.
-                let jsonParsingResult = parseJSON(data: data)
-                switch jsonParsingResult {
-                case .success(let factText):
-                    // 7. Screen the fact to make sure it doesn't contain inappropriate words. If we get an error or an HTTP response with a code that's not in the 2xx range, log an error. If we get a fact, we know the fact is safe and we can display it. If we get nothing, keep trying to generate a fact until we get a safe one. Once a safe fact is generated, give it to the view.
-                    screenFact(fact: factText) { fact, error in
-                        if let error = error {
-                            completionHandler(nil, error)
-                        } else if let fact = fact {
-                            if fact.isEmpty {
-                                logNoTextError {
-                                    error in
-                                    completionHandler(nil, error)
-                                }
-                            } else {
-                                completionHandler(fact, nil)
-                            }
-                        } else {
-                            generateRandomFact(didBeginHandler: didBeginHandler, completionHandler: completionHandler)
-                        }
-                    }
-                case .failure(let error):
-                    completionHandler(nil, error)
-                }
-            }
+            handleFactGenerationDataTaskResult(didBeginHandler: didBeginHandler, data: data, response: response, error: error, completionHandler: completionHandler)
         }
         // To start a URLSessionDataTask, we resume it.
         dataTask.resume()
+    }
+    
+    func handleFactGenerationDataTaskResult(didBeginHandler: @escaping (() -> Void), data: Data?, response: URLResponse?, error: Error?, completionHandler: @escaping ((String?, Error?) -> Void)) {
+        // 1. If an HTTP response is returned and its code isn't within the 2xx range, log it as an error.
+        if let httpResponse = response as? HTTPURLResponse, httpResponse.isUnsuccessful {
+            httpResponse.logAsError {
+                error in
+                completionHandler(nil, error)
+            }
+        }
+        // 2. Log any errors.
+        else if let error = error {
+            completionHandler(nil, error)
+            return
+        } else {
+            // 3. Make sure we can get the fact text. If we can't, an error is logged.
+            let jsonParsingResult = parseFactDataJSON(data: data)
+            switch jsonParsingResult {
+            case .success(let factText):
+                // 4. Screen the fact to make sure it doesn't contain inappropriate words. If we get an error or an HTTP response with a code that's not in the 2xx range, log an error. If we get a fact, we know the fact is safe and we can display it. If we get nothing, keep trying to generate a fact until we get a safe one. Once a safe fact is generated, give it to the view.
+                screenFact(fact: factText) { fact, error in
+                    if let error = error {
+                        completionHandler(nil, error)
+                    } else if let fact = fact {
+                        if fact.isEmpty {
+                            logNoTextError {
+                                error in
+                                completionHandler(nil, error)
+                            }
+                        } else {
+                            completionHandler(fact, nil)
+                        }
+                    } else {
+                        generateRandomFact(didBeginHandler: didBeginHandler, completionHandler: completionHandler)
+                    }
+                }
+            case .failure(let error):
+                completionHandler(nil, error)
+            }
+        }
     }
     
     // This method creates the fact generator URL request.
@@ -136,7 +140,7 @@ struct FactGenerator {
     }
     
     // This method parses the JSON data returned by the fact generator web API and creates a GeneratedFact object from it, returning the resulting fact text String.
-    func parseJSON(data: Data?) -> FactGeneratorResultType {
+    func parseFactDataJSON(data: Data?) -> FactGeneratorResultType {
         // 1. If data is nil, log an error.
         guard let data = data else {
             return .failure(factDataError)
@@ -176,27 +180,31 @@ struct FactGenerator {
         case .success(let request):
             // 3. Create the data task with the inappropriate words checker URL, handling errors and HTTP responses just as we did in generateRandomFact(didBeginHandler:completionHandler:) above.
             let dataTask = urlSession.dataTask(with: request) { [self] data, response, error in
-                if let error = error {
-                    completionHandler(nil, error)
-                }
-                if let httpResponse = response as? HTTPURLResponse, httpResponse.isUnsuccessful {
-                    httpResponse.logAsError { error in
-                        completionHandler(nil, error)
-                    }
-                }
-                let jsonParsingResult = parseFilterJSON(data: data)
-                switch jsonParsingResult {
-                case .success(let factIsInappropriate):
-                    if !factIsInappropriate {
-                        completionHandler(fact, nil)
-                    } else {
-                        completionHandler(nil, nil)
-                    }
-                case .failure(let error):
-                    completionHandler(nil, error)
-                }
+                handleInappropriateWordsCheckerDataTaskResult(fact: fact, data: data, response: response, error: error, completionHandler: completionHandler)
             }
             dataTask.resume()
+        case .failure(let error):
+            completionHandler(nil, error)
+        }
+    }
+    
+    func handleInappropriateWordsCheckerDataTaskResult(fact: String, data: Data?, response: URLResponse?, error: Error?, completionHandler: ((String?, Error?) -> Void)) {
+        if let error = error {
+            completionHandler(nil, error)
+        }
+        if let httpResponse = response as? HTTPURLResponse, httpResponse.isUnsuccessful {
+            httpResponse.logAsError { error in
+                completionHandler(nil, error)
+            }
+        }
+        let jsonParsingResult = parseInappropriateWordsCheckerJSON(data: data)
+        switch jsonParsingResult {
+        case .success(let factIsInappropriate):
+            if !factIsInappropriate {
+                completionHandler(fact, nil)
+            } else {
+                completionHandler(nil, nil)
+            }
         case .failure(let error):
             completionHandler(nil, error)
         }
@@ -224,12 +232,12 @@ struct FactGenerator {
     }
     
     // This method parses the JSON data returned by the inappropriate words checker web API and creates an InappropriateWordsCheckerData object from it, returning the resulting Bool indicating whether the fact contains inappropriate words.
-    func parseFilterJSON(data: Data?) -> InappropriateWordsCheckerResultType {
-        // 1. If data is nil, be on the safe side and treat the fact as inappropriate.
+    func parseInappropriateWordsCheckerJSON(data: Data?) -> InappropriateWordsCheckerResultType {
+        // 1. If data is nil, log an error.
         guard let data = data else {
             return .failure(factDataError)
         }
-        // 2. Try to decode the JSON data to create an InappropriateWordsCheckerData object, and get whether the fact is inappropriate from it, returning the fact if it's appropriate. If decoding fails, be on the safe side and treat the fact as inappropriate.
+        // 2. Try to decode the JSON data to create an InappropriateWordsCheckerData object, and get whether the fact is inappropriate from it, returning the fact if it's appropriate. If decoding fails, log an error.
         let decoder = JSONDecoder()
         do {
             let factObject = try decoder.decode(InappropriateWordsCheckerData.self, from: data)
