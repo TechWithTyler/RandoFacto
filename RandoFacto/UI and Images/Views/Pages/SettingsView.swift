@@ -254,4 +254,5 @@ struct SettingsView: View {
         .environmentObject(NetworkManager())
         .environmentObject(FavoriteFactsDatabase())
         .environmentObject(AuthenticationManager())
+        .frame(height: 500)
 }

@@ -177,4 +177,5 @@ struct FavoriteFactsListView: View {
         .environmentObject(FavoriteFactsDatabase())
         .environmentObject(FavoriteFactsListDisplayManager())
         .environmentObject(AuthenticationManager())
+        .frame(width: 500, height: 500)
 }
