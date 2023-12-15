@@ -11,6 +11,7 @@ import Foundation
 // MARK: - Generated Fact Data
 
 // Represents the JSON data returned by the random facts API.
+// Codable is a type alias for Encodable and Decodable.
 struct GeneratedFact: Codable {
 
 	// This property is named exactly as it is in the JSON data returned by the random facts API.

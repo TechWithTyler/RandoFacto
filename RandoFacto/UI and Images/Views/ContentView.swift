@@ -129,7 +129,6 @@ struct ContentView: View {
             if authenticationManager.userLoggedIn && authenticationManager.userDeletionStage == nil {
                 NavigationLink(value: AppPage.favoriteFacts) {
                     label(for: .favoriteFacts)
-                        .badge(favoriteFactsDatabase.favoriteFacts.count)
                 }
                 .disabled(appStateManager.factText == generatingRandomFactString)
                 .contextMenu {
@@ -169,15 +168,16 @@ struct ContentView: View {
 
     // This method applies a label to a navigation link based on page.
     @ViewBuilder
-	func label(for page: AppPage) -> some View {
-		switch page {
+    func label(for page: AppPage) -> some View {
+        switch page {
             case .randomFact:
-				Label("Random Fact", systemImage: "questionmark")
-			case .favoriteFacts:
-				Label("Favorite Facts", systemImage: "star")
+                Label("Random Fact", systemImage: "questionmark")
+            case .favoriteFacts:
+                Label("Favorite Facts", systemImage: "star")
+                .badge(favoriteFactsDatabase.favoriteFacts.count)
             #if !os(macOS)
-			case .settings:
-				Label("Settings", systemImage: "gear")
+            case .settings:
+                Label("Settings", systemImage: "gear")
             #endif
 		}
 	}
