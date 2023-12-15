@@ -191,4 +191,9 @@ struct AuthenticationFormView: View {
 
 #Preview {
     AuthenticationFormView()
+        .environmentObject(AppStateManager())
+        .environmentObject(ErrorManager())
+        .environmentObject(NetworkManager())
+        .environmentObject(FavoriteFactsDatabase())
+        .environmentObject(AuthenticationManager())
 }

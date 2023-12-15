@@ -171,4 +171,10 @@ struct FavoriteFactsListView: View {
 
 #Preview {
     FavoriteFactsListView()
+        .environmentObject(AppStateManager())
+        .environmentObject(ErrorManager())
+        .environmentObject(NetworkManager())
+        .environmentObject(FavoriteFactsDatabase())
+        .environmentObject(FavoriteFactsListDisplayManager())
+        .environmentObject(AuthenticationManager())
 }

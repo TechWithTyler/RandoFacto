@@ -24,4 +24,5 @@ struct UnfavoriteAllButton: View {
 
 #Preview {
     UnfavoriteAllButton()
+        .environmentObject(FavoriteFactsDatabase())
 }

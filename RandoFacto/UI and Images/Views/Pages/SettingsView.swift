@@ -249,4 +249,9 @@ struct SettingsView: View {
 
 #Preview {
 	SettingsView()
+        .environmentObject(AppStateManager())
+        .environmentObject(ErrorManager())
+        .environmentObject(NetworkManager())
+        .environmentObject(FavoriteFactsDatabase())
+        .environmentObject(AuthenticationManager())
 }

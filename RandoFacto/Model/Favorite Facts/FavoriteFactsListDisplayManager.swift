@@ -19,6 +19,10 @@ class FavoriteFactsListDisplayManager: ObservableObject {
         self.favoriteFactsDatabase = favoriteFactsDatabase
     }
     
+    init() {
+        self.favoriteFactsDatabase = FavoriteFactsDatabase()
+    }
+    
     // MARK: - Properties - Searching
     
     // The FavoriteFactsList search text.

@@ -149,4 +149,9 @@ struct FactView: View {
 
 #Preview {
     ContentView()
+        .environmentObject(AppStateManager())
+        .environmentObject(ErrorManager())
+        .environmentObject(NetworkManager())
+        .environmentObject(FavoriteFactsDatabase())
+        .environmentObject(AuthenticationManager())
 }

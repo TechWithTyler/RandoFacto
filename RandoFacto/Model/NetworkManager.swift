@@ -30,6 +30,12 @@ class NetworkManager: ObservableObject {
         configureNetworkPathMonitor()
     }
     
+    init() {
+        self.errorManager = ErrorManager()
+        self.firestore = Firestore.firestore()
+        configureNetworkPathMonitor()
+    }
+    
     // MARK: - Network - Path Monitor Configuration
     
     // This method configures the network path monitor's path update handler, which tells the app to enable or disable online mode, showing or hiding internet-connection-required UI based on network connection.

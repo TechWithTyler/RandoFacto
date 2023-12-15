@@ -104,27 +104,13 @@ struct RandoFactoApp: App {
 
     // This initializer configures Firebase and all the model objects for this app.
 	init() {
-		// 1. Make sure the GoogleService-Info.plist file is present in the app bundle.
-        let firebaseConfigurationFilename = "GoogleService-Info"
-        let firebaseConfigurationFileExtension = "plist"
-        guard let googleServicePlist = Bundle.main.url(forResource: firebaseConfigurationFilename, withExtension: firebaseConfigurationFileExtension) else {
-            fatalError("Firebase configuration file \(firebaseConfigurationFilename).\(firebaseConfigurationFileExtension) not found in app bundle.")
-        }
-        let firebaseConfigurationFilePath = googleServicePlist.path
-        // 2. Create a FirebaseOptions object with the API key.
-        guard let options = FirebaseOptions(contentsOfFile: firebaseConfigurationFilePath) else {
-            fatalError("Failed to load options from Firebase configuration file \(firebaseConfigurationFilename).\(firebaseConfigurationFileExtension).")
-        }
-        // Create a separate Swift file to hold a constant called firebaseAPIKey, and include its path in your git repository's .gitignore file to make sure it doesn't get committed. We set up the API key here, instead of in GoogleService-Info.plist, so anyone looking at that file in the app bundle's Contents/Resources directory on macOS won't be able to see the API key.
-        options.apiKey = firebaseAPIKey
-        // 3. Initialize Firebase with the custom options.
-        // Since we declare the API key outside GoogleService-Info.plist, we need to pass a set of custom options to the configure() method.
-        FirebaseApp.configure(options: options)
+        // 1. Configure Firebase.
+        RandoFactoApp.setupFirebaseConfiguration()
         // Creation of the main Firebase objects is written as Thing.thing() for some reason.
         let firestore = Firestore.firestore()
         // To make the Firebase authentication object, Auth, easier to understand, we use a custom type alias called Authentication.
         let firebaseAuthentication = Authentication.auth()
-        // 4. Enable syncing Firestore data to the device for use offline.
+        // 2. Enable syncing Firestore data to the device for use offline.
         let firestoreSettings = FirestoreSettings()
         // Persistent cache must be at least 1,048,576 bytes/1024KB/1MB. Here we use unlimited storage.
         let persistentCacheSizeBytes = FirestoreCacheSizeUnlimited as NSNumber
@@ -133,7 +119,7 @@ struct RandoFactoApp: App {
         firestoreSettings.isSSLEnabled = true
         firestoreSettings.dispatchQueue = .main
         firestore.settings = firestoreSettings
-        // 5. Configure the managers after having set Firestore's settings (you must set all desired Firestore settings BEFORE calling any other methods on it).
+        // 3. Configure the managers after having set Firestore's settings (you must set all desired Firestore settings BEFORE calling any other methods on it).
         let errorManager = ErrorManager()
         let networkManager = NetworkManager(errorManager: errorManager, firestore: firestore)
         let authenticationManager = AuthenticationManager(firebaseAuthentication: firebaseAuthentication, networkManager: networkManager, errorManager: errorManager)
@@ -150,5 +136,24 @@ struct RandoFactoApp: App {
         self.favoriteFactsDatabase.authenticationManager = authenticationManager
         self.authenticationManager.favoriteFactsDatabase = favoriteFactsDatabase
 	}
+    
+    static func setupFirebaseConfiguration() {
+        // 1. Make sure the GoogleService-Info.plist file is present in the app bundle.
+        let firebaseConfigurationFilename = "GoogleService-Info"
+        let firebaseConfigurationFileExtension = "plist"
+        guard let googleServicePlist = Bundle.main.url(forResource: firebaseConfigurationFilename, withExtension: firebaseConfigurationFileExtension) else {
+            fatalError("Firebase configuration file \(firebaseConfigurationFilename).\(firebaseConfigurationFileExtension) not found in app bundle.")
+        }
+        let firebaseConfigurationFilePath = googleServicePlist.path
+        // 2. Create a FirebaseOptions object with the API key.
+        guard let options = FirebaseOptions(contentsOfFile: firebaseConfigurationFilePath) else {
+            fatalError("Failed to load options from Firebase configuration file \(firebaseConfigurationFilename).\(firebaseConfigurationFileExtension).")
+        }
+        // Create a separate Swift file to hold a constant called firebaseAPIKey, and include its path in your git repository's .gitignore file to make sure it doesn't get committed. We set up the API key here, instead of in GoogleService-Info.plist, so anyone looking at that file in the app bundle's Contents/Resources directory on macOS won't be able to see the API key.
+        options.apiKey = firebaseAPIKey
+        // 3. Initialize Firebase with the custom options.
+        // Since we declare the API key outside GoogleService-Info.plist, we need to pass a set of custom options to the configure() method.
+        FirebaseApp.configure(options: options)
+    }
 
 }
