@@ -86,7 +86,7 @@ class AppStateManager: ObservableObject {
     
     // MARK: - Fact Generation
     
-    // This method either generates a random fact or displays a random favorite fact to the user based on authentication state and settings.
+    // This method either generates a random fact or displays a random favorite fact to the user based on authentication state, number of favorite facts, and settings.
     func displayInitialFact() {
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [self] in
             if favoriteFactsDatabase.initialFact == 0 || favoriteFactsDatabase.favoriteFacts.isEmpty || !authenticationManager.userLoggedIn {

@@ -174,6 +174,7 @@ struct ContentView: View {
                 Label("Random Fact", systemImage: "questionmark")
             case .favoriteFacts:
                 Label("Favorite Facts", systemImage: "star")
+            // A badge is only displayed if its count isn't 0.
                 .badge(favoriteFactsDatabase.favoriteFacts.count)
             #if !os(macOS)
             case .settings:

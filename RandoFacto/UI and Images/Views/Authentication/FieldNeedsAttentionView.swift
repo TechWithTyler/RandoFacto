@@ -10,13 +10,12 @@ import SwiftUI
 
 struct FieldNeedsAttentionView: View {
     
-    @State private var showingPopover: Bool = false
-    
     var body: some View {
         Label("This field needs your attention.", systemImage: errorSymbolName)
             .symbolRenderingMode(.multicolor)
             .foregroundStyle(.red)
     }
+    
 }
 
 #Preview {

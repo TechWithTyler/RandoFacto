@@ -37,15 +37,17 @@ struct AuthenticationMessageView: View {
             }
         .foregroundStyle(color)
         .background(color.opacity(0.25))
-        .containerShape(.rect(cornerRadius: 5))
+        .containerShape(.rect(cornerRadius: SAContainerViewCornerRadius))
     }
 
 }
 
 #Preview {
 	AuthenticationMessageView(text: "Success!", type: .confirmation)
+        .previewDisplayName("Success")
 }
 
 #Preview {
 	AuthenticationMessageView(text: "Error!", type: .error)
+        .previewDisplayName("Error")
 }

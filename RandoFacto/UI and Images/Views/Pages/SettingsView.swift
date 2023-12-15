@@ -236,9 +236,11 @@ struct SettingsView: View {
         Slider(value: $appStateManager.factTextSize, in: minFontSize...maxFontSize, step: 1) {
             Text(factTextSizeSliderText)
         } minimumValueLabel: {
-            Text("\(Int(minFontSize))")
+            Image(systemName: "textformat.size.smaller")
+                .accessibilityLabel("Smaller")
         } maximumValueLabel: {
-            Text("\(Int(maxFontSize))")
+            Image(systemName: "textformat.size.larger")
+                .accessibilityLabel("Larger")
         }
         .accessibilityValue("\(appStateManager.fontSizeValue)")
     }
