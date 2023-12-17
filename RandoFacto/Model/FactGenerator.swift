@@ -10,13 +10,15 @@ import Foundation
 
 struct FactGenerator {
     
-    // MARK: - Properties - Type Aliases
+    // MARK: - Properties - Result Type Aliases
     
-    typealias FactGeneratorJSONParsingResultType = Result<String, Error>
+    // A Result is made up of 2 types, Success (can be anything) and Error (must conform to Error). These type aliases simplify the type names.
     
-    typealias InappropriateWordsCheckerJSONParsingResultType = Result<Bool, Error>
+    typealias FactGeneratorJSONParsingResult = Result<String, Error>
     
-    typealias InappropriateWordsCheckerHTTPRequestResultType = Result<URLRequest, Error>
+    typealias InappropriateWordsCheckerJSONParsingResult = Result<Bool, Error>
+    
+    typealias InappropriateWordsCheckerHTTPRequestResult = Result<URLRequest, Error>
     
     // MARK: - Properties - Content Type
     
@@ -102,6 +104,7 @@ struct FactGenerator {
         } else {
             // 3. Make sure we can get the fact text. If we can't, an error is logged.
             let jsonParsingResult = parseFactDataJSON(data: data)
+            // With the Result generic type, we can use a switch statement to handle the result based on whether it's a success or a failure.
             switch jsonParsingResult {
             case .success(let factText):
                 // 4. Screen the fact to make sure it doesn't contain inappropriate words. If we get an error or an HTTP response with a code that's not in the 2xx range, log an error. If we get a fact, we know the fact is safe and we can display it. If we get nothing, keep trying to generate a fact until we get a safe one. Once a safe fact is generated, give it to the view.
@@ -140,8 +143,8 @@ struct FactGenerator {
         return request
     }
     
-    // This method parses the JSON data returned by the fact generator web API and creates a GeneratedFact object from it, returning the resulting fact text String.
-    func parseFactDataJSON(data: Data?) -> FactGeneratorJSONParsingResultType {
+    // This method parses the JSON data returned by the fact generator web API and creates a GeneratedFact object from it, returning the resulting fact text String if successful or an Error if unsuccessful.
+    func parseFactDataJSON(data: Data?) -> FactGeneratorJSONParsingResult {
         // 1. If data is nil, log an error.
         guard let data = data else {
             return .failure(factDataError)
@@ -212,7 +215,7 @@ struct FactGenerator {
     }
     
     // This method creates the inappropriate words checker URL request.
-    func createInappropriateWordsCheckerHTTPRequest(with url: URL, toScreenFact fact: String) -> InappropriateWordsCheckerHTTPRequestResultType {
+    func createInappropriateWordsCheckerHTTPRequest(with url: URL, toScreenFact fact: String) -> InappropriateWordsCheckerHTTPRequestResult {
         // 1. Create the URL request.
         var request = URLRequest(url: url)
         // 2. Specify the HTTP method and the type of content to give back.
@@ -233,7 +236,7 @@ struct FactGenerator {
     }
     
     // This method parses the JSON data returned by the inappropriate words checker web API and creates an InappropriateWordsCheckerData object from it, returning the resulting Bool indicating whether the fact contains inappropriate words.
-    func parseInappropriateWordsCheckerJSON(data: Data?) -> InappropriateWordsCheckerJSONParsingResultType {
+    func parseInappropriateWordsCheckerJSON(data: Data?) -> InappropriateWordsCheckerJSONParsingResult {
         // 1. If data is nil, log an error.
         guard let data = data else {
             return .failure(factDataError)
