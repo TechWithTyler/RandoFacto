@@ -27,7 +27,7 @@ struct RandoFactoCommands: Commands {
         CommandGroup(replacing: .printItem) {}
         CommandGroup(replacing: .textEditing) {}
         CommandGroup(replacing: .help) {
-            Button("RandoFacto Help") {
+            Button("\(appName!) Help") {
                 showHelp()
             }
             .keyboardShortcut(KeyEquivalent("?"), modifiers: [.command])

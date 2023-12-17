@@ -62,6 +62,17 @@ struct SettingsView: View {
                     Label(SettingsPage.account.rawValue.capitalized, systemImage: "person.circle")
                 }
                 .tag(SettingsPage.account)
+                #if(DEBUG)
+                SAMVisualEffectViewSwiftUIRepresentable {
+                    developerSection
+                }
+                .frame(width: 400, height: 115)
+                .formStyle(.grouped)
+                .tabItem {
+                    Label(SettingsPage.developer.rawValue.capitalized, systemImage: "hammer")
+                }
+                .tag(SettingsPage.developer)
+                #endif
             }
 #else
             NavigationStack {
@@ -76,6 +87,11 @@ struct SettingsView: View {
                                 .navigationTitle(SettingsPage.account.rawValue.capitalized)
                         }
                     }
+                    #if(DEBUG)
+                    Section {
+                        developerSection
+                    }
+                    #endif
                     Section {
                         Button("Help…") {
                             showHelp()
@@ -116,7 +132,7 @@ struct SettingsView: View {
 #endif
             }
             Section {
-                Text("RandoFacto was coded in Swift by Tyler Sheft!")
+                Text("\(appName!) was coded in Swift by Tyler Sheft!")
                     .font(.system(size: CGFloat(appStateManager.factTextSize)))
             }
             .animation(.default, value: appStateManager.factTextSize)
@@ -220,6 +236,15 @@ struct SettingsView: View {
                 .environmentObject(errorManager)
 		}
 	}
+    
+    // MARK: - Developer Options
+    
+    var developerSection: some View {
+        Form {
+            Text("This section is available in internal builds only.")
+            Link("Open \(appName!) Firebase Console…", destination: URL(string: "https://console.firebase.google.com/u/0/project/randofacto-2b730/overview")!)
+        }
+    }
     
     // MARK: - Loading Display
     

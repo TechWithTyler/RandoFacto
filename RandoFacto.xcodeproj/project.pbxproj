@@ -213,11 +213,11 @@
 		8D91FEA12AE22CB600ACB743 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				8D31D8522B27B758009F29EE /* APIKeys.swift */,
 				8D992FB22B0737BA004AF5CB /* Info.plist */,
 				8DF48E2E2936A62900152681 /* GoogleService-Info.plist */,
 				8DA2C417292C1E1200705A2F /* RandoFacto.entitlements */,
 				8D8899E32AFE095200BDDDFD /* Globals.swift */,
+				8D31D8522B27B758009F29EE /* APIKeys.swift */,
 				8D63D5FC2AFF4A180084BACF /* StringEmojiChecker.swift */,
 				8D8F41C42B15486400550899 /* PrivacyInfo.xcprivacy */,
 			);

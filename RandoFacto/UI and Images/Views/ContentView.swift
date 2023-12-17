@@ -142,7 +142,7 @@ struct ContentView: View {
             }
             #endif
         }
-        .navigationTitle("RandoFacto")
+        .navigationTitle("\(appName!)")
 #if os(iOS)
         .navigationBarTitleDisplayMode(.automatic)
 #endif

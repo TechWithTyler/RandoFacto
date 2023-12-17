@@ -14,5 +14,9 @@ enum SettingsPage : String {
     case account
     
     case display
+    
+    #if(DEBUG)
+    case developer
+    #endif
 
 }
