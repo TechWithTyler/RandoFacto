@@ -51,17 +51,17 @@ struct RandoFactoCommands: Commands {
                 Button(generateRandomFactButtonTitle) {
                     appStateManager.generateRandomFact()
                 }
-                .disabled(!networkManager.online || appStateManager.notDisplayingFact)
+                .disabled(!networkManager.online || appStateManager.factTextDisplayingMessage)
                 .keyboardShortcut(KeyboardShortcut(KeyEquivalent("g"), modifiers: [.command, .control]))
                 Button(getRandomFavoriteFactButtonTitle) {
                     appStateManager.getRandomFavoriteFact()
                 }
                 .keyboardShortcut(KeyboardShortcut(KeyEquivalent("g"), modifiers: [.command, .control, .shift]))
-                .disabled(!appStateManager.favoriteFactsAvailable || appStateManager.notDisplayingFact)
+                .disabled(!appStateManager.favoriteFactsAvailable || appStateManager.factTextDisplayingMessage)
             }
             .disabled(appStateManager.selectedPage != .randomFact)
             Section {
-                if !appStateManager.notDisplayingFact && authenticationManager.userLoggedIn && appStateManager.displayedFactIsSaved {
+                if !appStateManager.factTextDisplayingMessage && authenticationManager.userLoggedIn && appStateManager.displayedFactIsSaved {
                     Button("Unfavorite Current Fact…") {
                         favoriteFactsDatabase.favoriteFactToDelete = appStateManager.factText
                         favoriteFactsDatabase.showingDeleteFavoriteFact = true
@@ -72,7 +72,7 @@ struct RandoFactoCommands: Commands {
                         favoriteFactsDatabase.saveFactToFavorites(appStateManager.factText)
                     }
                     .keyboardShortcut(KeyboardShortcut(KeyEquivalent("f"), modifiers: [.command, .shift]))
-                    .disabled(appStateManager.notDisplayingFact || appStateManager.factText == factUnavailableString || !authenticationManager.userLoggedIn)
+                    .disabled(appStateManager.factTextDisplayingMessage || appStateManager.factText == factUnavailableString || !authenticationManager.userLoggedIn)
                 }
             }
             .disabled(appStateManager.selectedPage != .randomFact)

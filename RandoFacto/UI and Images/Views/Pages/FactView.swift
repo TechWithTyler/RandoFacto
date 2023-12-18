@@ -48,7 +48,7 @@ struct FactView: View {
     var factTextView: some View {
             ScrollableText(appStateManager.factText)
                 .font(.system(size: CGFloat(appStateManager.factTextSize)))
-                .isTextSelectable(!(appStateManager.notDisplayingFact || appStateManager.factText == factUnavailableString))
+                .isTextSelectable(!(appStateManager.factTextDisplayingMessage || appStateManager.factText == factUnavailableString))
                 .multilineTextAlignment(.center)
                 .animation(.default, value: appStateManager.factTextSize)
     }
@@ -88,7 +88,7 @@ struct FactView: View {
                 #endif
             }
         }
-        .disabled(appStateManager.notDisplayingFact)
+        .disabled(appStateManager.factTextDisplayingMessage)
     }
     
     // MARK: - Footer

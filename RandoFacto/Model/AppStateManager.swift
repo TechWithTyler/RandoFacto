@@ -1,5 +1,5 @@
 //
-//  RandoFactoManager.swift
+//  AppStateManager.swift
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 11/29/22.
@@ -34,7 +34,7 @@ class AppStateManager: ObservableObject {
     // MARK: - Properties - Integers
     
     // The current fact text size as an Int.
-    var fontSizeValue: Int {
+    var fontSizeAsInt: Int {
         return Int(factTextSize)
     }
     
@@ -63,7 +63,7 @@ class AppStateManager: ObservableObject {
     }
     
     // Whether the fact text view is displaying something other than a fact (i.e., a loading or error message).
-    var notDisplayingFact: Bool {
+    var factTextDisplayingMessage: Bool {
         return isLoading || factText == generatingRandomFactString
     }
     
@@ -147,7 +147,7 @@ class AppStateManager: ObservableObject {
         }
     }
     
-    // MARK: - Favorite Facts - Unavailable Handler
+    // MARK: - Favorite Facts - Dismiss
     
     // This method switches the current page from favoriteFacts to randomFact if a user logs out or is being deleted.
     func dismissFavoriteFacts() {

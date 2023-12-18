@@ -59,6 +59,7 @@ struct ContentView: View {
 		#if os(macOS)
 		.dialogSeverity(.critical)
 		#endif
+        // Unfavorite this fact alert
         .alert("Unfavorite this fact?", isPresented: $favoriteFactsDatabase.showingDeleteFavoriteFact, presenting: $favoriteFactsDatabase.favoriteFactToDelete) { factText in
             Button("Unfavorite", role: .destructive) {
                 favoriteFactsDatabase.unfavoriteFact(factText.wrappedValue!)
@@ -123,6 +124,7 @@ struct ContentView: View {
     @ViewBuilder
     var sidebarContent: some View {
         List(selection: $appStateManager.selectedPage) {
+            // We can't simply iterate through the AppPage enum's cases to create the navigation links, as one of them (Favorite Facts) only appears when a condition (user logged in and not being deleted) is true.
             NavigationLink(value: AppPage.randomFact) {
                 label(for: .randomFact)
             }
