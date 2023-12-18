@@ -43,6 +43,7 @@ struct SettingsView: View {
 #endif
         } else {
 #if os(macOS)
+            // macOS settings window
             TabView(selection: $appStateManager.selectedSettingsPage) {
                 SAMVisualEffectViewSwiftUIRepresentable {
                     displayPage
@@ -75,6 +76,7 @@ struct SettingsView: View {
                 #endif
             }
 #else
+            // iOS/visionOS settings page
             NavigationStack {
                 Form {
                     Section {
