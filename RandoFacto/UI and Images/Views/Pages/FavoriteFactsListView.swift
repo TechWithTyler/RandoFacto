@@ -122,7 +122,7 @@ struct FavoriteFactsListView: View {
         HStack {
             Spacer()
             VStack(alignment: .center) {
-                Text("Favorite facts: \(favoriteFactsListDisplayManager.sortedFavoriteFacts.count)")
+                Text("\(favoriteFactsListDisplayManager.searchText.isEmpty ? "Favorite facts" : "Search results"): \(favoriteFactsListDisplayManager.sortedFavoriteFacts.count)")
                     .multilineTextAlignment(.center)
                     .padding(10)
                     .font(.title)
