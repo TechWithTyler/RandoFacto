@@ -62,7 +62,7 @@ class AppStateManager: ObservableObject {
         return factText == loadingString
     }
     
-    // Whether the fact text view is displaying something other than a fact (i.e., a loading or error message).
+    // Whether the fact text view is displaying something other than a fact (i.e., a loading message).
     var factTextDisplayingMessage: Bool {
         return isLoading || factText == generatingRandomFactString
     }

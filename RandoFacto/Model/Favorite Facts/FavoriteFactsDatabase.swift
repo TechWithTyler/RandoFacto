@@ -110,7 +110,8 @@ class FavoriteFactsDatabase: ObservableObject {
             // compactMap throws out any documents where the data couldn't be decoded to a FavoriteFact object (the result of the transformation is nil).
             favoriteFacts = try snapshot.documents.compactMap { document in
                 // data(as:) handles the decoding of the data, so we don't need to use a Decoder object.
-                return try document.data(as: FavoriteFact.self)
+                let documentData = try document.data(as: FavoriteFact.self)
+                return documentData
             }
         } catch {
             // 2. If that fails, log an error.

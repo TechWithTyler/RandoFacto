@@ -242,12 +242,14 @@ struct SettingsView: View {
     
     // MARK: - Developer Options
     
+    #if(DEBUG)
     var developerPage: some View {
         Form {
             Text("This section is available in internal builds only.")
             Link("Open \(appName!) Firebase Console…", destination: URL(string: "https://console.firebase.google.com/u/0/project/randofacto-2b730/overview")!)
         }
     }
+    #endif
     
     // MARK: - Loading Display
     

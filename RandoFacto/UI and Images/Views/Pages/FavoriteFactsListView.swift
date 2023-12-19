@@ -62,7 +62,6 @@ struct FavoriteFactsListView: View {
     // MARK: - Favorite Facts Empty Display
     
     var favoriteFactsEmptyDisplay: some View {
-        // Favorite facts empty display
         VStack {
             Text("No Favorites")
                 .font(.largeTitle)
@@ -154,8 +153,8 @@ struct FavoriteFactsListView: View {
         ToolbarItem(placement: .automatic) {
             Menu {
                 Picker("Sort", selection: $favoriteFactsListDisplayManager.sortFavoriteFactsAscending) {
-                    Text("Sort Ascending (A-Z)").tag(true)
-                    Text("Sort Descending (Z-A)").tag(false)
+                    Text("Ascending (A-Z)").tag(true)
+                    Text("Descending (Z-A)").tag(false)
                 }
                 .pickerStyle(.menu)
                 Divider()
