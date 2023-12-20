@@ -12,7 +12,7 @@ import SheftAppsStylishUI
 struct SettingsView: View {
     
     // MARK: - Properties - Objects
-
+    
     @EnvironmentObject var appStateManager: AppStateManager
     
     @EnvironmentObject var networkManager: NetworkManager
@@ -30,7 +30,7 @@ struct SettingsView: View {
     }
     
     // MARK: - Body
-
+    
     var body: some View {
         if appStateManager.isLoading {
 #if os(macOS)
@@ -38,7 +38,7 @@ struct SettingsView: View {
                 loadingDisplay
                     .frame(width: 400, height: 280)
             }
-            #else
+#else
             loadingDisplay
 #endif
         } else {
@@ -63,17 +63,17 @@ struct SettingsView: View {
                     Label(SettingsPage.account.rawValue.capitalized, systemImage: "person.circle")
                 }
                 .tag(SettingsPage.account)
-                #if(DEBUG)
+#if(DEBUG)
                 SAMVisualEffectViewSwiftUIRepresentable {
                     developerPage
                 }
-                .frame(width: 400, height: 350)
+                .frame(width: 400, height: 450)
                 .formStyle(.grouped)
                 .tabItem {
                     Label(SettingsPage.developer.rawValue.capitalized, systemImage: "hammer")
                 }
                 .tag(SettingsPage.developer)
-                #endif
+#endif
             }
 #else
             // iOS/visionOS settings page
@@ -89,12 +89,12 @@ struct SettingsView: View {
                                 .navigationTitle(SettingsPage.account.rawValue.capitalized)
                         }
                     }
-                    #if(DEBUG)
+#if(DEBUG)
                     NavigationLink(SettingsPage.developer.rawValue.capitalized) {
                         developerPage
                             .navigationTitle(SettingsPage.developer.rawValue.capitalized)
                     }
-                    #endif
+#endif
                     Section {
                         Button("Help…") {
                             showHelp()
@@ -122,7 +122,7 @@ struct SettingsView: View {
                 } footer: {
                     Text("This setting will reset to \"\(randomFactSettingTitle)\" when you logout or delete your account.")
                 }
-                }
+            }
             Section {
 #if os(macOS)
                 factTextSizeSlider
@@ -144,15 +144,15 @@ struct SettingsView: View {
     }
     
     // MARK: - Account Page
-
-	var accountPage: some View {
-		Form {
-			Text((authenticationManager.firebaseAuthentication.currentUser?.email) ?? "Login to your RandoFacto account to save favorite facts to view on all your devices, even while offline.")
-				.font(.system(size: 24))
-				.fontWeight(.bold)
-			if let deletionStage = authenticationManager.userDeletionStage {
-				LoadingIndicator(message: "Deleting \(deletionStage)…")
-			} else if authenticationManager.userLoggedIn {
+    
+    var accountPage: some View {
+        Form {
+            Text((authenticationManager.firebaseAuthentication.currentUser?.email) ?? "Login to your RandoFacto account to save favorite facts to view on all your devices, even while offline.")
+                .font(.system(size: 24))
+                .fontWeight(.bold)
+            if let deletionStage = authenticationManager.userDeletionStage {
+                LoadingIndicator(message: "Deleting \(deletionStage)…")
+            } else if authenticationManager.userLoggedIn {
                 if networkManager.online {
                     Section {
                         Button("Change Password…") {
@@ -172,7 +172,7 @@ struct SettingsView: View {
                         }
                     }
                 }
-			} else {
+            } else {
                 if networkManager.online {
                     Button(loginText) {
                         authenticationManager.formType = .login
@@ -184,18 +184,18 @@ struct SettingsView: View {
                     Text("Authentication unavailable. Please check your internet connection.")
                         .font(.system(size: 24))
                 }
-			}
-		}
-		.formStyle(.grouped)
-		// Delete account alert
-		.alert("Are you sure you REALLY want to delete your account?", isPresented: $authenticationManager.showingDeleteAccount) {
-			Button("Cancel", role: .cancel) {
-				authenticationManager.showingDeleteAccount = false
-			}
-			Button("Delete", role: .destructive) {
-				authenticationManager.deleteCurrentUser {
-					[self] error in
-					if let error = error {
+            }
+        }
+        .formStyle(.grouped)
+        // Delete account alert
+        .alert("Are you sure you REALLY want to delete your account?", isPresented: $authenticationManager.showingDeleteAccount) {
+            Button("Cancel", role: .cancel) {
+                authenticationManager.showingDeleteAccount = false
+            }
+            Button("Delete", role: .destructive) {
+                authenticationManager.deleteCurrentUser {
+                    [self] error in
+                    if let error = error {
                         DispatchQueue.main.async { [self] in
                             errorManager.showError(error) {
                                 randoFactoError in
@@ -208,16 +208,16 @@ struct SettingsView: View {
                                 }
                             }
                         }
-					}
-					authenticationManager.showingDeleteAccount = false
-				}
-			}
-		} message: {
-			Text("You won't be able to save favorite facts to view offline! This can't be undone!")
-		}
-		#if os(macOS)
-		.dialogSeverity(.critical)
-		#endif
+                    }
+                    authenticationManager.showingDeleteAccount = false
+                }
+            }
+        } message: {
+            Text("You won't be able to save favorite facts to view offline! This can't be undone!")
+        }
+#if os(macOS)
+        .dialogSeverity(.critical)
+#endif
         // Logout alert
         .alert("Logout?", isPresented: $authenticationManager.showingLogout) {
             Button("Cancel", role: .cancel) {
@@ -230,15 +230,15 @@ struct SettingsView: View {
         } message: {
             Text("You won't be able to save favorite facts to view offline until you login again!")
         }
-		// Authentication form
-		.sheet(item: $authenticationManager.formType) {_ in
-			AuthenticationFormView()
+        // Authentication form
+        .sheet(item: $authenticationManager.formType) {_ in
+            AuthenticationFormView()
                 .environmentObject(appStateManager)
                 .environmentObject(networkManager)
                 .environmentObject(authenticationManager)
                 .environmentObject(errorManager)
-		}
-	}
+        }
+    }
     
     // MARK: - Loading Display
     
@@ -267,7 +267,7 @@ struct SettingsView: View {
 }
 
 #Preview {
-	SettingsView()
+    SettingsView()
         .environmentObject(AppStateManager())
         .environmentObject(ErrorManager())
         .environmentObject(NetworkManager())
@@ -280,11 +280,21 @@ extension SettingsView {
     
     // MARK: - Developer Options
     
-    #if(DEBUG)
+#if(DEBUG)
     var developerPage: some View {
         Form {
             Text("This page is available in internal builds only.")
-            Section(header: Text("Fact Generation URL Requests"), footer: Text("If a URL request doesn't succeed before the selected number of seconds passes since it starts, a \"request timed out\" error is thrown.")) {
+            Section(header: Text("Fact Generation"), footer: Text("If a URL request doesn't succeed before the selected number of seconds passes since it starts, a \"request timed out\" error is thrown.")) {
+                HStack {
+                    Text("Fact Generator URL")
+                    Spacer()
+                    Link(appStateManager.factGenerator.factURLString, destination: URL(string: appStateManager.factGenerator.factURLString)!)
+                }
+                HStack {
+                    Text("Inappropriate Words Checker URL")
+                    Spacer()
+                    Link(appStateManager.factGenerator.inappropriateWordsCheckerURLString, destination: URL(string: appStateManager.factGenerator.inappropriateWordsCheckerURLString)!)
+                }
                 Picker("Timeout Interval (in seconds)", selection: $appStateManager.factGenerator.urlRequestTimeoutInterval) {
                     Text("0.25").tag(0.25)
                     Text("2").tag(2.0)
@@ -299,6 +309,6 @@ extension SettingsView {
             }
         }
     }
-    #endif
+#endif
     
 }

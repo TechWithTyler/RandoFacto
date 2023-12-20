@@ -28,7 +28,7 @@ struct FactGenerator {
     // MARK: - Properties - URLs
     
     // The URL of the random facts API.
-    private var factURLString: String {
+    var factURLString: String {
         // 1. The scheme specifies the protocol used to access the resource. In this case, it's "https" (Hypertext Transfer Protocol Secure). This indicates that the data transferred between the app and the server is encrypted for security.
         let scheme = "https"
         // 2. The domain and subdomain are the main parts of the URL that identify the server where the resource is located. In this case, the domain is "jsph.pl" and the subdomain is "uselessfacts". "jsph.pl" in this case stands for Joeseph Paul, the creator of this API and others (usually "pl" means a website in Poland).
@@ -46,7 +46,7 @@ struct FactGenerator {
     }
     
     // The URL of the inappropriate words checker API.
-    private var inappropriateWordsCheckerURLString: String {
+    var inappropriateWordsCheckerURLString: String {
         // This URL is much simpler than the fact generator one above.
         let scheme = "https"
         let subdomain = "language-checker"
