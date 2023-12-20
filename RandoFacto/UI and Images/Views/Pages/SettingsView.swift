@@ -67,7 +67,7 @@ struct SettingsView: View {
                 SAMVisualEffectViewSwiftUIRepresentable {
                     developerPage
                 }
-                .frame(width: 400, height: 115)
+                .frame(width: 400, height: 350)
                 .formStyle(.grouped)
                 .tabItem {
                     Label(SettingsPage.developer.rawValue.capitalized, systemImage: "hammer")
@@ -240,17 +240,6 @@ struct SettingsView: View {
 		}
 	}
     
-    // MARK: - Developer Options
-    
-    #if(DEBUG)
-    var developerPage: some View {
-        Form {
-            Text("This section is available in internal builds only.")
-            Link("Open \(appName!) Firebase Console…", destination: URL(string: "https://console.firebase.google.com/u/0/project/randofacto-2b730/overview")!)
-        }
-    }
-    #endif
-    
     // MARK: - Loading Display
     
     var loadingDisplay: some View {
@@ -285,4 +274,31 @@ struct SettingsView: View {
         .environmentObject(FavoriteFactsDatabase())
         .environmentObject(AuthenticationManager())
         .frame(height: 500)
+}
+
+extension SettingsView {
+    
+    // MARK: - Developer Options
+    
+    #if(DEBUG)
+    var developerPage: some View {
+        Form {
+            Text("This page is available in internal builds only.")
+            Section(header: Text("Fact Generation URL Requests"), footer: Text("If a URL request doesn't succeed before the selected number of seconds passes since it starts, a \"request timed out\" error is thrown.")) {
+                Picker("Timeout Interval (in seconds)", selection: $appStateManager.factGenerator.urlRequestTimeoutInterval) {
+                    Text("0.25").tag(0.25)
+                    Text("2").tag(2.0)
+                    Text("10 (shipping build)").tag(10.0)
+                    Text("30").tag(30.0)
+                    Text("60 (system default)").tag(60.0)
+                    Text("120").tag(120.0)
+                }
+            }
+            Section("Backend") {
+                Link("Open \(appName!) Firebase Console…", destination: URL(string: "https://console.firebase.google.com/u/0/project/randofacto-2b730/overview")!)
+            }
+        }
+    }
+    #endif
+    
 }

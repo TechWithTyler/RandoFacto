@@ -6,7 +6,7 @@
 //  Copyright © 2022-2024 SheftApps. All rights reserved.
 //
 
-import Foundation
+import SwiftUI
 
 struct FactGenerator {
     
@@ -59,7 +59,11 @@ struct FactGenerator {
     // MARK: - Properties - URL Request Timeout Interval
     
     // The timeout interval of URL requests, which determines the maximum number of seconds they can try to run before a "request timed out" error is thrown if unsuccessful.
-    let urlRequestTimeoutInterval: TimeInterval = 5
+    #if(DEBUG)
+    @AppStorage("urlRequestTimeoutInterval") var urlRequestTimeoutInterval: TimeInterval = defaultURLRequestTimeoutInterval
+    #else
+    let urlRequestTimeoutInterval: TimeInterval = defaultURLRequestTimeoutInterval
+    #endif
     
     // MARK: - Properties - Errors
     

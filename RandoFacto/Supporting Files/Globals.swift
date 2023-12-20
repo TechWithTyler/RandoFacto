@@ -84,3 +84,5 @@ var minFontSize: Double = 14
 
 // The app's maximum font size.
 var maxFontSize: Double = 48
+
+var defaultURLRequestTimeoutInterval: Double = 10

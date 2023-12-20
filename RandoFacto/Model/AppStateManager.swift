@@ -15,6 +15,9 @@ class AppStateManager: ObservableObject {
     // MARK: - Properties - Fact Generator
     
     // The fact generator.
+    #if(DEBUG)
+    @Published
+    #endif
     var factGenerator = FactGenerator()
     
     var errorManager: ErrorManager
