@@ -284,7 +284,7 @@ extension SettingsView {
     var developerPage: some View {
         Form {
             Text("This page is available in internal builds only.")
-            Section(header: Text("Fact Generation"), footer: Text("If a URL request doesn't succeed before the selected number of seconds passes since it starts, a \"request timed out\" error is thrown.")) {
+            Section(header: Text("Fact Generation"), footer: Text("If a URL request doesn't succeed before the selected number of seconds passes since it started, a \"request timed out\" error is thrown.")) {
                 HStack {
                     Text("Fact Generator URL")
                     Spacer()
