@@ -11,9 +11,11 @@ import SwiftUI
 // Handles searching and sorting of the favorite facts list.
 class FavoriteFactsListDisplayManager: ObservableObject {
     
-    // MARK: - Properties - Favorite Facts List
+    // MARK: - Properties - Favorite Facts Database
     
     var favoriteFactsDatabase: FavoriteFactsDatabase
+    
+    // MARK: - Initialization
     
     init(favoriteFactsDatabase: FavoriteFactsDatabase) {
         self.favoriteFactsDatabase = favoriteFactsDatabase
