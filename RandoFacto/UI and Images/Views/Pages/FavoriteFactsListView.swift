@@ -151,7 +151,7 @@ struct FavoriteFactsListView: View {
     @ToolbarContentBuilder
     var toolbarContent: some ToolbarContent {
         ToolbarItem(placement: .automatic) {
-            Menu {
+            OptionsMenu {
                 Picker("Sort", selection: $favoriteFactsListDisplayManager.sortFavoriteFactsAscending) {
                     Text("Ascending (A-Z)").tag(true)
                     Text("Descending (Z-A)").tag(false)
@@ -160,8 +160,6 @@ struct FavoriteFactsListView: View {
                 Divider()
                 UnfavoriteAllButton()
                     .environmentObject(favoriteFactsDatabase)
-            } label: {
-                OptionsMenuLabel()
             }
         }
     }
