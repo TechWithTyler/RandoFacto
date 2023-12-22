@@ -48,6 +48,9 @@ struct FavoriteFactsListView: View {
             }
         }
         .navigationTitle("Favorite Facts List")
+        .onDisappear {
+            favoriteFactsListDisplayManager.searchText.removeAll()
+        }
     }
     
     // MARK: - Loading Display
