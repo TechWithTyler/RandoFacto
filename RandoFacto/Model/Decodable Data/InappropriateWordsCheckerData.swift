@@ -17,9 +17,12 @@ struct InappropriateWordsCheckerData: Codable {
 	// This property isn't named the same as it is in the JSON data returned by the inappropriate words checker API, so it's mapped to the correct name using the coding key below.
 	let containsInappropriateWords: Bool
 
-	// Use CodingKeys to point a custom property name to the correct property name in the JSON data.
+    // Use a coding key for any properties with names that differ from those of the data being decoded, or if you want the data being encoded to have different property names from those in your Codable type. For example, if your JSON data has a property named "birth-year" and you want the property name in your Codable type to be birthYear, you can use a coding key.
 	private enum CodingKeys: String, CodingKey {
+        
+        // This maps the InappropriateWordsCheckerData property containsInappropriateWords to the JSON property name "found-target-words".
 		case containsInappropriateWords = "found-target-words"
+        
 	}
 
 }
