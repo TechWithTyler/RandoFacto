@@ -49,6 +49,8 @@ class ErrorManager: ObservableObject {
             // Database errors
         case FirestoreErrorCode.unavailable.rawValue:
             errorToShow = .favoriteFactsDatabaseServerDataRetrievalError
+        case FavoriteFactsDatabase.ErrorCode.favoriteFactReferenceNotFound.rawValue:
+            errorToShow = .favoriteFactNoLongerExists
         case AuthErrorCode.userNotFound.rawValue:
             errorToShow = .attemptToLoginToInvalidAccount
         case AuthErrorCode.wrongPassword.rawValue:

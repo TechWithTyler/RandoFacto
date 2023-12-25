@@ -380,7 +380,7 @@ class AuthenticationManager: ObservableObject {
     func deleteCurrentUser(completionHandler: @escaping (Error?) -> Void) {
         // 1. Make sure we can get the current user.
         guard let user = firebaseAuthentication.currentUser else {
-            let userNotFoundError = NSError(domain: "User not found", code: 545)
+            let userNotFoundError = NSError(domain: ErrorDomain.userAccountNotFound.rawValue, code: ErrorCode.userAccountNotFound.rawValue)
             completionHandler(userNotFoundError)
             return
         }
@@ -418,6 +418,7 @@ class AuthenticationManager: ObservableObject {
         // 1. Make sure we can get the user's email.
         guard let userEmail = user.email else { return }
         var deletionError: Error?
+        let userReferenceError = NSError(domain: ErrorDomain.userReferenceNotFound.rawValue, code: ErrorCode.userReferenceNotFound.rawValue)
         // 2. Create a DispatchGroup and delete the user reference the same way we delete all favorite facts.
         let group = DispatchGroup()
         favoriteFactsDatabase?.firestore.collection(usersFirestoreCollectionName)
@@ -434,6 +435,8 @@ class AuthenticationManager: ObservableObject {
                             }
                             group.leave()
                         }
+                    } else {
+                        self.errorManager.showError(userReferenceError)
                     }
                 }
                 group.notify(queue: .main) {

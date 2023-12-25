@@ -33,10 +33,13 @@ enum RandoFactoError: LocalizedError, Equatable, Identifiable {
     // Fact generation/screening error.
     case factDataError
     
-    // MARK: - Error Case Definitions - Favorite Facts Database
+    // MARK: - Error Case Definitions - Favorite Facts Database/Authentication
     
     // Too many favorite facts database requests.
     case favoriteFactsDatabaseQuotaExceeded
+    
+    // Favorite fact no longer exists.
+    case favoriteFactNoLongerExists
     
     // Couldn't get data from server.
     case favoriteFactsDatabaseServerDataRetrievalError
@@ -91,6 +94,8 @@ enum RandoFactoError: LocalizedError, Equatable, Identifiable {
             return "Too many favorite fact database requests at once. Try again later."
         case .favoriteFactsDatabaseServerDataRetrievalError:
             return "Failed to download data from server. Using device data."
+        case .favoriteFactNoLongerExists:
+            return "The favorite fact to be deleted no longer exists."
         case .attemptToLoginToInvalidAccount:
             return "There is no account with that email address."
         case .invalidEmailFormat:

@@ -31,11 +31,6 @@ class FavoriteFactsDatabase: ObservableObject {
     // Listens for changes to the current user's favorite facts.
     var favoriteFactsListener: ListenerRegistration? = nil
     
-    // MARK: - Properties - Errors
-    
-    // The error logged if the favorite facts database is unable to get the document (data) from the corresponding favorite fact QuerySnapshot.
-    private let favoriteFactReferenceError = NSError(domain: "Favorite fact reference not found", code: 144)
-    
     // MARK: - Properties - Booleans
     
     // Whether the "delete this favorite fact" alert should be displayed.
@@ -158,6 +153,7 @@ class FavoriteFactsDatabase: ObservableObject {
     
     // This method gets the data from snapshot and deletes it.
     func getFavoriteFactSnapshotAndDelete(_ snapshot: QuerySnapshot?) {
+        let favoriteFactReferenceError = NSError(domain: ErrorDomain.favoriteFactReferenceNotFound.rawValue, code: ErrorCode.favoriteFactReferenceNotFound.rawValue)
         DispatchQueue.main.async { [self] in
             // 1. Make sure the snapshot and the corresponding data is there.
             if let snapshot = snapshot, let document = snapshot.documents.first {
