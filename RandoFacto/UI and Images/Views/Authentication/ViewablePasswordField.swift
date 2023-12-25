@@ -40,6 +40,7 @@ struct ViewablePasswordField: View {
             } label: {
                 Label(showPassword ? "Hide" : "Show", systemImage: showPassword ? "eye.slash" : "eye")
                     .labelStyle(.topIconBottomTitle)
+                    .animatedSymbolReplacement()
             }
                 .buttonStyle(.borderless)
             #if os(iOS)
