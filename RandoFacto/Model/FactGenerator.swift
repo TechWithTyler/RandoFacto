@@ -23,7 +23,7 @@ struct FactGenerator {
     // MARK: - Properties - Content Type
     
     // Specifies that the fact generator and inappropriate words checker APIs should return JSON data.
-    let jsonContentType = "application/json"
+    let contentType = "application/json"
     
     // MARK: - Properties - URLs
     
@@ -140,7 +140,7 @@ struct FactGenerator {
         var request = URLRequest(url: url)
         // 2. Specify the HTTP method and the type of content to give back.
         request.httpMethod = "GET"
-        request.setValue(jsonContentType, forHTTPHeaderField: "Accept")
+        request.setValue(contentType, forHTTPHeaderField: "Accept")
         // 3. Set the timeout interval for the URL request, after which an error will be thrown if the request can't complete.
         request.timeoutInterval = urlRequestTimeoutInterval
         // 4. Return the created request.
@@ -224,7 +224,7 @@ struct FactGenerator {
         var request = URLRequest(url: url)
         // 2. Specify the HTTP method and the type of content to give back.
         request.httpMethod = "POST"
-        request.setValue(jsonContentType, forHTTPHeaderField: "Content-Type")
+        request.setValue(contentType, forHTTPHeaderField: "Content-Type")
         // 3. Set the timeout interval for the URL request, after which an error will be thrown if the request can't complete.
         request.timeoutInterval = urlRequestTimeoutInterval
         // 4. Specify the data model that you want to send.
