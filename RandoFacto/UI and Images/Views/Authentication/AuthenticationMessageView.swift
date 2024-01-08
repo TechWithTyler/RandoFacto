@@ -42,12 +42,10 @@ struct AuthenticationMessageView: View {
 
 }
 
-#Preview {
+#Preview("Success") {
 	AuthenticationMessageView(text: "Success!", type: .confirmation)
-        .previewDisplayName("Success")
 }
 
-#Preview {
+#Preview("Error") {
 	AuthenticationMessageView(text: "Error!", type: .error)
-        .previewDisplayName("Error")
 }

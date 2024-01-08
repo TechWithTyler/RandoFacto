@@ -57,7 +57,7 @@ class AppStateManager: ObservableObject {
     
     // Whether favorite facts are available to be displayed.
     var favoriteFactsAvailable: Bool {
-        return authenticationManager.userLoggedIn && !favoriteFactsDatabase.favoriteFacts.isEmpty && authenticationManager.userDeletionStage == nil
+        return authenticationManager.userLoggedIn && !favoriteFactsDatabase.favoriteFacts.isEmpty && authenticationManager.accountDeletionStage == nil
     }
     
     // Whether the app is loading.

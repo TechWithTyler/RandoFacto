@@ -59,7 +59,7 @@ class AuthenticationManager: ObservableObject {
     // MARK: - Properties - Account Deletion Stage
     
     // The current stage of user deletion. Deleting a user deletes their favorite facts and reference first, then their actual account. If the user is still able to login after deletion, the actual account failed to be deleted, so the user reference will be put back.
-    @Published var userDeletionStage: User.AccountDeletionStage? = nil
+    @Published var accountDeletionStage: User.AccountDeletionStage? = nil
     
     // MARK: - Properties - Booleans
     
@@ -120,7 +120,7 @@ class AuthenticationManager: ObservableObject {
                     if let error = error {
                         // 5. If that fails, log an error.
                         if formType != nil {
-                        errorManager.showError(error) { [self] randoFactoError in
+                            errorManager.showError(error) { [self] randoFactoError in
                                 formErrorText = randoFactoError.localizedDescription
                             }
                         } else {
@@ -128,7 +128,7 @@ class AuthenticationManager: ObservableObject {
                         }
                     } else {
                         // 6. Logout the user if they've been deleted from another device. We need to make sure the snapshot is from the server, not the cache, to prevent the detection of a missing user reference when logging in on a new device for the first time. We also need to make sure a user isn't currently being logged in or deleted on this device, otherwise a missing user would be detected and logged out, causing the operation to never complete.
-                        guard userDeletionStage == nil && !isAuthenticating else { return }
+                        guard accountDeletionStage == nil && !isAuthenticating else { return }
                         /*
                          A user reference is considered "missing"/the user is considered "deleted" if any of the following are true:
                          * The snapshot or its documents collection is empty.
@@ -164,8 +164,8 @@ class AuthenticationManager: ObservableObject {
         if let error = error {
             errorManager.showError(error) { [self] randoFactoError in
                 formErrorText = randoFactoError.localizedDescription
-            isAuthenticating = false
-            successHandler(false)
+                isAuthenticating = false
+                successHandler(false)
             }
         } else {
             // 3. If successful, add the user reference if signing up, or check for the user reference when logging in, adding it if it doesn't exist. If that's successful, call the success block.
@@ -212,7 +212,7 @@ class AuthenticationManager: ObservableObject {
     func addUserReference(email: String, id: String, completionHandler: @escaping ((Error?) -> Void)) {
         // 1. Create a User.Reference object.
         let userReference = User.Reference(email: email)
-        // 2. Try to add the data from this object as a new document whose document ID is that of the user. Matching the document ID with the user ID makes deleting it easier.
+        // 2. Try to add the data from this object as a new document whose ID is that of the user. Matching the document ID with the user ID makes deleting it easier.
         do {
             try favoriteFactsDatabase?.firestore.collection(usersFirestoreCollectionName)
                 .document(id)
@@ -385,18 +385,18 @@ class AuthenticationManager: ObservableObject {
             return
         }
         // 2. Delete all their favorite facts, getting data from the server instead of the cache.
-        userDeletionStage = .data
+        accountDeletionStage = .data
         favoriteFactsDatabase?.deleteAllFavoriteFactsForCurrentUser(forUserDeletion: true) { [self] error in
             // 3. If that fails, log an error and cancel deletion.
             if let error = error {
-                userDeletionStage = nil
+                accountDeletionStage = nil
                 completionHandler(error)
             } else {
                 // 4. If successful, delete the user reference.
                 deleteUserReference(forUser: user) { [self] error in
                     // 5. If that fails, log an error and cancel deletion.
                     if let error = error {
-                        userDeletionStage = nil
+                        accountDeletionStage = nil
                         completionHandler(error)
                     } else {
                         // 6. If successful, all user data has been deleted, so the account can be safely deleted.
@@ -404,7 +404,7 @@ class AuthenticationManager: ObservableObject {
                             if error == nil {
                                 logoutMissingUser()
                             }
-                            userDeletionStage = nil
+                            accountDeletionStage = nil
                             completionHandler(error)
                         }
                     }

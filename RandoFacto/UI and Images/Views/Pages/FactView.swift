@@ -135,7 +135,7 @@ struct FactView: View {
                                 .accessibilityLabel(appStateManager.displayedFactIsSaved ? "Unfavorite" : "Favorite")
                     }
                     .help(appStateManager.displayedFactIsSaved ? "Unfavorite" : "Favorite")
-                    .disabled(appStateManager.factText == factUnavailableString || authenticationManager.userDeletionStage != nil)
+                    .disabled(appStateManager.factText == factUnavailableString || authenticationManager.accountDeletionStage != nil)
                 }
             }
         }

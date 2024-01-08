@@ -34,12 +34,10 @@ struct LoadingIndicator: View {
 	
 }
 
-#Preview {
+#Preview("Loading Indicator Without Label") {
     LoadingIndicator()
-        .previewDisplayName("Loading Indicator Without Label")
 }
 
-#Preview {
+#Preview("Loading Indicator With Label") {
     LoadingIndicator(message: loadingString)
-        .previewDisplayName("Loading Indicator With Label")
 }

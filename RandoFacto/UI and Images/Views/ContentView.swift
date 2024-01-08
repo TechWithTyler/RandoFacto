@@ -97,7 +97,7 @@ struct ContentView: View {
 			}
 		}
 		// User login state change/user deletion
-		.onChange(of: authenticationManager.userDeletionStage) { deletionStage in
+		.onChange(of: authenticationManager.accountDeletionStage) { deletionStage in
             if deletionStage != nil {
                 appStateManager.dismissFavoriteFacts()
             }
@@ -128,7 +128,7 @@ struct ContentView: View {
             NavigationLink(value: AppPage.randomFact) {
                 label(for: .randomFact)
             }
-            if authenticationManager.userLoggedIn && authenticationManager.userDeletionStage == nil {
+            if authenticationManager.userLoggedIn && authenticationManager.accountDeletionStage == nil {
                 NavigationLink(value: AppPage.favoriteFacts) {
                     label(for: .favoriteFacts)
                 }

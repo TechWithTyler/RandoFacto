@@ -150,7 +150,7 @@ struct SettingsView: View {
             Text((authenticationManager.firebaseAuthentication.currentUser?.email) ?? "Login to your RandoFacto account to save favorite facts to view on all your devices, even while offline.")
                 .font(.system(size: 24))
                 .fontWeight(.bold)
-            if let deletionStage = authenticationManager.userDeletionStage {
+            if let deletionStage = authenticationManager.accountDeletionStage {
                 LoadingIndicator(message: "Deleting \(deletionStage)…")
             } else if authenticationManager.userLoggedIn {
                 if networkManager.online {
