@@ -11,8 +11,12 @@ import SwiftUI
 struct FieldNeedsAttentionView: View {
     
     var body: some View {
-        Label("This field needs your attention.", systemImage: errorSymbolName)
-            .symbolRenderingMode(.multicolor)
+        VStack {
+            Image(systemName: "chevron.up")
+                .accessibilityHidden(false)
+            Label("This field needs your attention.", systemImage: errorSymbolName)
+                .symbolRenderingMode(.multicolor)
+        }
             .foregroundStyle(.red)
     }
     

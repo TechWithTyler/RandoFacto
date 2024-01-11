@@ -17,13 +17,13 @@ struct RandoFactoApp: App {
 	// MARK: - Properties - macOS AppDelegate Adaptor
 
 	#if os(macOS)
-	// Sometimes you still need to use an app delegate in SwiftUI App-based apps. Here, we use the @NSApplicationDelegateAdaptor property wrapper with the AppDelegate class as an argument to supply an app delegate on macOS.
+	// Sometimes you still need to use an app delegate in SwiftUI App-based apps. Here, we use the @NSApplicationDelegateAdaptor property wrapper with the AppDelegate class as an argument to supply an app delegate on macOS. In this app, it's used to quit the app when closing the last open window.
 	@NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 	#endif
     
     // MARK: - Properties - Firebase
     
-    // Firebase objects are declared here without their initial values, because they can't be assigned prior to calling FirebaseApp.configure(options:). These are both done in the initializer.
+    // Firebase objects are declared here without their initial values, because they can't be assigned prior to calling FirebaseApp.configure(options:). These are both done in init().
 
     // The app's Firestore database.
     var firestore: Firestore
@@ -36,7 +36,7 @@ struct RandoFactoApp: App {
     // Due to some model objects relying on one another (also known as circular dependencies), managers are declared without their initial values here and initialized in init().
     
     // Manages the app state (e.g. the fact to display, the page to display, the Settings page to display on macOS).
-    // The @ObservedObject property wrapper and ObservableObject protocol conformance allows SwiftUI views to update whenever any @Published property of an object changes. These objects are passed to SwiftUI views with the @EnvironmentObject property wrapper and the .environmentObject(_:) modifier, and to RandoFactoCommands with the @ObservedObject property wrapper.
+    // The @ObservedObject property wrapper and ObservableObject protocol conformance allows SwiftUI views to update whenever any @Published property of an object changes. These objects are passed to SwiftUI views with the @EnvironmentObject property wrapper and the .environmentObject(_:) modifier, and to RandoFactoCommands and model objects with the @ObservedObject property wrapper.
 	@ObservedObject var appStateManager: AppStateManager
     
     // Manages the app's network features.
@@ -151,14 +151,8 @@ struct RandoFactoApp: App {
         }
         // Create a separate Swift file to hold a constant called firebaseAPIKey, and include its path in your git repository's .gitignore file to make sure it doesn't get committed. We set up the API key here, instead of in GoogleService-Info.plist, so anyone looking at that file in the app bundle's Contents/Resources directory on macOS won't be able to see the API key.
         options.apiKey = firebaseAPIKey
-        // 3. On macOS, set the app to crash when NSExceptions are thrown.
-        #if os(macOS)
-        UserDefaults.standard.register(
-            defaults: ["NSApplicationCrashOnExceptions" : true]
-          )
-        #endif
-        // 4. Initialize Firebase with the custom options.
-        // Since we declare the API key outside GoogleService-Info.plist, we need to pass a set of custom options to the configure() method.
+        // 3. Initialize Firebase with the custom options.
+        // Since we declare the API key outside GoogleService-Info.plist, we need to use configure(options:) instead of configure().
         FirebaseApp.configure(options: options)
     }
 

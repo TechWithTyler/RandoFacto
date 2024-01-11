@@ -280,8 +280,8 @@
 			children = (
 				8DFEB0A42AFAF6FD00F57DB1 /* ContentView.swift */,
 				8D31D8542B27C0C0009F29EE /* Pages */,
-				8D31D8552B27C0C9009F29EE /* Controls */,
 				8DAFBC852B1AD4BD00C0907F /* Authentication */,
+				8D31D8552B27C0C9009F29EE /* Controls */,
 			);
 			path = Views;
 			sourceTree = "<group>";
