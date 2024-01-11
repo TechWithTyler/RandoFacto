@@ -151,7 +151,13 @@ struct RandoFactoApp: App {
         }
         // Create a separate Swift file to hold a constant called firebaseAPIKey, and include its path in your git repository's .gitignore file to make sure it doesn't get committed. We set up the API key here, instead of in GoogleService-Info.plist, so anyone looking at that file in the app bundle's Contents/Resources directory on macOS won't be able to see the API key.
         options.apiKey = firebaseAPIKey
-        // 3. Initialize Firebase with the custom options.
+        // 3. On macOS, set the app to crash when NSExceptions are thrown.
+        #if os(macOS)
+        UserDefaults.standard.register(
+            defaults: ["NSApplicationCrashOnExceptions" : true]
+          )
+        #endif
+        // 4. Initialize Firebase with the custom options.
         // Since we declare the API key outside GoogleService-Info.plist, we need to pass a set of custom options to the configure() method.
         FirebaseApp.configure(options: options)
     }
