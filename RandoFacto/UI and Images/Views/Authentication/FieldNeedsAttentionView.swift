@@ -13,10 +13,11 @@ struct FieldNeedsAttentionView: View {
     var body: some View {
         VStack {
             if #available(macOS 14, iOS 17, visionOS 1, *) {
-                chevron
+                fieldNeedsAttentionArrow
+                // In 2023 OS versions and later, apply a pulsing color animation to the arrow.
                     .symbolEffect(.variableColor, options: .repeat(5).speed(5))
             } else {
-                chevron
+                fieldNeedsAttentionArrow
             }
             Label("This field needs your attention.", systemImage: errorSymbolName)
                 .symbolRenderingMode(.multicolor)
@@ -24,9 +25,9 @@ struct FieldNeedsAttentionView: View {
             .foregroundStyle(.red)
     }
     
-    @ViewBuilder var chevron: some View {
+    @ViewBuilder var fieldNeedsAttentionArrow: some View {
         Image(systemName: "chevron.up")
-            .accessibilityHidden(false)
+            .accessibilityHidden(true)
     }
     
 }
