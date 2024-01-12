@@ -12,12 +12,21 @@ struct FieldNeedsAttentionView: View {
     
     var body: some View {
         VStack {
-            Image(systemName: "chevron.up")
-                .accessibilityHidden(false)
+            if #available(macOS 14, iOS 17, visionOS 1, *) {
+                chevron
+                    .symbolEffect(.variableColor, options: .repeat(5).speed(5))
+            } else {
+                chevron
+            }
             Label("This field needs your attention.", systemImage: errorSymbolName)
                 .symbolRenderingMode(.multicolor)
         }
             .foregroundStyle(.red)
+    }
+    
+    @ViewBuilder var chevron: some View {
+        Image(systemName: "chevron.up")
+            .accessibilityHidden(false)
     }
     
 }

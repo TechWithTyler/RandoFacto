@@ -48,6 +48,7 @@ struct ViewablePasswordField: View {
             #endif
                 .tint(.primary)
         }
+        .padding(.vertical, 10)
     }
 }
 
