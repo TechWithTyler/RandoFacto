@@ -8,9 +8,10 @@
 
 import SwiftUI
 import Firebase
+import Speech
 
 // Manages the fact generation/display and pages.
-class AppStateManager: ObservableObject {
+class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     
     // MARK: - Properties - Fact Generator
     
@@ -28,11 +29,15 @@ class AppStateManager: ObservableObject {
     
     var authenticationManager: AuthenticationManager
     
+    var voice = AVSpeechSynthesizer()
+    
     // MARK: - Properties - Strings
     
     // The text to display in the fact text view.
     // Properties with the @Published property wrapper will trigger updates to SwiftUI views when they're changed. Their values must be value types (i.e. structs), not reference types (i.e. classes).
     @Published var factText: String = loadingString
+    
+    @Published var factBeingSpoken: String = String()
     
     // MARK: - Properties - Integers
     
@@ -83,15 +88,18 @@ class AppStateManager: ObservableObject {
         self.networkManager = networkManager
         self.favoriteFactsDatabase = favoriteFactsDatabase
         self.authenticationManager = authenticationManager
+        super.init()
+        voice.delegate = self
         // 2. After waiting 2 seconds for network connection checking and favorite facts database loading to complete, display a fact to the user.
         displayInitialFact()
     }
     
-    init() {
+    override init() {
         self.errorManager = ErrorManager()
         self.networkManager = NetworkManager()
         self.favoriteFactsDatabase = FavoriteFactsDatabase()
         self.authenticationManager = AuthenticationManager()
+        super.init()
         displayInitialFact()
     }
     
@@ -132,6 +140,18 @@ class AppStateManager: ObservableObject {
         }
     }
     
+    // MARK: - Speak Fact
+    
+    func speakFact(fact: String) {
+        DispatchQueue.main.async { [self] in
+            voice.stopSpeaking(at: .immediate)
+            if factBeingSpoken != fact {
+                let utterance = AVSpeechUtterance(string: fact)
+                voice.speak(utterance)
+            }
+        }
+    }
+    
     // MARK: - Favorite Facts - Display Favorite Fact
     
     // This method gets a random fact from the favorite facts list and sets factText to its text.
@@ -159,6 +179,20 @@ class AppStateManager: ObservableObject {
                 selectedPage = .randomFact
             }
         }
+    }
+    
+}
+
+extension AppStateManager {
+    
+    // MARK: - Speech Synthesizer Delegate
+    
+    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didStart utterance: AVSpeechUtterance) {
+        factBeingSpoken = utterance.speechString
+    }
+    
+    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
+        factBeingSpoken = String()
     }
     
 }

@@ -95,19 +95,38 @@ struct FavoriteFactsListView: View {
             Section(header: header) {
                 ForEach(favoriteFactsListDisplayManager.sortedFavoriteFacts, id: \.self) {
                     favorite in
-                    Button {
-                        appStateManager.displayFavoriteFact(favorite)
-                    } label: {
-                        Text(favorite)
-                            .lineLimit(nil)
-                            .font(.system(size: CGFloat(appStateManager.factTextSize)))
-                            .multilineTextAlignment(.leading)
-                            .foregroundColor(.primary)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.vertical)
+                    HStack {
+                        Button {
+                            appStateManager.displayFavoriteFact(favorite)
+                        } label: {
+                            Text(favorite)
+                                .lineLimit(nil)
+                                .font(.system(size: CGFloat(appStateManager.factTextSize)))
+                                .multilineTextAlignment(.leading)
+                                .foregroundColor(.primary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.vertical)
+                        }
+                        Divider()
+                        SpeakButton(for: favorite)
+                            .labelStyle(.topIconBottomTitle)
+                        #if os(iOS)
+                            .hoverEffect(.highlight)
+                        #endif
                     }
                     .buttonStyle(.borderless)
                     .contextMenu {
+                        Divider()
+                        Button {
+                            #if os(macOS)
+                            NSPasteboard.general.declareTypes([.string], owner: self)
+                            NSPasteboard.general.setString(favorite, forType: .string)
+                            #else
+                            UIPasteboard.general.string = favorite
+                            #endif
+                        } label: {
+                            Label("Copy", systemImage: "doc.on.doc")
+                        }
                         unfavoriteAction(for: favorite)
                     }
                     .swipeActions {

@@ -28,8 +28,8 @@ struct ViewablePasswordField: View {
     var body: some View {
         HStack {
             if showPassword {
-                FormTextField(label, text: $text)
-                    .textContentType(signup ? nil : .password)
+                    FormTextField(label, text: $text)
+                        .textContentType(signup ? nil : .password)
             } else {
                 FormSecureField(label, text: $text)
                     .textContentType(signup ? nil : .password)
@@ -38,9 +38,11 @@ struct ViewablePasswordField: View {
             Button {
                 showPassword.toggle()
             } label: {
-                Label(showPassword ? "Hide" : "Show", systemImage: showPassword ? "eye.slash" : "eye")
-                    .labelStyle(.topIconBottomTitle)
+                Label(showPassword ? "Hide Password" : "Show Password", systemImage: showPassword ? "eye.slash" : "eye")
+                    .font(.system(size: 24))
+                    .labelStyle(.iconOnly)
                     .animatedSymbolReplacement()
+                    .help(showPassword ? "Hide Password" : "Show Password")
             }
                 .buttonStyle(.borderless)
             #if os(iOS)
@@ -48,7 +50,6 @@ struct ViewablePasswordField: View {
             #endif
                 .tint(.primary)
         }
-        .padding(.vertical, 10)
     }
 }
 

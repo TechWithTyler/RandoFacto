@@ -117,25 +117,30 @@ struct FactView: View {
                 LoadingIndicator()
             }
         } else {
-            if appStateManager.factText != factUnavailableString && authenticationManager.userLoggedIn {
+            if !appStateManager.factTextDisplayingMessage {
                 ToolbarItem(placement: .automatic) {
-                    Button {
-                        DispatchQueue.main.async {
-                            if appStateManager.displayedFactIsSaved {
-                                favoriteFactsDatabase.favoriteFactToDelete = appStateManager.factText
-                                favoriteFactsDatabase.showingDeleteFavoriteFact = true
-                            } else {
-                                favoriteFactsDatabase.saveFactToFavorites(appStateManager.factText)
+                    SpeakButton(for: appStateManager.factText)
+                }
+                if authenticationManager.userLoggedIn {
+                    ToolbarItem(placement: .automatic) {
+                        Button {
+                            DispatchQueue.main.async {
+                                if appStateManager.displayedFactIsSaved {
+                                    favoriteFactsDatabase.favoriteFactToDelete = appStateManager.factText
+                                    favoriteFactsDatabase.showingDeleteFavoriteFact = true
+                                } else {
+                                    favoriteFactsDatabase.saveFactToFavorites(appStateManager.factText)
+                                }
                             }
-                        }
-                    } label: {
-                        Image(systemName: appStateManager.displayedFactIsSaved ? "star.fill" : "star")
-                            .symbolRenderingMode(appStateManager.displayedFactIsSaved ? .multicolor : .monochrome)
-                            .animatedSymbolReplacement()
+                        } label: {
+                            Image(systemName: appStateManager.displayedFactIsSaved ? "star.fill" : "star")
+                                .symbolRenderingMode(appStateManager.displayedFactIsSaved ? .multicolor : .monochrome)
+                                .animatedSymbolReplacement()
                                 .accessibilityLabel(appStateManager.displayedFactIsSaved ? "Unfavorite" : "Favorite")
+                        }
+                        .help(appStateManager.displayedFactIsSaved ? "Unfavorite" : "Favorite")
+                        .disabled(appStateManager.factText == factUnavailableString || authenticationManager.accountDeletionStage != nil)
                     }
-                    .help(appStateManager.displayedFactIsSaved ? "Unfavorite" : "Favorite")
-                    .disabled(appStateManager.factText == factUnavailableString || authenticationManager.accountDeletionStage != nil)
                 }
             }
         }
