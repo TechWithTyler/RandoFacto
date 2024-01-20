@@ -18,6 +18,7 @@ struct OnboardingView: View {
                 .font(.largeTitle)
                 .fontWeight(.bold)
                 .multilineTextAlignment(.center)
+                .padding()
             Spacer()
             VStack(alignment: .leading, spacing: 10) {
                 Text("RandoFacto is a random facts app that gets random facts from \(appStateManager.factGenerator.factGeneratorAPIName).")
@@ -45,6 +46,7 @@ struct OnboardingView: View {
         }
         .padding()
         .frame(maxWidth: 600, minHeight: 500)
+        .interactiveDismissDisabled()
     }
 }
 
