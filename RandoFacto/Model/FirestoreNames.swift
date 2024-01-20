@@ -3,6 +3,7 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 1/19/24.
+//  Copyright © 2022-2024 SheftApps. All rights reserved.
 //
 
 import Firebase

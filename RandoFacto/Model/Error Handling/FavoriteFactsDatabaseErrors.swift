@@ -3,6 +3,7 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 12/24/23.
+//  Copyright © 2022-2024 SheftApps. All rights reserved.
 //
 
 import Foundation
