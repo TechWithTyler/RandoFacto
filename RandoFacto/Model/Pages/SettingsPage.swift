@@ -11,9 +11,11 @@ import Foundation
 // A page in Settings.
 enum SettingsPage : String {
     
+    case display
+    
     case account
     
-    case display
+    case advanced
     
     #if(DEBUG)
     case developer

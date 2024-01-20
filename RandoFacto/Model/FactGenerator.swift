@@ -25,6 +25,8 @@ struct FactGenerator {
     // Specifies that the fact generator and inappropriate words checker APIs should return JSON data.
     let contentType = "application/json"
     
+    let factGeneratorAPIName = "uselessfacts.jsph.pl"
+    
     // MARK: - Properties - URLs
     
     // The URL of the random facts API.
@@ -32,8 +34,7 @@ struct FactGenerator {
         // 1. The scheme specifies the protocol used to access the resource. In this case, it's "https" (Hypertext Transfer Protocol Secure). This indicates that the data transferred between the app and the server is encrypted for security.
         let scheme = "https"
         // 2. The domain and subdomain are the main parts of the URL that identify the server where the resource is located. In this case, the domain is "jsph.pl" and the subdomain is "uselessfacts". "jsph.pl" in this case stands for Joeseph Paul, the creator of this API and others (usually "pl" means a website in Poland).
-        let subdomain = "uselessfacts"
-        let domain = "jsph.pl"
+        let subdomainAndDomain = factGeneratorAPIName
         // 3. The path indicates the specific resource or location on the server that the client (RandoFacto) is requesting. In this URL, the path is "/api/vX/facts/random", where X represents the API version.
         let apiVersion = 2
         let randomFactPath = "api/v\(apiVersion)/facts/random"
@@ -41,7 +42,7 @@ struct FactGenerator {
         let lowercaseLanguageCode = "en"
         let languageQueryParameter = "language=\(lowercaseLanguageCode)"
         // 5. Put the components together to create the full URL string to return.
-        let urlString = "\(scheme)://\(subdomain).\(domain)/\(randomFactPath)?\(languageQueryParameter)"
+        let urlString = "\(scheme)://\(subdomainAndDomain)/\(randomFactPath)?\(languageQueryParameter)"
         return urlString
     }
     
@@ -49,10 +50,9 @@ struct FactGenerator {
     var inappropriateWordsCheckerURLString: String {
         // This URL is much simpler than the fact generator one above.
         let scheme = "https"
-        let subdomain = "language-checker"
-        let domain = "vercel.app"
+        let subdomainAndDomain = "language-checker.vercel.app"
         let languageCheckerPath = "api/check-language"
-        let urlString = "\(scheme)://\(subdomain).\(domain)/\(languageCheckerPath)"
+        let urlString = "\(scheme)://\(subdomainAndDomain)/\(languageCheckerPath)"
         return urlString
     }
     

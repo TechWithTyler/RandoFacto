@@ -63,6 +63,15 @@ struct SettingsView: View {
                     Label(SettingsPage.account.rawValue.capitalized, systemImage: "person.circle")
                 }
                 .tag(SettingsPage.account)
+                SAMVisualEffectViewSwiftUIRepresentable {
+                    advancedPage
+                }
+                .frame(width: 400, height: 100)
+                .formStyle(.grouped)
+                .tabItem {
+                    Label(SettingsPage.advanced.rawValue.capitalized, systemImage: "gear")
+                }
+                .tag(SettingsPage.advanced)
 #if(DEBUG)
                 SAMVisualEffectViewSwiftUIRepresentable {
                     developerPage
@@ -87,6 +96,10 @@ struct SettingsView: View {
                         NavigationLink(SettingsPage.account.rawValue.capitalized) {
                             accountPage
                                 .navigationTitle(SettingsPage.account.rawValue.capitalized)
+                        }
+                        NavigationLink(SettingsPage.advanced.rawValue.capitalized) {
+                            advancedPage
+                                .navigationTitle(SettingsPage.advanced.rawValue.capitalized)
                         }
                     }
 #if(DEBUG)
@@ -230,6 +243,39 @@ struct SettingsView: View {
         } message: {
             Text("You won't be able to save favorite facts to view offline until you login again!")
         }
+        // Authentication form
+        .sheet(item: $authenticationManager.formType) {_ in
+            AuthenticationFormView()
+                .environmentObject(appStateManager)
+                .environmentObject(networkManager)
+                .environmentObject(authenticationManager)
+                .environmentObject(errorManager)
+        }
+    }
+    
+    // MARK: - Advanced Page
+    
+    var advancedPage: some View {
+        Form {
+            Button("RESET ALL SETTINGS…", role: .destructive) {
+                appStateManager.showingResetAlert = true
+            }
+        }
+        .formStyle(.grouped)
+        // Reset alert
+        .alert("Are you sure you REALLY want to reset \(appName!)?", isPresented: $appStateManager.showingResetAlert) {
+            Button("Cancel", role: .cancel) {
+                appStateManager.showingResetAlert = false
+            }
+            Button("Reset", role: .destructive) {
+                appStateManager.eraseAllAppData()
+            }
+        } message: {
+            Text("This will reset all settings to default\(authenticationManager.userLoggedIn ? " and log you out of your account" : String()). This can't be undone!")
+        }
+        #if os(macOS)
+        .dialogSeverity(.critical)
+        #endif
         // Authentication form
         .sheet(item: $authenticationManager.formType) {_ in
             AuthenticationFormView()

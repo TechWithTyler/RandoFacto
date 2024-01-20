@@ -13,7 +13,7 @@ import Speech
 // Manages the fact generation/display and pages.
 class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     
-    // MARK: - Properties - Fact Generator
+    // MARK: - Properties - Objects
     
     // The fact generator.
     #if(DEBUG)
@@ -37,6 +37,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     // Properties with the @Published property wrapper will trigger updates to SwiftUI views when they're changed. Their values must be value types (i.e. structs), not reference types (i.e. classes).
     @Published var factText: String = loadingString
     
+    // The fact currently being spoken.
     @Published var factBeingSpoken: String = String()
     
     // MARK: - Properties - Integers
@@ -56,9 +57,20 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     @Published var selectedPage: AppPage? = .randomFact
     
     #if os(macOS)
-    // THe page currently selected in the Settings window on macOS.
+    // The page currently selected in the Settings window on macOS.
     @AppStorage("selectedSettingsPage") var selectedSettingsPage: SettingsPage = .display
     #endif
+    
+    // MARK: - Properties - Booleans
+    
+    // Whether the onboarding sheet should appear on the next app launch (i.e., the first launch or after resetting the app).
+    @AppStorage("shouldOnboard") var shouldOnboard: Bool = true
+    
+    // Whether the onboarding sheet should be displayed.
+    @Published var showingOnboarding: Bool = false
+    
+    // Whether the reset alert should be displayed.
+    @Published var showingResetAlert: Bool = false
     
     // Whether favorite facts are available to be displayed.
     var favoriteFactsAvailable: Bool {
@@ -179,6 +191,19 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
                 selectedPage = .randomFact
             }
         }
+    }
+    
+    // MARK: - Reset
+    
+    func eraseAllAppData() {
+        authenticationManager.logoutCurrentUser()
+        factTextSize = minFontSize
+        selectedPage = .randomFact
+        #if os(macOS)
+        selectedSettingsPage = .display
+        #endif
+        shouldOnboard = true
+        generateRandomFact()
     }
     
 }

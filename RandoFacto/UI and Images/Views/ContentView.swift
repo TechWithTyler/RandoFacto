@@ -85,6 +85,15 @@ struct ContentView: View {
                 favoriteFactsDatabase.showingDeleteAllFavoriteFacts = false
             }
         }
+        // Onboarding sheet
+        .sheet(isPresented: $appStateManager.showingOnboarding, content: {
+            OnboardingView()
+        })
+        .onAppear {
+            if appStateManager.shouldOnboard {
+                appStateManager.showingOnboarding = true
+            }
+        }
 		// Nil selection catcher
         .onChange(of: horizontalSizeClass) { sizeClass in
             if appStateManager.selectedPage == nil && sizeClass != .compact {
