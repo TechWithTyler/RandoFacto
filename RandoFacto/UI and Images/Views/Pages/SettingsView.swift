@@ -313,18 +313,18 @@ struct SettingsView: View {
 }
 
 #Preview {
-    SettingsView()
-        .environmentObject(AppStateManager())
-        .environmentObject(ErrorManager())
-        .environmentObject(NetworkManager())
-        .environmentObject(FavoriteFactsDatabase())
-        .environmentObject(AuthenticationManager())
-        .frame(height: 500)
+        SettingsView()
+            .environmentObject(AppStateManager())
+            .environmentObject(ErrorManager())
+            .environmentObject(NetworkManager())
+            .environmentObject(FavoriteFactsDatabase())
+            .environmentObject(AuthenticationManager())
+            .frame(height: 500)
 }
 
 extension SettingsView {
     
-    // MARK: - Developer Options
+    // MARK: - Developer Page (Internal Builds Only)
     
 #if(DEBUG)
     var developerPage: some View {
