@@ -12,6 +12,7 @@
 		8D051C5E2AFB15590064E90E /* AppPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D051C5D2AFB15590064E90E /* AppPage.swift */; };
 		8D0A3C3F2B1FA6F500B7345D /* FavoriteFactsListDisplayManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0A3C3E2B1FA6F500B7345D /* FavoriteFactsListDisplayManager.swift */; };
 		8D2A7B302B5B277300142BDA /* SpeakButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2A7B2F2B5B277300142BDA /* SpeakButton.swift */; };
+		8D2A7B362B5B48A400142BDA /* FirestoreNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2A7B352B5B48A400142BDA /* FirestoreNames.swift */; };
 		8D31D8532B27B759009F29EE /* APIKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D31D8522B27B758009F29EE /* APIKeys.swift */; };
 		8D5511402B059B3D00BB61D4 /* FactGeneratorErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D55113F2B059B3D00BB61D4 /* FactGeneratorErrors.swift */; };
 		8D5E9A2A2B226DE800C261B8 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D5E9A292B226DE800C261B8 /* NetworkManager.swift */; };
@@ -81,6 +82,7 @@
 		8D0A3C3E2B1FA6F500B7345D /* FavoriteFactsListDisplayManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteFactsListDisplayManager.swift; sourceTree = "<group>"; };
 		8D0C38D52ADDC9AB00EBB03A /* SheftAppsStylishUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SheftAppsStylishUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D2A7B2F2B5B277300142BDA /* SpeakButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeakButton.swift; sourceTree = "<group>"; };
+		8D2A7B352B5B48A400142BDA /* FirestoreNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreNames.swift; sourceTree = "<group>"; };
 		8D31D8522B27B758009F29EE /* APIKeys.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIKeys.swift; sourceTree = "<group>"; };
 		8D55113F2B059B3D00BB61D4 /* FactGeneratorErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactGeneratorErrors.swift; sourceTree = "<group>"; };
 		8D5E9A292B226DE800C261B8 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
@@ -300,6 +302,7 @@
 				8DCE5DE32B080A8C00DD3CE7 /* Pages */,
 				8D63D5F72AFEBBE90084BACF /* Authentication */,
 				8D55113E2B05976800BB61D4 /* Error Handling */,
+				8D2A7B352B5B48A400142BDA /* FirestoreNames.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -470,6 +473,7 @@
 				8D86FF052AF56CA600239DEE /* HTTPResponseExtension.swift in Sources */,
 				8D051C5E2AFB15590064E90E /* AppPage.swift in Sources */,
 				8DAFBC842B1AB52400C0907F /* FieldNeedsAttentionView.swift in Sources */,
+				8D2A7B362B5B48A400142BDA /* FirestoreNames.swift in Sources */,
 				8D8899DD2AFDF39900BDDDFD /* GeneratedFact.swift in Sources */,
 				8DEF074E2B241DBA00F0375F /* FavoriteFactsDatabase.swift in Sources */,
 				8D86430E2AEC594F0084C772 /* AuthenticationFormType.swift in Sources */,

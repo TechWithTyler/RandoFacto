@@ -77,9 +77,9 @@ class FavoriteFactsDatabase: ObservableObject {
             }
             // 2. Get the Firestore collection containing favorite facts.
             // Firestore collection methods are chained onto one another, often on their own lines, just like SwiftUI view modifiers are.
-            favoriteFactsListener = firestore.collection(favoriteFactsFirestoreCollectionName)
+            favoriteFactsListener = firestore.collection(Firestore.CollectionName.favoriteFacts)
             // 3. Filter the result to include only the current user's favorite facts.
-                .whereField(userFirestoreKeyName, isEqualTo: userEmail)
+                .whereField(Firestore.KeyName.user, isEqualTo: userEmail)
             // 4. Listen for any changes made to the favorite facts list, whether it's on this device, another device, or the Firebase console.
                 .addSnapshotListener(includeMetadataChanges: true) { [self] snapshot, error in
                     // 5. Log any errors.
@@ -124,7 +124,7 @@ class FavoriteFactsDatabase: ObservableObject {
         guard !favoriteFacts.contains(fact) else { return }
         // 2. Create a FavoriteFact object with the fact text and the current user's email, and try to create a new document with that data in the favorite facts Firestore collection.
         do {
-            try firestore.collection(favoriteFactsFirestoreCollectionName)
+            try firestore.collection(Firestore.CollectionName.favoriteFacts)
                 .addDocument(from: fact)
         } catch {
             DispatchQueue.main.async { [self] in
@@ -137,8 +137,8 @@ class FavoriteFactsDatabase: ObservableObject {
     func unfavoriteFact(_ factText: String) {
         // 1. Get facts with text that matches the given fact text (there should only be 1).
         DispatchQueue.main.async { [self] in
-            firestore.collection(favoriteFactsFirestoreCollectionName)
-                .whereField(factTextFirestoreKeyName, isEqualTo: factText)
+            firestore.collection(Firestore.CollectionName.favoriteFacts)
+                .whereField(Firestore.KeyName.factText, isEqualTo: factText)
                 .getDocuments(source: .cache) { [self] snapshot, error in
                     // 2. If that fails, log an error.
                     if let error = error {
@@ -182,8 +182,8 @@ class FavoriteFactsDatabase: ObservableObject {
         // 2. Create a DispatchGroup.
         let group = DispatchGroup()
         // 3. Get all favorite facts associated with the current user. If deleting their account, get from the server instead of the cache to ensure the server data is wiped before deletion continues.
-        firestore.collection(favoriteFactsFirestoreCollectionName)
-            .whereField(userFirestoreKeyName, isEqualTo: userEmail)
+        firestore.collection(Firestore.CollectionName.favoriteFacts)
+            .whereField(Firestore.KeyName.user, isEqualTo: userEmail)
             .getDocuments(source: factStorageSource) { (snapshot, error) in
                 // 4. If that fails, log an error.
                 if let error = error {

@@ -62,21 +62,6 @@ let signupText = "Signup"
 // The name of the filled-circle exclamation mark SF Symbol used for errors.
 let errorSymbolName = "exclamationmark.circle.fill"
 
-// The name of the collection containing all registered users in the Firestore database.
-let usersFirestoreCollectionName = "users"
-
-// The name of the collection containing favorite facts in the Firestore database.
-let favoriteFactsFirestoreCollectionName = "favoriteFacts"
-
-// The key name of a fact's text in the Firestore database.
-let factTextFirestoreKeyName = "text"
-
-// The key name of a fact's associated user.
-let userFirestoreKeyName = "user"
-
-// The key name of a registered user's email.
-let emailFirestoreKeyName = "email"
-
 // MARK: - Properties - Doubles
 
 // The app's minimum font size.
@@ -85,4 +70,5 @@ var minFontSize: Double = 14
 // The app's maximum font size.
 var maxFontSize: Double = 48
 
+// The default URL request timeout interval (can't be changed in release builds).
 var defaultURLRequestTimeoutInterval: Double = 10
