@@ -54,7 +54,11 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     // MARK: - Properties - Pages
     
     // The page currently selected in the sidebar/top-level view. On macOS, the settings view is accessed by the Settings menu item in the app menu instead of as a page.
-    @Published var selectedPage: AppPage? = .randomFact
+    @Published var selectedPage: AppPage? = .randomFact {
+        didSet {
+            voice.stopSpeaking(at: .immediate)
+        }
+    }
     
     #if os(macOS)
     // The page currently selected in the Settings window on macOS.
@@ -135,6 +139,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
             // 2. Display a message before starting fact generation.
             DispatchQueue.main.async { [self] in
                 dismissFavoriteFacts()
+                voice.stopSpeaking(at: .immediate)
                 factText = generatingRandomFactString
             }
         } completionHandler: { [self]
@@ -170,6 +175,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     func getRandomFavoriteFact() {
         let favoriteFact = favoriteFactsDatabase.favoriteFacts.randomElement()?.text ?? factUnavailableString
         DispatchQueue.main.async { [self] in
+            voice.stopSpeaking(at: .immediate)
             factText = favoriteFact
         }
     }
@@ -178,6 +184,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     func displayFavoriteFact(_ favorite: String) {
         DispatchQueue.main.async { [self] in
             factText = favorite
+            voice.stopSpeaking(at: .immediate)
             dismissFavoriteFacts()
         }
     }
@@ -195,6 +202,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     
     // MARK: - Reset
     
+    // This method resets all settings to default and logs out the current user.
     func eraseAllAppData() {
         authenticationManager.logoutCurrentUser()
         factTextSize = minFontSize
@@ -203,7 +211,6 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
         selectedSettingsPage = .display
         #endif
         shouldOnboard = true
-        generateRandomFact()
     }
     
 }

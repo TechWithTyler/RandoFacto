@@ -117,7 +117,7 @@ struct FactView: View {
                 LoadingIndicator()
             }
         } else {
-            if !appStateManager.factTextDisplayingMessage {
+            if !appStateManager.factTextDisplayingMessage && appStateManager.factText != factUnavailableString {
                 ToolbarItem(placement: .automatic) {
                     SpeakButton(for: appStateManager.factText)
                 }
