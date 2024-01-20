@@ -17,15 +17,21 @@ struct OnboardingView: View {
             Text("Welcome to RandoFacto!")
                 .font(.largeTitle)
                 .fontWeight(.bold)
+                .multilineTextAlignment(.center)
             Spacer()
-            VStack {
+            VStack(alignment: .leading, spacing: 10) {
                 Text("RandoFacto is a random facts app that gets random facts from \(appStateManager.factGenerator.factGeneratorAPIName).")
+                Text("Press the speech bubble to have displayed facts read out loud!")
                 Text("Create a RandoFacto account in Settings to save your favorite facts to view offline on all your devices.")
                 Text("You can change the fact text size in Settings.")
             }
             .font(.system(size: 18))
-            .multilineTextAlignment(.center)
+            .multilineTextAlignment(.leading)
             Spacer()
+            Text("By using this app, you agree to our [privacy policy](https://techwithtyler20.weebly.com/randofactoprivacypolicy.html).")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+            Divider()
             Button {
                 appStateManager.shouldOnboard = false
                 appStateManager.showingOnboarding = false
@@ -38,7 +44,7 @@ struct OnboardingView: View {
             .controlSize(.large)
         }
         .padding()
-        .frame(minHeight: 500)
+        .frame(maxWidth: 600, minHeight: 500)
     }
 }
 
