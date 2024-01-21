@@ -145,7 +145,7 @@ struct AuthenticationFormView: View {
     var credentialFields: some View {
         Group {
             if authenticationManager.formType != .passwordChange {
-                VStack {
+                VStack(alignment: .trailing) {
                     FormTextField("Email", text: $authenticationManager.emailFieldText)
                         .textContentType(.username)
 #if os(iOS)
@@ -156,27 +156,28 @@ struct AuthenticationFormView: View {
                     }
                 }
             }
-            VStack {
+            VStack(alignment: .trailing) {
                 ViewablePasswordField("Password", text: $authenticationManager.passwordFieldText, signup: authenticationManager.formType == .signup)
                 if authenticationManager.invalidCredentialField == 1 {
                     FieldNeedsAttentionView()
                 }
-            }
-            if authenticationManager.formType == .login && !authenticationManager.emailFieldText.isEmpty && authenticationManager.passwordFieldText.isEmpty {
-                        Button {
-                            errorManager.errorToShow = nil
-                            authenticationManager.showingResetPasswordEmailSent = false
-                            authenticationManager.formErrorText = nil
-                            authenticationManager.sendPasswordResetLink()
-                        } label: {
-                            Label(forgotPasswordButtonTitle, systemImage: "questionmark.circle.fill")
-                                .labelStyle(.titleAndIcon)
-                        }
-                        .disabled(authenticationManager.isAuthenticating)
+                if authenticationManager.formType == .login && !authenticationManager.emailFieldText.isEmpty && authenticationManager.passwordFieldText.isEmpty {
+                    Divider()
+                    Button {
+                        errorManager.errorToShow = nil
+                        authenticationManager.showingResetPasswordEmailSent = false
+                        authenticationManager.formErrorText = nil
+                        authenticationManager.sendPasswordResetLink()
+                    } label: {
+                        Label(forgotPasswordButtonTitle, systemImage: "questionmark.circle.fill")
+                            .labelStyle(.titleAndIcon)
+                    }
+                    .disabled(authenticationManager.isAuthenticating)
 #if os(macOS)
-                        .buttonStyle(.link)
+                    .buttonStyle(.link)
 #endif
-            }
+                }
+                }
         }
         .disabled(authenticationManager.isAuthenticating)
         .onChange(of: authenticationManager.emailFieldText) { value in
