@@ -29,7 +29,7 @@ struct OnboardingView: View {
             .font(.system(size: 18))
             .multilineTextAlignment(.leading)
             Spacer()
-            Text("By using this app, you agree to our [privacy policy](https://techwithtyler20.weebly.com/randofactoprivacypolicy.html).")
+            Text("By creating a RandoFacto account, you agree to our [privacy policy](https://techwithtyler20.weebly.com/randofactoprivacypolicy.html).")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
             Divider()
