@@ -32,6 +32,7 @@ struct OnboardingView: View {
             Text("By creating a RandoFacto account, you agree to our [privacy policy](https://techwithtyler20.weebly.com/randofactoprivacypolicy.html).")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
             Divider()
             Button {
                 appStateManager.shouldOnboard = false
