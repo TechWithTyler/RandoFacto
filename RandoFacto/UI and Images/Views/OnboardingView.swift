@@ -41,9 +41,9 @@ struct OnboardingView: View {
                 Text("Continue")
                     .frame(width: 300)
             }
-            .keyboardShortcut(.return)
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
+            .keyboardShortcut(.defaultAction)
         }
         .padding()
         .frame(maxWidth: 600, minHeight: 500)
