@@ -137,6 +137,7 @@ struct RandoFactoApp: App {
         self.authenticationManager.favoriteFactsDatabase = favoriteFactsDatabase
 	}
     
+    // This method sets up the app's Firebase configuration.
     static func setupFirebaseConfiguration() {
         // 1. Make sure the GoogleService-Info.plist file is present in the app bundle.
         let firebaseConfigurationFilename = "GoogleService-Info"

@@ -116,17 +116,17 @@ struct FavoriteFactsListView: View {
                     }
                     .buttonStyle(.borderless)
                     .contextMenu {
-                        Divider()
                         Button {
-                            #if os(macOS)
+#if os(macOS)
                             NSPasteboard.general.declareTypes([.string], owner: self)
                             NSPasteboard.general.setString(favorite, forType: .string)
-                            #else
+#else
                             UIPasteboard.general.string = favorite
-                            #endif
+#endif
                         } label: {
                             Label("Copy", systemImage: "doc.on.doc")
                         }
+                        Divider()
                         unfavoriteAction(for: favorite)
                     }
                     .swipeActions {
