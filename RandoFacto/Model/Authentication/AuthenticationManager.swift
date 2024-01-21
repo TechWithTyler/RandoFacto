@@ -36,14 +36,14 @@ class AuthenticationManager: ObservableObject {
     // MARK: - Properties - Integers
     
     // the credential field pertaining to an authentication error.
-    var invalidCredentialField: Int? {
+    var invalidCredentialField: Authentication.FormField? {
         if let errorText = formErrorText {
             let emailError = errorText.lowercased().contains("email")
             let passwordError = errorText.lowercased().contains("password")
             if emailError {
-                return 0
+                return .email
             } else if passwordError {
-                return 1
+                return .password
             } else {
                 return nil
             }
@@ -79,6 +79,11 @@ class AuthenticationManager: ObservableObject {
     // Whether a user is logged in.
     var userLoggedIn: Bool {
         return firebaseAuthentication.currentUser != nil
+    }
+    
+    // Whether the authentication form is invalid (i.e. not completely filled out).
+    var formInvalid: Bool {
+        return formType == .passwordChange ? passwordFieldText.isEmpty : emailFieldText.isEmpty || passwordFieldText.isEmpty
     }
     
     // MARK: - Properties - Registered Users Listener
@@ -267,6 +272,38 @@ class AuthenticationManager: ObservableObject {
         }
     }
     
+    // MARK: - Authentication - Dismiss Form
+    
+    func dismissForm() {
+        DispatchQueue.main.async { [self] in
+            emailFieldText.removeAll()
+            passwordFieldText.removeAll()
+            formErrorText = nil
+        }
+    }
+    
+    // MARK: - Authentication - Perform Action
+    
+    // This method performs the authentication request when pressing the default button in the toolbar or keyboard.
+    func performAuthenticationAction(completionHandler: @escaping ((Bool) -> Void)) {
+        guard !passwordFieldText.containsEmoji else {
+            formErrorText = "Passwords can't contain emoji."
+            completionHandler(false)
+            return
+        }
+        showingResetPasswordEmailSent = false
+        errorManager.errorToShow = nil
+        formErrorText = nil
+        emailFieldText = emailFieldText.lowercased()
+        if formType == .signup {
+            signup(successHandler: completionHandler)
+        } else if formType == .passwordChange {
+            updatePasswordForCurrentUser(completionHandler: completionHandler)
+        } else {
+            login(successHandler: completionHandler)
+        }
+    }
+    
     // MARK: - Authentication - Signup
     
     // This method takes the user's credentials and tries to sign them up for a RandoFacto account.
@@ -361,7 +398,7 @@ class AuthenticationManager: ObservableObject {
                 if let error = error {
                     errorManager.showError(error) { [self] randoFactoError in
                         if randoFactoError == .tooLongSinceLastLogin {
-                            formType = nil
+                            dismissForm()
                             logoutCurrentUser()
                             errorManager.showingErrorAlert = true
                         }
