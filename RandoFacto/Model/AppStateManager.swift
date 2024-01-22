@@ -27,6 +27,8 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     
     var favoriteFactsDatabase: FavoriteFactsDatabase
     
+    var favoriteFactsListDisplayManager: FavoriteFactsListDisplayManager
+    
     var authenticationManager: AuthenticationManager
     
     var voice = AVSpeechSynthesizer()
@@ -98,11 +100,12 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     
     // MARK: - Initialization
     
-    init(errorManager: ErrorManager, networkManager: NetworkManager, favoriteFactsDatabase: FavoriteFactsDatabase, authenticationManager: AuthenticationManager) {
+    init(errorManager: ErrorManager, networkManager: NetworkManager, favoriteFactsDatabase: FavoriteFactsDatabase, favoriteFactsListDisplayManager: FavoriteFactsListDisplayManager, authenticationManager: AuthenticationManager) {
         // 1. Configure the network path monitor.
         self.errorManager = errorManager
         self.networkManager = networkManager
         self.favoriteFactsDatabase = favoriteFactsDatabase
+        self.favoriteFactsListDisplayManager = favoriteFactsListDisplayManager
         self.authenticationManager = authenticationManager
         super.init()
         voice.delegate = self
@@ -114,6 +117,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
         self.errorManager = ErrorManager()
         self.networkManager = NetworkManager()
         self.favoriteFactsDatabase = FavoriteFactsDatabase()
+        self.favoriteFactsListDisplayManager = FavoriteFactsListDisplayManager()
         self.authenticationManager = AuthenticationManager()
         super.init()
         displayInitialFact()
@@ -207,6 +211,8 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
         authenticationManager.logoutCurrentUser()
         factTextSize = minFontSize
         selectedPage = .randomFact
+        favoriteFactsListDisplayManager.searchText.removeAll()
+        favoriteFactsListDisplayManager.sortFavoriteFactsAscending = false
         #if os(macOS)
         selectedSettingsPage = .display
         #endif
