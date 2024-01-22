@@ -144,9 +144,9 @@ class AuthenticationManager: ObservableObject {
                         if let snapshot = documentSnapshot, !snapshot.metadata.isFromCache, (snapshot.isEmpty || snapshot.documents.isEmpty), !snapshot.documents.contains(where: { document in
                             return document.documentID == currentUser.uid
                         }) {
-                            logoutMissingUser()
+                            logoutCurrentUser()
                         } else if documentSnapshot == nil {
-                            logoutMissingUser()
+                            logoutCurrentUser()
                         }
                     }
                 }
@@ -352,23 +352,6 @@ class AuthenticationManager: ObservableObject {
         }
     }
     
-    // This method logs out the current user after deletion or if their reference goes missing. If the account itself still exists, logging in will put the missing reference back.
-    func logoutMissingUser() {
-        // 1. Delete all the missing user's favorite facts, getting the data from the server instead of the cache.
-        DispatchQueue.main.async { [self] in
-            favoriteFactsDatabase?.deleteAllFavoriteFactsForCurrentUser(forUserDeletion: true) { [self] error in
-                if let error = error {
-                    // 2. If that fails, log an error.
-                    errorManager.showError(error)
-                    return
-                } else {
-                    // 3. If successful, log the user out.
-                    logoutCurrentUser()
-                }
-            }
-        }
-    }
-    
     // MARK: - Account Management - Password Reset/Update
     
     // This method sends a password reset email to the entered email address. The message body is customized in RandoFacto's Firebase console.
@@ -440,7 +423,7 @@ class AuthenticationManager: ObservableObject {
                         // 6. If successful, all user data has been deleted, so the account can be safely deleted.
                         user.delete { [self] error in
                             if error == nil {
-                                logoutMissingUser()
+                                logoutCurrentUser()
                             }
                             accountDeletionStage = nil
                             completionHandler(error)
