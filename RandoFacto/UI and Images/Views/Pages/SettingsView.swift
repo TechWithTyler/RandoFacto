@@ -26,7 +26,7 @@ struct SettingsView: View {
     // MARK: - Properties - Fact Text Size Slider Text
     
     var factTextSizeSliderText: String {
-        return "Fact Text Size: \(appStateManager.fontSizeAsInt)"
+        return "Fact Text Size: \(appStateManager.factTextSizeAsInt)"
     }
     
     // MARK: - Body
@@ -307,7 +307,7 @@ struct SettingsView: View {
             Image(systemName: "textformat.size.larger")
                 .accessibilityLabel("Larger")
         }
-        .accessibilityValue("\(appStateManager.fontSizeAsInt)")
+        .accessibilityValue("\(appStateManager.factTextSizeAsInt)")
     }
     
 }

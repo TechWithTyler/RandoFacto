@@ -43,7 +43,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     // MARK: - Properties - Integers
     
     // The current fact text size as an Int.
-    var fontSizeAsInt: Int {
+    var factTextSizeAsInt: Int {
         return Int(factTextSize)
     }
     

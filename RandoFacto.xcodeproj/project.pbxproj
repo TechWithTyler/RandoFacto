@@ -188,10 +188,10 @@
 			children = (
 				8DEF074B2B241D5B00F0375F /* AuthenticationManager.swift */,
 				8D86430D2AEC594F0084C772 /* AuthenticationFormType.swift */,
+				8D5E25082B5DAD0A00B51730 /* AuthenticationFormField.swift */,
 				8D8899DF2AFDF3D100BDDDFD /* AuthenticationMessageType.swift */,
 				8D63D5FC2AFF4A180084BACF /* StringEmojiChecker.swift */,
 				8D63D5F82AFF1D470084BACF /* UserDeletionStage.swift */,
-				8D5E25082B5DAD0A00B51730 /* AuthenticationFormField.swift */,
 			);
 			path = Authentication;
 			sourceTree = "<group>";
@@ -303,12 +303,12 @@
 				8DA2C420292C1E6000705A2F /* FactGenerator.swift */,
 				8DF48E302936A80700152681 /* AppStateManager.swift */,
 				8D5E9A292B226DE800C261B8 /* NetworkManager.swift */,
+				8D2A7B352B5B48A400142BDA /* FirestoreNames.swift */,
 				8D8899D92AFDF39900BDDDFD /* Decodable Data */,
 				8D8899DE2AFDF3B100BDDDFD /* Favorite Facts */,
 				8DCE5DE32B080A8C00DD3CE7 /* Pages */,
 				8D63D5F72AFEBBE90084BACF /* Authentication */,
 				8D55113E2B05976800BB61D4 /* Error Handling */,
-				8D2A7B352B5B48A400142BDA /* FirestoreNames.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
