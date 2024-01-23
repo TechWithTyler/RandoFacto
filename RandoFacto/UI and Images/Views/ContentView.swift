@@ -8,6 +8,7 @@
 
 import SwiftUI
 import SheftAppsStylishUI
+import Speech
 
 struct ContentView: View {
     

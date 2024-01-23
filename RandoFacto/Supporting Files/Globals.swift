@@ -62,6 +62,10 @@ let signupText = "Signup"
 // The name of the filled-circle exclamation mark SF Symbol used for errors.
 let errorSymbolName = "exclamationmark.circle.fill"
 
+let defaultVoiceID = "com.apple.ttsbundle.Samantha-compact"
+
+let sampleFact = "\(appName!) was coded in Swift by Tyler Sheft!"
+
 // MARK: - Properties - Doubles
 
 // The app's minimum font size.

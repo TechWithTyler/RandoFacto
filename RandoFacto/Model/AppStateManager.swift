@@ -42,6 +42,10 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     // The fact currently being spoken.
     @Published var factBeingSpoken: String = String()
     
+    @AppStorage("selectedVoiceID") var selectedVoiceID: String = defaultVoiceID
+    
+    @Published var voices: [AVSpeechSynthesisVoice] = []
+    
     // MARK: - Properties - Integers
     
     // The current fact text size as an Int.
@@ -111,6 +115,9 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
         voice.delegate = self
         // 2. After waiting 2 seconds for network connection checking and favorite facts database loading to complete, display a fact to the user.
         displayInitialFact()
+        DispatchQueue.main.async { [self] in
+            loadVoices()
+        }
     }
     
     override init() {
@@ -161,18 +168,6 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
         }
     }
     
-    // MARK: - Speak Fact
-    
-    func speakFact(fact: String) {
-        DispatchQueue.main.async { [self] in
-            voice.stopSpeaking(at: .immediate)
-            if factBeingSpoken != fact {
-                let utterance = AVSpeechUtterance(string: fact)
-                voice.speak(utterance)
-            }
-        }
-    }
-    
     // MARK: - Favorite Facts - Display Favorite Fact
     
     // This method gets a random fact from the favorite facts list and sets factText to its text.
@@ -213,6 +208,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
         selectedPage = .randomFact
         favoriteFactsListDisplayManager.searchText.removeAll()
         favoriteFactsListDisplayManager.sortFavoriteFactsAscending = false
+        selectedVoiceID = defaultVoiceID
         #if os(macOS)
         selectedSettingsPage = .display
         #endif
@@ -223,7 +219,32 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
 
 extension AppStateManager {
     
-    // MARK: - Speech Synthesizer Delegate
+    // MARK: - Speech - Load Voices
+    
+    func loadVoices() {
+        if #available(macOS 14, iOS 17, visionOS 1, *) {
+            AVSpeechSynthesizer.requestPersonalVoiceAuthorization { [self] status in
+                voices = AVSpeechSynthesisVoice.speechVoices().filter({$0.language == "en-US"})
+            }
+        } else {
+            voices = AVSpeechSynthesisVoice.speechVoices().filter({$0.language == "en-US"})
+        }
+    }
+    
+    // MARK: - Speech - Speak Fact
+    
+    func speakFact(fact: String) {
+        DispatchQueue.main.async { [self] in
+            voice.stopSpeaking(at: .immediate)
+            if factBeingSpoken != fact {
+                let utterance = AVSpeechUtterance(string: fact)
+                utterance.voice = AVSpeechSynthesisVoice(identifier: selectedVoiceID)
+                voice.speak(utterance)
+            }
+        }
+    }
+    
+    // MARK: - Speech - Synthesizer Delegate
     
     func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didStart utterance: AVSpeechUtterance) {
         factBeingSpoken = utterance.speechString

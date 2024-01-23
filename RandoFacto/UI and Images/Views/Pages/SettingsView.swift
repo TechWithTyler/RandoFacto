@@ -66,7 +66,7 @@ struct SettingsView: View {
                 SAMVisualEffectViewSwiftUIRepresentable {
                     advancedPage
                 }
-                .frame(width: 400, height: 100)
+                .frame(width: 400, height: 150)
                 .formStyle(.grouped)
                 .tabItem {
                     Label(SettingsPage.advanced.rawValue.capitalized, systemImage: "gear")
@@ -148,7 +148,7 @@ struct SettingsView: View {
 #endif
             }
             Section {
-                Text("\(appName!) was coded in Swift by Tyler Sheft!")
+                Text(sampleFact)
                     .font(.system(size: CGFloat(appStateManager.factTextSize)))
             }
             .animation(.default, value: appStateManager.factTextSize)
@@ -257,8 +257,19 @@ struct SettingsView: View {
     
     var advancedPage: some View {
         Form {
-            Button("RESET ALL SETTINGS…", role: .destructive) {
-                appStateManager.showingResetAlert = true
+            Section {
+                VoicePicker(selectedVoiceID: $appStateManager.selectedVoiceID, voices: appStateManager.voices)
+                .onChange(of: appStateManager.selectedVoiceID) { value in
+                    appStateManager.speakFact(fact: sampleFact)
+                }
+            }
+            .onAppear {
+                appStateManager.loadVoices()
+            }
+            Section {
+                Button("RESET ALL SETTINGS…", role: .destructive) {
+                    appStateManager.showingResetAlert = true
+                }
             }
         }
         .formStyle(.grouped)
