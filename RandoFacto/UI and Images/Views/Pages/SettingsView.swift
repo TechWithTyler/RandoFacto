@@ -279,7 +279,7 @@ struct SettingsView: View {
                 appStateManager.showingResetAlert = false
             }
             Button("Reset", role: .destructive) {
-                appStateManager.eraseAllAppData()
+                appStateManager.resetApp()
             }
         } message: {
             Text("This will reset all settings to default\(authenticationManager.userLoggedIn ? " and log you out of your account" : String()). This can't be undone!")

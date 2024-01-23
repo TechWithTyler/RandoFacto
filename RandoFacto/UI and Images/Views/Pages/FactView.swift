@@ -120,6 +120,7 @@ struct FactView: View {
             if !appStateManager.factTextDisplayingMessage && appStateManager.factText != factUnavailableString {
                 ToolbarItem(placement: .automatic) {
                     SpeakButton(for: appStateManager.factText)
+                        .help(appStateManager.factBeingSpoken.isEmpty ? "Speak fact" : "Stop speaking")
                 }
                 if authenticationManager.userLoggedIn {
                     ToolbarItem(placement: .automatic) {

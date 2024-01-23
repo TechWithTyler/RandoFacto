@@ -202,16 +202,20 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     // MARK: - Reset
     
     // This method resets all settings to default and logs out the current user.
-    func eraseAllAppData() {
+    func resetApp() {
+        // 1. Logout the current user.
         authenticationManager.logoutCurrentUser()
+        // 2. Reset all settings.
         factTextSize = minFontSize
         selectedPage = .randomFact
         favoriteFactsListDisplayManager.searchText.removeAll()
         favoriteFactsListDisplayManager.sortFavoriteFactsAscending = false
         selectedVoiceID = defaultVoiceID
+        // 3. Reset the selected settings page on macOS.
         #if os(macOS)
         selectedSettingsPage = .display
         #endif
+        // 4. Set the onboarding sheet to show on the next launch.
         shouldOnboard = true
     }
     
@@ -221,6 +225,7 @@ extension AppStateManager {
     
     // MARK: - Speech - Load Voices
     
+    // This method loads all installed voices into the app.
     func loadVoices() {
         if #available(macOS 14, iOS 17, visionOS 1, *) {
             AVSpeechSynthesizer.requestPersonalVoiceAuthorization { [self] status in
@@ -233,6 +238,7 @@ extension AppStateManager {
     
     // MARK: - Speech - Speak Fact
     
+    // This method speaks fact using the selected voice.
     func speakFact(fact: String) {
         DispatchQueue.main.async { [self] in
             voice.stopSpeaking(at: .immediate)
