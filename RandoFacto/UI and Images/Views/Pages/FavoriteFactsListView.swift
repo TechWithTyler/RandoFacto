@@ -79,7 +79,7 @@ struct FavoriteFactsListView: View {
     
     var noMatchesDisplay: some View {
         VStack {
-            Text("No Matches")
+            Text("No Favorites Containing \"\(favoriteFactsListDisplayManager.searchText)\"")
                 .font(.largeTitle)
             Text("Please check your search terms.")
                 .font(.callout)
