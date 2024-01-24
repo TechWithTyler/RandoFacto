@@ -13,13 +13,13 @@ import Firebase
 // Handles network connection.
 class NetworkManager: ObservableObject {
     
-    // MARK: - Properties - Network Monitor
+    // MARK: - Properties - Network Path Monitor
     
     // Observes changes to the device's network connection to tell the app whether it should run in online or offline mode.
     var networkPathMonitor = NWPathMonitor()
     
     // Whether the device is online.
-    @Published var online: Bool = false
+    @Published var deviceIsOnline: Bool = false
     
     var errorManager: ErrorManager
     
@@ -72,7 +72,7 @@ class NetworkManager: ObservableObject {
                 // 3. If successful, tell the app that the device is online.
                 // Updating a published property must be done on the main thread, so we use DispatchQueue.main.async to run any code that sets such properties.
                 DispatchQueue.main.async {
-                    self.online = true
+                    self.deviceIsOnline = true
                 }
             }
         }
@@ -93,7 +93,7 @@ class NetworkManager: ObservableObject {
             } else {
                 // 3. If successful, tell the app that the device is offline.
                 DispatchQueue.main.async {
-                    self.online = false
+                    self.deviceIsOnline = false
                 }
             }
         }

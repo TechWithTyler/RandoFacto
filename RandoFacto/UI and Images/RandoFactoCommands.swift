@@ -51,7 +51,7 @@ struct RandoFactoCommands: Commands {
                 Button(generateRandomFactButtonTitle) {
                     appStateManager.generateRandomFact()
                 }
-                .disabled(!networkManager.online || appStateManager.factTextDisplayingMessage)
+                .disabled(!networkManager.deviceIsOnline || appStateManager.factTextDisplayingMessage)
                 .keyboardShortcut(KeyboardShortcut(KeyEquivalent("g"), modifiers: [.command, .control]))
                 Button(getRandomFavoriteFactButtonTitle) {
                     appStateManager.getRandomFavoriteFact()

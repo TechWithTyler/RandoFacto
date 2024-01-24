@@ -20,28 +20,31 @@ struct FactGenerator {
     
     typealias InappropriateWordsCheckerHTTPRequestResult = Result<URLRequest, Error>
     
-    // MARK: - Properties - Content Type
+    // MARK: - Properties - HTTP Request Content Type
     
     // Specifies that the fact generator and inappropriate words checker APIs should return JSON data.
-    let contentType = "application/json"
+    let httpRequestContentType = "application/json"
     
-    let factGeneratorAPIName = "uselessfacts.jsph.pl"
+    // The name of the random facts API, which is its base URL.
+    let randomFactsAPIName = "uselessfacts.jsph.pl"
+    
+    // The version of the random facts API.
+    let randomFactsAPIVersion = 2
     
     // MARK: - Properties - URLs
     
     // The URL of the random facts API.
     var factURLString: String {
-        // 1. The scheme specifies the protocol used to access the resource. In this case, it's "https" (Hypertext Transfer Protocol Secure). This indicates that the data transferred between the app and the server is encrypted for security.
+        // 1. The scheme specifies the protocol used to access the resource. In this case, it's "https" (Hypertext Transfer Protocol Secure). This indicates that the data transferred between the app (client) and the web API (server) is encrypted for security.
         let scheme = "https"
         // 2. The domain and subdomain are the main parts of the URL that identify the server where the resource is located. In this case, the domain is "jsph.pl" and the subdomain is "uselessfacts". "jsph.pl" in this case stands for Joeseph Paul, the creator of this API and others (usually "pl" means a website in Poland).
-        let subdomainAndDomain = factGeneratorAPIName
+        let subdomainAndDomain = randomFactsAPIName
         // 3. The path indicates the specific resource or location on the server that the client (RandoFacto) is requesting. In this URL, the path is "/api/vX/facts/random", where X represents the API version.
-        let apiVersion = 2
-        let randomFactPath = "api/v\(apiVersion)/facts/random"
+        let randomFactPath = "api/v\(randomFactsAPIVersion)/facts/random"
         // 4. Query parameters are additional information provided in the URL to modify the request. They follow a question mark (?) and are separated by ampersands (&). In this URL, there is one query parameter, "language=en", indicating that the client is requesting a fact in English. Sometimes, parts of the request are modified by setting one or more HTTP header fields.
         let lowercaseLanguageCode = "en"
         let languageQueryParameter = "language=\(lowercaseLanguageCode)"
-        // 5. Put the components together to create the full URL string to return.
+        // 5. Put the components together to create the full URL string to return. In this case, it's "https://uselessfacts.jsph.pl/api/vX/facts/random?language=en", where X represents the API version.
         let urlString = "\(scheme)://\(subdomainAndDomain)/\(randomFactPath)?\(languageQueryParameter)"
         return urlString
     }
@@ -60,10 +63,9 @@ struct FactGenerator {
     
     // The timeout interval of URL requests, which determines the maximum number of seconds they can try to run before a "request timed out" error is thrown if unsuccessful.
     #if(DEBUG)
-    @AppStorage("urlRequestTimeoutInterval") var urlRequestTimeoutInterval: TimeInterval = defaultURLRequestTimeoutInterval
-    #else
-    let urlRequestTimeoutInterval: TimeInterval = defaultURLRequestTimeoutInterval
+    @AppStorage("urlRequestTimeoutInterval") 
     #endif
+    var urlRequestTimeoutInterval: TimeInterval = defaultURLRequestTimeoutInterval
     
     // MARK: - Properties - Errors
     
@@ -93,6 +95,7 @@ struct FactGenerator {
         dataTask.resume()
     }
     
+    // This method handles the fact generation data task result.
     func handleFactGenerationDataTaskResult(didBeginHandler: @escaping (() -> Void), data: Data?, response: URLResponse?, error: Error?, completionHandler: @escaping ((String?, Error?) -> Void)) {
         // 1. If an HTTP response is returned and its code isn't within the 2xx range, log it as an error.
         if let httpResponse = response as? HTTPURLResponse, httpResponse.isUnsuccessful {
@@ -134,13 +137,13 @@ struct FactGenerator {
         }
     }
     
-    // This method creates the fact generator URL request.
+    // This method creates the fact generator HTTP request.
     func createFactGeneratorHTTPRequest(with url: URL) -> URLRequest {
         // 1. Create the URL request.
         var request = URLRequest(url: url)
-        // 2. Specify the HTTP method and the type of content to give back.
-        request.httpMethod = "GET"
-        request.setValue(contentType, forHTTPHeaderField: "Accept")
+        // 2. Specify the HTTP method and the type of content to give back. For this HTTP request, it's optional.
+        request.httpMethod = URLRequest.HTTPMethod.get
+        request.setValue(httpRequestContentType, forHTTPHeaderField: URLRequest.HTTPHeaderField.accept)
         // 3. Set the timeout interval for the URL request, after which an error will be thrown if the request can't complete.
         request.timeoutInterval = urlRequestTimeoutInterval
         // 4. Return the created request.
@@ -196,6 +199,7 @@ struct FactGenerator {
         }
     }
     
+    // This method handles the inappropriate words checker HTTP request for the given fact.
     func handleInappropriateWordsCheckerDataTaskResult(fact: String, data: Data?, response: URLResponse?, error: Error?, completionHandler: ((String?, Error?) -> Void)) {
         if let error = error {
             completionHandler(nil, error)
@@ -218,13 +222,13 @@ struct FactGenerator {
         }
     }
     
-    // This method creates the inappropriate words checker URL request.
+    // This method creates the inappropriate words checker HTTP request.
     func createInappropriateWordsCheckerHTTPRequest(with url: URL, toScreenFact fact: String) -> InappropriateWordsCheckerHTTPRequestResult {
         // 1. Create the URL request.
         var request = URLRequest(url: url)
-        // 2. Specify the HTTP method and the type of content to give back.
-        request.httpMethod = "POST"
-        request.setValue(contentType, forHTTPHeaderField: "Content-Type")
+        // 2. Specify the HTTP method and the type of content to give back. For this HTTP request, it's required.
+        request.httpMethod = URLRequest.HTTPMethod.post
+        request.setValue(httpRequestContentType, forHTTPHeaderField: URLRequest.HTTPHeaderField.contentType)
         // 3. Set the timeout interval for the URL request, after which an error will be thrown if the request can't complete.
         request.timeoutInterval = urlRequestTimeoutInterval
         // 4. Specify the data model that you want to send.

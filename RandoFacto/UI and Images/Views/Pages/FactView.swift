@@ -72,7 +72,7 @@ struct FactView: View {
                 .hoverEffect(.highlight)
                 #endif
             }
-            if networkManager.online {
+            if networkManager.deviceIsOnline {
                 Button {
                     appStateManager.generateRandomFact()
                 } label: {
@@ -96,7 +96,7 @@ struct FactView: View {
     var footer: some View {
         VStack {
             // To include a clickable link in a string, use the format [text](URL), where text is the text to be displayed and URL is the URL the link goes to.
-            Text("Facts provided by [\(appStateManager.factGenerator.factGeneratorAPIName)](https://\(appStateManager.factGenerator.factGeneratorAPIName)).")
+            Text("Facts provided by [\(appStateManager.factGenerator.randomFactsAPIName)](https://\(appStateManager.factGenerator.randomFactsAPIName)).")
             if authenticationManager.userLoggedIn {
                 Text("Favorite facts database powered by [Firebase](https://firebase.google.com).")
             }

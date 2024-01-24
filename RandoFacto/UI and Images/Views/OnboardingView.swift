@@ -21,7 +21,7 @@ struct OnboardingView: View {
                 .padding()
             Spacer()
             VStack(alignment: .leading, spacing: 10) {
-                Text("RandoFacto is a random facts app that gets random facts from \(appStateManager.factGenerator.factGeneratorAPIName).")
+                Text("RandoFacto is a random facts app that gets random facts from \(appStateManager.factGenerator.randomFactsAPIName).")
                 Text("Press the speech bubble to have displayed facts read out loud!")
                 Text("Create a RandoFacto account in Settings to save your favorite facts to view offline on all your devices.")
                 Text("You can change the fact text size in Settings.")

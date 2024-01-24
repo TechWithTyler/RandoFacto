@@ -166,7 +166,7 @@ struct SettingsView: View {
             if let deletionStage = authenticationManager.accountDeletionStage {
                 LoadingIndicator(message: "Deleting \(deletionStage)…")
             } else if authenticationManager.userLoggedIn {
-                if networkManager.online {
+                if networkManager.deviceIsOnline {
                     Section {
                         Button("Change Password…") {
                             authenticationManager.formType = .passwordChange
@@ -178,7 +178,7 @@ struct SettingsView: View {
                         authenticationManager.showingLogout = true
                     }
                 }
-                if networkManager.online {
+                if networkManager.deviceIsOnline {
                     Section {
                         Button("DELETE ACCOUNT…", role: .destructive) {
                             authenticationManager.showingDeleteAccount = true
@@ -186,7 +186,7 @@ struct SettingsView: View {
                     }
                 }
             } else {
-                if networkManager.online {
+                if networkManager.deviceIsOnline {
                     Button(loginText) {
                         authenticationManager.formType = .login
                     }
