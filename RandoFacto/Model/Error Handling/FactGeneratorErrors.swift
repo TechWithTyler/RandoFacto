@@ -34,14 +34,14 @@ extension FactGenerator {
 
     // These methods log any errors not handled by catch blocks or completion handlers.
 
-    func logFactDataError(completionHandler: ((Error) -> Void)) {
+    func logFactDataError() -> Error {
         let dataError = factDataError
-        completionHandler(dataError)
+        return dataError
     }
 
-    func logNoTextError(completionHandler: ((Error) -> Void)) {
+    func logNoTextError() -> Error {
         let dataError = NSError(domain: ErrorDomain.noText.rawValue, code: ErrorCode.noText.rawValue)
-        completionHandler(dataError)
+        return dataError
     }
 
 }

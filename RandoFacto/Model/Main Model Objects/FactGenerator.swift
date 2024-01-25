@@ -80,9 +80,7 @@ struct FactGenerator {
         didBeginHandler()
         // 2. Create the URL, URL request, and URL session.
         guard let url = URL(string: factURLString) else {
-            logFactDataError { error in
-                completionHandler(nil, error)
-            }
+                completionHandler(nil, logFactDataError())
             return
         }
         let urlRequest = createFactGeneratorHTTPRequest(with: url)
@@ -99,10 +97,7 @@ struct FactGenerator {
     func handleFactGenerationDataTaskResult(didBeginHandler: @escaping (() -> Void), data: Data?, response: URLResponse?, error: Error?, completionHandler: @escaping ((String?, Error?) -> Void)) {
         // 1. If an HTTP response is returned and its code isn't within the 2xx range, log it as an error.
         if let httpResponse = response as? HTTPURLResponse, httpResponse.isUnsuccessful {
-            httpResponse.logAsError {
-                error in
-                completionHandler(nil, error)
-            }
+                completionHandler(nil, httpResponse.logAsError())
         }
         // 2. Log any errors.
         else if let error = error {
@@ -120,10 +115,7 @@ struct FactGenerator {
                         completionHandler(nil, error)
                     } else if let fact = fact {
                         if fact.isEmpty {
-                            logNoTextError {
-                                error in
-                                completionHandler(nil, error)
-                            }
+                           completionHandler(nil, logNoTextError())
                         } else {
                             completionHandler(fact, nil)
                         }
@@ -205,9 +197,7 @@ struct FactGenerator {
             completionHandler(nil, error)
         }
         if let httpResponse = response as? HTTPURLResponse, httpResponse.isUnsuccessful {
-            httpResponse.logAsError { error in
-                completionHandler(nil, error)
-            }
+            completionHandler(nil, httpResponse.logAsError())
         }
         let jsonParsingResult = parseInappropriateWordsCheckerJSON(data: data)
         switch jsonParsingResult {
@@ -233,7 +223,7 @@ struct FactGenerator {
         request.timeoutInterval = urlRequestTimeoutInterval
         // 4. Specify the data model that you want to send.
         let body = ["content": fact]
-        // 5. Try to convert model to JSON data and return the created request. If conversion fails, log an error.
+        // 5. Try to convert body to JSON data and return the created request. If conversion fails, log an error.
         do {
             let jsonData = try JSONSerialization.data(withJSONObject: body, options: [.fragmentsAllowed])
             request.httpBody = jsonData
