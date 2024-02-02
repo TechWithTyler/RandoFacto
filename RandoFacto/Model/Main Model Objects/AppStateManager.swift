@@ -120,6 +120,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
         }
     }
     
+    // The initializers for the AppStateManager, NetworkManager, FavoriteFactsDatabase, FavoriteFactsListDisplayManager, AuthenticationManager, and ErrorManager that don't take any arguments are used for Xcode previews.
     override init() {
         self.errorManager = ErrorManager()
         self.networkManager = NetworkManager()
