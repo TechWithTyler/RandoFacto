@@ -201,7 +201,7 @@ struct SettingsView: View {
         }
         .formStyle(.grouped)
         // Delete account alert
-        .alert("Are you sure you REALLY want to delete your account?", isPresented: $authenticationManager.showingDeleteAccount) {
+        .alert("Are you sure you REALLY want to delete your RandoFacto account?", isPresented: $authenticationManager.showingDeleteAccount) {
             Button("Cancel", role: .cancel) {
                 authenticationManager.showingDeleteAccount = false
             }

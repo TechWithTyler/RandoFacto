@@ -80,6 +80,9 @@ struct RandoFactoApp: App {
             #if os(macOS)
 				.frame(minWidth: 800, minHeight: 300, alignment: .center)
             #endif
+            #if os(iOS)
+                .pickerStyle(.navigationLink)
+            #endif
 				.ignoresSafeArea(edges: .all)
 		}
         // Menu/keyboard commands for the scene
