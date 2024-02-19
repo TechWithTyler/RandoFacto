@@ -260,6 +260,7 @@ struct SettingsView: View {
             Section {
                 VoicePicker(selectedVoiceID: $appStateManager.selectedVoiceID, voices: appStateManager.voices)
                 .onChange(of: appStateManager.selectedVoiceID) { value in
+                    print("New voice ID: \(value)")
                     appStateManager.speakFact(fact: sampleFact)
                 }
             }
@@ -309,7 +310,7 @@ struct SettingsView: View {
     // MARK: - Fact Text Size Slider
     
     var factTextSizeSlider: some View {
-        Slider(value: $appStateManager.factTextSize, in: minFontSize...maxFontSize, step: 1) {
+        Slider(value: $appStateManager.factTextSize, in: SATextMinFontSize...SATextMaxFontSize, step: 1) {
             Text(factTextSizeSliderText)
         } minimumValueLabel: {
             Image(systemName: "textformat.size.smaller")

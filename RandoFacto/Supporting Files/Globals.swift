@@ -62,17 +62,9 @@ let signupText = "Signup"
 // The name of the filled-circle exclamation mark SF Symbol used for errors.
 let errorSymbolName = "exclamationmark.circle.fill"
 
-let defaultVoiceID = "com.apple.ttsbundle.Samantha-compact"
+let defaultVoiceID = "com.apple.voice.compact.en-US.Samantha"
 
 let sampleFact = "\(appName!) was coded in Swift by Tyler Sheft!"
-
-// MARK: - Properties - Doubles
-
-// The app's minimum font size.
-var minFontSize: Double = 14
-
-// The app's maximum font size.
-var maxFontSize: Double = 48
 
 // The default URL request timeout interval (can't be changed in release builds).
 var defaultURLRequestTimeoutInterval: Double = 10

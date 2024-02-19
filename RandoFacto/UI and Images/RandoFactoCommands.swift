@@ -37,12 +37,12 @@ struct RandoFactoCommands: Commands {
                 Button("Increase Fact Text Size") {
                     appStateManager.factTextSize += 1
                 }
-                .disabled(appStateManager.factTextSize == maxFontSize)
+                .disabled(appStateManager.factTextSize == SATextMaxFontSize)
                 .keyboardShortcut(KeyEquivalent("+"), modifiers: .command)
                 Button("Decrease Fact Text Size") {
                     appStateManager.factTextSize -= 1
                 }
-                .disabled(appStateManager.factTextSize == minFontSize)
+                .disabled(appStateManager.factTextSize == SATextMinFontSize)
                 .keyboardShortcut(KeyEquivalent("-"), modifiers: .command)
             }
         }
