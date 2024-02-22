@@ -3,9 +3,11 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 11/17/23.
+//  Copyright © 2022-2024 SheftApps. All rights reserved.
 //
 
 import SwiftUI
+import SheftAppsStylishUI
 
 struct RandoFactoCommands: Commands {
     
@@ -37,12 +39,12 @@ struct RandoFactoCommands: Commands {
                 Button("Increase Fact Text Size") {
                     appStateManager.factTextSize += 1
                 }
-                .disabled(appStateManager.factTextSize == SATextMaxFontSize)
+                .disabled(appStateManager.factTextSize == SATextViewMaxFontSize)
                 .keyboardShortcut(KeyEquivalent("+"), modifiers: .command)
                 Button("Decrease Fact Text Size") {
                     appStateManager.factTextSize -= 1
                 }
-                .disabled(appStateManager.factTextSize == SATextMinFontSize)
+                .disabled(appStateManager.factTextSize == SATextViewMinFontSize)
                 .keyboardShortcut(KeyEquivalent("-"), modifiers: .command)
             }
         }

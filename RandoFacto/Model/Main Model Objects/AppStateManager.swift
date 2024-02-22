@@ -9,6 +9,7 @@
 import SwiftUI
 import Firebase
 import Speech
+import SheftAppsStylishUI
 
 // Manages the fact generation/display and pages.
 class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
@@ -55,7 +56,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     
     // The @AppStorage property wrapper binds a property to the given UserDefaults key name. Such properties behave the same as UserDefaults get/set properties such as the "5- or 10-frame" setting in SkippyNums, but with the added benefit of automatic UI refreshing.
     // The text size for facts.
-    @AppStorage("factTextSize") var factTextSize: Double = SATextMinFontSize
+    @AppStorage("factTextSize") var factTextSize: Double = SATextViewMinFontSize
     
     // MARK: - Properties - Pages
     
@@ -207,7 +208,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
         // 1. Logout the current user.
         authenticationManager.logoutCurrentUser()
         // 2. Reset all settings.
-        factTextSize = SATextMinFontSize
+        factTextSize = SATextViewMinFontSize
         selectedPage = .randomFact
         favoriteFactsListDisplayManager.searchText.removeAll()
         favoriteFactsListDisplayManager.sortFavoriteFactsAscending = false

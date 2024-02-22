@@ -310,7 +310,7 @@ struct SettingsView: View {
     // MARK: - Fact Text Size Slider
     
     var factTextSizeSlider: some View {
-        Slider(value: $appStateManager.factTextSize, in: SATextMinFontSize...SATextMaxFontSize, step: 1) {
+        Slider(value: $appStateManager.factTextSize, in: SATextViewFontSizeRange, step: 1) {
             Text(factTextSizeSliderText)
         } minimumValueLabel: {
             Image(systemName: "textformat.size.smaller")
