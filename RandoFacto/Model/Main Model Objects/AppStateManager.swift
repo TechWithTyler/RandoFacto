@@ -213,7 +213,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     
     // This method resets all settings to default and logs out the current user.
     func resetApp() {
-        // 1. Logout the current user.
+        // 1. Logout the current user, which will reset all login-required settings to ∂efault.
         authenticationManager.logoutCurrentUser()
         // 2. Reset all settings.
         factTextSize = SATextViewMinFontSize

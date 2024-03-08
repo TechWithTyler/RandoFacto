@@ -22,7 +22,11 @@ struct FactView: View {
     @EnvironmentObject var networkManager: NetworkManager
     
     @EnvironmentObject var errorManager: ErrorManager
-    
+
+    #if os(iOS)
+    let randomizerHaptics = UIImpactFeedbackGenerator(style: .light)
+    #endif
+
     // MARK: - Body
     
     var body: some View {
@@ -41,6 +45,11 @@ struct FactView: View {
         .toolbar {
             toolbarContent
         }
+        #if os(iOS)
+        .onChange(of: favoriteFactsDatabase.randomizerIterations) { value in
+            randomizerHaptics.impactOccurred(intensity: 0.5)
+        }
+        #endif
     }
     
     // MARK: - Fact Text View
