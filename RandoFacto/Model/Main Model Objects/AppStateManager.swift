@@ -33,7 +33,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     var authenticationManager: AuthenticationManager
     
     var voice = AVSpeechSynthesizer()
-    
+
     // MARK: - Properties - Strings
     
     // The text to display in the fact text view.
@@ -57,7 +57,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     // The @AppStorage property wrapper binds a property to the given UserDefaults key name. Such properties behave the same as UserDefaults get/set properties such as the "5- or 10-frame" setting in SkippyNums, but with the added benefit of automatic UI refreshing.
     // The text size for facts.
     @AppStorage("factTextSize") var factTextSize: Double = SATextViewMinFontSize
-    
+
     // MARK: - Properties - Pages
     
     // The page currently selected in the sidebar/top-level view. On macOS, the settings view is accessed by the Settings menu item in the app menu instead of as a page.
@@ -76,7 +76,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     
     // Whether the onboarding sheet should appear on the next app launch (i.e., the first launch or after resetting the app).
     @AppStorage("shouldOnboard") var shouldOnboard: Bool = true
-    
+
     // Whether the onboarding sheet should be displayed.
     @Published var showingOnboarding: Bool = false
     
@@ -95,7 +95,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     
     // Whether the fact text view is displaying something other than a fact (i.e., a loading message).
     var factTextDisplayingMessage: Bool {
-        return isLoading || factText == generatingRandomFactString
+        return isLoading || factText == generatingRandomFactString || favoriteFactsDatabase.randomizerIterations > 0
     }
     
     // Whether the displayed fact is saved as a favorite.
@@ -171,16 +171,24 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     }
     
     // MARK: - Favorite Facts - Display Favorite Fact
-    
+
     // This method gets a random fact from the favorite facts list and sets factText to its text.
     func getRandomFavoriteFact() {
-        let favoriteFact = favoriteFactsDatabase.favoriteFacts.randomElement()?.text ?? factUnavailableString
-        DispatchQueue.main.async { [self] in
-            voice.stopSpeaking(at: .immediate)
+        let block: (() -> Void) = { [self] in
+            let favoriteFact = favoriteFactsDatabase.favoriteFacts.randomElement()?.text ?? factUnavailableString
             factText = favoriteFact
         }
+        DispatchQueue.main.async { [self] in
+            voice.stopSpeaking(at: .immediate)
+            dismissFavoriteFacts()
+            if favoriteFactsDatabase.randomizerEffect && favoriteFactsDatabase.favoriteFacts.count >= 5 {
+                favoriteFactsDatabase.createRandomizerTimer { block() }
+            } else {
+                block()
+            }
+        }
     }
-    
+
     // This method displays favorite and switches to the "Random Fact" page.
     func displayFavoriteFact(_ favorite: String) {
         DispatchQueue.main.async { [self] in

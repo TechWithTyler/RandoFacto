@@ -142,7 +142,7 @@ struct ContentView: View {
                 NavigationLink(value: AppPage.favoriteFacts) {
                     label(for: .favoriteFacts)
                 }
-                .disabled(appStateManager.factText == generatingRandomFactString)
+                .disabled(appStateManager.factText == generatingRandomFactString || favoriteFactsDatabase.randomizerIterations > 0)
                 .contextMenu {
                     UnfavoriteAllButton()
                         .environmentObject(favoriteFactsDatabase)

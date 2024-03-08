@@ -31,9 +31,12 @@ class FavoriteFactsDatabase: ObservableObject {
     
     // Listens for changes to the current user's favorite facts.
     var favoriteFactsListener: ListenerRegistration? = nil
-    
+
     // MARK: - Properties - Booleans
-    
+
+    // Whether a randomizer effect should be used when getting a random favorite fact.
+    @AppStorage("randomizerEffect") var randomizerEffect: Bool = false
+
     // Whether the "delete this favorite fact" alert should be displayed.
     @Published var showingDeleteFavoriteFact: Bool = false
     
@@ -49,7 +52,13 @@ class FavoriteFactsDatabase: ObservableObject {
     
     // Whether to display one of the user's favorite facts or generate a random fact when the app launches. This setting resets to 0 (Random Fact), and is hidden, when the user logs out or deletes their account.
     @AppStorage("initialFact") var initialFact: Int = 0
-    
+
+    var randomizerIterations: Int = 0
+
+    // MARK: - Properties - Randomizer Timer
+
+    var randomizerTimer: Timer? = nil
+
     // MARK: - Initialization
     
     init(firestore: Firestore, networkManager: NetworkManager, errorManager: ErrorManager) {
@@ -114,7 +123,27 @@ class FavoriteFactsDatabase: ObservableObject {
             errorManager.showError(error)
         }
     }
-    
+
+    // MARK: - Randomizer Timer
+
+    func createRandomizerTimer(block: @escaping (() -> Void)) {
+        let maxIterations = 20
+        randomizerTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(Double(randomizerIterations)/Double(maxIterations*4)), repeats: true, block: { [self] timer in
+            if randomizerIterations == maxIterations {
+                timer.invalidate()
+                randomizerTimer = nil
+                randomizerIterations = 0
+            } else {
+                randomizerIterations += 1
+                timer.invalidate()
+                createRandomizerTimer {
+                    block()
+                }
+            }
+            block()
+        })
+    }
+
     // MARK: - Saving/Deleting
     
     // This method creates a FavoriteFact from factText and saves it to the favorite facts database.

@@ -48,7 +48,7 @@ struct SettingsView: View {
                 SAMVisualEffectViewSwiftUIRepresentable {
                     displayPage
                 }
-                .frame(width: 400, height: authenticationManager.userLoggedIn ? 390 : 280)
+                .frame(width: 400, height: authenticationManager.userLoggedIn ? 420 : 280)
                 .formStyle(.grouped)
                 .tabItem {
                     Label(SettingsPage.display.rawValue.capitalized, systemImage: "textformat.size")
@@ -134,6 +134,11 @@ struct SettingsView: View {
                     }
                 } footer: {
                     Text("This setting will reset to \"\(randomFactSettingTitle)\" when you logout or delete your account.")
+                }
+                Section {
+                    Toggle("Favorite Fact Randomizer Effect", isOn: $favoriteFactsDatabase.randomizerEffect)
+                } footer: {
+                    Text("This setting specifies whether a randomizer effect should be used when getting a random favorite fact instead of simply displaying a random favorite fact.")
                 }
             }
             Section {

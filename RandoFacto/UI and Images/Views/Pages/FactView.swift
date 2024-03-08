@@ -111,7 +111,7 @@ struct FactView: View {
     
     @ToolbarContentBuilder
     var toolbarContent: some ToolbarContent {
-        let displayingLoadingMessage = appStateManager.factText.last == "…" || appStateManager.factText.isEmpty
+        let displayingLoadingMessage = appStateManager.factText.last == "…" || appStateManager.factText.isEmpty || favoriteFactsDatabase.randomizerIterations > 0
         if displayingLoadingMessage {
             ToolbarItem(placement: .automatic) {
                 LoadingIndicator()
