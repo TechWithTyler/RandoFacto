@@ -424,6 +424,7 @@ class AuthenticationManager: ObservableObject {
                         // 6. If successful, all user data has been deleted, so the account can be safely deleted.
                         user.delete { [self] error in
                             if error == nil {
+                                // 7. If account deletion is successful, log the now-deleted user out of this device and reset all login-required settings to their defaults.
                                 logoutCurrentUser()
                             }
                             accountDeletionStage = nil
