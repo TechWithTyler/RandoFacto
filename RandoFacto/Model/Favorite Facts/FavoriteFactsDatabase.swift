@@ -53,6 +53,10 @@ class FavoriteFactsDatabase: ObservableObject {
     // Whether to display one of the user's favorite facts or generate a random fact when the app launches. This setting resets to 0 (Random Fact), and is hidden, when the user logs out or deletes their account.
     @AppStorage("initialFact") var initialFact: Int = 0
 
+    // The maximum number of iterations for the randomizer effect. The randomizer effect starts out fast and gradually slows down, by using the equation randomizerIterations divided by (maxRandomizerIterations times 4).
+    let maxRandomizerIterations: Int = 20
+
+    // The number of iterations the randomizer effect has gone through. The randomizer stops after this property reaches maxRandomizerIterations.
     var randomizerIterations: Int = 0
 
     // MARK: - Properties - Randomizer Timer
@@ -126,10 +130,10 @@ class FavoriteFactsDatabase: ObservableObject {
 
     // MARK: - Randomizer Timer
 
+    // This method creates the randomizer timer.
     func createRandomizerTimer(block: @escaping (() -> Void)) {
-        let maxIterations = 20
-        randomizerTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(Double(randomizerIterations)/Double(maxIterations*4)), repeats: true, block: { [self] timer in
-            if randomizerIterations == maxIterations {
+        randomizerTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(Double(randomizerIterations)/Double(maxRandomizerIterations*4)), repeats: true, block: { [self] timer in
+            if randomizerIterations == maxRandomizerIterations {
                 timer.invalidate()
                 randomizerTimer = nil
                 randomizerIterations = 0
