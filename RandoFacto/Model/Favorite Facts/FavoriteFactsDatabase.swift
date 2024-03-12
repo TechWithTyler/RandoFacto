@@ -61,6 +61,7 @@ class FavoriteFactsDatabase: ObservableObject {
 
     // MARK: - Properties - Randomizer Timer
 
+    // The timer used for the randomizer effect.
     var randomizerTimer: Timer? = nil
 
     // MARK: - Initialization
