@@ -100,10 +100,11 @@ class AuthenticationManager: ObservableObject {
         addRegisteredUsersHandler()
     }
     
-    init() {
-        self.firebaseAuthentication = Authentication.auth()
-        self.networkManager = NetworkManager()
-        self.errorManager = ErrorManager()
+    convenience init() {
+        let firebaseAuthentication = Authentication.auth()
+        let networkManager = NetworkManager()
+        let errorManager = ErrorManager()
+        self.init(firebaseAuthentication: firebaseAuthentication, networkManager: networkManager, errorManager: errorManager)
         addRegisteredUsersHandler()
     }
     

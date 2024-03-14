@@ -21,8 +21,9 @@ class FavoriteFactsListDisplayManager: ObservableObject {
         self.favoriteFactsDatabase = favoriteFactsDatabase
     }
     
-    init() {
-        self.favoriteFactsDatabase = FavoriteFactsDatabase()
+    convenience init() {
+        let favoriteFactsDatabase = FavoriteFactsDatabase()
+        self.init(favoriteFactsDatabase: favoriteFactsDatabase)
     }
     
     // MARK: - Properties - Searching
