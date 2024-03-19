@@ -123,6 +123,7 @@ struct AuthenticationFormView: View {
                         .keyboardType(.emailAddress)
 #endif
                         .submitLabel(.next)
+                        .foregroundStyle(authenticationManager.invalidCredentialField == .email ? .red : .primary)
                         .focused($focusedField, equals: .email)
                         .onSubmit(of: .text) {
                             focusedField = .password
@@ -136,6 +137,7 @@ struct AuthenticationFormView: View {
                 ViewablePasswordField("Password", text: $authenticationManager.passwordFieldText, signup: authenticationManager.formType == .signup)
                     .focused($focusedField, equals: .password)
                     .submitLabel(.done)
+                    .foregroundStyle(authenticationManager.invalidCredentialField == .password ? .red : .primary)
                     .onSubmit(of: .text) {
                         guard !authenticationManager.formInvalid else {
                             focusedField = .email
