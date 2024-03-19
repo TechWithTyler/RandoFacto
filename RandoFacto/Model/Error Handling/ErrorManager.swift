@@ -34,6 +34,8 @@ class ErrorManager: ObservableObject {
             // Network errors
         case URLError.notConnectedToInternet.rawValue:
             errorToShow = .noInternetFactGeneration
+        case URLError.secureConnectionFailed.rawValue:
+            errorToShow = .secureConnectionFailed
         case AuthErrorCode.networkError.rawValue:
             errorToShow = .noInternetAuthentication
         case URLError.networkConnectionLost.rawValue:

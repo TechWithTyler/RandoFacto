@@ -18,9 +18,12 @@ enum RandoFactoError: LocalizedError, Equatable, Identifiable {
     
     // Network connection lost.
     case networkConnectionLost
-    
+
+    // An SSL connection couldn't be made (e.g. internet is restricted or not available on the current network).
+    case secureConnectionFailed
+
     // MARK: - Error Case Definitions - Fact Generation
-    
+
     // Fact generation/screening timeout
     case factGenerationTimedOut
     
@@ -82,6 +85,8 @@ enum RandoFactoError: LocalizedError, Equatable, Identifiable {
             return "Please check your internet connection and try again."
         case .networkConnectionLost:
             return "Internet connection lost."
+        case .secureConnectionFailed:
+            return "Secure connection failed. If using a public Wi-Fi network, make sure you've activated your internet access."
         case .factGenerationTimedOut:
             return "Fact generation took too long. Please try again later."
         case let .badHTTPResponse(domain):
