@@ -128,14 +128,16 @@ struct RandoFactoApp: App {
         let authenticationManager = AuthenticationManager(firebaseAuthentication: firebaseAuthentication, networkManager: networkManager, errorManager: errorManager)
         let favoriteFactsDatabase = FavoriteFactsDatabase(firestore: firestore, networkManager: networkManager, errorManager: errorManager)
         let favoriteFactsListDisplayManager = FavoriteFactsListDisplayManager(favoriteFactsDatabase: favoriteFactsDatabase)
+        let appStateManager = AppStateManager(errorManager: errorManager, networkManager: networkManager, favoriteFactsDatabase: favoriteFactsDatabase, favoriteFactsListDisplayManager: favoriteFactsListDisplayManager, authenticationManager: authenticationManager)
         self.firebaseAuthentication = firebaseAuthentication
         self.authenticationManager = authenticationManager
         self.firestore = firestore
         self.favoriteFactsDatabase = favoriteFactsDatabase
+        self.appStateManager = appStateManager
         self.errorManager = errorManager
-        self.networkManager = NetworkManager(errorManager: errorManager, firestore: firestore)
-        self.appStateManager = AppStateManager(errorManager: errorManager, networkManager: networkManager, favoriteFactsDatabase: favoriteFactsDatabase, favoriteFactsListDisplayManager: favoriteFactsListDisplayManager, authenticationManager: authenticationManager)
+        self.networkManager = networkManager
         self.favoriteFactsListDisplayManager = favoriteFactsListDisplayManager
+        // 6. Link the FavoriteFactsDatabase and AuthenticationManager to each other. This can't be done at initialization time, so these properties are optional, allowing them to be nil until after initialization, where they're then set to their proper values here.
         self.favoriteFactsDatabase.authenticationManager = authenticationManager
         self.authenticationManager.favoriteFactsDatabase = favoriteFactsDatabase
 	}

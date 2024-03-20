@@ -79,6 +79,7 @@ class FavoriteFactsDatabase: ObservableObject {
         let errorManager = ErrorManager()
         let authenticationManager = AuthenticationManager()
         self.init(firestore: firestore, networkManager: networkManager, errorManager: errorManager)
+        self.authenticationManager = authenticationManager
         loadFavoriteFactsForCurrentUser()
     }
     
