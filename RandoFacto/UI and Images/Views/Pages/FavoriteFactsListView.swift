@@ -174,7 +174,7 @@ struct FavoriteFactsListView: View {
     @ToolbarContentBuilder
     var toolbarContent: some ToolbarContent {
         ToolbarItem(placement: .automatic) {
-            OptionsMenu {
+            OptionsMenu(title: .menu) {
                 Picker("Sort", selection: $favoriteFactsListDisplayManager.sortFavoriteFactsAscending) {
                     Text("Ascending (A-Z)").tag(true)
                     Text("Descending (Z-A)").tag(false)
