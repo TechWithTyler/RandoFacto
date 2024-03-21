@@ -53,7 +53,7 @@ class NetworkConnectionManager: ObservableObject {
             }
         }
         // 4. Start the network path monitor, using a separate DispatchQueue for it.
-        let dispatchQueue = DispatchQueue(label: "Network Path Monitor")
+        let dispatchQueue = DispatchQueue(label: "Network Path Monitor", qos: .utility)
         networkPathMonitor.start(queue: dispatchQueue)
     }
     
