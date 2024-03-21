@@ -24,7 +24,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     
     var errorManager: ErrorManager
     
-    var networkManager: NetworkManager
+    var networkConnectionManager: NetworkConnectionManager
     
     var favoriteFactsDatabase: FavoriteFactsDatabase
     
@@ -105,10 +105,10 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     
     // MARK: - Initialization
     
-    init(errorManager: ErrorManager, networkManager: NetworkManager, favoriteFactsDatabase: FavoriteFactsDatabase, favoriteFactsListDisplayManager: FavoriteFactsListDisplayManager, authenticationManager: AuthenticationManager) {
+    init(errorManager: ErrorManager, networkConnectionManager: NetworkConnectionManager, favoriteFactsDatabase: FavoriteFactsDatabase, favoriteFactsListDisplayManager: FavoriteFactsListDisplayManager, authenticationManager: AuthenticationManager) {
         // 1. Configure the network path monitor.
         self.errorManager = errorManager
-        self.networkManager = networkManager
+        self.networkConnectionManager = networkConnectionManager
         self.favoriteFactsDatabase = favoriteFactsDatabase
         self.favoriteFactsListDisplayManager = favoriteFactsListDisplayManager
         self.authenticationManager = authenticationManager
@@ -121,14 +121,14 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
         }
     }
     
-    // The initializers for the AppStateManager, NetworkManager, FavoriteFactsDatabase, FavoriteFactsListDisplayManager, AuthenticationManager, and ErrorManager that don't take any arguments are used for Xcode previews.
+    // The initializers for the AppStateManager, NetworkConnectionManager, FavoriteFactsDatabase, FavoriteFactsListDisplayManager, AuthenticationManager, and ErrorManager that don't take any arguments are used for Xcode previews.
     convenience override init() {
         let errorManager = ErrorManager()
-        let networkManager = NetworkManager()
+        let networkConnectionManager = NetworkConnectionManager()
         let favoriteFactsDatabase = FavoriteFactsDatabase()
         let favoriteFactsListDisplayManager = FavoriteFactsListDisplayManager()
         let authenticationManager = AuthenticationManager()
-        self.init(errorManager: errorManager, networkManager: networkManager, favoriteFactsDatabase: favoriteFactsDatabase, favoriteFactsListDisplayManager: favoriteFactsListDisplayManager, authenticationManager: authenticationManager)
+        self.init(errorManager: errorManager, networkConnectionManager: networkConnectionManager, favoriteFactsDatabase: favoriteFactsDatabase, favoriteFactsListDisplayManager: favoriteFactsListDisplayManager, authenticationManager: authenticationManager)
         displayInitialFact()
     }
     

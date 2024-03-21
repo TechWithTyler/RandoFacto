@@ -40,7 +40,7 @@ struct RandoFactoApp: App {
 	@ObservedObject var appStateManager: AppStateManager
     
     // Manages the app's network features.
-    @ObservedObject var networkManager: NetworkManager
+    @ObservedObject var networkConnectionManager: NetworkConnectionManager
     
     // Manages authentication/user accounts.
     @ObservedObject var authenticationManager: AuthenticationManager
@@ -72,7 +72,7 @@ struct RandoFactoApp: App {
 			ContentView()
             // Pass model objects to views using .environmentObject(<#object#>). You don't need to pass them to each child view--just pass them once and all child views have access.
                 .environmentObject(appStateManager)
-                .environmentObject(networkManager)
+                .environmentObject(networkConnectionManager)
                 .environmentObject(errorManager)
                 .environmentObject(favoriteFactsDatabase)
                 .environmentObject(authenticationManager)
@@ -87,7 +87,7 @@ struct RandoFactoApp: App {
 		}
         // Menu/keyboard commands for the scene
         .commands {
-            RandoFactoCommands(appStateManager: appStateManager, networkManager: networkManager, errorManager: errorManager, authenticationManager: authenticationManager, favoriteFactsDatabase: favoriteFactsDatabase)
+            RandoFactoCommands(appStateManager: appStateManager, networkConnectionManager: networkConnectionManager, errorManager: errorManager, authenticationManager: authenticationManager, favoriteFactsDatabase: favoriteFactsDatabase)
         }
         #if os(macOS)
         // Settings window scene
@@ -95,7 +95,7 @@ struct RandoFactoApp: App {
 		Settings {
 			SettingsView()
                 .environmentObject(appStateManager)
-                .environmentObject(networkManager)
+                .environmentObject(networkConnectionManager)
                 .environmentObject(errorManager)
                 .environmentObject(favoriteFactsDatabase)
                 .environmentObject(authenticationManager)
@@ -124,18 +124,18 @@ struct RandoFactoApp: App {
         firestore.settings = firestoreSettings
         // 3. Configure the managers after having set Firestore's settings (you must set all desired Firestore settings BEFORE calling any other methods on it).
         let errorManager = ErrorManager()
-        let networkManager = NetworkManager(errorManager: errorManager, firestore: firestore)
-        let authenticationManager = AuthenticationManager(firebaseAuthentication: firebaseAuthentication, networkManager: networkManager, errorManager: errorManager)
-        let favoriteFactsDatabase = FavoriteFactsDatabase(firestore: firestore, networkManager: networkManager, errorManager: errorManager)
+        let networkConnectionManager = NetworkConnectionManager(errorManager: errorManager, firestore: firestore)
+        let authenticationManager = AuthenticationManager(firebaseAuthentication: firebaseAuthentication, networkConnectionManager: networkConnectionManager, errorManager: errorManager)
+        let favoriteFactsDatabase = FavoriteFactsDatabase(firestore: firestore, networkConnectionManager: networkConnectionManager, errorManager: errorManager)
         let favoriteFactsListDisplayManager = FavoriteFactsListDisplayManager(favoriteFactsDatabase: favoriteFactsDatabase)
-        let appStateManager = AppStateManager(errorManager: errorManager, networkManager: networkManager, favoriteFactsDatabase: favoriteFactsDatabase, favoriteFactsListDisplayManager: favoriteFactsListDisplayManager, authenticationManager: authenticationManager)
+        let appStateManager = AppStateManager(errorManager: errorManager, networkConnectionManager: networkConnectionManager, favoriteFactsDatabase: favoriteFactsDatabase, favoriteFactsListDisplayManager: favoriteFactsListDisplayManager, authenticationManager: authenticationManager)
         self.firebaseAuthentication = firebaseAuthentication
         self.authenticationManager = authenticationManager
         self.firestore = firestore
         self.favoriteFactsDatabase = favoriteFactsDatabase
         self.appStateManager = appStateManager
         self.errorManager = errorManager
-        self.networkManager = networkManager
+        self.networkConnectionManager = networkConnectionManager
         self.favoriteFactsListDisplayManager = favoriteFactsListDisplayManager
         // 6. Link the FavoriteFactsDatabase and AuthenticationManager to each other. This can't be done at initialization time, so these properties are optional, allowing them to be nil until after initialization, where they're then set to their proper values here.
         self.favoriteFactsDatabase.authenticationManager = authenticationManager

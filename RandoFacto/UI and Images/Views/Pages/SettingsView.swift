@@ -15,7 +15,7 @@ struct SettingsView: View {
     
     @EnvironmentObject var appStateManager: AppStateManager
     
-    @EnvironmentObject var networkManager: NetworkManager
+    @EnvironmentObject var networkConnectionManager: NetworkConnectionManager
     
     @EnvironmentObject var authenticationManager: AuthenticationManager
     
@@ -171,7 +171,7 @@ struct SettingsView: View {
             if let deletionStage = authenticationManager.accountDeletionStage {
                 LoadingIndicator(message: "Deleting \(deletionStage)…")
             } else if authenticationManager.userLoggedIn {
-                if networkManager.deviceIsOnline {
+                if networkConnectionManager.deviceIsOnline {
                     Section {
                         Button("Change Password…") {
                             authenticationManager.formType = .passwordChange
@@ -183,7 +183,7 @@ struct SettingsView: View {
                         authenticationManager.showingLogout = true
                     }
                 }
-                if networkManager.deviceIsOnline {
+                if networkConnectionManager.deviceIsOnline {
                     Section {
                         Button("DELETE ACCOUNT…", role: .destructive) {
                             authenticationManager.showingDeleteAccount = true
@@ -191,7 +191,7 @@ struct SettingsView: View {
                     }
                 }
             } else {
-                if networkManager.deviceIsOnline {
+                if networkConnectionManager.deviceIsOnline {
                     Button(loginText) {
                         authenticationManager.formType = .login
                     }
@@ -252,7 +252,7 @@ struct SettingsView: View {
         .sheet(item: $authenticationManager.formType) {_ in
             AuthenticationFormView()
                 .environmentObject(appStateManager)
-                .environmentObject(networkManager)
+                .environmentObject(networkConnectionManager)
                 .environmentObject(authenticationManager)
                 .environmentObject(errorManager)
         }
@@ -297,7 +297,7 @@ struct SettingsView: View {
         .sheet(item: $authenticationManager.formType) {_ in
             AuthenticationFormView()
                 .environmentObject(appStateManager)
-                .environmentObject(networkManager)
+                .environmentObject(networkConnectionManager)
                 .environmentObject(authenticationManager)
                 .environmentObject(errorManager)
         }
@@ -333,7 +333,7 @@ struct SettingsView: View {
         SettingsView()
             .environmentObject(AppStateManager())
             .environmentObject(ErrorManager())
-            .environmentObject(NetworkManager())
+            .environmentObject(NetworkConnectionManager())
             .environmentObject(FavoriteFactsDatabase())
             .environmentObject(AuthenticationManager())
             .frame(height: 500)

@@ -19,7 +19,7 @@ struct FavoriteFactsListView: View {
     
     @EnvironmentObject var favoriteFactsListDisplayManager: FavoriteFactsListDisplayManager
     
-    @EnvironmentObject var networkManager: NetworkManager
+    @EnvironmentObject var networkConnectionManager: NetworkConnectionManager
     
     @EnvironmentObject var errorManager: ErrorManager
     
@@ -193,7 +193,7 @@ struct FavoriteFactsListView: View {
     FavoriteFactsListView()
         .environmentObject(AppStateManager())
         .environmentObject(ErrorManager())
-        .environmentObject(NetworkManager())
+        .environmentObject(NetworkConnectionManager())
         .environmentObject(FavoriteFactsDatabase())
         .environmentObject(FavoriteFactsListDisplayManager())
         .environmentObject(AuthenticationManager())

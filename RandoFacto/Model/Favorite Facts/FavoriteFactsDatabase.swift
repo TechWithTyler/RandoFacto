@@ -18,7 +18,7 @@ class FavoriteFactsDatabase: ObservableObject {
     
     var authenticationManager: AuthenticationManager? = nil
     
-    var networkManager: NetworkManager
+    var networkConnectionManager: NetworkConnectionManager
     
     var errorManager: ErrorManager
     
@@ -66,19 +66,19 @@ class FavoriteFactsDatabase: ObservableObject {
 
     // MARK: - Initialization
     
-    init(firestore: Firestore, networkManager: NetworkManager, errorManager: ErrorManager) {
+    init(firestore: Firestore, networkConnectionManager: NetworkConnectionManager, errorManager: ErrorManager) {
         self.firestore = firestore
-        self.networkManager = networkManager
+        self.networkConnectionManager = networkConnectionManager
         self.errorManager = errorManager
         loadFavoriteFactsForCurrentUser()
     }
     
     convenience init() {
         let firestore = Firestore.firestore()
-        let networkManager = NetworkManager()
+        let networkConnectionManager = NetworkConnectionManager()
         let errorManager = ErrorManager()
         let authenticationManager = AuthenticationManager()
-        self.init(firestore: firestore, networkManager: networkManager, errorManager: errorManager)
+        self.init(firestore: firestore, networkConnectionManager: networkConnectionManager, errorManager: errorManager)
         self.authenticationManager = authenticationManager
         loadFavoriteFactsForCurrentUser()
     }

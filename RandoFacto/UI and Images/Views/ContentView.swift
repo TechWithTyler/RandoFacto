@@ -22,7 +22,7 @@ struct ContentView: View {
     
     @EnvironmentObject var favoriteFactSearcher: FavoriteFactsListDisplayManager
     
-    @EnvironmentObject var networkManager: NetworkManager
+    @EnvironmentObject var networkConnectionManager: NetworkConnectionManager
     
     @EnvironmentObject var errorManager: ErrorManager
     
@@ -201,7 +201,7 @@ struct ContentView: View {
     ContentView()
         .environmentObject(AppStateManager())
         .environmentObject(ErrorManager())
-        .environmentObject(NetworkManager())
+        .environmentObject(NetworkConnectionManager())
         .environmentObject(FavoriteFactsDatabase())
         .environmentObject(FavoriteFactsListDisplayManager())
         .environmentObject(AuthenticationManager())

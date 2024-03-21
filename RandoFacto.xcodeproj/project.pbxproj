@@ -18,7 +18,7 @@
 		8D5E25052B5B8EFF00B51730 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D5E25042B5B8EFF00B51730 /* OnboardingView.swift */; };
 		8D5E25092B5DAD0A00B51730 /* AuthenticationFormField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D5E25082B5DAD0A00B51730 /* AuthenticationFormField.swift */; };
 		8D5E25152B6199B300B51730 /* URLRequestExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D5E25122B6198B500B51730 /* URLRequestExtension.swift */; };
-		8D5E9A2A2B226DE800C261B8 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D5E9A292B226DE800C261B8 /* NetworkManager.swift */; };
+		8D5E9A2A2B226DE800C261B8 /* NetworkConnectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D5E9A292B226DE800C261B8 /* NetworkConnectionManager.swift */; };
 		8D63D5F92AFF1D470084BACF /* UserDeletionStage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D63D5F82AFF1D470084BACF /* UserDeletionStage.swift */; };
 		8D63D5FD2AFF4A180084BACF /* StringEmojiChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D63D5FC2AFF4A180084BACF /* StringEmojiChecker.swift */; };
 		8D69ADEA2B1FCC20002BA65E /* ErrorManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D69ADE92B1FCC20002BA65E /* ErrorManager.swift */; };
@@ -91,7 +91,7 @@
 		8D5E25042B5B8EFF00B51730 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		8D5E25082B5DAD0A00B51730 /* AuthenticationFormField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationFormField.swift; sourceTree = "<group>"; };
 		8D5E25122B6198B500B51730 /* URLRequestExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLRequestExtension.swift; sourceTree = "<group>"; };
-		8D5E9A292B226DE800C261B8 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
+		8D5E9A292B226DE800C261B8 /* NetworkConnectionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkConnectionManager.swift; sourceTree = "<group>"; };
 		8D63D5F82AFF1D470084BACF /* UserDeletionStage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDeletionStage.swift; sourceTree = "<group>"; };
 		8D63D5FC2AFF4A180084BACF /* StringEmojiChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringEmojiChecker.swift; sourceTree = "<group>"; };
 		8D69ADE92B1FCC20002BA65E /* ErrorManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorManager.swift; sourceTree = "<group>"; };
@@ -190,7 +190,7 @@
 			children = (
 				8DF48E302936A80700152681 /* AppStateManager.swift */,
 				8DA2C420292C1E6000705A2F /* FactGenerator.swift */,
-				8D5E9A292B226DE800C261B8 /* NetworkManager.swift */,
+				8D5E9A292B226DE800C261B8 /* NetworkConnectionManager.swift */,
 			);
 			path = "Main Model Objects";
 			sourceTree = "<group>";
@@ -482,7 +482,7 @@
 				8D5E25052B5B8EFF00B51730 /* OnboardingView.swift in Sources */,
 				8D5511402B059B3D00BB61D4 /* FactGeneratorErrors.swift in Sources */,
 				8D0312242AF9CAB100DBB2B2 /* LoadingIndicator.swift in Sources */,
-				8D5E9A2A2B226DE800C261B8 /* NetworkManager.swift in Sources */,
+				8D5E9A2A2B226DE800C261B8 /* NetworkConnectionManager.swift in Sources */,
 				8D69ADEA2B1FCC20002BA65E /* ErrorManager.swift in Sources */,
 				8D31D8532B27B759009F29EE /* APIKeys.swift in Sources */,
 				8D5E25092B5DAD0A00B51730 /* AuthenticationFormField.swift in Sources */,

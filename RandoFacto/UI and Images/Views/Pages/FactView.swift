@@ -19,7 +19,7 @@ struct FactView: View {
     
     @EnvironmentObject var favoriteFactsDatabase: FavoriteFactsDatabase
     
-    @EnvironmentObject var networkManager: NetworkManager
+    @EnvironmentObject var networkConnectionManager: NetworkConnectionManager
     
     @EnvironmentObject var errorManager: ErrorManager
 
@@ -83,7 +83,7 @@ struct FactView: View {
                 .hoverEffect(.highlight)
                 #endif
             }
-            if networkManager.deviceIsOnline {
+            if networkConnectionManager.deviceIsOnline {
                 Button {
                     appStateManager.generateRandomFact()
                 } label: {
@@ -164,7 +164,7 @@ struct FactView: View {
     FactView()
         .environmentObject(AppStateManager())
         .environmentObject(ErrorManager())
-        .environmentObject(NetworkManager())
+        .environmentObject(NetworkConnectionManager())
         .environmentObject(FavoriteFactsDatabase())
         .environmentObject(AuthenticationManager())
 }

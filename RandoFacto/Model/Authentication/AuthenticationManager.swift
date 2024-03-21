@@ -18,7 +18,7 @@ class AuthenticationManager: ObservableObject {
     
     var favoriteFactsDatabase: FavoriteFactsDatabase? = nil
     
-    var networkManager: NetworkManager
+    var networkConnectionManager: NetworkConnectionManager
     
     var errorManager: ErrorManager
     
@@ -93,18 +93,18 @@ class AuthenticationManager: ObservableObject {
     
     // MARK: - Initialization
     
-    init(firebaseAuthentication: Authentication, networkManager: NetworkManager, errorManager: ErrorManager) {
+    init(firebaseAuthentication: Authentication, networkConnectionManager: NetworkConnectionManager, errorManager: ErrorManager) {
         self.firebaseAuthentication = firebaseAuthentication
-        self.networkManager = networkManager
+        self.networkConnectionManager = networkConnectionManager
         self.errorManager = errorManager
         addRegisteredUsersHandler()
     }
     
     convenience init() {
         let firebaseAuthentication = Authentication.auth()
-        let networkManager = NetworkManager()
+        let networkConnectionManager = NetworkConnectionManager()
         let errorManager = ErrorManager()
-        self.init(firebaseAuthentication: firebaseAuthentication, networkManager: networkManager, errorManager: errorManager)
+        self.init(firebaseAuthentication: firebaseAuthentication, networkConnectionManager: networkConnectionManager, errorManager: errorManager)
         addRegisteredUsersHandler()
     }
     

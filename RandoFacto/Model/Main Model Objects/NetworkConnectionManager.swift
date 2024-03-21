@@ -1,5 +1,5 @@
 //
-//  NetworkManager.swift
+//  NetworkConnectionManager.swift
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 12/7/23.
@@ -11,7 +11,7 @@ import Network
 import Firebase
 
 // Handles network connection.
-class NetworkManager: ObservableObject {
+class NetworkConnectionManager: ObservableObject {
     
     // MARK: - Properties - Network Path Monitor
     

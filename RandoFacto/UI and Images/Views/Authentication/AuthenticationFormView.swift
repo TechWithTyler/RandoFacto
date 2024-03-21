@@ -17,7 +17,7 @@ struct AuthenticationFormView: View {
     
     @EnvironmentObject var authenticationManager: AuthenticationManager
     
-    @EnvironmentObject var networkManager: NetworkManager
+    @EnvironmentObject var networkConnectionManager: NetworkConnectionManager
     
     @EnvironmentObject var errorManager: ErrorManager
     
@@ -187,7 +187,7 @@ struct AuthenticationFormView: View {
     AuthenticationFormView()
         .environmentObject(AppStateManager())
         .environmentObject(ErrorManager())
-        .environmentObject(NetworkManager())
+        .environmentObject(NetworkConnectionManager())
         .environmentObject(FavoriteFactsDatabase())
         .environmentObject(AuthenticationManager())
 }

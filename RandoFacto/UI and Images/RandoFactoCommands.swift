@@ -13,7 +13,7 @@ struct RandoFactoCommands: Commands {
     
     @ObservedObject var appStateManager: AppStateManager
     
-    @ObservedObject var networkManager: NetworkManager
+    @ObservedObject var networkConnectionManager: NetworkConnectionManager
     
     @ObservedObject var errorManager: ErrorManager
     
@@ -53,7 +53,7 @@ struct RandoFactoCommands: Commands {
                 Button(generateRandomFactButtonTitle) {
                     appStateManager.generateRandomFact()
                 }
-                .disabled(!networkManager.deviceIsOnline || appStateManager.factTextDisplayingMessage)
+                .disabled(!networkConnectionManager.deviceIsOnline || appStateManager.factTextDisplayingMessage)
                 .keyboardShortcut(KeyboardShortcut(KeyEquivalent("g"), modifiers: [.command, .control]))
                 Button(getRandomFavoriteFactButtonTitle) {
                     appStateManager.getRandomFavoriteFact()
