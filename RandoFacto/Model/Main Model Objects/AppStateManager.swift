@@ -11,7 +11,7 @@ import Firebase
 import Speech
 import SheftAppsStylishUI
 
-// Manages the fact generation/display and pages.
+// Manages the fact generation/display and pages. This is not to be confused with an NSApplicationDelegate or UIApplicationDelegate.
 class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     
     // MARK: - Properties - Objects
@@ -43,18 +43,20 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     // The fact currently being spoken.
     @Published var factBeingSpoken: String = String()
     
+    // The @AppStorage property wrapper binds a property to the given UserDefaults key name. Such properties behave the same as UserDefaults get/set properties such as the "5- or 10-frame" setting in SkippyNums, but with the added benefit of automatic UI refreshing.
+    // The ID string of the currently selected voice.
     @AppStorage("selectedVoiceID") var selectedVoiceID: String = defaultVoiceID
-    
+
+    // The voices that are currently available on the device.
     @Published var voices: [AVSpeechSynthesisVoice] = []
-    
+
     // MARK: - Properties - Integers
-    
+
     // The current fact text size as an Int.
     var factTextSizeAsInt: Int {
         return Int(factTextSize)
     }
-    
-    // The @AppStorage property wrapper binds a property to the given UserDefaults key name. Such properties behave the same as UserDefaults get/set properties such as the "5- or 10-frame" setting in SkippyNums, but with the added benefit of automatic UI refreshing.
+
     // The text size for facts.
     @AppStorage("factTextSize") var factTextSize: Double = SATextViewMinFontSize
 

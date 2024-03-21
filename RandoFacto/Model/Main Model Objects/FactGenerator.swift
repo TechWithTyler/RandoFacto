@@ -20,17 +20,19 @@ struct FactGenerator {
     
     typealias InappropriateWordsCheckerHTTPRequestResult = Result<URLRequest, Error>
     
-    // MARK: - Properties - HTTP Request Content Type
-    
+    // MARK: - Properties - Strings
+
     // Specifies that the fact generator and inappropriate words checker APIs should return JSON data.
     let httpRequestContentType = "application/json"
     
     // The name of the random facts API, which is its base URL.
     let randomFactsAPIName = "uselessfacts.jsph.pl"
-    
-    // The version of the random facts API.
+
+    // MARK: - Properties - Integers
+
+    // The major version of the random facts API.
     let randomFactsAPIVersion = 2
-    
+
     // MARK: - Properties - URLs
     
     // The URL of the random facts API.
@@ -63,8 +65,10 @@ struct FactGenerator {
     
     // The timeout interval of URL requests, which determines the maximum number of seconds they can try to run before a "request timed out" error is thrown if unsuccessful.
     #if(DEBUG)
-    @AppStorage("urlRequestTimeoutInterval") 
+    // Allow this to be changed in in-development (internal) builds...
+    @AppStorage("urlRequestTimeoutInterval")
     #endif
+    // ...but not final (release) builds.
     var urlRequestTimeoutInterval: TimeInterval = defaultURLRequestTimeoutInterval
     
     // MARK: - Properties - Errors
@@ -170,7 +174,7 @@ struct FactGenerator {
     
     // MARK: - Inappropriate Words Checker
     
-    // This method screens a fact to make sure it doesn't contain inappropriate words. If it does, fact generation is retried.
+    // This method screens a fact to make sure it doesn't contain inappropriate words. If it does, fact generation is retried. While early builds of the initial release, 2023.12 (November 2022-October 2023), displayed messages to the user during the screening process or if an inappropriate fact was returned, we decided to not make the presence of an inappropriate words checker visible to the user, and it's not mentioned anywhere in the app's documentation or info.
     func screenFact(fact: String, completionHandler: @escaping ((String?, Error?) -> Void)) {
         // 1. Create the URL and URL session.
         guard let url = URL(string: inappropriateWordsCheckerURLString) else {
