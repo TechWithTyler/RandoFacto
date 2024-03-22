@@ -76,13 +76,13 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     
     // MARK: - Properties - Booleans
     
-    // Whether the onboarding sheet should appear on the next app launch (i.e., the first launch or after resetting the app).
+    // Whether the onboarding sheet should appear on the next app launch (i.e., the first launch of version 2024.2 or later, or after resetting the app).
     @AppStorage("shouldOnboard") var shouldOnboard: Bool = true
 
-    // Whether the onboarding sheet should be displayed.
+    // Whether the onboarding sheet should be/is being displayed.
     @Published var showingOnboarding: Bool = false
     
-    // Whether the reset alert should be displayed.
+    // Whether the reset alert should be/is being displayed.
     @Published var showingResetAlert: Bool = false
     
     // Whether favorite facts are available to be displayed.
@@ -108,7 +108,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     // MARK: - Initialization
     
     init(errorManager: ErrorManager, networkConnectionManager: NetworkConnectionManager, favoriteFactsDatabase: FavoriteFactsDatabase, favoriteFactsListDisplayManager: FavoriteFactsListDisplayManager, authenticationManager: AuthenticationManager) {
-        // 1. Configure the network path monitor.
+        // 1. Link the managers and set the speech synthesizer delegate.
         self.errorManager = errorManager
         self.networkConnectionManager = networkConnectionManager
         self.favoriteFactsDatabase = favoriteFactsDatabase
@@ -138,7 +138,9 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     
     // This method either generates a random fact or displays a random favorite fact to the user based on authentication state, number of favorite facts, and settings.
     func displayInitialFact() {
+        // 1. Wait 2 seconds to give the network path monitor time to configure.
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [self] in
+            // 2. Display a fact to the user.
             if favoriteFactsDatabase.initialFact == 0 || favoriteFactsDatabase.favoriteFacts.isEmpty || !authenticationManager.userLoggedIn {
                 generateRandomFact()
             } else {
@@ -215,7 +217,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     
     // This method resets all settings to default and logs out the current user.
     func resetApp() {
-        // 1. Logout the current user, which will reset all login-required settings to ∂efault.
+        // 1. Logout the current user, which will reset all login-required settings to default.
         authenticationManager.logoutCurrentUser()
         // 2. Reset all settings.
         factTextSize = SATextViewMinFontSize
