@@ -87,7 +87,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     
     // Whether favorite facts are available to be displayed.
     var favoriteFactsAvailable: Bool {
-        return authenticationManager.userLoggedIn && !favoriteFactsDatabase.favoriteFacts.isEmpty && authenticationManager.accountDeletionStage == nil
+        return authenticationManager.userLoggedIn && !favoriteFactsDatabase.favoriteFacts.isEmpty && !authenticationManager.isDeletingAccount
     }
     
     // Whether the app is loading.

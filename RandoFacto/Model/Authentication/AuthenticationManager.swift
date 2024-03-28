@@ -85,7 +85,12 @@ class AuthenticationManager: ObservableObject {
     var formInvalid: Bool {
         return formType == .passwordChange ? passwordFieldText.isEmpty : emailFieldText.isEmpty || passwordFieldText.isEmpty
     }
-    
+
+    // Whether user account deletion is in progress (accountDeletionStage is not nil).
+    var isDeletingAccount: Bool {
+        return accountDeletionStage != nil
+    }
+
     // MARK: - Properties - Registered Users Listener
     
     // Listens for changes to the references for registered users.
@@ -135,7 +140,7 @@ class AuthenticationManager: ObservableObject {
                         }
                     } else {
                         // 6. Logout the user if they've been deleted from another device. We need to make sure the snapshot is from the server, not the cache, to prevent the detection of a missing user reference when logging in on a new device for the first time. We also need to make sure a user isn't currently being logged in or deleted on this device, otherwise a missing user would be detected and logged out, causing the operation to never complete.
-                        guard accountDeletionStage == nil && !isAuthenticating else { return }
+                        guard !isDeletingAccount && !isAuthenticating else { return }
                         /*
                          A user reference is considered "missing"/the user is considered "deleted" if any of the following are true:
                          * The snapshot or its documents collection is empty.
@@ -194,7 +199,7 @@ class AuthenticationManager: ObservableObject {
                 }
             } else {
                 if let email = result?.user.email, let id = result?.user.uid {
-                    addMissingUserReference(email: email, id: id) { [self] error in
+                    addMissingUserReferenceForLogin(email: email, id: id) { [self] error in
                         if let error = error {
                             errorManager.showError(error) { [self] randoFactoError in
                                 formErrorText = randoFactoError.localizedDescription
@@ -215,7 +220,7 @@ class AuthenticationManager: ObservableObject {
     
     // MARK: - User References
     
-    // This method adds a reference for the current user once they signup or login and such reference is missing.
+    // This method adds a reference for the current user once they signup, or if they login and such reference is missing.
     func addUserReference(email: String, id: String, completionHandler: @escaping ((Error?) -> Void)) {
         // 1. Create a User.Reference object.
         let userReference = User.Reference(email: email)
@@ -231,8 +236,8 @@ class AuthenticationManager: ObservableObject {
         }
     }
     
-    // This method checks for the current user's reference and adds it if it doesn't exist.
-    func addMissingUserReference(email: String, id: String, completionHandler: @escaping ((Error?) -> Void)) {
+    // This method checks for the current user's reference upon logging in and adds it if it doesn't exist.
+    func addMissingUserReferenceForLogin(email: String, id: String, completionHandler: @escaping ((Error?) -> Void)) {
         // 1. Create the block which will add the missing user reference if needed.
         let addReferenceBlock: ((() -> Void)) = { [self] in
             addUserReference(email: email, id: id) { error in
@@ -251,7 +256,7 @@ class AuthenticationManager: ObservableObject {
                 if let error = error {
                     completionHandler(error)
                 } else {
-                    // 4. If the reference doesn't exist, call the add reference block.
+                    // 4. If the reference doesn't exist, call the add reference block, which will call the completion handler.
                     if let snapshot = snapshot, (snapshot.isEmpty || snapshot.documents.isEmpty) {
                         addReferenceBlock()
                     } else if snapshot == nil {
@@ -266,10 +271,12 @@ class AuthenticationManager: ObservableObject {
     
     // MARK: - Credential Field Change Handler
     
+    // This method clears all authentication messages when the credential field values are changed.
     func credentialFieldsChanged() {
         DispatchQueue.main.async { [self] in
             errorManager.errorToShow = nil
             formErrorText = nil
+            showingResetPasswordEmailSent = false
         }
     }
     
@@ -289,21 +296,28 @@ class AuthenticationManager: ObservableObject {
     
     // This method performs the authentication request when pressing the default button in the toolbar or keyboard.
     func performAuthenticationAction(completionHandler: @escaping ((Bool) -> Void)) {
+        // 1. Make sure the authentication form is being displayed. This method will never be called unless it's displayed, so we can simply return in the else block.
+        guard let formType = formType else { return }
+        // 2. Make sure the password doesn't contain emoji. Emoji can only be entered when the password is visible, so we don't allow emojis at all.
         guard !passwordFieldText.containsEmoji else {
             formErrorText = "Passwords can't contain emoji."
             completionHandler(false)
             return
         }
+        // 3. Clear all authentication messages.
         showingResetPasswordEmailSent = false
         errorManager.errorToShow = nil
         formErrorText = nil
+        // 4. Make the email lowercase before performing the authentication request. Emails are case-insensitive, but this just makes sure the email is always displayed and passed around in the traditional all-lowercase format.
         emailFieldText = emailFieldText.lowercased()
-        if formType == .signup {
+        // 5. Perform the desired authentication request (signup/login/password change) based on formType. The guard-let above is used so the switch statement doesn't need an unused nil case.
+        switch formType {
+        case .signup:
             signup(successHandler: completionHandler)
-        } else if formType == .passwordChange {
-            updatePasswordForCurrentUser(completionHandler: completionHandler)
-        } else {
+        case .login:
             login(successHandler: completionHandler)
+        case .passwordChange:
+            updatePasswordForCurrentUser(completionHandler: completionHandler)
         }
     }
     

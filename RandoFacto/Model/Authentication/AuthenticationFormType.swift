@@ -10,7 +10,7 @@ import Foundation
 
 extension Authentication {
 	
-	// Represents a type of authentication form.
+	// Represents a type of authentication form, which determines how the UI should be displayed.
 	enum FormType: Identifiable {
         
         // MARK: - Authentication Form Type Definitions

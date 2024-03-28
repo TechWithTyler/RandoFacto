@@ -138,7 +138,7 @@ struct ContentView: View {
             NavigationLink(value: AppPage.randomFact) {
                 label(for: .randomFact)
             }
-            if authenticationManager.userLoggedIn && authenticationManager.accountDeletionStage == nil {
+            if authenticationManager.userLoggedIn && !authenticationManager.isDeletingAccount {
                 NavigationLink(value: AppPage.favoriteFacts) {
                     label(for: .favoriteFacts)
                 }
