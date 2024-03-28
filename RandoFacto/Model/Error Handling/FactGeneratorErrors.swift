@@ -28,6 +28,10 @@ extension FactGenerator {
 
 		case noText = 423
 
+        static var factDataHTTPResponseCodeRange: ClosedRange<Int> {
+            return 33000...33999
+        }
+
 	}
     
     // MARK: - Fact Generator Custom Error Logging

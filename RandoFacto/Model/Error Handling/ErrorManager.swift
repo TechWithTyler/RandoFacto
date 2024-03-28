@@ -11,7 +11,7 @@ import Firebase
 
 class ErrorManager: ObservableObject {
     
-    // Whether an error alert should be displayed.
+    // Whether an error alert should be/is being displayed.
     @Published var showingErrorAlert: Bool = false
     
     // MARK: - Properties - RandoFacto Error
@@ -43,7 +43,7 @@ class ErrorManager: ObservableObject {
         case URLError.timedOut.rawValue:
             errorToShow = .factGenerationTimedOut
             // Fact data errors
-        case 33000...33999: /*HTTP response code + 33000 to add 33 (FD) to the beginning*/
+        case FactGenerator.ErrorCode.factDataHTTPResponseCodeRange: /*HTTP response code + 33000 to add 33 (FD) to the beginning*/
             errorToShow = .badHTTPResponse(domain: nsError.domain)
         case FactGenerator.ErrorCode.noText.rawValue:
             errorToShow = .noFactText
@@ -66,11 +66,11 @@ class ErrorManager: ObservableObject {
             errorToShow = .favoriteFactsDatabaseQuotaExceeded
         default:
             // Other errors
-            // If we get an error that hasn't been customized with a friendly message, log the localized description as is.
+            // If we get an error that hasn't been customized with a friendly message, log the localized description as is. Only errors with messages that aren't understandable by the average user are customized above.
             let reason = nsError.localizedDescription
             errorToShow = .unknown(reason: reason)
         }
-        // 3. Show the error in the login/signup dialog if they're open, otherwise show it as an alert.
+        // 3. Show the error in the authentication dialog if it's open, otherwise show it as an alert.
         if let completionHandler = completionHandler, let errorToShow = errorToShow {
             completionHandler(errorToShow)
         } else {
