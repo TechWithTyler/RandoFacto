@@ -275,11 +275,13 @@ class AuthenticationManager: ObservableObject {
     
     // MARK: - Authentication - Dismiss Form
     
+    // This method clears the authentication form for dismissal.
     func dismissForm() {
         DispatchQueue.main.async { [self] in
             emailFieldText.removeAll()
             passwordFieldText.removeAll()
             formErrorText = nil
+            showingResetPasswordEmailSent = false
         }
     }
     
