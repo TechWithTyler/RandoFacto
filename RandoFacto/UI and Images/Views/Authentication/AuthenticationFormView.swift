@@ -156,10 +156,7 @@ struct AuthenticationFormView: View {
                 HStack {
                     Spacer()
                     Button {
-                        errorManager.errorToShow = nil
-                        authenticationManager.showingResetPasswordEmailSent = false
-                        authenticationManager.formErrorText = nil
-                        authenticationManager.sendPasswordResetLink()
+                        authenticationManager.sendPasswordResetLinkToEnteredEmailAddress()
                     } label: {
                         Label(forgotPasswordButtonTitle, systemImage: "questionmark.circle.fill")
                             .labelStyle(.titleAndIcon)

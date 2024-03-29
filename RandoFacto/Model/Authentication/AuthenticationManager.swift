@@ -160,7 +160,7 @@ class AuthenticationManager: ObservableObject {
     }
     
     // MARK: - Post-Signup/Login Request Handler
-    
+
     // This method loads the user's favorite facts if authentication is successful. Otherwise, it logs an error.
     func handleAuthenticationRequest(with result: AuthDataResult?, error: Error?, isSignup: Bool, successHandler: @escaping ((Bool) -> Void)) {
         // 1. Create the block which will be performed if authentication is successful. This block loads the user's favorite facts, adds the registered users handler, and calls the completion handler.
@@ -218,8 +218,8 @@ class AuthenticationManager: ObservableObject {
         }
     }
     
-    // MARK: - User References
-    
+    // MARK: - New/Missing User References
+
     // This method adds a reference for the current user once they signup, or if they login and such reference is missing.
     func addUserReference(email: String, id: String, completionHandler: @escaping ((Error?) -> Void)) {
         // 1. Create a User.Reference object.
@@ -270,7 +270,7 @@ class AuthenticationManager: ObservableObject {
     }
     
     // MARK: - Credential Field Change Handler
-    
+
     // This method clears all authentication messages when the credential field values are changed.
     func credentialFieldsChanged() {
         DispatchQueue.main.async { [self] in
@@ -280,7 +280,7 @@ class AuthenticationManager: ObservableObject {
         }
     }
     
-    // MARK: - Authentication - Dismiss Form
+    // MARK: - Dismiss Form
     
     // This method clears the authentication form for dismissal.
     func dismissForm() {
@@ -292,12 +292,14 @@ class AuthenticationManager: ObservableObject {
         }
     }
     
-    // MARK: - Authentication - Perform Action
+    // MARK: - Perform Action
     
     // This method performs the authentication request when pressing the default button in the toolbar or keyboard.
     func performAuthenticationAction(completionHandler: @escaping ((Bool) -> Void)) {
         // 1. Make sure the authentication form is being displayed. This method will never be called unless it's displayed, so we can simply return in the else block.
-        guard let formType = formType else { return }
+        guard let formType = formType else {
+            completionHandler(false)
+            return }
         // 2. Make sure the password doesn't contain emoji. Emoji can only be entered when the password is visible, so we don't allow emojis at all.
         guard !passwordFieldText.containsEmoji else {
             formErrorText = "Passwords can't contain emoji."
@@ -311,6 +313,7 @@ class AuthenticationManager: ObservableObject {
         // 4. Make the email lowercase before performing the authentication request. Emails are case-insensitive, but this just makes sure the email is always displayed and passed around in the traditional all-lowercase format.
         emailFieldText = emailFieldText.lowercased()
         // 5. Perform the desired authentication request (signup/login/password change) based on formType. The guard-let above is used so the switch statement doesn't need an unused nil case.
+        // The delay between when a Firebase method and its completion handler are called is an actual network-based delay, compared to the app's initial loading delay, which is mostly artificial. If there's no internet connection, the completion handler is called immediately with an error. Completion handlers are passed up the call hierarchy until it reaches this method.
         switch formType {
         case .signup:
             signup(successHandler: completionHandler)
@@ -321,31 +324,35 @@ class AuthenticationManager: ObservableObject {
         }
     }
     
-    // MARK: - Authentication - Signup
-    
+    // MARK: - Signup
+
     // This method takes the user's credentials and tries to sign them up for a RandoFacto account.
     func signup(successHandler: @escaping ((Bool) -> Void)) {
         DispatchQueue.main.async { [self] in
+            // 1. Try to sign the user up for an account with the given credentials.
             isAuthenticating = true
             firebaseAuthentication.createUser(withEmail: emailFieldText, password: passwordFieldText) { [self] result, error in
+                // 2. Handle the success or error.
                 self.handleAuthenticationRequest(with: result, error: error, isSignup: true, successHandler: successHandler)
             }
         }
     }
     
-    // MARK: - Authentication - Login
+    // MARK: - Login
     
     // This method takes the user's credentials and tries to log them into their RandoFacto account.
     func login(successHandler: @escaping ((Bool) -> Void)) {
         DispatchQueue.main.async { [self] in
+            // 1. Try to log the user in with the given credentials.
             isAuthenticating = true
             firebaseAuthentication.signIn(withEmail: emailFieldText, password: passwordFieldText) { [self] result, error in
+                // 2. Handle the success or error.
                 handleAuthenticationRequest(with: result, error: error, isSignup: false, successHandler: successHandler)
             }
         }
     }
     
-    // MARK: - Authentication - Logout
+    // MARK: - Logout
     
     // This method tries to logout the current user, clearing the app's favorite facts list if successful.
     func logoutCurrentUser() {
@@ -370,29 +377,37 @@ class AuthenticationManager: ObservableObject {
         }
     }
     
-    // MARK: - Account Management - Password Reset/Update
+    // MARK: - Password Reset/Update
     
-    // This method sends a password reset email to the entered email address. The message body is customized in RandoFacto's Firebase console.
-    func sendPasswordResetLink() {
+    // This method sends a password reset email to the entered email address. The message body is customized in RandoFacto's Firebase console. The recipient has to click the link in the email to begin the reset process--the email is customized in Firebase to tell the user to ignore it if they didn't send the request.
+    func sendPasswordResetLinkToEnteredEmailAddress() {
         DispatchQueue.main.async { [self] in
+            // 1. Ask Firebase to send the password reset email to the entered email address.
             isAuthenticating = true
+            errorManager.errorToShow = nil
+            showingResetPasswordEmailSent = false
+            formErrorText = nil
             firebaseAuthentication.sendPasswordReset(withEmail: emailFieldText, actionCodeSettings: ActionCodeSettings(), completion: { [self] error in
+                // 2. If an error occurs (e.g., the entered email address doesn't correspond to an account), log it.
                 isAuthenticating = false
                 if let error = error {
                     errorManager.showError(error) { [self] randoFactoError in
                         formErrorText = randoFactoError.localizedDescription
                     }
                 } else {
+                    // 3. If successful, show the "reset password email sent" message.
                     showingResetPasswordEmailSent = true
                 }
             })
         }
     }
     
-    // This method updates the current user's password to newPassword.
+    // This method updates the current user's password to the password field's text.
     func updatePasswordForCurrentUser(completionHandler: @escaping ((Bool) -> Void)) {
+        // 1. Make sure we can get the current user.
         guard let user = firebaseAuthentication.currentUser else { return }
         DispatchQueue.main.async { [self] in
+            // 2. Update user's password to the new password. If unsuccessful, show an error.
             isAuthenticating = true
             user.updatePassword(to: passwordFieldText) { [self] error in
                 isAuthenticating = false
@@ -413,7 +428,7 @@ class AuthenticationManager: ObservableObject {
         }
     }
     
-    // MARK: - Account Management - Delete User
+    // MARK: - Delete User
     
     // This method deletes the current user's favorite facts, their reference, and then their account.
     func deleteCurrentUser(completionHandler: @escaping (Error?) -> Void) {
