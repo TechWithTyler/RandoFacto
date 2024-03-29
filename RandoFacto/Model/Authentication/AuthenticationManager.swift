@@ -364,7 +364,7 @@ class AuthenticationManager: ObservableObject {
                 favoriteFactsDatabase?.favoriteFacts.removeAll()
             }
             favoriteFactsDatabase?.initialFact = 0
-            favoriteFactsDatabase?.randomizerEffect = false
+            favoriteFactsDatabase?.favoriteFactsRandomizerEffect = false
             registeredUsersListener?.remove()
             registeredUsersListener = nil
             favoriteFactsDatabase?.favoriteFactsListener?.remove()

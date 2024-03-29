@@ -185,8 +185,8 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
         DispatchQueue.main.async { [self] in
             voice.stopSpeaking(at: .immediate)
             dismissFavoriteFacts()
-            if favoriteFactsDatabase.randomizerEffect && favoriteFactsDatabase.favoriteFacts.count >= 5 {
-                favoriteFactsDatabase.createRandomizerTimer { block() }
+            if favoriteFactsDatabase.favoriteFactsRandomizerEffect && favoriteFactsDatabase.favoriteFacts.count >= 5 {
+                favoriteFactsDatabase.setupRandomizerTimer { block() }
             } else {
                 block()
             }

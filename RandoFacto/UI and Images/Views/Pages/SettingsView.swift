@@ -136,7 +136,7 @@ struct SettingsView: View {
                     Text("This setting will reset to \"\(randomFactSettingTitle)\" when you logout or delete your account.")
                 }
                 Section {
-                    Toggle("Favorite Fact Randomizer Effect", isOn: $favoriteFactsDatabase.randomizerEffect)
+                    Toggle("Favorite Fact Randomizer Effect", isOn: $favoriteFactsDatabase.favoriteFactsRandomizerEffect)
                 } footer: {
                     Text("This setting specifies whether a randomizer effect should be used when getting a random favorite fact instead of simply displaying a random favorite fact.")
                 }

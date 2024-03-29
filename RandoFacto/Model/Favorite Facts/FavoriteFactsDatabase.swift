@@ -35,12 +35,12 @@ class FavoriteFactsDatabase: ObservableObject {
     // MARK: - Properties - Booleans
 
     // Whether a randomizer effect should be used when getting a random favorite fact.
-    @AppStorage("randomizerEffect") var randomizerEffect: Bool = false
+    @AppStorage("favoriteFactsRandomizerEffect") var favoriteFactsRandomizerEffect: Bool = false
 
-    // Whether the "delete this favorite fact" alert should be displayed.
+    // Whether the "delete this favorite fact" alert should be/is being displayed.
     @Published var showingDeleteFavoriteFact: Bool = false
     
-    // Whether the "delete all favorite facts" alert should be displayed.
+    // Whether the "delete all favorite facts" alert should be/is being displayed.
     @Published var showingDeleteAllFavoriteFacts: Bool = false
     
     // MARK: - Properties - Strings
@@ -50,7 +50,7 @@ class FavoriteFactsDatabase: ObservableObject {
     
     // MARK: - Properties - Integers
     
-    // Whether to display one of the user's favorite facts or generate a random fact when the app launches. This setting resets to 0 (Random Fact), and is hidden, when the user logs out or deletes their account.
+    // Whether to display one of the user's favorite facts (1) or generate a random fact (0) when the app launches. This setting resets to 0 (Random Fact), and is hidden, when the user logs out or deletes their account.
     @AppStorage("initialFact") var initialFact: Int = 0
 
     // The maximum number of iterations for the randomizer effect. The randomizer effect starts out fast and gradually slows down, by using the equation randomizerIterations divided by (maxRandomizerIterations times 4).
@@ -79,8 +79,6 @@ class FavoriteFactsDatabase: ObservableObject {
         let errorManager = ErrorManager()
         let authenticationManager = AuthenticationManager()
         self.init(firestore: firestore, networkConnectionManager: networkConnectionManager, errorManager: errorManager)
-        self.authenticationManager = authenticationManager
-        loadFavoriteFactsForCurrentUser()
     }
     
     // MARK: - Loading
@@ -93,7 +91,7 @@ class FavoriteFactsDatabase: ObservableObject {
                 return
             }
             // 2. Get the Firestore collection containing favorite facts.
-            // Firestore collection methods are chained onto one another, often on their own lines, just like SwiftUI view modifiers are.
+            // Just like with SwiftUI view modifiers, common convention is to have each Firebase method call on its own line.
             favoriteFactsListener = firestore.collection(Firestore.CollectionName.favoriteFacts)
             // 3. Filter the result to include only the current user's favorite facts.
                 .whereField(Firestore.KeyName.user, isEqualTo: userEmail)
@@ -133,17 +131,20 @@ class FavoriteFactsDatabase: ObservableObject {
 
     // MARK: - Randomizer Timer
 
-    // This method creates the randomizer timer.
-    func createRandomizerTimer(block: @escaping (() -> Void)) {
-        randomizerTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(Double(randomizerIterations)/Double(maxRandomizerIterations*4)), repeats: true, block: { [self] timer in
+    // This method sets up the randomizer timer.
+    func setupRandomizerTimer(block: @escaping (() -> Void)) {
+        // 1. Start the randomizerTimer without repeat, since the timer's interval increases as randomizerIterations increases and the time interval of running Timers can't be changed directly.
+        randomizerTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(Double(randomizerIterations)/Double(maxRandomizerIterations*4)), repeats: false, block: { [self] timer in
+            // 2. If randomizerIterations equals maxRandomizerIterations, stop the timer and reset the count.
             if randomizerIterations == maxRandomizerIterations {
                 timer.invalidate()
                 randomizerTimer = nil
                 randomizerIterations = 0
             } else {
+                // 3. Otherwise, increase the count and restart the timer.
                 randomizerIterations += 1
                 timer.invalidate()
-                createRandomizerTimer {
+                setupRandomizerTimer {
                     block()
                 }
             }
