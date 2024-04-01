@@ -53,5 +53,5 @@ struct OnboardingView: View {
 
 #Preview {
     OnboardingView()
-        .environmentObject(AppStateManager())
+        .withPreviewData()
 }

@@ -162,9 +162,5 @@ struct FactView: View {
 
 #Preview {
     FactView()
-        .environmentObject(AppStateManager())
-        .environmentObject(ErrorManager())
-        .environmentObject(NetworkConnectionManager())
-        .environmentObject(FavoriteFactsDatabase())
-        .environmentObject(AuthenticationManager())
+        .withPreviewData()
 }

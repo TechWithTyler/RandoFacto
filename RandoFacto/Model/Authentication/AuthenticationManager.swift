@@ -105,14 +105,6 @@ class AuthenticationManager: ObservableObject {
         addRegisteredUsersHandler()
     }
     
-    convenience init() {
-        let firebaseAuthentication = Authentication.auth()
-        let networkConnectionManager = NetworkConnectionManager()
-        let errorManager = ErrorManager()
-        self.init(firebaseAuthentication: firebaseAuthentication, networkConnectionManager: networkConnectionManager, errorManager: errorManager)
-        addRegisteredUsersHandler()
-    }
-    
     // MARK: - Registered Users Handler
     
     // This method sets up the app to listen for changes to registered user references. The email addresses and IDs of registered users get added to a Firestore collection called "users" when they signup, because Firebase doesn't yet have an ability to immediately notify the app of creations/deletions of accounts or checking whether they exist.

@@ -124,22 +124,13 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     }
     
     // The initializers for the AppStateManager, NetworkConnectionManager, FavoriteFactsDatabase, FavoriteFactsListDisplayManager, AuthenticationManager, and ErrorManager that don't take any arguments are used for Xcode previews.
-    convenience override init() {
-        let errorManager = ErrorManager()
-        let networkConnectionManager = NetworkConnectionManager()
-        let favoriteFactsDatabase = FavoriteFactsDatabase()
-        let favoriteFactsListDisplayManager = FavoriteFactsListDisplayManager()
-        let authenticationManager = AuthenticationManager()
-        self.init(errorManager: errorManager, networkConnectionManager: networkConnectionManager, favoriteFactsDatabase: favoriteFactsDatabase, favoriteFactsListDisplayManager: favoriteFactsListDisplayManager, authenticationManager: authenticationManager)
-        displayInitialFact()
-    }
     
     // MARK: - Fact Generation
     
     // This method either generates a random fact or displays a random favorite fact to the user based on authentication state, number of favorite facts, and settings.
     func displayInitialFact() {
         // 1. Wait 2 seconds to give the network path monitor time to configure.
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(initializationTime)) { [self] in
             // 2. Display a fact to the user.
             if favoriteFactsDatabase.initialFact == 0 || favoriteFactsDatabase.favoriteFacts.isEmpty || !authenticationManager.userLoggedIn {
                 generateRandomFact()

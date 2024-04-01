@@ -73,14 +73,6 @@ class FavoriteFactsDatabase: ObservableObject {
         loadFavoriteFactsForCurrentUser()
     }
     
-    convenience init() {
-        let firestore = Firestore.firestore()
-        let networkConnectionManager = NetworkConnectionManager()
-        let errorManager = ErrorManager()
-        let authenticationManager = AuthenticationManager()
-        self.init(firestore: firestore, networkConnectionManager: networkConnectionManager, errorManager: errorManager)
-    }
-    
     // MARK: - Loading
     
     // This method asynchronously loads all the favorite facts associated with the current user. Firestore doesn't have a way to associate data with the user that created it, so we have to add a "user" key to each favorite fact so when a user deletes their account, their favorite facts, but no one else's, are deleted.

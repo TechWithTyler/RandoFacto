@@ -30,5 +30,5 @@ struct SpeakButton: View {
 
 #Preview {
     SpeakButton(for: "This is a test")
-        .environmentObject(AppStateManager())
+        .withPreviewData()
 }

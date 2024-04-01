@@ -199,10 +199,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .environmentObject(AppStateManager())
-        .environmentObject(ErrorManager())
-        .environmentObject(NetworkConnectionManager())
-        .environmentObject(FavoriteFactsDatabase())
-        .environmentObject(FavoriteFactsListDisplayManager())
-        .environmentObject(AuthenticationManager())
+        .withPreviewData()
 }

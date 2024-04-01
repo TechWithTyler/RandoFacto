@@ -331,12 +331,10 @@ struct SettingsView: View {
 
 #Preview {
         SettingsView()
-            .environmentObject(AppStateManager())
-            .environmentObject(ErrorManager())
-            .environmentObject(NetworkConnectionManager())
-            .environmentObject(FavoriteFactsDatabase())
-            .environmentObject(AuthenticationManager())
+            .withPreviewData()
+    #if os(macOS)
             .frame(height: 500)
+    #endif
 }
 
 extension SettingsView {

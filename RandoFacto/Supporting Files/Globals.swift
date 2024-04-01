@@ -66,5 +66,12 @@ let defaultVoiceID = "com.apple.voice.compact.en-US.Samantha"
 
 let sampleFact = "\(appName!) was coded in Swift by Tyler Sheft!"
 
+// MARK: - Properties - Doubles
+
 // The default URL request timeout interval (can't be changed in release builds).
 var defaultURLRequestTimeoutInterval: Double = 10
+
+// MARK: - Properties - Integers
+
+// The number of seconds the app takes to load.
+var initializationTime: Int = 2

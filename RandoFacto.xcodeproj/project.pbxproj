@@ -54,6 +54,8 @@
 		8DCE5DE72B08272B00DD3CE7 /* RandoFactoCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCE5DE62B08272B00DD3CE7 /* RandoFactoCommands.swift */; };
 		8DCE5DE92B084F6000DD3CE7 /* UnfavoriteAllButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCE5DE82B084F6000DD3CE7 /* UnfavoriteAllButton.swift */; };
 		8DCF671F297F58B7006DE41E /* FavoriteFactsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCF671E297F58B7006DE41E /* FavoriteFactsListView.swift */; };
+		8DEB531F2BBB4E5400788A04 /* PreviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEB531E2BBB4E5400788A04 /* PreviewManager.swift */; };
+		8DEB53222BBB54E600788A04 /* PreviewDataModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEB53212BBB54E600788A04 /* PreviewDataModifier.swift */; };
 		8DEF074C2B241D5B00F0375F /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEF074B2B241D5B00F0375F /* AuthenticationManager.swift */; };
 		8DEF074E2B241DBA00F0375F /* FavoriteFactsDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEF074D2B241DBA00F0375F /* FavoriteFactsDatabase.swift */; };
 		8DF48E312936A80700152681 /* AppStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF48E302936A80700152681 /* AppStateManager.swift */; };
@@ -122,6 +124,8 @@
 		8DCE5DE62B08272B00DD3CE7 /* RandoFactoCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandoFactoCommands.swift; sourceTree = "<group>"; };
 		8DCE5DE82B084F6000DD3CE7 /* UnfavoriteAllButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnfavoriteAllButton.swift; sourceTree = "<group>"; };
 		8DCF671E297F58B7006DE41E /* FavoriteFactsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteFactsListView.swift; sourceTree = "<group>"; };
+		8DEB531E2BBB4E5400788A04 /* PreviewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewManager.swift; sourceTree = "<group>"; };
+		8DEB53212BBB54E600788A04 /* PreviewDataModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewDataModifier.swift; sourceTree = "<group>"; };
 		8DEF074B2B241D5B00F0375F /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
 		8DEF074D2B241DBA00F0375F /* FavoriteFactsDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteFactsDatabase.swift; sourceTree = "<group>"; };
 		8DF48E2E2936A62900152681 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -191,6 +195,7 @@
 				8DF48E302936A80700152681 /* AppStateManager.swift */,
 				8DA2C420292C1E6000705A2F /* FactGenerator.swift */,
 				8D5E9A292B226DE800C261B8 /* NetworkConnectionManager.swift */,
+				8DEB531E2BBB4E5400788A04 /* PreviewManager.swift */,
 			);
 			path = "Main Model Objects";
 			sourceTree = "<group>";
@@ -293,6 +298,7 @@
 			isa = PBXGroup;
 			children = (
 				8DA2C419292C1E1200705A2F /* Preview Assets.xcassets */,
+				8DEB53212BBB54E600788A04 /* PreviewDataModifier.swift */,
 			);
 			path = "Preview Content";
 			sourceTree = "<group>";
@@ -476,6 +482,7 @@
 				8DFEB0A32AFAF64800F57DB1 /* SettingsView.swift in Sources */,
 				8DF48E312936A80700152681 /* AppStateManager.swift in Sources */,
 				8DFEB0A72AFAF77800F57DB1 /* FactView.swift in Sources */,
+				8DEB531F2BBB4E5400788A04 /* PreviewManager.swift in Sources */,
 				8DCE5DE52B080AA200DD3CE7 /* SettingsPage.swift in Sources */,
 				8D63D5FD2AFF4A180084BACF /* StringEmojiChecker.swift in Sources */,
 				8D8899E42AFE095200BDDDFD /* Globals.swift in Sources */,
@@ -488,6 +495,7 @@
 				8D5E25092B5DAD0A00B51730 /* AuthenticationFormField.swift in Sources */,
 				8D0312222AF995AF00DBB2B2 /* AuthenticationFormView.swift in Sources */,
 				8D8F1AF82AFDF25600DB9B7D /* AuthenticationMessageView.swift in Sources */,
+				8DEB53222BBB54E600788A04 /* PreviewDataModifier.swift in Sources */,
 				8D8899DC2AFDF39900BDDDFD /* InappropriateWordsCheckerData.swift in Sources */,
 				8D8F92B32B393D8A001A9B5B /* AuthenticationManagerErrors.swift in Sources */,
 				8D86FF052AF56CA600239DEE /* HTTPResponseExtension.swift in Sources */,
