@@ -100,7 +100,6 @@ struct FavoriteFactsListView: View {
                             appStateManager.displayFavoriteFact(favorite)
                         } label: {
                             Text(favorite)
-                                .lineLimit(nil)
                                 .font(.system(size: CGFloat(appStateManager.factTextSize)))
                                 .multilineTextAlignment(.leading)
                                 .foregroundColor(.primary)
@@ -192,5 +191,4 @@ struct FavoriteFactsListView: View {
 #Preview {
     FavoriteFactsListView()
         .withPreviewData()
-        .frame(width: 500, height: 500)
 }

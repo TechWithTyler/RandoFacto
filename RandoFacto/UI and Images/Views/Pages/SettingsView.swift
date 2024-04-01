@@ -123,7 +123,7 @@ struct SettingsView: View {
     }
     
     // MARK: - Display Page
-    
+
     var displayPage: some View {
         Form {
             if authenticationManager.userLoggedIn {
