@@ -60,7 +60,7 @@ struct FactView: View {
                 .isTextSelectable(!(appStateManager.factTextDisplayingMessage || appStateManager.factText == factUnavailableString))
                 .multilineTextAlignment(.center)
                 .animation(.default, value: appStateManager.factTextSize)
-                .blur(radius: favoriteFactsDatabase.randomizerIterations > 0 ? 10 : 0)
+                .blur(radius: favoriteFactsDatabase.randomizerIterations > 0 ? 20 : 0)
                 .accessibilityHidden(favoriteFactsDatabase.randomizerIterations > 0)
     }
     
