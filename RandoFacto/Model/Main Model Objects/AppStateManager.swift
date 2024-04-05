@@ -84,7 +84,10 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     
     // Whether the reset alert should be/is being displayed.
     @Published var showingResetAlert: Bool = false
-    
+
+    // Whether this AppStateManager instance is used for previews. Set to false except in PreviewManager.
+    @Published var forPreview: Bool = false
+
     // Whether favorite facts are available to be displayed.
     var favoriteFactsAvailable: Bool {
         return authenticationManager.userLoggedIn && !favoriteFactsDatabase.favoriteFacts.isEmpty && !authenticationManager.isDeletingAccount
@@ -176,7 +179,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
         DispatchQueue.main.async { [self] in
             voice.stopSpeaking(at: .immediate)
             dismissFavoriteFacts()
-            if favoriteFactsDatabase.favoriteFactsRandomizerEffect && favoriteFactsDatabase.favoriteFacts.count >= 5 {
+            if !forPreview && favoriteFactsDatabase.favoriteFactsRandomizerEffect && favoriteFactsDatabase.favoriteFacts.count >= 5 {
                 favoriteFactsDatabase.setupRandomizerTimer {
                     withAnimation {
                         block()

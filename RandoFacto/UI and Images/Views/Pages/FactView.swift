@@ -24,6 +24,7 @@ struct FactView: View {
     @EnvironmentObject var errorManager: ErrorManager
 
     #if os(iOS)
+    // Gives an iPhone user ultra-slick haptic taps for each favorite fact randomizer iteration.
     let randomizerHaptics = UIImpactFeedbackGenerator(style: .light)
     #endif
 
@@ -35,7 +36,7 @@ struct FactView: View {
         } translucentFooterContent: {
             factGenerationButtons
             Divider()
-            footer
+            footerText
         }
         .navigationTitle("Random Fact")
 #if os(iOS)
@@ -73,7 +74,7 @@ struct FactView: View {
                     appStateManager.getRandomFavoriteFact()
                 } label: {
                     Text(getRandomFavoriteFactButtonTitle)
-                        .frame(width: 200)
+                        .frame(width: factGenerationButtonWidth)
                 }
 #if os(iOS)
                 .padding()
@@ -88,7 +89,7 @@ struct FactView: View {
                     appStateManager.generateRandomFact()
                 } label: {
                     Text(generateRandomFactButtonTitle)
-                        .frame(width: 200)
+                        .frame(width: factGenerationButtonWidth)
                 }
 #if os(iOS)
                 .padding()
@@ -99,12 +100,16 @@ struct FactView: View {
                 #endif
             }
         }
+        #if os(macOS)
+        // Sometimes, while a section of code can be used on multiple platforms, you may not want to compile it for all of them. In this case, the large control size is just right for this app on macOS, but not for iOS, so we use the large control size on macOS but leave it as is on the other platforms.
+        .controlSize(.large)
+        #endif
         .disabled(appStateManager.factTextDisplayingMessage)
     }
     
     // MARK: - Footer
     
-    var footer: some View {
+    var footerText: some View {
         VStack {
             // To include a clickable link in a string, use the format [text](URL), where text is the text to be displayed and URL is the URL the link goes to.
             Text("Facts provided by [\(appStateManager.factGenerator.randomFactsAPIName)](https://\(appStateManager.factGenerator.randomFactsAPIName)).")

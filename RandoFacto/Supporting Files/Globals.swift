@@ -69,9 +69,14 @@ let sampleFact = "\(appName!) was coded in Swift by Tyler Sheft!"
 // MARK: - Properties - Doubles
 
 // The default URL request timeout interval (can't be changed in release builds).
-var defaultURLRequestTimeoutInterval: Double = 10
+let defaultURLRequestTimeoutInterval: Double = 10
+
+// MARK: - Properties - Floats
+
+// The width of the fact generation buttons.
+let factGenerationButtonWidth: CGFloat = 200
 
 // MARK: - Properties - Integers
 
 // The number of seconds the app takes to load.
-var initializationTime: Int = 2
+let initializationTime: Int = 2

@@ -34,11 +34,13 @@ class PreviewManager: ObservableObject {
         let favoriteFactsDatabase = FavoriteFactsDatabase(firestore: firestore, networkConnectionManager: networkConnectionManager, errorManager: errorManager)
         let favoriteFactsListDisplayManager = FavoriteFactsListDisplayManager(favoriteFactsDatabase: favoriteFactsDatabase)
         let appStateManager = AppStateManager(errorManager: errorManager, networkConnectionManager: networkConnectionManager, favoriteFactsDatabase: favoriteFactsDatabase, favoriteFactsListDisplayManager: favoriteFactsListDisplayManager, authenticationManager: authenticationManager)
-        // 2. Create the global instance of PreviewManager, with all the app's model objects injected.
+        // 3. Tell the AppStateManager that this instance is being used for Xcode previews, which will prevent code such as the randomizer timer from running.
+        appStateManager.forPreview = true
+        // 3. Create the global instance of PreviewManager, with all the app's model objects injected.
         let previewManager = PreviewManager(appStateManager: appStateManager, errorManager: errorManager, networkConnectionManager: networkConnectionManager, favoriteFactsDatabase: favoriteFactsDatabase, authenticationManager: authenticationManager, favoriteFactsListDisplayManager: favoriteFactsListDisplayManager)
-        // 3. Perform any desired setup for Xcode previews.
+        // 4. Perform any desired setup for Xcode previews.
         previewManager.configurePreview()
-        // 4. Return the PreviewManager.
+        // 5. Return the PreviewManager.
         return previewManager
     }
 
