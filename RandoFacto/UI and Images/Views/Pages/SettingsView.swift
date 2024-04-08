@@ -112,6 +112,7 @@ struct SettingsView: View {
                         Button("Help…") {
                             showHelp()
                         }
+                        PrivacyPolicyButton()
                     }
                 }
             }

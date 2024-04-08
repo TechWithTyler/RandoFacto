@@ -33,6 +33,8 @@ struct RandoFactoCommands: Commands {
                 showHelp()
             }
             .keyboardShortcut(KeyEquivalent("?"), modifiers: [.command])
+            Divider()
+            PrivacyPolicyButton()
         }
         CommandGroup(replacing: .textFormatting) {
             Section {
