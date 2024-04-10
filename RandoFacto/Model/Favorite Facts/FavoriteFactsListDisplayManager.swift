@@ -10,22 +10,22 @@ import SwiftUI
 
 // Handles searching and sorting of the favorite facts list.
 class FavoriteFactsListDisplayManager: ObservableObject {
-    
+
     // MARK: - Properties - Favorite Facts Database
-    
+
     var favoriteFactsDatabase: FavoriteFactsDatabase
-    
+
     // MARK: - Initialization
-    
+
     init(favoriteFactsDatabase: FavoriteFactsDatabase) {
         self.favoriteFactsDatabase = favoriteFactsDatabase
     }
-    
+
     // MARK: - Properties - Searching
-    
+
     // The FavoriteFactsList search text.
     @Published var searchText = String()
-    
+
     // The favorite facts that match searchText.
     var searchResults: [String] {
         // 1. Define the content being searched.
@@ -44,17 +44,28 @@ class FavoriteFactsListDisplayManager: ObservableObject {
             }
         }
     }
-    
+
     // MARK: - Properties - Sorting
-    
+
     // The sort order of the favorite facts list.
     @AppStorage("sortFavoriteFactsAscending") var sortFavoriteFactsAscending: Bool = false
-    
+
     // The favorite facts list, sorted in either A-Z or Z-A order.
     var sortedFavoriteFacts: [String] {
         return searchResults.sorted { a, z in
             return sortFavoriteFactsAscending ? a < z : a > z
         }
     }
-    
+
+    // Colors the matching text of favorite and returns the resulting AttributedString.
+    func favoriteFactWithColoredMatchingTerms(_ favorite: String) -> AttributedString {
+        // 1. Convert the favorite fact String to an AttributedString. As AttributedString is a data type, it's declared in the Foundation framework instead of the SwiftUI framework, even though its cross-platform design makes it shine with SwiftUI.
+        var attributedString = AttributedString(favorite)
+        // 2. Check to see if the fact text contains the entered search text, case insensitive. If so, change the color of the matching part.
+        if let range = attributedString.range(of: searchText, options: .caseInsensitive) {
+            attributedString[range].foregroundColor = .accentColor
+        }
+        return attributedString
+    }
+
 }

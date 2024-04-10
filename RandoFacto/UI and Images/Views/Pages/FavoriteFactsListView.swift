@@ -99,7 +99,7 @@ struct FavoriteFactsListView: View {
                         Button {
                             appStateManager.displayFavoriteFact(favorite)
                         } label: {
-                            Text(favorite)
+                            Text(favoriteFactsListDisplayManager.favoriteFactWithColoredMatchingTerms(favorite))
                                 .font(.system(size: CGFloat(appStateManager.factTextSize)))
                                 .multilineTextAlignment(.leading)
                                 .foregroundColor(.primary)
