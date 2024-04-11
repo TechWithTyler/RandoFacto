@@ -28,6 +28,7 @@ struct AuthenticationMessageView: View {
                     .imageScale(.large)
                     .accessibilityHidden(true)
                     .padding(5)
+                    .font(.system(size: 24, weight: .bold, design: .rounded))
                 Text(text)
                     .font(.system(size: 18))
                     .lineLimit(10)
