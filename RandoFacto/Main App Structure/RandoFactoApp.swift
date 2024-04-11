@@ -53,15 +53,6 @@ struct RandoFactoApp: App {
     
     // Handles errors.
     @ObservedObject var errorManager: ErrorManager
-    
-    // The main window's title.
-    var windowTitle: String {
-        var appName = (Bundle.main.infoDictionary?[kCFBundleNameKey as String] as? String)!
-        #if DEBUG && os(macOS)
-        appName.appendSheftAppsTeamInternalBuildDesignation()
-        #endif
-        return appName
-    }
 
 	// MARK: - Windows and Views
 
