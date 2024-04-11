@@ -65,6 +65,7 @@ class FavoriteFactsListDisplayManager: ObservableObject {
         if let range = attributedString.range(of: searchText, options: .caseInsensitive) {
             attributedString[range].foregroundColor = .accentColor
         }
+        // 3. Return the attributed string.
         return attributedString
     }
 
