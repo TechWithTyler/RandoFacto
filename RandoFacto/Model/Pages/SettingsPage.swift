@@ -10,9 +10,27 @@ import Foundation
 
 // A page in Settings.
 enum SettingsPage : String {
-    
+
+    enum Icons: String {
+
+        case display = "textformat.size"
+
+        case account = "person.circle"
+
+        case advanced = "gear"
+
+        case speech = "speaker.wave.2.bubble.left.fill"
+
+        #if(DEBUG)
+        case developer = "hammer"
+        #endif
+
+    }
+
     case display
-    
+
+    case speech
+
     case account
     
     case advanced

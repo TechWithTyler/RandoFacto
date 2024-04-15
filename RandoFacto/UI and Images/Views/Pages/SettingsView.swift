@@ -51,35 +51,44 @@ struct SettingsView: View {
                 .frame(width: 400, height: authenticationManager.userLoggedIn ? 420 : 280)
                 .formStyle(.grouped)
                 .tabItem {
-                    Label(SettingsPage.display.rawValue.capitalized, systemImage: "textformat.size")
+                    Label(SettingsPage.display.rawValue.capitalized, systemImage: SettingsPage.Icons.display.rawValue)
                 }
                 .tag(SettingsPage.display)
+                SAMVisualEffectViewSwiftUIRepresentable {
+                    speechPage
+                }
+                .frame(width: 400, height: 75)
+                .formStyle(.grouped)
+                .tabItem {
+                    Label(SettingsPage.speech.rawValue.capitalized, systemImage: SettingsPage.Icons.speech.rawValue)
+                }
+                .tag(SettingsPage.speech)
                 SAMVisualEffectViewSwiftUIRepresentable {
                     accountPage
                 }
                 .frame(width: 400, height: 260)
                 .formStyle(.grouped)
                 .tabItem {
-                    Label(SettingsPage.account.rawValue.capitalized, systemImage: "person.circle")
+                    Label(SettingsPage.account.rawValue.capitalized, systemImage: SettingsPage.Icons.account.rawValue)
                 }
                 .tag(SettingsPage.account)
                 SAMVisualEffectViewSwiftUIRepresentable {
                     advancedPage
                 }
-                .frame(width: 400, height: 150)
+                .frame(width: 400, height: 200)
                 .formStyle(.grouped)
                 .tabItem {
-                    Label(SettingsPage.advanced.rawValue.capitalized, systemImage: "gear")
+                    Label(SettingsPage.advanced.rawValue.capitalized, systemImage: SettingsPage.Icons.advanced.rawValue)
                 }
                 .tag(SettingsPage.advanced)
 #if(DEBUG)
                 SAMVisualEffectViewSwiftUIRepresentable {
                     developerPage
                 }
-                .frame(width: 400, height: 500)
+                .frame(width: 400, height: 535)
                 .formStyle(.grouped)
                 .tabItem {
-                    Label(SettingsPage.developer.rawValue.capitalized, systemImage: "hammer")
+                    Label(SettingsPage.developer.rawValue.capitalized, systemImage: SettingsPage.Icons.developer.rawValue)
                 }
                 .tag(SettingsPage.developer)
 #endif
@@ -89,31 +98,39 @@ struct SettingsView: View {
             NavigationStack {
                 Form {
                     Section {
-                        NavigationLink(SettingsPage.display.rawValue.capitalized) {
+                        NavigationLink {
                             displayPage
                                 .navigationTitle(SettingsPage.display.rawValue.capitalized)
+                        } label: {
+                            Label(SettingsPage.display.rawValue.capitalized, systemImage: SettingsPage.Icons.display.rawValue)
                         }
-                        NavigationLink(SettingsPage.account.rawValue.capitalized) {
+                        NavigationLink {
+                            speechPage
+                                .navigationTitle(SettingsPage.speech.rawValue.capitalized)
+                        } label: {
+                            Label(SettingsPage.speech.rawValue.capitalized, systemImage: SettingsPage.Icons.speech.rawValue)
+                        }
+                        NavigationLink {
                             accountPage
                                 .navigationTitle(SettingsPage.account.rawValue.capitalized)
+                        } label: {
+                            Label(SettingsPage.account.rawValue, systemImage: SettingsPage.Icons.account.rawValue)
                         }
-                        NavigationLink(SettingsPage.advanced.rawValue.capitalized) {
+                        NavigationLink {
                             advancedPage
                                 .navigationTitle(SettingsPage.advanced.rawValue.capitalized)
+                        } label: {
+                            Label(SettingsPage.advanced.rawValue.capitalized, systemImage: SettingsPage.Icons.advanced.rawValue)
                         }
                     }
 #if(DEBUG)
-                    NavigationLink(SettingsPage.developer.rawValue.capitalized) {
+                    NavigationLink {
                         developerPage
                             .navigationTitle(SettingsPage.developer.rawValue.capitalized)
+                    } label: {
+                        Label(SettingsPage.developer.rawValue.capitalized, systemImage: SettingsPage.Icons.developer.rawValue)
                     }
 #endif
-                    Section {
-                        Button("Help…") {
-                            showHelp()
-                        }
-                        PrivacyPolicyButton()
-                    }
                 }
             }
             .navigationTitle("Settings")
@@ -258,20 +275,30 @@ struct SettingsView: View {
                 .environmentObject(errorManager)
         }
     }
-    
+
+    var speechPage: some View {
+        Form {
+            Section {
+                VoicePicker(selectedVoiceID: $appStateManager.selectedVoiceID, voices: appStateManager.voices)
+                    .onChange(of: appStateManager.selectedVoiceID) { value in
+                        appStateManager.speakFact(fact: sampleFact)
+                    }
+            }
+            .onAppear {
+                appStateManager.loadVoices()
+            }
+        }
+    }
+
     // MARK: - Advanced Page
     
     var advancedPage: some View {
         Form {
-            Section {
-                VoicePicker(selectedVoiceID: $appStateManager.selectedVoiceID, voices: appStateManager.voices)
-                .onChange(of: appStateManager.selectedVoiceID) { value in
-                    print("New voice ID: \(value)")
-                    appStateManager.speakFact(fact: sampleFact)
+            Section("Documentation") {
+                Button("Help…", systemImage: "questionmark.circle") {
+                    showHelp()
                 }
-            }
-            .onAppear {
-                appStateManager.loadVoices()
+                PrivacyPolicyButton()
             }
             Section {
                 Button("RESET ALL SETTINGS…", role: .destructive) {
@@ -344,6 +371,7 @@ extension SettingsView {
     
 #if(DEBUG)
     var developerPage: some View {
+        // Put any internal/development-related features/settings here to hide them from release builds.
         Form {
             Text("This page is available in internal builds only.")
             Section {
@@ -371,8 +399,15 @@ extension SettingsView {
                     Text("120").tag(120.0)
                 }
             }
-            Section("Backend") {
+            Section("Firebase/Backend") {
                 Link("Open \(appName!) Firebase Console…", destination: URL(string: "https://console.firebase.google.com/u/0/project/randofacto-2b730/overview")!)
+                Button("Crash Test!", systemImage: "exclamationmark.triangle") {
+                    #if os(macOS)
+                    NSSound.beep()
+                    Thread.sleep(forTimeInterval: 1)
+                    #endif
+                    fatalError("This is a test of \(appName!)'s Firebase Crashlytics mechanism. The button that triggered this crash won't be seen in release builds. Build and run the app via Xcode to upload this crash to Crashlytics.")
+                }
             }
         }
     }

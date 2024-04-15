@@ -22,7 +22,7 @@ struct SpeakButton: View {
         Button {
             appStateManager.speakFact(fact: fact)
         } label: {
-            Label(appStateManager.factBeingSpoken == fact ? "Stop" : "Speak", systemImage: appStateManager.factBeingSpoken == fact ? "stop" : "speaker.wave.2.bubble.left.fill")
+            Label(appStateManager.factBeingSpoken == fact ? "Stop" : "Speak", systemImage: appStateManager.factBeingSpoken == fact ? "stop" : speechSymbolName)
                 .frame(width: 30)
         }
     }

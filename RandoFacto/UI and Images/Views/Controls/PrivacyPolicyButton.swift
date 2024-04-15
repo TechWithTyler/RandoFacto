@@ -13,7 +13,7 @@ struct PrivacyPolicyButton: View {
     // MARK: - Body
 
     var body: some View {
-        Button("Privacy Policy…") {
+        Button("Privacy Policy…", systemImage: "hand.raised.circle") {
             showPrivacyPolicy()
         }
     }
@@ -33,4 +33,5 @@ struct PrivacyPolicyButton: View {
 
 #Preview {
     PrivacyPolicyButton()
+        .padding()
 }

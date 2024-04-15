@@ -62,6 +62,9 @@ let signupText = "Signup"
 // The name of the filled-circle exclamation mark SF Symbol used for errors.
 let errorSymbolName = "exclamationmark.circle.fill"
 
+// The name of the filled-bubble speaker SF Symbol used for speech/
+let speechSymbolName = "speaker.wave.2.bubble.left.fill"
+
 let defaultVoiceID = "com.apple.voice.compact.en-US.Samantha"
 
 let sampleFact = "\(appName!) was coded in Swift by Tyler Sheft!"
