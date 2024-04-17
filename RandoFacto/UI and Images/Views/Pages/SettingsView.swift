@@ -301,7 +301,7 @@ struct SettingsView: View {
                 PrivacyPolicyButton()
             }
             Section {
-                Button("RESET ALL SETTINGS…", role: .destructive) {
+                Button("RESET ALL SETTINGS…", systemImage: "trash.fill", role: .destructive) {
                     appStateManager.showingResetAlert = true
                 }
             }
