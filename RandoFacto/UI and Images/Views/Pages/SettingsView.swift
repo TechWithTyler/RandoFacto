@@ -114,7 +114,7 @@ struct SettingsView: View {
                             accountPage
                                 .navigationTitle(SettingsPage.account.rawValue.capitalized)
                         } label: {
-                            Label(SettingsPage.account.rawValue, systemImage: SettingsPage.Icons.account.rawValue)
+                            Label(SettingsPage.account.rawValue.capitalized, systemImage: SettingsPage.Icons.account.rawValue)
                         }
                         NavigationLink {
                             advancedPage
