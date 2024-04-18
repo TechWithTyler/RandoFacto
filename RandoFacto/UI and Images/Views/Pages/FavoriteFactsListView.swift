@@ -99,6 +99,8 @@ struct FavoriteFactsListView: View {
                         Button {
                             appStateManager.displayFavoriteFact(favorite)
                         } label: {
+                            Image(systemName: "star.fill")
+                                .symbolRenderingMode(.multicolor)
                             Text(favoriteFactsListDisplayManager.favoriteFactWithColoredMatchingTerms(favorite))
                                 .font(.system(size: CGFloat(appStateManager.factTextSize)))
                                 .multilineTextAlignment(.leading)

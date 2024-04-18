@@ -73,7 +73,7 @@ struct FactView: View {
                 Button {
                     appStateManager.getRandomFavoriteFact()
                 } label: {
-                    Text(getRandomFavoriteFactButtonTitle)
+                    Label(getRandomFavoriteFactButtonTitle, systemImage: "star")
                         .frame(width: factGenerationButtonWidth)
                 }
 #if os(iOS)
@@ -88,7 +88,7 @@ struct FactView: View {
                 Button {
                     appStateManager.generateRandomFact()
                 } label: {
-                    Text(generateRandomFactButtonTitle)
+                    Label(generateRandomFactButtonTitle, systemImage: "dice")
                         .frame(width: factGenerationButtonWidth)
                 }
 #if os(iOS)

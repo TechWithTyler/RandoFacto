@@ -183,10 +183,12 @@ struct ContentView: View {
     func label(for page: AppPage) -> some View {
         switch page {
             case .randomFact:
-                Label("Random Fact", systemImage: "questionmark")
+                Label("Random Fact", systemImage: "dice")
+                .symbolRenderingMode(.hierarchical)
             case .favoriteFacts:
-                Label("Favorite Facts", systemImage: "star")
-            // A badge is only displayed if its count isn't 0.
+                Label("Favorite Facts", systemImage: "list.star")
+                .symbolRenderingMode(.hierarchical)
+                // A badge is only displayed if its count isn't 0.
                 .badge(favoriteFactsDatabase.favoriteFacts.count)
             #if !os(macOS)
             case .settings:

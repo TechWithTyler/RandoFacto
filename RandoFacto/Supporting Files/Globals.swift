@@ -77,7 +77,7 @@ let defaultURLRequestTimeoutInterval: Double = 10
 // MARK: - Properties - Floats
 
 // The width of the fact generation buttons.
-let factGenerationButtonWidth: CGFloat = 200
+let factGenerationButtonWidth: CGFloat = 240
 
 // MARK: - Properties - Integers
 
