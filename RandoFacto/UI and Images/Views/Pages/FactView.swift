@@ -24,8 +24,10 @@ struct FactView: View {
     @EnvironmentObject var errorManager: ErrorManager
 
     #if os(iOS)
-    // Gives an iPhone user ultra-slick haptic taps for each favorite fact randomizer iteration.
+    // Gives an iPhone, MacBook, or 2015-present MAgic Trackpad user ultra-slick haptic taps for each favorite fact randomizer iteration.
     let randomizerHaptics = UIImpactFeedbackGenerator(style: .light)
+    #elseif os(macOS)
+    let randomizerHaptics = NSHapticFeedbackManager.defaultPerformer
     #endif
 
     // MARK: - Body
@@ -46,9 +48,13 @@ struct FactView: View {
         .toolbar {
             toolbarContent
         }
-        #if os(iOS)
+        #if os(iOS) || os(macOS)
         .onChange(of: favoriteFactsDatabase.randomizerIterations) { value in
+            #if os(iOS)
             randomizerHaptics.impactOccurred(intensity: 0.5)
+            #else
+            randomizerHaptics.perform(.generic, performanceTime: .default)
+            #endif
         }
         #endif
     }
@@ -101,7 +107,7 @@ struct FactView: View {
             }
         }
         #if os(macOS)
-        // Sometimes, while a section of code can be used on multiple platforms, you may not want to compile it for all of them. In this case, the large control size is just right for this app on macOS, but not for iOS, so we use the large control size on macOS but leave it as is on the other platforms.
+        // Sometimes, while a section of code can be used on multiple platforms, you may not want to compile it for all of them. In this case, the large control size is just right for this app on macOS, but not for iOS (bordered buttons on iOS are already large by default because of its touch-first UI), so we use the large control size on macOS but leave it as is on the other platforms.
         .controlSize(.large)
         #endif
         .disabled(appStateManager.factTextDisplayingMessage)
