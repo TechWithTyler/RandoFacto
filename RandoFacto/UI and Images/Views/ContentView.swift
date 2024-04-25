@@ -34,6 +34,7 @@ struct ContentView: View {
     // MARK: - Properties - iPhone Haptics
     
 #if os(iOS)
+    // Gives an iPhone user ultra-slick haptic taps when an error message appears.
 	var haptics = UINotificationFeedbackGenerator()
 #endif
     
@@ -69,9 +70,11 @@ struct ContentView: View {
                 favoriteFactsDatabase.showingDeleteFavoriteFact = false
                 favoriteFactsDatabase.favoriteFactToDelete = nil
             }
+        } message: { factText in
+            Text("Make sure to re-favorite this fact BEFORE generating a new one if you change your mind!")
         }
         // Unfavorite all facts alert
-        .alert("Unfavorite all facts?", isPresented: $favoriteFactsDatabase.showingDeleteAllFavoriteFacts) {
+        .alert("Are you sure you REALLY want to unfavorite all facts?", isPresented: $favoriteFactsDatabase.showingDeleteAllFavoriteFacts) {
             Button("Unfavorite", role: .destructive) {
                 favoriteFactsDatabase.deleteAllFavoriteFactsForCurrentUser { error in
                     if let error = error {
@@ -85,11 +88,16 @@ struct ContentView: View {
             Button("Cancel", role: .cancel) {
                 favoriteFactsDatabase.showingDeleteAllFavoriteFacts = false
             }
+        } message: {
+            Text("This can't be undone!")
         }
+#if os(macOS)
+.dialogSeverity(.critical)
+#endif
         // Onboarding sheet
-        .sheet(isPresented: $appStateManager.showingOnboarding, content: {
+        .sheet(isPresented: $appStateManager.showingOnboarding) {
             OnboardingView()
-        })
+        }
         .onAppear {
             if appStateManager.shouldOnboard {
                 appStateManager.showingOnboarding = true
@@ -117,7 +125,7 @@ struct ContentView: View {
                 appStateManager.dismissFavoriteFacts()
             }
 		}
-		// Error sound/haptics
+		// Error sound (Mac) or haptics (iPhone)
 		.onChange(of: errorManager.errorToShow) { error in
 			if error != nil {
 #if os(macOS)

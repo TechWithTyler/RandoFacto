@@ -24,7 +24,7 @@ struct FactView: View {
     @EnvironmentObject var errorManager: ErrorManager
 
     #if os(iOS)
-    // Gives an iPhone, MacBook, or 2015-present MAgic Trackpad user ultra-slick haptic taps for each favorite fact randomizer iteration.
+    // Gives an iPhone, MacBook, or 2015-present Magic Trackpad user ultra-slick haptic taps for each favorite fact randomizer iteration (like the clicks of a spinner).
     let randomizerHaptics = UIImpactFeedbackGenerator(style: .light)
     #elseif os(macOS)
     let randomizerHaptics = NSHapticFeedbackManager.defaultPerformer
@@ -34,11 +34,13 @@ struct FactView: View {
     
     var body: some View {
         TranslucentFooterVStack {
+            // Main section
             factTextView
         } translucentFooterContent: {
+            // Footer section
             factGenerationButtons
             Divider()
-            footerText
+            creditsText
         }
         .navigationTitle("Random Fact")
 #if os(iOS)
@@ -51,8 +53,10 @@ struct FactView: View {
         #if os(iOS) || os(macOS)
         .onChange(of: favoriteFactsDatabase.randomizerIterations) { value in
             #if os(iOS)
+            // iPhone supports a wide range of intensities for its haptics.
             randomizerHaptics.impactOccurred(intensity: 0.5)
             #else
+            // The Force Touch Trackpad on a MacBook or 2015-present Magic Trackpad, on the other hand, only supports 3 types of haptics. We use the generic haptic pattern here.
             randomizerHaptics.perform(.generic, performanceTime: .default)
             #endif
         }
@@ -115,7 +119,7 @@ struct FactView: View {
     
     // MARK: - Footer
     
-    var footerText: some View {
+    var creditsText: some View {
         VStack {
             // To include a clickable link in a string, use the format [text](URL), where text is the text to be displayed and URL is the URL the link goes to.
             Text("Facts provided by [\(appStateManager.factGenerator.randomFactsAPIName)](https://\(appStateManager.factGenerator.randomFactsAPIName)).")
