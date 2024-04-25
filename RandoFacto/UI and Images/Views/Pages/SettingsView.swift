@@ -10,27 +10,27 @@ import SwiftUI
 import SheftAppsStylishUI
 
 struct SettingsView: View {
-    
+
     // MARK: - Properties - Objects
-    
+
     @EnvironmentObject var appStateManager: AppStateManager
-    
+
     @EnvironmentObject var networkConnectionManager: NetworkConnectionManager
-    
+
     @EnvironmentObject var authenticationManager: AuthenticationManager
-    
+
     @EnvironmentObject var errorManager: ErrorManager
-    
+
     @EnvironmentObject var favoriteFactsDatabase: FavoriteFactsDatabase
-    
+
     // MARK: - Properties - Fact Text Size Slider Text
-    
+
     var factTextSizeSliderText: String {
         return "Fact Text Size: \(appStateManager.factTextSizeAsInt)"
     }
-    
+
     // MARK: - Body
-    
+
     var body: some View {
         if appStateManager.isLoading {
 #if os(macOS)
@@ -66,7 +66,7 @@ struct SettingsView: View {
                 SAMVisualEffectViewSwiftUIRepresentable {
                     accountPage
                 }
-                .frame(width: 400, height: 260)
+                .frame(width: 400, height: 270)
                 .formStyle(.grouped)
                 .tabItem {
                     Label(SettingsPage.account.rawValue.capitalized, systemImage: SettingsPage.Icons.account.rawValue)
@@ -75,7 +75,7 @@ struct SettingsView: View {
                 SAMVisualEffectViewSwiftUIRepresentable {
                     advancedPage
                 }
-                .frame(width: 400, height: 200)
+                .frame(width: 400, height: 240)
                 .formStyle(.grouped)
                 .tabItem {
                     Label(SettingsPage.advanced.rawValue.capitalized, systemImage: SettingsPage.Icons.advanced.rawValue)
@@ -139,7 +139,7 @@ struct SettingsView: View {
 #endif
         }
     }
-    
+
     // MARK: - Display Page
 
     var displayPage: some View {
@@ -178,9 +178,9 @@ struct SettingsView: View {
             .formStyle(.grouped)
         }
     }
-    
+
     // MARK: - Account Page
-    
+
     var accountPage: some View {
         Form {
             Text((authenticationManager.firebaseAuthentication.currentUser?.email) ?? "Login to your RandoFacto account to save favorite facts to view on all your devices, even while offline.")
@@ -191,31 +191,42 @@ struct SettingsView: View {
             } else if authenticationManager.userLoggedIn {
                 if networkConnectionManager.deviceIsOnline {
                     Section {
-                        Button("Change Password…") {
+                        Button("Change Password…", systemImage: "key") {
                             authenticationManager.formType = .passwordChange
                         }
                     }
+                    .controlSize(.large)
                 }
                 Section {
-                    Button("Logout…") {
+                    Button("Logout…", systemImage: "door.left.hand.open") {
                         authenticationManager.showingLogout = true
                     }
+                    .controlSize(.large)
                 }
                 if networkConnectionManager.deviceIsOnline {
                     Section {
-                        Button("DELETE ACCOUNT…", role: .destructive) {
+                        Button(role: .destructive) {
                             authenticationManager.showingDeleteAccount = true
+                        } label: {
+                            Label("DELETE ACCOUNT…", systemImage: "person.crop.circle.fill.badge.minus")
+#if !os(macOS)
+                                .foregroundStyle(.red)
+#endif
                         }
+
+                        .controlSize(.large)
                     }
                 }
             } else {
                 if networkConnectionManager.deviceIsOnline {
-                    Button(loginText) {
+                    Button(loginText, systemImage: "entry.lever.keypad") {
                         authenticationManager.formType = .login
                     }
-                    Button(signupText) {
+                    .controlSize(.large)
+                    Button(signupText, systemImage: "person.crop.circle.fill.badge.plus") {
                         authenticationManager.formType = .signup
                     }
+                    .controlSize(.large)
                 } else {
                     Text("Authentication unavailable. Please check your internet connection.")
                         .font(.system(size: 24))
@@ -291,19 +302,27 @@ struct SettingsView: View {
     }
 
     // MARK: - Advanced Page
-    
+
     var advancedPage: some View {
         Form {
             Section("Documentation") {
                 Button("Help…", systemImage: "questionmark.circle") {
                     showHelp()
                 }
+                .controlSize(.large)
                 PrivacyPolicyButton()
+                    .controlSize(.large)
             }
             Section {
-                Button("RESET ALL SETTINGS…", systemImage: "trash.fill", role: .destructive) {
+                Button(role: .destructive) {
                     appStateManager.showingResetAlert = true
+                } label: {
+                    Label("RESET ALL SETTINGS…", systemImage: "trash.fill")
+#if !os(macOS)
+                        .foregroundStyle(.red)
+#endif
                 }
+                .controlSize(.large)
             }
         }
         .formStyle(.grouped)
@@ -318,9 +337,9 @@ struct SettingsView: View {
         } message: {
             Text("This will reset all settings to default\(authenticationManager.userLoggedIn ? " and log you out of your account" : String()). This can't be undone!")
         }
-        #if os(macOS)
+#if os(macOS)
         .dialogSeverity(.critical)
-        #endif
+#endif
         // Authentication form
         .sheet(item: $authenticationManager.formType) {_ in
             AuthenticationFormView()
@@ -330,18 +349,18 @@ struct SettingsView: View {
                 .environmentObject(errorManager)
         }
     }
-    
+
     // MARK: - Loading Display
-    
+
     var loadingDisplay: some View {
         Form {
             LoadingIndicator(message: pleaseWaitString)
                 .padding()
         }
     }
-    
+
     // MARK: - Fact Text Size Slider
-    
+
     var factTextSizeSlider: some View {
         Slider(value: $appStateManager.factTextSize, in: SATextViewFontSizeRange, step: 1) {
             Text(factTextSizeSliderText)
@@ -354,21 +373,21 @@ struct SettingsView: View {
         }
         .accessibilityValue("\(appStateManager.factTextSizeAsInt)")
     }
-    
+
 }
 
 #Preview {
-        SettingsView()
-            .withPreviewData()
-    #if os(macOS)
-            .frame(height: 500)
-    #endif
+    SettingsView()
+        .withPreviewData()
+#if os(macOS)
+        .frame(height: 500)
+#endif
 }
 
 extension SettingsView {
-    
+
     // MARK: - Developer Page (Internal Builds Only)
-    
+
 #if(DEBUG)
     var developerPage: some View {
         // Put any internal/development-related features/settings here to hide them from release builds.
@@ -402,15 +421,15 @@ extension SettingsView {
             Section("Firebase/Backend") {
                 Link("Open \(appName!) Firebase Console…", destination: URL(string: "https://console.firebase.google.com/u/0/project/randofacto-2b730/overview")!)
                 Button("Crash Test!", systemImage: "exclamationmark.triangle") {
-                    #if os(macOS)
+#if os(macOS)
                     NSSound.beep()
                     Thread.sleep(forTimeInterval: 1)
-                    #endif
+#endif
                     fatalError("This is a test of \(appName!)'s Firebase Crashlytics mechanism on \(DateFormatter.localizedString(from: Date(), dateStyle: .full, timeStyle: .full)). The button that triggered this crash won't be seen in release builds. Build and run the app via Xcode to upload this crash to Crashlytics.")
                 }
             }
         }
     }
 #endif
-    
+
 }

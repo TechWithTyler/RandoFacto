@@ -73,23 +73,21 @@ struct AuthenticationFormView: View {
                     }
                 }
                 ToolbarItem(placement: .cancellationAction) {
-                    Button {
+                    Button("Cancel") {
                         dismiss()
-                    } label: {
-                        Text("Cancel")
                     }
+                    .controlSize(.large)
                     .disabled(authenticationManager.isAuthenticating)
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button {
+                    Button(authenticationManager.formType?.confirmButtonText ?? Authentication.FormType.login.confirmButtonText) {
                         authenticationManager.performAuthenticationAction { success in
                             if success {
                                 dismiss()
                             }
                         }
-                    } label: {
-                        Text(authenticationManager.formType?.confirmButtonText ?? Authentication.FormType.login.confirmButtonText)
                     }
+                    .controlSize(.large)
                     .disabled(authenticationManager.formInvalid || authenticationManager.isAuthenticating)
                 }
             }
