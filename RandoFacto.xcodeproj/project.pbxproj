@@ -45,6 +45,7 @@
 		8D8F1AF82AFDF25600DB9B7D /* AuthenticationMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8F1AF72AFDF25600DB9B7D /* AuthenticationMessageView.swift */; };
 		8D8F92B32B393D8A001A9B5B /* AuthenticationManagerErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8F92B22B393D8A001A9B5B /* AuthenticationManagerErrors.swift */; };
 		8D8F92B52B393DA0001A9B5B /* FavoriteFactsDatabaseErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8F92B42B393DA0001A9B5B /* FavoriteFactsDatabaseErrors.swift */; };
+		8D95DD212BDAF0C1006FAE63 /* DeveloperSettingsPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D95DD202BDAF0C1006FAE63 /* DeveloperSettingsPage.swift */; };
 		8DA2C412292C1E1100705A2F /* RandoFactoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA2C411292C1E1100705A2F /* RandoFactoApp.swift */; };
 		8DA2C416292C1E1200705A2F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8DA2C415292C1E1200705A2F /* Assets.xcassets */; };
 		8DA2C41A292C1E1200705A2F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8DA2C419292C1E1200705A2F /* Preview Assets.xcassets */; };
@@ -113,6 +114,7 @@
 		8D8F41C42B15486400550899 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		8D8F92B22B393D8A001A9B5B /* AuthenticationManagerErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManagerErrors.swift; sourceTree = "<group>"; };
 		8D8F92B42B393DA0001A9B5B /* FavoriteFactsDatabaseErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteFactsDatabaseErrors.swift; sourceTree = "<group>"; };
+		8D95DD202BDAF0C1006FAE63 /* DeveloperSettingsPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperSettingsPage.swift; sourceTree = "<group>"; };
 		8D992FB22B0737BA004AF5CB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8DA2C40E292C1E1100705A2F /* RandoFacto.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RandoFacto.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8DA2C411292C1E1100705A2F /* RandoFactoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandoFactoApp.swift; sourceTree = "<group>"; };
@@ -164,6 +166,7 @@
 				8DFEB0A62AFAF77800F57DB1 /* FactView.swift */,
 				8DCF671E297F58B7006DE41E /* FavoriteFactsListView.swift */,
 				8DFEB0A22AFAF64800F57DB1 /* SettingsView.swift */,
+				8D95DD202BDAF0C1006FAE63 /* DeveloperSettingsPage.swift */,
 			);
 			path = Pages;
 			sourceTree = "<group>";
@@ -491,6 +494,7 @@
 				8D8899E42AFE095200BDDDFD /* Globals.swift in Sources */,
 				8D5E25052B5B8EFF00B51730 /* OnboardingView.swift in Sources */,
 				8D5511402B059B3D00BB61D4 /* FactGeneratorErrors.swift in Sources */,
+				8D95DD212BDAF0C1006FAE63 /* DeveloperSettingsPage.swift in Sources */,
 				8D0312242AF9CAB100DBB2B2 /* LoadingIndicator.swift in Sources */,
 				8D5E9A2A2B226DE800C261B8 /* NetworkConnectionManager.swift in Sources */,
 				8D69ADEA2B1FCC20002BA65E /* ErrorManager.swift in Sources */,
