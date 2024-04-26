@@ -20,7 +20,7 @@ struct DisplaySettingsPageView: View {
     // MARK: - Properties - Fact Text Size Slider Text
 
     var factTextSizeSliderText: String {
-        return "Fact Text Size: \(appStateManager.factTextSizeAsInt)"
+        return "Fact Text Size: \(appStateManager.factTextSizeAsInt)pt"
     }
 
     var body: some View {
@@ -42,11 +42,12 @@ struct DisplaySettingsPageView: View {
             }
             Section {
 #if os(macOS)
+                // Sliders show their labels by default on macOS.
                 factTextSizeSlider
 #else
-                HStack {
+                VStack(spacing: 0) {
                     Text(factTextSizeSliderText)
-                    Spacer(minLength: 20)
+                        .padding(5)
                     factTextSizeSlider
                 }
 #endif
