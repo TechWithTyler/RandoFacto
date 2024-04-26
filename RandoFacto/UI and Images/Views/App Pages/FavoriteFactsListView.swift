@@ -68,6 +68,7 @@ struct FavoriteFactsListView: View {
         VStack {
             Text("No Favorites")
                 .font(.largeTitle)
+            // In SwiftUI, you don't need to use attributed strings to embed SF Symbols in text--you can simply use an Image view as you would any other value in string interpolation!
             Text("Save facts to view offline by pressing the \(Image(systemName: "star")) button.")
                 .font(.callout)
         }
