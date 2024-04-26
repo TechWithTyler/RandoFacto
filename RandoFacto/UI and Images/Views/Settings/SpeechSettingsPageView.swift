@@ -15,7 +15,7 @@ struct SpeechSettingsPageView: View {
 
     var body: some View {
         Form {
-            Section {
+            Section(footer: Text("This is the voice \(appName!) will use to read facts aloud.")) {
                 VoicePicker(selectedVoiceID: $appStateManager.selectedVoiceID, voices: appStateManager.voices)
                     .onChange(of: appStateManager.selectedVoiceID) { value in
                         appStateManager.speakFact(fact: sampleFact)
