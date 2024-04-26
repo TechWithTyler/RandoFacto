@@ -12,7 +12,7 @@ import Firebase
 // MARK: - Functions
 
 func showHelp() {
-    let helpURL = URL(string: "https://techwithtyler20.weebly.com/randofactohelp")!
+    let helpURL = URL(string: "https://techwithtyler20.weebly.com/\((appName?.lowercased())!)help")!
     #if os(macOS)
     NSWorkspace.shared.open(helpURL)
     #else

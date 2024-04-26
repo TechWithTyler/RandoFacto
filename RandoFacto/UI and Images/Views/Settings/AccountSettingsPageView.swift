@@ -20,7 +20,7 @@ struct AccountSettingsPageView: View {
 
     var body: some View {
         Form {
-            Text((authenticationManager.firebaseAuthentication.currentUser?.email) ?? "Login to your RandoFacto account to save favorite facts to view on all your devices, even while offline.")
+            Text((authenticationManager.firebaseAuthentication.currentUser?.email) ?? "Login to your \(appName!) account to save favorite facts to view on all your devices, even while offline.")
                 .font(.system(size: 24))
                 .fontWeight(.bold)
             if let deletionStage = authenticationManager.accountDeletionStage {
@@ -72,7 +72,7 @@ struct AccountSettingsPageView: View {
         }
         .formStyle(.grouped)
         // Delete account alert
-        .alert("Are you sure you REALLY want to delete your RandoFacto account?", isPresented: $authenticationManager.showingDeleteAccount) {
+        .alert("Are you sure you REALLY want to delete your \(appName!) account?", isPresented: $authenticationManager.showingDeleteAccount) {
             Button("Cancel", role: .cancel) {
                 authenticationManager.showingDeleteAccount = false
             }
