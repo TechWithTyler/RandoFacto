@@ -1,5 +1,5 @@
 //
-//  DeveloperSettingsPage.swift
+//  DeveloperSettingsPageView.swift
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 4/25/24.
@@ -9,11 +9,21 @@
 #if(DEBUG)
 import SwiftUI
 
-extension SettingsView {
+struct DeveloperSettingsPageView: View {
+
+    @EnvironmentObject var appStateManager: AppStateManager
+
+    @EnvironmentObject var networkConnectionManager: NetworkConnectionManager
+
+    @EnvironmentObject var authenticationManager: AuthenticationManager
+
+    @EnvironmentObject var errorManager: ErrorManager
+
+    @EnvironmentObject var favoriteFactsDatabase: FavoriteFactsDatabase
 
     // MARK: - Developer Settings Page (Internal Builds Only)
 
-    var developerPage: some View {
+    var body: some View {
         // Put any internal/development-related features/settings here to hide them from release builds.
         Form {
             Text("This page is available in internal builds only.")
@@ -55,5 +65,10 @@ extension SettingsView {
         }
     }
 
+}
+
+#Preview {
+    DeveloperSettingsPageView()
+        .withPreviewData()
 }
 #endif

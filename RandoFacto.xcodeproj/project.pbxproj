@@ -45,7 +45,11 @@
 		8D8F1AF82AFDF25600DB9B7D /* AuthenticationMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8F1AF72AFDF25600DB9B7D /* AuthenticationMessageView.swift */; };
 		8D8F92B32B393D8A001A9B5B /* AuthenticationManagerErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8F92B22B393D8A001A9B5B /* AuthenticationManagerErrors.swift */; };
 		8D8F92B52B393DA0001A9B5B /* FavoriteFactsDatabaseErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8F92B42B393DA0001A9B5B /* FavoriteFactsDatabaseErrors.swift */; };
-		8D95DD212BDAF0C1006FAE63 /* DeveloperSettingsPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D95DD202BDAF0C1006FAE63 /* DeveloperSettingsPage.swift */; };
+		8D95DD212BDAF0C1006FAE63 /* DeveloperSettingsPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D95DD202BDAF0C1006FAE63 /* DeveloperSettingsPageView.swift */; };
+		8D95DD242BDAF888006FAE63 /* DisplaySettingsPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D95DD232BDAF888006FAE63 /* DisplaySettingsPageView.swift */; };
+		8D95DD262BDAF899006FAE63 /* AccountSettingsPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D95DD252BDAF899006FAE63 /* AccountSettingsPageView.swift */; };
+		8D95DD282BDAF8B0006FAE63 /* SpeechSettingsPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D95DD272BDAF8B0006FAE63 /* SpeechSettingsPageView.swift */; };
+		8D95DD2A2BDAF8C3006FAE63 /* AdvancedSettingsPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D95DD292BDAF8C3006FAE63 /* AdvancedSettingsPageView.swift */; };
 		8DA2C412292C1E1100705A2F /* RandoFactoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA2C411292C1E1100705A2F /* RandoFactoApp.swift */; };
 		8DA2C416292C1E1200705A2F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8DA2C415292C1E1200705A2F /* Assets.xcassets */; };
 		8DA2C41A292C1E1200705A2F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8DA2C419292C1E1200705A2F /* Preview Assets.xcassets */; };
@@ -114,7 +118,11 @@
 		8D8F41C42B15486400550899 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		8D8F92B22B393D8A001A9B5B /* AuthenticationManagerErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManagerErrors.swift; sourceTree = "<group>"; };
 		8D8F92B42B393DA0001A9B5B /* FavoriteFactsDatabaseErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteFactsDatabaseErrors.swift; sourceTree = "<group>"; };
-		8D95DD202BDAF0C1006FAE63 /* DeveloperSettingsPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperSettingsPage.swift; sourceTree = "<group>"; };
+		8D95DD202BDAF0C1006FAE63 /* DeveloperSettingsPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperSettingsPageView.swift; sourceTree = "<group>"; };
+		8D95DD232BDAF888006FAE63 /* DisplaySettingsPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplaySettingsPageView.swift; sourceTree = "<group>"; };
+		8D95DD252BDAF899006FAE63 /* AccountSettingsPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSettingsPageView.swift; sourceTree = "<group>"; };
+		8D95DD272BDAF8B0006FAE63 /* SpeechSettingsPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechSettingsPageView.swift; sourceTree = "<group>"; };
+		8D95DD292BDAF8C3006FAE63 /* AdvancedSettingsPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSettingsPageView.swift; sourceTree = "<group>"; };
 		8D992FB22B0737BA004AF5CB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8DA2C40E292C1E1100705A2F /* RandoFacto.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RandoFacto.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8DA2C411292C1E1100705A2F /* RandoFactoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandoFactoApp.swift; sourceTree = "<group>"; };
@@ -160,15 +168,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		8D31D8542B27C0C0009F29EE /* Pages */ = {
+		8D31D8542B27C0C0009F29EE /* App Pages */ = {
 			isa = PBXGroup;
 			children = (
 				8DFEB0A62AFAF77800F57DB1 /* FactView.swift */,
 				8DCF671E297F58B7006DE41E /* FavoriteFactsListView.swift */,
-				8DFEB0A22AFAF64800F57DB1 /* SettingsView.swift */,
-				8D95DD202BDAF0C1006FAE63 /* DeveloperSettingsPage.swift */,
 			);
-			path = Pages;
+			path = "App Pages";
 			sourceTree = "<group>";
 		};
 		8D31D8552B27C0C9009F29EE /* Controls */ = {
@@ -263,6 +269,19 @@
 			path = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		8D95DD222BDAF86C006FAE63 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				8DFEB0A22AFAF64800F57DB1 /* SettingsView.swift */,
+				8D95DD202BDAF0C1006FAE63 /* DeveloperSettingsPageView.swift */,
+				8D95DD232BDAF888006FAE63 /* DisplaySettingsPageView.swift */,
+				8D95DD252BDAF899006FAE63 /* AccountSettingsPageView.swift */,
+				8D95DD272BDAF8B0006FAE63 /* SpeechSettingsPageView.swift */,
+				8D95DD292BDAF8C3006FAE63 /* AdvancedSettingsPageView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
 		8D992FB12B073549004AF5CB /* Main App Structure */ = {
 			isa = PBXGroup;
 			children = (
@@ -313,7 +332,8 @@
 			isa = PBXGroup;
 			children = (
 				8DFEB0A42AFAF6FD00F57DB1 /* ContentView.swift */,
-				8D31D8542B27C0C0009F29EE /* Pages */,
+				8D31D8542B27C0C0009F29EE /* App Pages */,
+				8D95DD222BDAF86C006FAE63 /* Settings */,
 				8DAFBC852B1AD4BD00C0907F /* Authentication */,
 				8D31D8552B27C0C9009F29EE /* Controls */,
 				8D5E25042B5B8EFF00B51730 /* OnboardingView.swift */,
@@ -494,7 +514,7 @@
 				8D8899E42AFE095200BDDDFD /* Globals.swift in Sources */,
 				8D5E25052B5B8EFF00B51730 /* OnboardingView.swift in Sources */,
 				8D5511402B059B3D00BB61D4 /* FactGeneratorErrors.swift in Sources */,
-				8D95DD212BDAF0C1006FAE63 /* DeveloperSettingsPage.swift in Sources */,
+				8D95DD212BDAF0C1006FAE63 /* DeveloperSettingsPageView.swift in Sources */,
 				8D0312242AF9CAB100DBB2B2 /* LoadingIndicator.swift in Sources */,
 				8D5E9A2A2B226DE800C261B8 /* NetworkConnectionManager.swift in Sources */,
 				8D69ADEA2B1FCC20002BA65E /* ErrorManager.swift in Sources */,
@@ -503,19 +523,23 @@
 				8D0312222AF995AF00DBB2B2 /* AuthenticationFormView.swift in Sources */,
 				8D8F1AF82AFDF25600DB9B7D /* AuthenticationMessageView.swift in Sources */,
 				8DEB53222BBB54E600788A04 /* PreviewDataModifier.swift in Sources */,
+				8D95DD2A2BDAF8C3006FAE63 /* AdvancedSettingsPageView.swift in Sources */,
 				8D8899DC2AFDF39900BDDDFD /* InappropriateWordsCheckerData.swift in Sources */,
 				8D8F92B32B393D8A001A9B5B /* AuthenticationManagerErrors.swift in Sources */,
 				8D86FF052AF56CA600239DEE /* HTTPResponseExtension.swift in Sources */,
 				8DC867D22BC4866300A51787 /* PrivacyPolicyButton.swift in Sources */,
 				8D051C5E2AFB15590064E90E /* AppPage.swift in Sources */,
 				8DAFBC842B1AB52400C0907F /* FieldNeedsAttentionView.swift in Sources */,
+				8D95DD262BDAF899006FAE63 /* AccountSettingsPageView.swift in Sources */,
 				8D2A7B362B5B48A400142BDA /* FirestoreNames.swift in Sources */,
 				8D8899DD2AFDF39900BDDDFD /* GeneratedFact.swift in Sources */,
 				8DEF074E2B241DBA00F0375F /* FavoriteFactsDatabase.swift in Sources */,
+				8D95DD282BDAF8B0006FAE63 /* SpeechSettingsPageView.swift in Sources */,
 				8D86430E2AEC594F0084C772 /* AuthenticationFormType.swift in Sources */,
 				8D87C83E2B0306A7009BBE56 /* FavoriteFact.swift in Sources */,
 				8D87C8402B030890009BBE56 /* UserReference.swift in Sources */,
 				8DEF074C2B241D5B00F0375F /* AuthenticationManager.swift in Sources */,
+				8D95DD242BDAF888006FAE63 /* DisplaySettingsPageView.swift in Sources */,
 				8D8899E02AFDF3D100BDDDFD /* AuthenticationMessageType.swift in Sources */,
 				8D0A3C3F2B1FA6F500B7345D /* FavoriteFactsListDisplayManager.swift in Sources */,
 				8DA2C412292C1E1100705A2F /* RandoFactoApp.swift in Sources */,
