@@ -139,7 +139,11 @@ struct SettingsView: View {
 
 }
 
-#Preview {
+#Preview("Loaded") {
     SettingsView()
         .withPreviewData()
+}
+
+#Preview("Loading") {
+    SettingsView().loadingDisplay
 }
