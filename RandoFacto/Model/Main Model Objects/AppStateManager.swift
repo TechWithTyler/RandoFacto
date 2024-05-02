@@ -95,7 +95,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     
     // Whether the app is loading.
     var isLoading: Bool {
-        return factText == loadingString
+        return factText == loadingString && !forPreview
     }
     
     // Whether the fact text view is displaying something other than a fact (i.e., a loading message).

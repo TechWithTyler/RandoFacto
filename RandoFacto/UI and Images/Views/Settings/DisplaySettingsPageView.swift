@@ -57,8 +57,8 @@ struct DisplaySettingsPageView: View {
                     .font(.system(size: CGFloat(appStateManager.factTextSize)))
             }
             .animation(.default, value: appStateManager.factTextSize)
-            .formStyle(.grouped)
         }
+        .formStyle(.grouped)
     }
 
     // MARK: - Fact Text Size Slider
