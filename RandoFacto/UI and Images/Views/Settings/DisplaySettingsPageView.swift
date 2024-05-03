@@ -37,7 +37,7 @@ struct DisplaySettingsPageView: View {
                 Section {
                     Toggle("Favorite Fact Randomizer Effect", isOn: $favoriteFactsDatabase.favoriteFactsRandomizerEffect)
                 } footer: {
-                    Text("This setting specifies whether a randomizer effect should be used when getting a random favorite fact instead of simply displaying a random favorite fact.")
+                    Text("Turn this on if you want \(appName!) to \"spin through\" several random favorite facts instead of simply displaying a random favorite fact.")
                 }
             }
             Section {
