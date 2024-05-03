@@ -65,6 +65,7 @@ struct FactView: View {
     
     // MARK: - Fact Text View
     
+    @ViewBuilder
     var factTextView: some View {
             ScrollableText(appStateManager.factText)
                 .font(.system(size: CGFloat(appStateManager.factTextSize)))
@@ -77,6 +78,7 @@ struct FactView: View {
     
     // MARK: - Fact Generation Buttons
     
+    @ViewBuilder
     var factGenerationButtons: some View {
         ConditionalHVStack {
             if appStateManager.favoriteFactsAvailable {
@@ -119,6 +121,7 @@ struct FactView: View {
     
     // MARK: - Footer
     
+    @ViewBuilder
     var creditsText: some View {
         VStack {
             // To include a clickable link in a string, use the format [text](URL), where text is the text to be displayed and URL is the URL the link goes to.

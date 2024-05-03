@@ -55,6 +55,7 @@ struct FavoriteFactsListView: View {
     
     // MARK: - Loading Display
     
+    @ViewBuilder
     var loadingDisplay: some View {
         LoadingIndicator(message: "Loading favorite facts…")
             .font(.largeTitle)
@@ -64,6 +65,7 @@ struct FavoriteFactsListView: View {
     
     // MARK: - Favorite Facts Empty Display
     
+    @ViewBuilder
     var favoriteFactsEmptyDisplay: some View {
         VStack {
             Text("No Favorites")
@@ -78,6 +80,7 @@ struct FavoriteFactsListView: View {
     
     // MARK: - No Matches Display
     
+    @ViewBuilder
     var noMatchesDisplay: some View {
         VStack {
             Text("No Favorites Containing \"\(favoriteFactsListDisplayManager.searchText)\"")
@@ -91,6 +94,7 @@ struct FavoriteFactsListView: View {
     
     // MARK: - Favorite Facts List
     
+    @ViewBuilder
     var favoriteFactsList: some View {
         List {
             Section(header: header) {
@@ -142,6 +146,7 @@ struct FavoriteFactsListView: View {
     
     // MARK: - Header
     
+    @ViewBuilder
     var header: some View {
         HStack {
             Spacer()
