@@ -113,7 +113,7 @@ struct RandoFactoApp: App {
         firestoreSettings.isSSLEnabled = true
         firestoreSettings.dispatchQueue = .main
         firestore.settings = firestoreSettings
-        // 3. Configure the managers after having set Firestore's settings (you must set all desired Firestore settings BEFORE calling any other methods on it).
+        // 3. Configure the managers after having set Firestore's settings (you must set all desired Firestore settings BEFORE calling any other methods on the Firestore object).
         let errorManager = ErrorManager()
         let networkConnectionManager = NetworkConnectionManager(errorManager: errorManager, firestore: firestore)
         let authenticationManager = AuthenticationManager(firebaseAuthentication: firebaseAuthentication, networkConnectionManager: networkConnectionManager, errorManager: errorManager)
