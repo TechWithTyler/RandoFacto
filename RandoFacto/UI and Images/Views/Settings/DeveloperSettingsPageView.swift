@@ -26,7 +26,7 @@ struct DeveloperSettingsPageView: View {
     var body: some View {
         // Put any internal/development-related features/settings here to hide them from release builds.
         Form {
-            Text("This page is available in internal builds only.")
+            Label("This page is available in internal builds only. No traces of this page can be found in release builds.", systemImage: "hammer")
             Section {
                 Button("Reset Onboarding") {
                     appStateManager.shouldOnboard = true
@@ -63,6 +63,7 @@ struct DeveloperSettingsPageView: View {
                 }
             }
         }
+        .formStyle(.grouped)
     }
 
 }
