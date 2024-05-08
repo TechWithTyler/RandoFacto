@@ -222,5 +222,7 @@ struct FactView: View {
 
 #Preview {
     FactView()
+        #if DEBUG
         .withPreviewData()
+    #endif
 }

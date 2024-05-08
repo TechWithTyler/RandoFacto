@@ -141,7 +141,9 @@ struct SettingsView: View {
 
 #Preview("Loaded") {
     SettingsView()
+        #if DEBUG
         .withPreviewData()
+    #endif
 }
 
 #Preview("Loading") {

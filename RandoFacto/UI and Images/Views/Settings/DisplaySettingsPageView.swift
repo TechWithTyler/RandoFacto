@@ -81,5 +81,7 @@ struct DisplaySettingsPageView: View {
 
 #Preview {
     DisplaySettingsPageView()
+        #if DEBUG
         .withPreviewData()
+    #endif
 }

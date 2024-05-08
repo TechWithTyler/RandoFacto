@@ -30,5 +30,7 @@ struct SpeakButton: View {
 
 #Preview {
     SpeakButton(for: "This is a test")
+        #if DEBUG
         .withPreviewData()
+    #endif
 }

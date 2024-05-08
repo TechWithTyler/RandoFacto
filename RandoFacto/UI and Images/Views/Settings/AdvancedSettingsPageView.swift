@@ -69,5 +69,7 @@ struct AdvancedSettingsPageView: View {
 
 #Preview {
     AdvancedSettingsPageView()
+        #if DEBUG
         .withPreviewData()
+    #endif
 }

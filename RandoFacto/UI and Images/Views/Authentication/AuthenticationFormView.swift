@@ -178,5 +178,7 @@ struct AuthenticationFormView: View {
 
 #Preview {
     AuthenticationFormView()
+        #if DEBUG
         .withPreviewData()
+    #endif
 }

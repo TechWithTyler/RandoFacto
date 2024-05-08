@@ -24,5 +24,7 @@ struct UnfavoriteAllButton: View {
 
 #Preview {
     UnfavoriteAllButton()
+        #if DEBUG
         .withPreviewData()
+    #endif
 }

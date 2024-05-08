@@ -70,6 +70,8 @@ struct DeveloperSettingsPageView: View {
 
 #Preview {
     DeveloperSettingsPageView()
+        #if DEBUG
         .withPreviewData()
+    #endif
 }
 #endif

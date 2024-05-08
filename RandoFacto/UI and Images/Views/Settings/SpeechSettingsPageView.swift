@@ -31,5 +31,7 @@ struct SpeechSettingsPageView: View {
 
 #Preview {
     SpeechSettingsPageView()
+        #if DEBUG
         .withPreviewData()
+    #endif
 }

@@ -128,5 +128,7 @@ struct AccountSettingsPageView: View {
 
 #Preview {
     AccountSettingsPageView()
+        #if DEBUG
         .withPreviewData()
+    #endif
 }

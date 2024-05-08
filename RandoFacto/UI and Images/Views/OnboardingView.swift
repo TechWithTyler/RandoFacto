@@ -53,5 +53,7 @@ struct OnboardingView: View {
 
 #Preview {
     OnboardingView()
+        #if DEBUG
         .withPreviewData()
+    #endif
 }

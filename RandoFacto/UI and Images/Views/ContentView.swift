@@ -209,5 +209,7 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
+        #if DEBUG
         .withPreviewData()
+    #endif
 }

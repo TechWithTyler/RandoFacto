@@ -198,7 +198,9 @@ struct FavoriteFactsListView: View {
 
 #Preview {
     FavoriteFactsListView()
+        #if DEBUG
         .withPreviewData()
+    #endif
     #if os(macOS)
         .frame(width: 800, height: 600)
     #endif
