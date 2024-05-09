@@ -140,12 +140,16 @@ struct SettingsView: View {
 }
 
 #Preview("Loaded") {
-    SettingsView()
-        #if DEBUG
-        .withPreviewData()
-    #endif
+    NavigationStack {
+        SettingsView()
+            #if DEBUG
+#endif
+    }
+    .withPreviewData()
 }
 
 #Preview("Loading") {
-    SettingsView().loadingDisplay
+    NavigationStack {
+        SettingsView().loadingDisplay
+    }
 }

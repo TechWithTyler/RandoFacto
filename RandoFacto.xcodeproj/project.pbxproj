@@ -273,11 +273,11 @@
 			isa = PBXGroup;
 			children = (
 				8DFEB0A22AFAF64800F57DB1 /* SettingsView.swift */,
-				8D95DD202BDAF0C1006FAE63 /* DeveloperSettingsPageView.swift */,
 				8D95DD232BDAF888006FAE63 /* DisplaySettingsPageView.swift */,
-				8D95DD252BDAF899006FAE63 /* AccountSettingsPageView.swift */,
 				8D95DD272BDAF8B0006FAE63 /* SpeechSettingsPageView.swift */,
+				8D95DD252BDAF899006FAE63 /* AccountSettingsPageView.swift */,
 				8D95DD292BDAF8C3006FAE63 /* AdvancedSettingsPageView.swift */,
+				8D95DD202BDAF0C1006FAE63 /* DeveloperSettingsPageView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";

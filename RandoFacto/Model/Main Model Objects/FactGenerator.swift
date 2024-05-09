@@ -174,7 +174,7 @@ struct FactGenerator {
     
     // MARK: - Inappropriate Words Checker
     
-    // This method screens a fact to make sure it doesn't contain inappropriate words. If it does, fact generation is retried. While early builds of the initial release, 2023.12 (November 2022-October 2023), displayed messages to the user during the screening process or if an inappropriate fact was returned, we decided to not make the presence of an inappropriate words checker visible to the user, and it's not mentioned anywhere in the app's documentation or info.
+    // This method screens a fact to make sure it doesn't contain inappropriate words. If it does, fact generation is retried. While early builds of the initial release, 2023.12 (November 2022-December 2023), displayed messages to the user during the screening process or if an inappropriate fact was returned, we decided to not make the presence of an inappropriate words checker visible to the user, and it's not mentioned anywhere in the app's documentation or info.
     func screenFact(fact: String, completionHandler: @escaping ((String?, Error?) -> Void)) {
         // 1. Create the URL and URL session.
         guard let url = URL(string: inappropriateWordsCheckerURLString) else {
