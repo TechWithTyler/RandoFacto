@@ -25,7 +25,7 @@ class PreviewManager: ObservableObject {
 
     var favoriteFactsListDisplayManager: FavoriteFactsListDisplayManager
 
-    init(factText: String = sampleFact, authenticationFormType: Authentication.FormType = .login, prepBlock: ((AppStateManager, ErrorManager, NetworkConnectionManager, FavoriteFactsDatabase, AuthenticationManager, FavoriteFactsListDisplayManager) -> Void)? = nil) {
+    init(prepBlock: ((AppStateManager, ErrorManager, NetworkConnectionManager, FavoriteFactsDatabase, AuthenticationManager, FavoriteFactsListDisplayManager) -> Void)? = nil) {
         let errorManager = ErrorManager()
         let firestore = Firestore.firestore()
         let firebaseAuthentication = Authentication.auth()
@@ -34,9 +34,6 @@ class PreviewManager: ObservableObject {
         let favoriteFactsDatabase = FavoriteFactsDatabase(firestore: firestore, networkConnectionManager: networkConnectionManager, errorManager: errorManager)
         let favoriteFactsListDisplayManager = FavoriteFactsListDisplayManager(favoriteFactsDatabase: favoriteFactsDatabase)
         let appStateManager = AppStateManager(errorManager: errorManager, networkConnectionManager: networkConnectionManager, favoriteFactsDatabase: favoriteFactsDatabase, favoriteFactsListDisplayManager: favoriteFactsListDisplayManager, authenticationManager: authenticationManager)
-        appStateManager.forPreview = true
-        appStateManager.factText = factText
-        authenticationManager.formType = authenticationFormType
         prepBlock?(appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager)
         self.appStateManager = appStateManager
         self.errorManager = errorManager

@@ -180,14 +180,17 @@ struct AuthenticationFormView: View {
 #Preview("Login (Empty)") {
     AuthenticationFormView()
         #if DEBUG
-        .withPreviewData(authenticationFormType: .login)
+        .withPreviewData { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
+            authenticationManager.formType = .login
+        }
     #endif
 }
 
 #Preview("Login (Forgot Password Button)") {
     AuthenticationFormView()
         #if DEBUG
-        .withPreviewData(authenticationFormType: .login) { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
+        .withPreviewData { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
+            authenticationManager.formType = .login
             authenticationManager.emailFieldText = "someone@example.com"
         }
     #endif
@@ -196,19 +199,10 @@ struct AuthenticationFormView: View {
 #Preview("Login (Forgot Password Sent)") {
     AuthenticationFormView()
         #if DEBUG
-        .withPreviewData(authenticationFormType: .login) { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
+        .withPreviewData { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
+            authenticationManager.formType = .login
             authenticationManager.emailFieldText = "someone@example.com"
             authenticationManager.showingResetPasswordEmailSent = true
-        }
-    #endif
-}
-
-#Preview("Login (Error)") {
-    AuthenticationFormView()
-        #if DEBUG
-        .withPreviewData(authenticationFormType: .login) { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
-            authenticationManager.emailFieldText = "someone@example.com"
-            authenticationManager.passwordFieldText = "SomePassword123!@#"
         }
     #endif
 }
@@ -216,13 +210,22 @@ struct AuthenticationFormView: View {
 #Preview("Signup") {
     AuthenticationFormView()
         #if DEBUG
-        .withPreviewData(authenticationFormType: .signup)
+        .withPreviewData { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
+            authenticationManager.formType = .signup
+        }
     #endif
 }
 
 #Preview("Change Password") {
     AuthenticationFormView()
         #if DEBUG
-        .withPreviewData(authenticationFormType: .passwordChange)
+        .withPreviewData { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
+            if !authenticationManager.userLoggedIn {
+                authenticationManager.formType = .login
+                authenticationManager.formErrorText = "Change Password preview requires you to be logged in. You can login here using Live Preview mode and try again."
+            } else {
+                authenticationManager.formType = .passwordChange
+            }
+        }
     #endif
 }

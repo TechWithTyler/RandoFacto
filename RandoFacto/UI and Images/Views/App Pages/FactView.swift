@@ -220,9 +220,29 @@ struct FactView: View {
 
 }
 
-#Preview {
+#Preview("Loading") {
     FactView()
         #if DEBUG
-        .withPreviewData()
+        .withPreviewData { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
+            appStateManager.factText = loadingString
+        }
+    #endif
+}
+
+#Preview("Loaded") {
+    FactView()
+        #if DEBUG
+        .withPreviewData { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
+            appStateManager.factText = sampleFact
+        }
+    #endif
+}
+
+#Preview("Generating") {
+    FactView()
+        #if DEBUG
+        .withPreviewData { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
+            appStateManager.factText = generatingRandomFactString
+        }
     #endif
 }

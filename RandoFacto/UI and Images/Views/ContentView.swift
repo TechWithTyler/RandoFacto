@@ -207,9 +207,30 @@ struct ContentView: View {
 
 }
 
-#Preview {
+#Preview("Loading") {
     ContentView()
         #if DEBUG
-        .withPreviewData()
+        .withPreviewData { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
+            appStateManager.factText = loadingString
+        }
     #endif
 }
+
+#Preview("Loaded") {
+    ContentView()
+        #if DEBUG
+        .withPreviewData { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
+            appStateManager.factText = sampleFact
+        }
+    #endif
+}
+
+#Preview("Generating") {
+    ContentView()
+        #if DEBUG
+        .withPreviewData { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
+            appStateManager.factText = generatingRandomFactString
+        }
+    #endif
+}
+
