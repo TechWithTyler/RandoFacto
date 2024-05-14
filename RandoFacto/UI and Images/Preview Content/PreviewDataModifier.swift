@@ -10,14 +10,20 @@ import SwiftUI
 
 struct PreviewDataModifier: ViewModifier {
 
+    let previewManager: PreviewManager
+
+    init(factText: String, authenticationFormType: Authentication.FormType, prepBlock: ((AppStateManager, ErrorManager, NetworkConnectionManager, FavoriteFactsDatabase, AuthenticationManager, FavoriteFactsListDisplayManager) -> Void)? = nil) {
+        self.previewManager = PreviewManager(factText: factText, authenticationFormType: authenticationFormType, prepBlock: prepBlock)
+    }
+
     func body(content: Content) -> some View {
         content
-            .environmentObject(PreviewManager.shared.appStateManager)
-            .environmentObject(PreviewManager.shared.errorManager)
-            .environmentObject(PreviewManager.shared.networkConnectionManager)
-            .environmentObject(PreviewManager.shared.favoriteFactsDatabase)
-            .environmentObject(PreviewManager.shared.authenticationManager)
-            .environmentObject(PreviewManager.shared.favoriteFactsListDisplayManager)
+            .environmentObject(previewManager.appStateManager)
+            .environmentObject(previewManager.errorManager)
+            .environmentObject(previewManager.networkConnectionManager)
+            .environmentObject(previewManager.favoriteFactsDatabase)
+            .environmentObject(previewManager.authenticationManager)
+            .environmentObject(previewManager.favoriteFactsListDisplayManager)
     }
 
 }
@@ -25,8 +31,8 @@ struct PreviewDataModifier: ViewModifier {
 extension View {
 
     // Injects the app's model objects into Xcode Previews.
-    func withPreviewData() -> some View {
-        modifier(PreviewDataModifier())
+    func withPreviewData(factText: String = sampleFact, authenticationFormType: Authentication.FormType = .login, prepBlock: ((AppStateManager, ErrorManager, NetworkConnectionManager, FavoriteFactsDatabase, AuthenticationManager, FavoriteFactsListDisplayManager) -> Void)? = nil) -> some View {
+        modifier(PreviewDataModifier(factText: factText, authenticationFormType: authenticationFormType, prepBlock: prepBlock))
     }
 
 }

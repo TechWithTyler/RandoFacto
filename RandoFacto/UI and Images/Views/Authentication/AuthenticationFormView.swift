@@ -8,6 +8,7 @@
 
 import SwiftUI
 import SheftAppsStylishUI
+import Firebase
 
 struct AuthenticationFormView: View {
     
@@ -176,9 +177,52 @@ struct AuthenticationFormView: View {
     
 }
 
-#Preview {
+#Preview("Login (Empty)") {
     AuthenticationFormView()
         #if DEBUG
-        .withPreviewData()
+        .withPreviewData(authenticationFormType: .login)
+    #endif
+}
+
+#Preview("Login (Forgot Password Button)") {
+    AuthenticationFormView()
+        #if DEBUG
+        .withPreviewData(authenticationFormType: .login) { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
+            authenticationManager.emailFieldText = "someone@example.com"
+        }
+    #endif
+}
+
+#Preview("Login (Forgot Password Sent)") {
+    AuthenticationFormView()
+        #if DEBUG
+        .withPreviewData(authenticationFormType: .login) { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
+            authenticationManager.emailFieldText = "someone@example.com"
+            authenticationManager.showingResetPasswordEmailSent = true
+        }
+    #endif
+}
+
+#Preview("Login (Error)") {
+    AuthenticationFormView()
+        #if DEBUG
+        .withPreviewData(authenticationFormType: .login) { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
+            authenticationManager.emailFieldText = "someone@example.com"
+            authenticationManager.passwordFieldText = "SomePassword123!@#"
+        }
+    #endif
+}
+
+#Preview("Signup") {
+    AuthenticationFormView()
+        #if DEBUG
+        .withPreviewData(authenticationFormType: .signup)
+    #endif
+}
+
+#Preview("Change Password") {
+    AuthenticationFormView()
+        #if DEBUG
+        .withPreviewData(authenticationFormType: .passwordChange)
     #endif
 }
