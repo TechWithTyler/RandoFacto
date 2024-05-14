@@ -87,7 +87,7 @@ class FavoriteFactsDatabase: ObservableObject {
             favoriteFactsListener = firestore.collection(Firestore.CollectionName.favoriteFacts)
             // 3. Filter the result to include only the current user's favorite facts.
                 .whereField(Firestore.KeyName.user, isEqualTo: userEmail)
-            // 4. Listen for any changes made to the favorite facts list, whether it's on this device, another device, or the Firebase console.
+            // 4. Listen for any changes made to the favorite facts list, whether it's on this device, another device, or the Firebase console. The result of steps 2-4 is the value of favoriteFactsListener.
                 .addSnapshotListener(includeMetadataChanges: true) { [self] snapshot, error in
                     // 5. Log any errors.
                     if let error = error {
