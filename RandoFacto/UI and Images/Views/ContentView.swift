@@ -71,7 +71,11 @@ struct ContentView: View {
                 favoriteFactsDatabase.favoriteFactToDelete = nil
             }
         } message: { factText in
-            Text("Make sure to re-favorite this fact BEFORE generating a new one if you change your mind!")
+            if appStateManager.selectedPage == .randomFact {
+                Text("Make sure to re-favorite this fact BEFORE generating a new one if you change your mind!")
+            } else {
+                Text("This can't be undone!")
+            }
         }
         // Unfavorite all facts alert
         .alert("Are you sure you REALLY want to unfavorite all facts?", isPresented: $favoriteFactsDatabase.showingDeleteAllFavoriteFacts) {

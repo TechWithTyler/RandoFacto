@@ -34,7 +34,7 @@ class FavoriteFactsDatabase: ObservableObject {
 
     // MARK: - Properties - Booleans
 
-    // Whether a randomizer effect should be used when getting a random favorite fact.
+    // Whether RandoFacto should "spin through" a user's favorite facts when getting a random favorite fact.
     @AppStorage("favoriteFactsRandomizerEffect") var favoriteFactsRandomizerEffect: Bool = false
 
     // Whether the "delete this favorite fact" alert should be/is being displayed.
