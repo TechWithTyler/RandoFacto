@@ -42,9 +42,10 @@ struct AuthenticationFormView: View {
                     credentialFields
                     if authenticationManager.formType == .passwordChange {
                         HStack {
-                            Image(systemName: "info.circle")
+                            Image(systemName: "exclamationmark.triangle")
+                                .symbolRenderingMode(.multicolor)
                                 .accessibilityHidden(true)
-                            Text("Changing your password will log you out of your other devices within an hour.")
+                            Text("IMPORTANT: Changing your password will log you out of your other devices within an hour.")
                         }
                         .font(.callout)
                         .foregroundStyle(.secondary)
