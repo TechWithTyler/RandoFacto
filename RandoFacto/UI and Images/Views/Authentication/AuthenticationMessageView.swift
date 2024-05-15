@@ -24,7 +24,11 @@ struct AuthenticationMessageView: View {
                 Spacer()
                 Image(systemName: type == .confirmation ? "checkmark.circle.fill" : errorSymbolName)
                     .symbolRenderingMode(.palette)
-                    .foregroundStyle(.white, color)
+                    .foregroundStyle(
+                        // Frontmost layer
+                        .white,
+                        // Rearmost layer (red = error, green = success)
+                        color)
                     .imageScale(.large)
                     .accessibilityHidden(true)
                     .padding(5)
@@ -36,6 +40,7 @@ struct AuthenticationMessageView: View {
                     .padding(5)
                 Spacer()
             }
+        // Use the image circle's color for the text and background.
         .foregroundStyle(color)
         .background(color.opacity(0.25))
         .containerShape(.rect(cornerRadius: SAContainerViewCornerRadius))
