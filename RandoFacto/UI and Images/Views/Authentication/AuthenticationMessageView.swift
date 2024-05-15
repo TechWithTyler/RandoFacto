@@ -50,8 +50,10 @@ struct AuthenticationMessageView: View {
 
 #Preview("Success") {
 	AuthenticationMessageView(text: "Success!", type: .confirmation)
+        .padding()
 }
 
 #Preview("Error") {
 	AuthenticationMessageView(text: "Error!", type: .error)
+        .padding()
 }
