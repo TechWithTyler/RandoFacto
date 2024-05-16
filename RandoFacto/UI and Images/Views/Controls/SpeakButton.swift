@@ -29,8 +29,9 @@ struct SpeakButton: View {
 }
 
 #Preview {
-    SpeakButton(for: "This is a test")
-        #if DEBUG
-        .withPreviewData()
-    #endif
+        SpeakButton(for: "This is a test")
+            .labelStyle(.topIconBottomTitle)
+#if DEBUG
+            .withPreviewData()
+#endif
 }
