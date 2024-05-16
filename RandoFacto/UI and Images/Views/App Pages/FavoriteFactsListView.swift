@@ -134,7 +134,7 @@ struct FavoriteFactsListView: View {
                             Label("Copy", systemImage: "doc.on.doc")
                         }
                         Divider()
-                        unfavoriteAction(for: favorite)
+                        unfavoriteAction(for: favorite, inMenu: true)
                     }
                     .swipeActions {
                         unfavoriteAction(for: favorite)
@@ -167,12 +167,12 @@ struct FavoriteFactsListView: View {
     // MARK: - Unfavorite Action
     
     @ViewBuilder
-    func unfavoriteAction(for favorite: String) -> some View {
+    func unfavoriteAction(for favorite: String, inMenu: Bool = false) -> some View {
         Button(role: .destructive) {
             favoriteFactsDatabase.favoriteFactToDelete = favorite
             favoriteFactsDatabase.showingDeleteFavoriteFact = true
         } label: {
-            Label("Unfavorite…", systemImage: "star.slash")
+            Label(inMenu ? "Unfavorite…" : "Unfavorite", systemImage: "star.slash")
         }
     }
     
@@ -196,10 +196,26 @@ struct FavoriteFactsListView: View {
     
 }
 
-#Preview {
+#Preview("Loading") {
     FavoriteFactsListView()
         #if DEBUG
-        .withPreviewData()
+        .withPreviewData {
+            appStateManager, _, _, _, _, _ in
+            appStateManager.factText = loadingString
+        }
+    #endif
+    #if os(macOS)
+        .frame(width: 800, height: 600)
+    #endif
+}
+
+#Preview("Loaded") {
+    FavoriteFactsListView()
+        #if DEBUG
+        .withPreviewData {
+            appStateManager, _, _, _, _, _ in
+            appStateManager.factText = sampleFact
+        }
     #endif
     #if os(macOS)
         .frame(width: 800, height: 600)

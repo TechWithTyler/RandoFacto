@@ -20,28 +20,38 @@ struct AccountSettingsPageView: View {
 
     var body: some View {
         Form {
-            Text((authenticationManager.firebaseAuthentication.currentUser?.email) ?? "Login to your \(appName!) account to save favorite facts to view on all your devices, even while offline.")
-                .font(.system(size: 24))
-                .fontWeight(.bold)
+            if let email = authenticationManager.firebaseAuthentication.currentUser?.email {
+                HStack {
+                    Image(systemName: "person.circle.fill")
+                        .foregroundStyle(.secondary)
+                        .font(.system(size: 24))
+                        .fontWeight(.bold)
+                        .accessibilityLabel(email)
+                    VStack {
+                        Text("Logged in as")
+                        Text(email)
+                            .font(.system(size: 24))
+                            .fontWeight(.bold)
+                    }
+                }
+            } else {
+                Text("Login to your \(appName!) account to save favorite facts to view on all your devices, even while offline.")
+                    .font(.system(size: 24))
+            }
             if let deletionStage = authenticationManager.accountDeletionStage {
                 LoadingIndicator(message: "Deleting \(deletionStage)…")
             } else if authenticationManager.userLoggedIn {
                 if networkConnectionManager.deviceIsOnline {
-                    Section {
                         Button("Change Password…", systemImage: "key") {
                             authenticationManager.formType = .passwordChange
                         }
-                    }
                     .controlSize(.large)
                 }
-                Section {
                     Button("Logout…", systemImage: "door.left.hand.open") {
                         authenticationManager.showingLogout = true
                     }
                     .controlSize(.large)
-                }
                 if networkConnectionManager.deviceIsOnline {
-                    Section {
                         Button(role: .destructive) {
                             authenticationManager.showingDeleteAccount = true
                         } label: {
@@ -52,7 +62,6 @@ struct AccountSettingsPageView: View {
                         }
 
                         .controlSize(.large)
-                    }
                 }
             } else {
                 if networkConnectionManager.deviceIsOnline {
