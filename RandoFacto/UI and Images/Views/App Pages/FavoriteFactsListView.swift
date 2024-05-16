@@ -97,7 +97,12 @@ struct FavoriteFactsListView: View {
     @ViewBuilder
     var favoriteFactsList: some View {
         List {
-            Section(header: header) {
+            Section {
+                header
+            }
+            .listRowSeparator(.hidden)
+            .listRowBackground(Color.clear)
+            Section {
                 ForEach(favoriteFactsListDisplayManager.sortedFavoriteFacts, id: \.self) {
                     favorite in
                     HStack {
@@ -117,9 +122,9 @@ struct FavoriteFactsListView: View {
                         SpeakButton(for: favorite)
                             .labelStyle(.topIconBottomTitle)
                             .padding(.horizontal)
-                        #if os(iOS)
+#if os(iOS)
                             .hoverEffect(.highlight)
-                        #endif
+#endif
                     }
                     .buttonStyle(.borderless)
                     .contextMenu {
@@ -153,11 +158,10 @@ struct FavoriteFactsListView: View {
             VStack(alignment: .center) {
                 Text("\(favoriteFactsListDisplayManager.searchText.isEmpty ? "Favorite facts" : "Search results"): \(favoriteFactsListDisplayManager.sortedFavoriteFacts.count)")
                     .multilineTextAlignment(.center)
-                    .padding(10)
                     .font(.title)
                 Text("Select a favorite fact to display it.")
                     .multilineTextAlignment(.center)
-                    .padding(10)
+                    .padding(1)
                     .font(.callout)
             }
             Spacer()
