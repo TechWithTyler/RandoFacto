@@ -19,7 +19,7 @@ enum SettingsPage : String {
 
         case advanced = "gear"
 
-        case speech = "speaker.wave.2.bubble.left.fill"
+        case speech = "speaker.wave.2.bubble.left"
 
         #if(DEBUG)
         case developer = "hammer"
