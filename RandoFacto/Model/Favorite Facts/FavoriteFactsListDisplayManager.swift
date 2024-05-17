@@ -53,7 +53,8 @@ class FavoriteFactsListDisplayManager: ObservableObject {
     // The favorite facts list, sorted in either A-Z or Z-A order.
     var sortedFavoriteFacts: [String] {
         return searchResults.sorted { a, z in
-            return sortFavoriteFactsAscending ? a < z : a > z
+            let sortCondition = sortFavoriteFactsAscending ? a < z : z < a
+            return sortCondition
         }
     }
 
