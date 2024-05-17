@@ -23,7 +23,7 @@ class FavoriteFactsListDisplayManager: ObservableObject {
 
     // MARK: - Properties - Searching
 
-    // The FavoriteFactsList search text.
+    // The search text.
     @Published var searchText = String()
 
     // The favorite facts that match searchText.
@@ -60,7 +60,7 @@ class FavoriteFactsListDisplayManager: ObservableObject {
 
     // Colors the matching text of favorite and returns the resulting AttributedString.
     func favoriteFactWithColoredMatchingTerms(_ favorite: String) -> AttributedString {
-        // 1. Convert the favorite fact String to an AttributedString. As AttributedString is a data type, it's declared in the Foundation framework instead of the SwiftUI framework, even though its cross-platform design makes it shine with SwiftUI.
+        // 1. Convert the favorite fact String to an AttributedString. As AttributedString is a data type, it's declared in the Foundation framework instead of the SwiftUI framework, even though its cross-platform design makes it shine with SwiftUI. Unlike with NSAttributedString, you can simply initialize it with a String argument without having to use an argument label.
         var attributedString = AttributedString(favorite)
         // 2. Check to see if the fact text contains the entered search text, case insensitive. If so, change the color of the matching part.
         if let range = attributedString.range(of: searchText, options: .caseInsensitive) {
