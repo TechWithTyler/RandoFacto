@@ -121,6 +121,7 @@ struct FavoriteFactsListView: View {
                         Divider()
                         SpeakButton(for: favorite)
                             .labelStyle(.topIconBottomTitle)
+                            .imageScale(.large)
                             .padding(.horizontal)
 #if os(iOS)
                             .hoverEffect(.highlight)
