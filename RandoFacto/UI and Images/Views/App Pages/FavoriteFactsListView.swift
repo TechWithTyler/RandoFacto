@@ -40,8 +40,10 @@ struct FavoriteFactsListView: View {
                     }
                 }
                 .animation(.default, value: favoriteFactsListDisplayManager.sortedFavoriteFacts)
+                // The searchable(text:placement:prompt:) modifier adds a search box with the given search text String binding, placement, and placeholder text prompt. The list contains everything in the FavoriteFactListDisplayManager's sortedFavoriteFacts array, which returns all favorite facts if the search box is empty or only favorite facts matching search terms if the search box contains text. The sortedFavoriteFacts array is a computed property whose value depends on the search text.
                 .searchable(text: $favoriteFactsListDisplayManager.searchText, placement: .toolbar, prompt: "Search Favorite Facts")
                 // Toolbar
+                // The search box is placed in the toolbar by the modifier above.
                 .toolbar {
                     toolbarContent
                 }
@@ -49,7 +51,7 @@ struct FavoriteFactsListView: View {
         }
         .navigationTitle("Favorite Facts List")
         .onDisappear {
-            favoriteFactsListDisplayManager.searchText.removeAll()
+            favoriteFactsListDisplayManager.clearSearchText()
         }
     }
     
@@ -130,12 +132,7 @@ struct FavoriteFactsListView: View {
                     .buttonStyle(.borderless)
                     .contextMenu {
                         Button {
-#if os(macOS)
-                            NSPasteboard.general.declareTypes([.string], owner: self)
-                            NSPasteboard.general.setString(favorite, forType: .string)
-#else
-                            UIPasteboard.general.string = favorite
-#endif
+                            favoriteFactsListDisplayManager.copyFact(favorite)
                         } label: {
                             Label("Copy", systemImage: "doc.on.doc")
                         }

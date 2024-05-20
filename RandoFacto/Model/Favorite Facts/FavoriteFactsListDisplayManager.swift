@@ -36,7 +36,7 @@ class FavoriteFactsListDisplayManager: ObservableObject {
         if searchText.isEmpty {
             return facts
         } else {
-            // 4. Return facts that contain all or part of the search text.
+            // 4. If searchText contains text, return facts that contain all or part of the search text.
             return facts.filter { fact in
                 let range = fact.range(of: searchText, options: .caseInsensitive)
                 let textMatchesSearchTerm = range != nil
@@ -47,7 +47,7 @@ class FavoriteFactsListDisplayManager: ObservableObject {
 
     // MARK: - Properties - Sorting
 
-    // The sort order of the favorite facts list.
+    // The sort order of the favorite facts list (false = Z-A, true = A-Z).
     @AppStorage("sortFavoriteFactsAscending") var sortFavoriteFactsAscending: Bool = false
 
     // The favorite facts list, sorted in either A-Z or Z-A order.
@@ -57,6 +57,8 @@ class FavoriteFactsListDisplayManager: ObservableObject {
             return sortCondition
         }
     }
+
+    // MARK: - Color Matching Terms
 
     // Colors the matching text of favorite and returns the resulting AttributedString.
     func favoriteFactWithColoredMatchingTerms(_ favorite: String) -> AttributedString {
@@ -68,6 +70,24 @@ class FavoriteFactsListDisplayManager: ObservableObject {
         }
         // 3. Return the attributed string.
         return attributedString
+    }
+
+    // MARK: - Copy Fact
+
+    // Copies favorite to the device's clipboard using the platform-specific copy implementation.
+    func copyFact(_ favorite: String) {
+#if os(macOS)
+                            NSPasteboard.general.declareTypes([.string], owner: self)
+                            NSPasteboard.general.setString(favorite, forType: .string)
+#else
+                            UIPasteboard.general.string = favorite
+#endif
+    }
+
+    // MARK: - Clear Search Text
+
+    func clearSearchText() {
+        searchText.removeAll()
     }
 
 }
