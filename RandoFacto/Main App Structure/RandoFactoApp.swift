@@ -100,7 +100,7 @@ struct RandoFactoApp: App {
 	init() {
         // 1. Configure Firebase.
         RandoFactoApp.setupFirebaseConfiguration()
-        // Creation of the main Firebase objects is written as Thing.thing() for some reason.
+        // Firebase objects are initialized using Thing.thing(), with Thing being the class name and thing() being the same-name-but-lowercase singleton initializer method. Firebase objects can be initialized only once, and simply using Thing() won't compile.
         let firestore = Firestore.firestore()
         // To make the Firebase authentication object, Auth, easier to understand, we use a custom type alias called Authentication.
         let firebaseAuthentication = Authentication.auth()
