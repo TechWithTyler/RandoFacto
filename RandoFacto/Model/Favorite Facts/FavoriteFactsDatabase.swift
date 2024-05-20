@@ -13,7 +13,8 @@ import Firebase
 class FavoriteFactsDatabase: ObservableObject {
     
     // MARK: - Properties - Objects
-    
+
+    // Handles all Firestore database-related tasks.
     var firestore: Firestore
     
     var authenticationManager: AuthenticationManager? = nil
@@ -29,7 +30,7 @@ class FavoriteFactsDatabase: ObservableObject {
     
     // MARK: - Properties - Favorite Facts Listener
     
-    // Listens for changes to the current user's favorite facts.
+    // Listens for changes to the current user's favorite facts, whether it's from RandoFacto on this device, RandoFacto on another device, or RandoFacto's Firebase console.
     var favoriteFactsListener: ListenerRegistration? = nil
 
     // MARK: - Properties - Booleans
@@ -106,7 +107,7 @@ class FavoriteFactsDatabase: ObservableObject {
     
     // This method updates the app's favorite facts list with snapshot's data.
     func updateFavoriteFactsList(from snapshot: QuerySnapshot) {
-        // 1. Try to replace the data in favoriteFacts with snapshot's data by decoding it to a FavoriteFact object.
+        // 1. Try to replace the data in favoriteFacts with snapshot's data by decoding it to FavoriteFact objects.
         do {
             // compactMap is marked throws so you can call throwing functions in its closure. Errors are then "rethrown" so the catch block of this do statement can handle them.
             // compactMap throws out any documents where the data couldn't be decoded to a FavoriteFact object (the result of the transformation is nil).

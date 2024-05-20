@@ -104,16 +104,18 @@ struct RandoFactoApp: App {
         let firestore = Firestore.firestore()
         // To make the Firebase authentication object, Auth, easier to understand, we use a custom type alias called Authentication.
         let firebaseAuthentication = Authentication.auth()
-        // 2. Enable syncing Firestore data to the device for use offline.
+        // 2. Create a FirestoreSettings object.
         let firestoreSettings = FirestoreSettings()
+        // 3. Enable syncing Firestore data to the device for use offline. Cached Firestore data is stored in the Application Support folder in the app's container.
         // Persistent cache must be at least 1,048,576 bytes/1024KB/1MB. Here we use unlimited storage.
         let persistentCacheSizeBytes = FirestoreCacheSizeUnlimited as NSNumber
         let persistentCache = PersistentCacheSettings(sizeBytes: persistentCacheSizeBytes)
         firestoreSettings.cacheSettings = persistentCache
+        // 4. Enable SSL and set the DispatchQueue to the main queue, then set the configured FirestoreSettings object as Firestore's settings.
         firestoreSettings.isSSLEnabled = true
         firestoreSettings.dispatchQueue = .main
         firestore.settings = firestoreSettings
-        // 3. Configure the managers after having set Firestore's settings (you must set all desired Firestore settings BEFORE calling any other methods on the Firestore object).
+        // 5. Configure the managers after having set Firestore's settings (you must set all desired Firestore settings BEFORE calling any other methods on the Firestore object).
         let errorManager = ErrorManager()
         let networkConnectionManager = NetworkConnectionManager(errorManager: errorManager, firestore: firestore)
         let authenticationManager = AuthenticationManager(firebaseAuthentication: firebaseAuthentication, networkConnectionManager: networkConnectionManager, errorManager: errorManager)
@@ -148,7 +150,7 @@ struct RandoFactoApp: App {
         }
         // Create a separate Swift file to hold a constant called firebaseAPIKey, and include its path in your git repository's .gitignore file to make sure it doesn't get committed. We set up the API key here, instead of in GoogleService-Info.plist, so anyone looking at that file in the app bundle's Contents/Resources directory on macOS won't be able to see the API key.
         options.apiKey = firebaseAPIKey
-        // 3. Initialize Firebase with the custom options.
+        // 3. Initialize Firebase with the custom options. This must be done before the Firestore and Auth objects can be initialized.
         // Since we declare the API key outside GoogleService-Info.plist, we need to use configure(options:) instead of configure().
         FirebaseApp.configure(options: options)
     }
