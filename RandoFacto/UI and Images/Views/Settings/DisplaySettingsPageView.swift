@@ -55,8 +55,6 @@ struct DisplaySettingsPageView: View {
             Section {
                 Text(sampleFact)
                     .font(.system(size: CGFloat(appStateManager.factTextSize)))
-                    .listRowBackground(Color.clear)
-                    .multilineTextAlignment(.center)
             }
             .animation(.default, value: appStateManager.factTextSize)
         }
