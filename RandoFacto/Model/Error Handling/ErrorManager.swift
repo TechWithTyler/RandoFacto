@@ -23,7 +23,7 @@ class ErrorManager: ObservableObject {
     
     // This method shows error's localizedDescription as an alert or in the authentication form.
     func showError(_ error: Error, completionHandler: ((RandoFactoError) -> Void)? = nil) {
-        // 1. Convert the error to NSError and print it.
+        // 1. Convert the error to NSError, and print it in internal builds.
         let nsError = error as NSError
 #if DEBUG
         // If an unfamiliar error appears, check its code in the console and add a friendlier message if necessary.
