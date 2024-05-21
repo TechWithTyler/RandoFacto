@@ -58,6 +58,8 @@ class ErrorManager: ObservableObject {
             errorToShow = .attemptToLoginToInvalidAccount
         case AuthErrorCode.wrongPassword.rawValue:
             errorToShow = .incorrectPassword
+        case AuthErrorCode.weakPassword.rawValue:
+            errorToShow = .passwordTooShort
         case AuthErrorCode.invalidEmail.rawValue:
             errorToShow = .invalidEmailFormat
         case AuthErrorCode.requiresRecentLogin.rawValue:

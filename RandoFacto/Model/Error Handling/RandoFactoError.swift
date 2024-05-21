@@ -52,7 +52,10 @@ enum RandoFactoError: LocalizedError, Equatable, Identifiable {
     
     // The password is incorrect.
     case incorrectPassword
-    
+
+    // The password is less than 6 characters long (too weak).
+    case passwordTooShort
+
     // The email address wasn't in the format email@example.xyz.
     case invalidEmailFormat
     
@@ -107,6 +110,8 @@ enum RandoFactoError: LocalizedError, Equatable, Identifiable {
             return "The email address must be in the format email@example.xyz."
         case .incorrectPassword:
             return "Incorrect password. If you forgot your password, clear the password field and press \"\(forgotPasswordButtonTitle)\"."
+        case .passwordTooShort:
+            return "Your password must be at least 6 characters long."
         case .tooLongSinceLastLogin:
             return "It's been more than 5 minutes since you last logged in on this device. Please re-login and try the operation again."
             // This can be written as either case .name(let propertyName) or case let .name(propertyName).
