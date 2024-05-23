@@ -51,7 +51,7 @@ struct AuthenticationFormView: View {
                         .foregroundStyle(.secondary)
                     }
                     if authenticationManager.showingResetPasswordEmailSent {
-                        AuthenticationMessageView(text: "A password reset email has been sent to \"\(authenticationManager.emailFieldText)\". Follow the instructions to reset your password.", type: .confirmation)
+                        AuthenticationMessageView(text: "A password reset email has been sent to \"\(authenticationManager.emailFieldText)\". Follow the instructions in the email to reset your password. If you don't see the email from \(appName!), check your spam folder.", type: .confirmation)
                     }
                     if let errorText = authenticationManager.formErrorText {
                         AuthenticationMessageView(text: errorText, type: .error)
@@ -113,6 +113,7 @@ struct AuthenticationFormView: View {
     
     // MARK: - Credential Fields
     
+    @ViewBuilder
     var credentialFields: some View {
         Group {
             if authenticationManager.formType != .passwordChange {
