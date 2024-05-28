@@ -76,7 +76,7 @@ struct FavoriteFactsListView: View {
             Text("Save facts to view offline by pressing the \(Image(systemName: "star")) button.")
                 .font(.callout)
         }
-        .foregroundColor(.secondary)
+        .foregroundStyle(.secondary)
         .padding()
     }
     
@@ -90,7 +90,7 @@ struct FavoriteFactsListView: View {
             Text("Please check your search terms.")
                 .font(.callout)
         }
-        .foregroundColor(.secondary)
+        .foregroundStyle(.secondary)
         .padding()
     }
     
@@ -116,7 +116,7 @@ struct FavoriteFactsListView: View {
                             Text(favoriteFactsListDisplayManager.favoriteFactWithColoredMatchingTerms(favorite))
                                 .font(.system(size: CGFloat(appStateManager.factTextSize)))
                                 .multilineTextAlignment(.leading)
-                                .foregroundColor(.primary)
+                                .foregroundStyle(.primary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.vertical)
                         }

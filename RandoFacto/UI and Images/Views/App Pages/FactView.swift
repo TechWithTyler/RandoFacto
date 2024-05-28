@@ -175,7 +175,7 @@ struct FactView: View {
         .padding(.top, 1)
         .font(.footnote)
         .multilineTextAlignment(.center)
-        .foregroundColor(.secondary)
+        .foregroundStyle(.secondary)
     }
 
     // MARK: - Toolbar
