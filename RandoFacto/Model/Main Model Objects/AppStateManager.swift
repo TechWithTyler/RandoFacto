@@ -32,7 +32,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     
     var authenticationManager: AuthenticationManager
     
-    var voice = AVSpeechSynthesizer()
+    var speechSynthesizer = AVSpeechSynthesizer()
 
     // MARK: - Properties - Strings
     
@@ -65,7 +65,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     // The page currently selected in the sidebar/top-level view. On macOS, the settings view is accessed by the Settings menu item in the app menu instead of as a page.
     @Published var selectedPage: AppPage? = .randomFact {
         didSet {
-            voice.stopSpeaking(at: .immediate)
+            speechSynthesizer.stopSpeaking(at: .immediate)
         }
     }
     
@@ -115,7 +115,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
         self.favoriteFactsListDisplayManager = favoriteFactsListDisplayManager
         self.authenticationManager = authenticationManager
         super.init()
-        voice.delegate = self
+        speechSynthesizer.delegate = self
         // 2. After waiting 2 seconds for network connection checking and favorite facts database loading to complete, display a fact to the user.
         displayInitialFact()
         DispatchQueue.main.async { [self] in
@@ -147,7 +147,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
             // 2. Display a message before starting fact generation.
             DispatchQueue.main.async { [self] in
                 dismissFavoriteFacts()
-                voice.stopSpeaking(at: .immediate)
+                speechSynthesizer.stopSpeaking(at: .immediate)
                 factText = generatingRandomFactString
             }
         } completionHandler: { [self]
@@ -174,7 +174,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
             factText = favoriteFact
         }
         DispatchQueue.main.async { [self] in
-            voice.stopSpeaking(at: .immediate)
+            speechSynthesizer.stopSpeaking(at: .immediate)
             dismissFavoriteFacts()
             if favoriteFactsDatabase.favoriteFactsRandomizerEffect && favoriteFactsDatabase.favoriteFacts.count >= 5 {
                 favoriteFactsDatabase.setupRandomizerTimer {
@@ -194,7 +194,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     func displayFavoriteFact(_ favorite: String) {
         DispatchQueue.main.async { [self] in
             factText = favorite
-            voice.stopSpeaking(at: .immediate)
+            speechSynthesizer.stopSpeaking(at: .immediate)
             dismissFavoriteFacts()
         }
     }
@@ -252,11 +252,11 @@ extension AppStateManager {
     // This method speaks fact using the selected voice.
     func speakFact(fact: String) {
         DispatchQueue.main.async { [self] in
-            voice.stopSpeaking(at: .immediate)
+            speechSynthesizer.stopSpeaking(at: .immediate)
             if factBeingSpoken != fact {
                 let utterance = AVSpeechUtterance(string: fact)
                 utterance.voice = AVSpeechSynthesisVoice(identifier: selectedVoiceID)
-                voice.speak(utterance)
+                speechSynthesizer.speak(utterance)
             }
         }
     }
