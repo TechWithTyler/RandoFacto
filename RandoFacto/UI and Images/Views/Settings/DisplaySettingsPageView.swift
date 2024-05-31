@@ -36,6 +36,9 @@ struct DisplaySettingsPageView: View {
                 }
                 Section {
                     Toggle("Favorite Fact Randomizer Effect", isOn: $favoriteFactsDatabase.favoriteFactsRandomizerEffect)
+                    HStack {
+                        InfoText("The randomizer effect only works if you have at least 5 favorite facts.")
+                    }
                 } footer: {
                     Text("Turn this on if you want \(appName!) to \"spin through\" several random favorite facts instead of simply displaying a random favorite fact.\nThis setting will reset to off when you logout or delete your account.")
                 }
