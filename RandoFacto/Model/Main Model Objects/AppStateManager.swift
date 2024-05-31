@@ -108,26 +108,25 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     // MARK: - Initialization
     
     init(errorManager: ErrorManager, networkConnectionManager: NetworkConnectionManager, favoriteFactsDatabase: FavoriteFactsDatabase, favoriteFactsListDisplayManager: FavoriteFactsListDisplayManager, authenticationManager: AuthenticationManager) {
-        // 1. Link the managers and set the speech synthesizer delegate.
+        // 1. Link the managers.
         self.errorManager = errorManager
         self.networkConnectionManager = networkConnectionManager
         self.favoriteFactsDatabase = favoriteFactsDatabase
         self.favoriteFactsListDisplayManager = favoriteFactsListDisplayManager
         self.authenticationManager = authenticationManager
         super.init()
+        // 3. Set the speech synthesizer delegate and load the list of installed voices.
         speechSynthesizer.delegate = self
-        // 2. After waiting 2 seconds for network connection checking and favorite facts database loading to complete, display a fact to the user.
-        displayInitialFact()
         DispatchQueue.main.async { [self] in
             loadVoices()
         }
+        // 3. After waiting 2 seconds for network connection checking and favorite facts database loading to complete, display a fact to the user.
+        displayInitialFact()
     }
-    
-    // The initializers for the AppStateManager, NetworkConnectionManager, FavoriteFactsDatabase, FavoriteFactsListDisplayManager, AuthenticationManager, and ErrorManager that don't take any arguments are used for Xcode previews.
     
     // MARK: - Fact Generation
     
-    // This method either generates a random fact or displays a random favorite fact to the user based on authentication state, number of favorite facts, and settings.
+    // This method either generates a random fact or displays a random favorite fact to the user, based on authentication state, number of favorite facts, and settings.
     func displayInitialFact() {
         // 1. Wait 2 seconds to give the network path monitor time to configure.
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(initializationTime)) { [self] in
