@@ -41,7 +41,7 @@ struct AuthenticationFormView: View {
                     }
                     credentialFields
                     if authenticationManager.formType == .passwordChange {
-                        WarningText("Changing your password will log you out of your other devices within an hour.", prefix: .important)
+                        WarningText("Changing your password will log you out of your other devices within an hour.", prefix: .importantUrgent)
                     }
                     if authenticationManager.showingResetPasswordEmailSent {
                         AuthenticationMessageView(text: "A password reset email has been sent to \"\(authenticationManager.emailFieldText)\". Follow the instructions in the email to reset your password. If you don't see the email from \(appName!), check your spam folder.", type: .confirmation)
