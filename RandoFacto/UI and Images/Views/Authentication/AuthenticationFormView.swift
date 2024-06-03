@@ -49,6 +49,9 @@ struct AuthenticationFormView: View {
                     if let errorText = authenticationManager.formErrorText {
                         AuthenticationMessageView(text: errorText, type: .error)
                     }
+                    if authenticationManager.formType == .signup {
+                        PrivacyPolicyAgreementText()
+                    }
                 }
             }
             .formStyle(.grouped)
