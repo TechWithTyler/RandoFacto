@@ -112,7 +112,7 @@ struct AccountSettingsPageView: View {
         .dialogSeverity(.critical)
 #endif
         // Logout alert
-        .alert("Logout?", isPresented: $authenticationManager.showingLogout) {
+        .alert("Logout of your \(appName!) account?", isPresented: $authenticationManager.showingLogout) {
             Button("Cancel", role: .cancel) {
                 authenticationManager.showingLogout = false
             }
