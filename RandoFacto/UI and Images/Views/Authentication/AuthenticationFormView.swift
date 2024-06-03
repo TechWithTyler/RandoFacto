@@ -151,7 +151,7 @@ struct AuthenticationFormView: View {
                 HStack {
                     Spacer()
                     Button {
-                        authenticationManager.sendPasswordResetLinkToEnteredEmailAddress()
+                        authenticationManager.showingResetPasswordAlert = true
                     } label: {
                         Label(forgotPasswordButtonTitle, systemImage: "questionmark.circle.fill")
                             .labelStyle(.titleAndIcon)
@@ -170,6 +170,16 @@ struct AuthenticationFormView: View {
         }
         .onChange(of: authenticationManager.passwordFieldText) { value in
             authenticationManager.credentialFieldsChanged()
+        }
+        .alert("Send password reset request?", isPresented: $authenticationManager.showingResetPasswordAlert) {
+            Button("OK") {
+                authenticationManager.sendPasswordResetLinkToEnteredEmailAddress()
+            }
+            Button("Cancel", role: .cancel) {
+                authenticationManager.showingResetPasswordAlert = false
+            }
+        } message: {
+            Text("By continuing, you confirm that \(authenticationManager.emailFieldText) is your email address.")
         }
     }
     

@@ -69,7 +69,10 @@ class AuthenticationManager: ObservableObject {
     
     // Whether the "delete account" alert should be displayed.
     @Published var showingDeleteAccount: Bool = false
-    
+
+    // Whether the "send reset password request" alert should be displayed.
+    @Published var showingResetPasswordAlert: Bool = false
+
     // Whether the AuthenticationFormView should show a confirmation that a password reset email has been sent to the entered email address.
     @Published var showingResetPasswordEmailSent: Bool = false
     
@@ -378,6 +381,7 @@ class AuthenticationManager: ObservableObject {
             isAuthenticating = true
             errorManager.errorToShow = nil
             showingResetPasswordEmailSent = false
+            showingResetPasswordAlert = false
             formErrorText = nil
             firebaseAuthentication.sendPasswordReset(withEmail: emailFieldText, actionCodeSettings: ActionCodeSettings(), completion: { [self] error in
                 // 2. If an error occurs (e.g., the entered email address doesn't correspond to an account), log it.
