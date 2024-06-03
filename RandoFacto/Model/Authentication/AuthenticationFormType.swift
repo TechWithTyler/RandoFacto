@@ -15,10 +15,13 @@ extension Authentication {
         
         // MARK: - Authentication Form Type Definitions
 
+        // The user is signing up for a RandoFacto account.
 		case signup
 
+        // The user is logging into their RandoFacto account or resetting their password.
 		case login
 
+        // The user is changing the password for their RandoFacto account.
 		case passwordChange
         
         // MARK: - Authentication Form Type ID
@@ -33,8 +36,11 @@ extension Authentication {
 		// The text for the form's default button.
 		var confirmButtonText: String {
 			switch self {
+                // "Signup"
 				case .signup: return signupText
+                // "Save"
 				case .passwordChange: return "Save"
+                // "Login"
 				case .login: return loginText
 			}
 		}
@@ -44,8 +50,11 @@ extension Authentication {
 		// The form's title text.
 		var titleText: String {
 			switch self {
+                // "Signup"
 				case .signup: return signupText
+                // "Change Password"
 				case .passwordChange: return "Change Password"
+                // "Login"
 				case .login: return loginText
 			}
 		}
