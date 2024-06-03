@@ -71,7 +71,7 @@ struct ContentView: View {
                 favoriteFactsDatabase.favoriteFactToDelete = nil
             }
         } message: { factText in
-            if appStateManager.selectedPage == .randomFact {
+            if appStateManager.selectedPage == .randomFact || appStateManager.factText == factText.wrappedValue {
                 Text("Make sure to re-favorite this fact BEFORE generating a new one if you change your mind!")
             } else {
                 Text("This can't be undone!")
