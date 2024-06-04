@@ -35,7 +35,7 @@ class FavoriteFactsDatabase: ObservableObject {
 
     // MARK: - Properties - Booleans
 
-    // Whether RandoFacto should "spin through" a user's favorite facts when getting a random favorite fact.
+    // Whether RandoFacto should "spin through" a user's favorite facts when getting a random favorite fact. This setting resets to off and is hidden when the user logs out or deletes their account.
     @AppStorage("favoriteFactsRandomizerEffect") var favoriteFactsRandomizerEffect: Bool = false
 
     // Whether the "delete this favorite fact" alert should be/is being displayed.
@@ -51,7 +51,7 @@ class FavoriteFactsDatabase: ObservableObject {
     
     // MARK: - Properties - Integers
     
-    // Whether to display one of the user's favorite facts (1) or generate a random fact (0) when the app launches. This setting resets to 0 (Random Fact), and is hidden, when the user logs out or deletes their account.
+    // Whether to display one of the user's favorite facts (1) or generate a random fact (0) when the app launches. This setting resets to 0 (Random Fact) and is hidden when the user logs out or deletes their account.
     @AppStorage("initialFact") var initialFact: Int = 0
 
     // The maximum number of iterations for the randomizer effect. The randomizer effect starts out fast and gradually slows down, by using the equation randomizerIterations divided by (maxRandomizerIterations times 4).
@@ -107,7 +107,7 @@ class FavoriteFactsDatabase: ObservableObject {
     
     // This method updates the app's favorite facts list with snapshot's data.
     func updateFavoriteFactsList(from snapshot: QuerySnapshot) {
-        // 1. Try to replace the data in favoriteFacts with snapshot's data by decoding it to FavoriteFact objects.
+        // 1. Try to replace the data in favoriteFacts with snapshot's data by decoding each of its documents to FavoriteFact objects.
         do {
             // compactMap is marked throws so you can call throwing functions in its closure. Errors are then "rethrown" so the catch block of this do statement can handle them.
             // compactMap throws out any documents where the data couldn't be decoded to a FavoriteFact object (the result of the transformation is nil).
@@ -239,7 +239,7 @@ class FavoriteFactsDatabase: ObservableObject {
                         }
                     }
                 }
-                // 9. Notify the DispatchGroup on the main thread and call the completion handler.
+                // 9. Notify the DispatchGroup on the main thread and call the completion handler with any errors that may have been encountered above.
                 group.notify(queue: .main) {
                     completionHandler(deletionError)
                 }
