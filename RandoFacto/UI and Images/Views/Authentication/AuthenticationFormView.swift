@@ -153,7 +153,7 @@ struct AuthenticationFormView: View {
                     Button {
                         authenticationManager.showingResetPasswordAlert = true
                     } label: {
-                        Label(forgotPasswordButtonTitle, systemImage: "questionmark.circle.fill")
+                        Label(authenticationManager.showingResetPasswordEmailSent ? "Resend Password Reset" : forgotPasswordButtonTitle, systemImage: "questionmark.circle.fill")
                             .labelStyle(.titleAndIcon)
                     }
                     .frame(alignment: .trailing)
