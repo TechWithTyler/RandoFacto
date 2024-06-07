@@ -35,7 +35,7 @@ class AuthenticationManager: ObservableObject {
     
     // MARK: - Properties - Integers
     
-    // the credential field pertaining to an authentication error.
+    // The credential field pertaining to an authentication error.
     var invalidCredentialField: Authentication.FormField? {
         if let errorText = formErrorText {
             let emailError = errorText.lowercased().contains("email")
@@ -411,22 +411,44 @@ class AuthenticationManager: ObservableObject {
         do {
             // 1. Try to logout the current user.
             try firebaseAuthentication.signOut()
-            // 2. If successful, clear the favorite facts list, remove and nil-out the user listener and favorite facts listener, reset the Favorite Fact Randomizer Effect setting to off, and reset the Fact on Launch setting to "Random Fact".
-            DispatchQueue.main.async { [self] in
-                favoriteFactsDatabase?.favoriteFacts.removeAll()
-            }
-            favoriteFactsDatabase?.initialFact = 0
-            favoriteFactsDatabase?.favoriteFactsRandomizerEffect = false
-            registeredUsersListener?.remove()
-            registeredUsersListener = nil
-            favoriteFactsDatabase?.favoriteFactsListener?.remove()
-            favoriteFactsDatabase?.favoriteFactsListener = nil
+            // 2. If successful, reset the app's local Firestore data and related settings.
+            resetLocalFirestoreData()
         } catch {
             // 3. If unsuccessful, log an error.
             DispatchQueue.main.async { [self] in
                 errorManager.showError(error)
             }
         }
+    }
+
+    // MARK: - Reset Local Firestore Data
+
+    // This method deletes all local (cached) Firestore data when a user logs out of/deletes their account.
+    func resetLocalFirestoreData() {
+        // 1. Clear the favorite facts list.
+        DispatchQueue.main.async { [self] in
+            favoriteFactsDatabase?.favoriteFacts.removeAll()
+        }
+        // 2. Reset all favorite fact-related settings as the favorite facts database (and its related settings) don't apply when logged out.
+        resetFavoriteFactSettings()
+        // 3. Remove and nil-out the user listener and favorite facts listener.
+        removeFirestoreListeners()
+    }
+
+    // This method resets all settings pertaining to favorite facts, which don't apply when logged out and you can't access the favorite facts database.
+    func resetFavoriteFactSettings() {
+        // 1. Reset the Fact on Launch setting to "Random Fact".
+        favoriteFactsDatabase?.initialFact = 0
+        // 2. Reset the Favorite Fact Randomizer Effect setting to off.
+        favoriteFactsDatabase?.favoriteFactsRandomizerEffect = false
+    }
+
+    // This method removes all Firestore listeners from the app when logging out.
+    func removeFirestoreListeners() {
+        registeredUsersListener?.remove()
+        registeredUsersListener = nil
+        favoriteFactsDatabase?.favoriteFactsListener?.remove()
+        favoriteFactsDatabase?.favoriteFactsListener = nil
     }
 
     // MARK: - Delete User

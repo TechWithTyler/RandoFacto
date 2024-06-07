@@ -215,7 +215,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     func resetApp() {
         // 1. Logout the current user, which will reset all login-required settings to default.
         authenticationManager.logoutCurrentUser()
-        // 2. Reset all settings.
+        // 2. Reset all in-app/non-accessibility settings.
         factTextSize = SATextViewMinFontSize
         selectedPage = .randomFact
         favoriteFactsListDisplayManager.searchText.removeAll()
@@ -248,7 +248,7 @@ extension AppStateManager {
     
     // MARK: - Speech - Speak Fact
     
-    // This method speaks fact using the selected voice.
+    // This method speaks fact using the selected voice, or if fact is the fact currently being spoken, stops speech.
     func speakFact(fact: String) {
         DispatchQueue.main.async { [self] in
             // 1. Stop any in-progress speech.
