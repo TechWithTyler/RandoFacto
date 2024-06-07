@@ -228,7 +228,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
         // 4. Set the onboarding sheet to show on the next launch.
         shouldOnboard = true
     }
-    
+
 }
 
 extension AppStateManager {
@@ -251,10 +251,15 @@ extension AppStateManager {
     // This method speaks fact using the selected voice.
     func speakFact(fact: String) {
         DispatchQueue.main.async { [self] in
+            // 1. Stop any in-progress speech.
             speechSynthesizer.stopSpeaking(at: .immediate)
+            // 2. If the fact to be spoken is the fact currently being spoken, speech is stopped and we don't continue.
             if factBeingSpoken != fact {
+                // 3. If we get here, create an AVSpeechUtterance with the given String (in this case, the fact passed into this method).
                 let utterance = AVSpeechUtterance(string: fact)
+                // 4. Set the voice for the utterance.
                 utterance.voice = AVSpeechSynthesisVoice(identifier: selectedVoiceID)
+                // 5. Speak the utterance.
                 speechSynthesizer.speak(utterance)
             }
         }
@@ -262,10 +267,12 @@ extension AppStateManager {
     
     // MARK: - Speech - Synthesizer Delegate
     
+    // This method sets factBeingSpoken to utterance's speechString when speech starts.
     func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didStart utterance: AVSpeechUtterance) {
         factBeingSpoken = utterance.speechString
     }
     
+    // This method resets factBeingSpoken to an empty String once speech completes or stops.
     func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
         factBeingSpoken = String()
     }
