@@ -24,6 +24,8 @@ enum RandoFactoError: LocalizedError, Equatable, Identifiable {
 
     // MARK: - Error Case Definitions - Fact Generation
 
+    case factGeneratorURLNotFound
+
     // Fact generation/screening timeout
     case factGenerationTimedOut
     
@@ -90,6 +92,8 @@ enum RandoFactoError: LocalizedError, Equatable, Identifiable {
             return "Internet connection lost."
         case .secureConnectionFailed:
             return "Secure connection failed. If using a public Wi-Fi network, make sure you've activated your internet access."
+        case .factGeneratorURLNotFound:
+            return "Unable to access the fact generator URL. Your network may have restricted or no internet access."
         case .factGenerationTimedOut:
             return "Fact generation took too long. Please try again later."
         case let .badHTTPResponse(domain):

@@ -42,6 +42,8 @@ class ErrorManager: ObservableObject {
             errorToShow = .networkConnectionLost
         case URLError.timedOut.rawValue:
             errorToShow = .factGenerationTimedOut
+        case URLError.cannotFindHost.rawValue:
+            errorToShow = .factGeneratorURLNotFound
             // Fact data errors
         case FactGenerator.ErrorCode.factDataHTTPResponseCodeRange: /*HTTP response code + 33000 to add 33 (FD) to the beginning*/
             errorToShow = .badHTTPResponse(domain: nsError.domain)
