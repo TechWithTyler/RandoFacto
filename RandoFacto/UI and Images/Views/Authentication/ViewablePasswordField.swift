@@ -39,6 +39,7 @@ struct ViewablePasswordField: View {
                 showPassword.toggle()
             } label: {
                 Label(showPassword ? "Hide Password" : "Show Password", systemImage: showPassword ? "eye.slash" : "eye")
+                    .frame(height: 24)
                     .font(.system(size: 24))
                     .labelStyle(.iconOnly)
                     .help(showPassword ? "Hide Password" : "Show Password")
