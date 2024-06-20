@@ -42,6 +42,7 @@ struct ViewablePasswordField: View {
                     .font(.system(size: 24))
                     .labelStyle(.iconOnly)
                     .help(showPassword ? "Hide Password" : "Show Password")
+                    .animatedSymbolReplacement(magicReplace: true)
             }
                 .buttonStyle(.borderless)
             #if os(iOS)
