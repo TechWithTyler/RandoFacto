@@ -22,17 +22,19 @@ struct AccountSettingsPageView: View {
         Form {
             if let email = authenticationManager.firebaseAuthentication.currentUser?.email {
                 HStack {
+                    Spacer()
                     Image(systemName: "person.circle.fill")
                         .foregroundStyle(.secondary)
                         .font(.system(size: 24))
                         .fontWeight(.bold)
                         .accessibilityLabel(email)
-                    VStack {
+                    VStack(alignment: .center) {
                         Text("Logged in as")
                         Text(email)
                             .font(.system(size: 24))
                             .fontWeight(.bold)
                     }
+                    Spacer()
                 }
             } else {
                 Text("Login to your \(appName!) account to save favorite facts to view on all your devices, even while offline.")
