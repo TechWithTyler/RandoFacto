@@ -22,7 +22,7 @@ struct AuthenticationFormView: View {
     
     @EnvironmentObject var errorManager: ErrorManager
     
-    @FocusState private var focusedField: Authentication.FormField?
+    @FocusState private var focusedCredentialField: Authentication.FormField?
     
     // MARK: - Dismiss
     
@@ -93,10 +93,10 @@ struct AuthenticationFormView: View {
         .onAppear {
             switch authenticationManager.formType {
             case .passwordChange:
-                focusedField = .password
+                focusedCredentialField = .password
                 authenticationManager.emailFieldText = (authenticationManager.firebaseAuthentication.currentUser?.email)!
             default:
-                focusedField = .email
+                focusedCredentialField = .email
             }
         }
         .onDisappear {
@@ -120,9 +120,9 @@ struct AuthenticationFormView: View {
                         .keyboardType(.emailAddress)
 #endif
                         .submitLabel(.next)
-                        .focused($focusedField, equals: .email)
+                        .focused($focusedCredentialField, equals: .email)
                         .onSubmit(of: .text) {
-                            focusedField = .password
+                            focusedCredentialField = .password
                         }
                     if authenticationManager.invalidCredentialField == .email {
                         FieldNeedsAttentionView()
@@ -131,11 +131,11 @@ struct AuthenticationFormView: View {
             }
             VStack(alignment: .trailing) {
                 ViewablePasswordField("Password", text: $authenticationManager.passwordFieldText, signup: authenticationManager.formType == .signup)
-                    .focused($focusedField, equals: .password)
+                    .focused($focusedCredentialField, equals: .password)
                     .submitLabel(.done)
                     .onSubmit(of: .text) {
                         guard !authenticationManager.formInvalid else {
-                            focusedField = .email
+                            focusedCredentialField = .email
                             return }
                         authenticationManager.performAuthenticationAction { success in
                             if success {
