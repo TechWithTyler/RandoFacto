@@ -10,7 +10,9 @@ import SwiftUI
 import SheftAppsStylishUI
 
 struct RandoFactoCommands: Commands {
-    
+
+    // MARK: - Properties - Objects
+
     @ObservedObject var appStateManager: AppStateManager
     
     @ObservedObject var networkConnectionManager: NetworkConnectionManager
