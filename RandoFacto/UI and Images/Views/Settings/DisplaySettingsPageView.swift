@@ -17,12 +17,6 @@ struct DisplaySettingsPageView: View {
 
     @EnvironmentObject var favoriteFactsDatabase: FavoriteFactsDatabase
 
-    // MARK: - Properties - Fact Text Size Slider Text
-
-    var factTextSizeSliderText: String {
-        return "Fact Text Size: \(appStateManager.factTextSizeAsInt)pt"
-    }
-
     var body: some View {
         Form {
             if authenticationManager.userLoggedIn {
@@ -44,40 +38,11 @@ struct DisplaySettingsPageView: View {
                 }
             }
             Section {
-#if os(macOS)
-                // Sliders show their labels by default on macOS.
-                factTextSizeSlider
-#else
-                VStack(spacing: 0) {
-                    Text(factTextSizeSliderText)
-                        .padding(5)
-                    factTextSizeSlider
-                }
-#endif
-            }
-            Section {
-                Text(sampleFact)
-                    .font(.system(size: CGFloat(appStateManager.factTextSize)))
+                TextSizeSlider(labelText: "Fact Text Size", textSize: $appStateManager.factTextSize, previewText: sampleFact)
             }
             .animation(.default, value: appStateManager.factTextSize)
         }
         .formStyle(.grouped)
-    }
-
-    // MARK: - Fact Text Size Slider
-
-    @ViewBuilder
-    var factTextSizeSlider: some View {
-        Slider(value: $appStateManager.factTextSize, in: SATextViewFontSizeRange, step: 1) {
-            Text(factTextSizeSliderText)
-        } minimumValueLabel: {
-            Image(systemName: "textformat.size.smaller")
-                .accessibilityLabel("Smaller")
-        } maximumValueLabel: {
-            Image(systemName: "textformat.size.larger")
-                .accessibilityLabel("Larger")
-        }
-        .accessibilityValue("\(appStateManager.factTextSizeAsInt)")
     }
 
 }
