@@ -126,6 +126,9 @@ struct AuthenticationFormView: View {
                         }
                     if authenticationManager.invalidCredentialField == .email {
                         FieldNeedsAttentionView()
+                            .onAppear {
+                                focusedCredentialField = .email
+                            }
                     }
                 }
             }
@@ -145,6 +148,9 @@ struct AuthenticationFormView: View {
                     }
                 if authenticationManager.invalidCredentialField == .password {
                     FieldNeedsAttentionView()
+                        .onAppear {
+                            focusedCredentialField = .password
+                        }
                 }
             }
             if authenticationManager.formType == .login && !authenticationManager.emailFieldText.isEmpty && authenticationManager.passwordFieldText.isEmpty {
