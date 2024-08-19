@@ -166,8 +166,8 @@ struct FactView: View {
     @ViewBuilder
     var creditsText: some View {
         VStack {
-            // To include a clickable link in a string, use the format [text](URL), where text is the text to be displayed and URL is the URL the link goes to.
-            Text("Facts provided by [\(appStateManager.factGenerator.randomFactsAPIName)](https://\(appStateManager.factGenerator.randomFactsAPIName)).")
+            // To include a clickable link in a string, use the format [text](URL), where text is the text to be displayed and URL is the URL the link goes to. String interpolation can't be used in the URL part of a string link.
+            Text("Facts provided by [\(appStateManager.factGenerator.randomFactsAPIName)](https://uselessfacts.jsph.pl).")
             if authenticationManager.userLoggedIn {
                 Text("Favorite facts database powered by [Firebase](https://firebase.google.com).")
             }

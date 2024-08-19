@@ -142,8 +142,6 @@ struct SettingsView: View {
 #Preview("Loaded") {
     NavigationStack {
         SettingsView()
-            #if DEBUG
-#endif
     }
     .withPreviewData()
 }
