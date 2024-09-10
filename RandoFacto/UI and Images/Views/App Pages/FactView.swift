@@ -41,6 +41,7 @@ struct FactView: View {
             factGenerationButtons
             Divider()
             #if !os(macOS)
+            // Only show the fact text size buttons on iOS--macOS users will already have a keyboard shortcut for it.
             factTextSizeButtons
             Divider()
             #endif

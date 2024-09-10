@@ -30,7 +30,7 @@ struct PreviewDataModifier: ViewModifier {
 
 extension View {
 
-    // Injects the app's model objects into Xcode Previews.
+    // Injects the app's model objects into Xcode Previews and allows access to them.
     func withPreviewData(prepBlock: ((AppStateManager, ErrorManager, NetworkConnectionManager, FavoriteFactsDatabase, AuthenticationManager, FavoriteFactsListDisplayManager) -> Void)? = nil) -> some View {
         modifier(PreviewDataModifier(prepBlock: prepBlock))
     }
