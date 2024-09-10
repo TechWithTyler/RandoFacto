@@ -121,11 +121,15 @@ struct ContentView: View {
 		// User login state change/user deletion
 		.onChange(of: authenticationManager.accountDeletionStage) { deletionStage in
             if deletionStage != nil {
+                favoriteFactsDatabase.showingDeleteFavoriteFact = false
+                favoriteFactsDatabase.showingDeleteAllFavoriteFacts = false
                 appStateManager.dismissFavoriteFacts()
             }
 		}
 		.onChange(of: authenticationManager.userLoggedIn) { loggedIn in
             if !loggedIn {
+                favoriteFactsDatabase.showingDeleteFavoriteFact = false
+                favoriteFactsDatabase.showingDeleteAllFavoriteFacts = false
                 appStateManager.dismissFavoriteFacts()
             }
 		}
