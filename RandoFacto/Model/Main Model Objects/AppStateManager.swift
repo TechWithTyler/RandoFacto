@@ -45,7 +45,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     
     // The @AppStorage property wrapper binds a property to the given UserDefaults key name. Such properties behave the same as UserDefaults get/set properties such as the "5- or 10-frame" setting in SkippyNums, but with the added benefit of automatic UI refreshing.
     // The ID string of the currently selected voice.
-    @AppStorage("selectedVoiceID") var selectedVoiceID: String = defaultVoiceID
+    @AppStorage("selectedVoiceID") var selectedVoiceID: String = SADefaultVoiceID
 
     // The voices that are currently available on the device.
     @Published var voices: [AVSpeechSynthesisVoice] = []
@@ -220,7 +220,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
         selectedPage = .randomFact
         favoriteFactsListDisplayManager.searchText.removeAll()
         favoriteFactsListDisplayManager.sortFavoriteFactsAscending = false
-        selectedVoiceID = defaultVoiceID
+        selectedVoiceID = SADefaultVoiceID
         // 3. Reset the selected settings page on macOS.
         #if os(macOS)
         selectedSettingsPage = .display
