@@ -31,8 +31,8 @@ class NetworkConnectionManager: ObservableObject {
         configureNetworkPathMonitor()
     }
     
-    // MARK: - Network - Path Monitor Configuration
-    
+    // MARK: - Network Path Monitor Configuration
+
     // This method configures the network path monitor's path update handler, which tells the app to enable or disable online mode, showing or hiding internet-connection-required UI based on network connection.
     func configureNetworkPathMonitor() {
         // 1. Configure the network path monitor's path update handler.
@@ -51,7 +51,7 @@ class NetworkConnectionManager: ObservableObject {
         networkPathMonitor.start(queue: dispatchQueue)
     }
     
-    // MARK: - Network - Online
+    // MARK: - Online
     
     // This method enables online mode.
     func goOnline() {
@@ -72,7 +72,7 @@ class NetworkConnectionManager: ObservableObject {
         }
     }
     
-    // MARK: - Network - Offline
+    // MARK: - Offline
     
     // This method enables offline mode.
     func goOffline() {
