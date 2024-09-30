@@ -88,7 +88,7 @@ class FavoriteFactsDatabase: ObservableObject {
             favoriteFactsListener = firestore.collection(Firestore.CollectionName.favoriteFacts)
             // 3. Filter the result to include only the current user's favorite facts.
                 .whereField(Firestore.KeyName.user, isEqualTo: userEmail)
-            // 4. Listen for any changes made to the favorite facts list, whether it's on this device, another device, or the Firebase console. The result of steps 2-4 is the value of favoriteFactsListener.
+            // 4. Listen for any changes made to the favorite facts list, whether it's on this device, another device, or the Firebase console. The result of steps 2-4 is the value of favoriteFactsListener. It isn't necessary to assign the result of this method call to a QuerySnapshotListener object unless you want to be able to remove the listener later.
                 .addSnapshotListener(includeMetadataChanges: true) { [self] snapshot, error in
                     // 5. Log any errors.
                     if let error = error {
@@ -127,7 +127,8 @@ class FavoriteFactsDatabase: ObservableObject {
     // This method sets up the randomizer timer.
     func setupRandomizerTimer(block: @escaping (() -> Void)) {
         // 1. Start the randomizerTimer without repeat, since the timer's interval increases as randomizerIterations increases and the time interval of running Timers can't be changed directly.
-        randomizerTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(Double(randomizerIterations)/Double(maxRandomizerIterations*4)), repeats: false, block: { [self] timer in
+        let randomizerTimeInterval = TimeInterval(randomizerIterations) / TimeInterval(maxRandomizerIterations * 4)
+        randomizerTimer = Timer.scheduledTimer(withTimeInterval: randomizerTimeInterval, repeats: false, block: { [self] timer in
             // 2. If randomizerIterations equals maxRandomizerIterations, stop the timer and reset the count.
             if randomizerIterations == maxRandomizerIterations {
                 timer.invalidate()
@@ -150,14 +151,17 @@ class FavoriteFactsDatabase: ObservableObject {
     // This method creates a FavoriteFact from factText and saves it to the favorite facts database.
     func saveFactToFavorites(_ factText: String) {
         // 1. Make sure the fact doesn't already exist and that the current user has an email (who would have an account but no email?!).
-        guard let email = authenticationManager?.firebaseAuthentication.currentUser?.email else { return }
-        let fact = FavoriteFact(text: factText, user: email)
+        guard let userEmail = authenticationManager?.firebaseAuthentication.currentUser?.email else { return }
+        // 2. Create a FavoriteFact object with the fact text and the current user's email.
+        let fact = FavoriteFact(text: factText, user: userEmail)
+        // 3. Make sure the favorite fact doesn't already exist.
         guard !favoriteFacts.contains(fact) else { return }
-        // 2. Create a FavoriteFact object with the fact text and the current user's email, and try to create a new document with that data in the favorite facts Firestore collection.
+        // 4. Try to create a new document with that data in the favorite facts Firestore collection
         do {
             try firestore.collection(Firestore.CollectionName.favoriteFacts)
                 .addDocument(from: fact)
         } catch {
+            // 5. If that fails, log an error.
             DispatchQueue.main.async { [self] in
                 errorManager.showError(error)
             }

@@ -50,7 +50,7 @@ class FavoriteFactsListDisplayManager: ObservableObject {
     // The sort order of the favorite facts list (false = Z-A, true = A-Z).
     @AppStorage("sortFavoriteFactsAscending") var sortFavoriteFactsAscending: Bool = false
 
-    // The favorite facts list, sorted in either A-Z or Z-A order.
+    // The favorite facts list/search results, sorted in either A-Z or Z-A order.
     var sortedFavoriteFacts: [String] {
         return searchResults.sorted { a, z in
             let sortCondition = sortFavoriteFactsAscending ? a < z : z < a
@@ -77,10 +77,10 @@ class FavoriteFactsListDisplayManager: ObservableObject {
     // Copies favorite to the device's clipboard using the platform-specific copy implementation.
     func copyFact(_ favorite: String) {
 #if os(macOS)
-                            NSPasteboard.general.declareTypes([.string], owner: self)
-                            NSPasteboard.general.setString(favorite, forType: .string)
+        NSPasteboard.general.declareTypes([.string], owner: self)
+        NSPasteboard.general.setString(favorite, forType: .string)
 #else
-                            UIPasteboard.general.string = favorite
+        UIPasteboard.general.string = favorite
 #endif
     }
 

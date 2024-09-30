@@ -15,11 +15,11 @@ enum SettingsPage : String {
 
         case display = "textformat.size"
 
+        case speech = "speaker.wave.2.bubble.left"
+
         case account = "person.circle"
 
         case advanced = "gear"
-
-        case speech = "speaker.wave.2.bubble.left"
 
         #if(DEBUG)
         case developer = "hammer"

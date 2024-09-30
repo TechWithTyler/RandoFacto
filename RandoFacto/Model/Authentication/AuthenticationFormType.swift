@@ -38,10 +38,10 @@ extension Authentication {
 			switch self {
                 // "Signup"
 				case .signup: return signupText
-                // "Save"
-				case .passwordChange: return "Save"
                 // "Login"
-				case .login: return loginText
+                case .login: return loginText
+                // "Save"
+                case .passwordChange: return "Save"
 			}
 		}
         
@@ -52,10 +52,10 @@ extension Authentication {
 			switch self {
                 // "Signup"
 				case .signup: return signupText
-                // "Change Password"
-				case .passwordChange: return "Change Password"
                 // "Login"
-				case .login: return loginText
+                case .login: return loginText
+                // "Change Password"
+                case .passwordChange: return "Change Password"
 			}
 		}
 
