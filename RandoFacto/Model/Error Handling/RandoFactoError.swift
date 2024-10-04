@@ -11,8 +11,8 @@ import Foundation
 // Errors produced by the app.
 enum RandoFactoError: LocalizedError, Equatable, Identifiable {
     
-    // MARK: - Error Case Definitions - Internet Connection
-    
+    // MARK: - Error Case Definitions - Network/Internet Connection
+
     // No internet connection.
     case noInternetFactGeneration, noInternetAuthentication
     
@@ -24,9 +24,10 @@ enum RandoFactoError: LocalizedError, Equatable, Identifiable {
 
     // MARK: - Error Case Definitions - Fact Generation
 
+    // The fact generation URL wasn't found.
     case factGeneratorURLNotFound
 
-    // Fact generation/screening timeout
+    // Fact generation/screening timed out.
     case factGenerationTimedOut
     
     // Bad HTTP response, with the given error domain.

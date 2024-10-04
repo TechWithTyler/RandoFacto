@@ -13,7 +13,7 @@ extension Firestore {
     // RandoFacto Firestore collection names
     struct CollectionName {
         
-        // The name of the collection containing all registered users in the Firestore database.
+        // The name of the collection containing registered users in the Firestore database.
         static let users = "users"
         
         // The name of the collection containing favorite facts in the Firestore database.
@@ -27,7 +27,7 @@ extension Firestore {
         // The key name of a fact's text in the Firestore database.
         static let factText = "text"
         
-        // The key name of a fact's associated user.
+        // The key name of a fact's associated user email.
         static let user = "user"
         
         // The key name of a registered user's email.
