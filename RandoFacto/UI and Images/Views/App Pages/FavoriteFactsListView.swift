@@ -116,7 +116,7 @@ struct FavoriteFactsListView: View {
                             Text(favoriteFactsListDisplayManager.favoriteFactWithColoredMatchingTerms(favorite))
                                 .font(.system(size: CGFloat(appStateManager.factTextSize)))
                                 .multilineTextAlignment(.leading)
-                                .foregroundStyle(.primary)
+                                .tint(.primary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.vertical)
                         }
