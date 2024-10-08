@@ -87,10 +87,11 @@ struct FavoriteFactsListView: View {
         VStack {
             Text("No favorite facts containing \"\(favoriteFactsListDisplayManager.searchText)\"")
                 .font(.largeTitle)
+                .foregroundStyle(.secondary)
             Text("Please check your search terms.")
                 .font(.callout)
+                .foregroundStyle(.tertiary)
         }
-        .foregroundStyle(.secondary)
         .padding()
     }
     
