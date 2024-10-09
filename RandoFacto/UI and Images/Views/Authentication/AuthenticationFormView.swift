@@ -71,7 +71,7 @@ struct AuthenticationFormView: View {
                     }
                 }
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
+                    Button("Cancel", role: .cancel) {
                         dismiss()
                     }
                     .controlSize(.large)
