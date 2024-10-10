@@ -39,7 +39,7 @@ struct RandoFactoApp: App {
     // The @ObservedObject property wrapper and ObservableObject protocol conformance allows SwiftUI views to update whenever any @Published property of an object changes. These objects are passed to SwiftUI views with the @EnvironmentObject property wrapper and the .environmentObject(_:) modifier, and to RandoFactoCommands and model objects with the @ObservedObject property wrapper.
 	@ObservedObject var appStateManager: AppStateManager
     
-    // Manages the app's network features.
+    // Manages the app's network status.
     @ObservedObject var networkConnectionManager: NetworkConnectionManager
     
     // Manages authentication/user accounts.
@@ -48,7 +48,7 @@ struct RandoFactoApp: App {
     // The favorite facts database.
     @ObservedObject var favoriteFactsDatabase: FavoriteFactsDatabase
     
-    // Handles searching and sorting of favorite facts.
+    // Handles searching and sorting of the favorite facts list.
     @ObservedObject var favoriteFactsListDisplayManager: FavoriteFactsListDisplayManager
     
     // Handles errors.
