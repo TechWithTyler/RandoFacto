@@ -121,7 +121,7 @@ struct RandoFactoApp: App {
         let authenticationManager = AuthenticationManager(firebaseAuthentication: firebaseAuthentication, networkConnectionManager: networkConnectionManager, errorManager: errorManager)
         let favoriteFactsDatabase = FavoriteFactsDatabase(firestore: firestore, networkConnectionManager: networkConnectionManager, errorManager: errorManager)
         let favoriteFactsListDisplayManager = FavoriteFactsListDisplayManager(favoriteFactsDatabase: favoriteFactsDatabase)
-        let appStateManager = AppStateManager(errorManager: errorManager, networkConnectionManager: networkConnectionManager, favoriteFactsDatabase: favoriteFactsDatabase, favoriteFactsListDisplayManager: favoriteFactsListDisplayManager, authenticationManager: authenticationManager)
+        let appStateManager = AppStateManager(errorManager: errorManager, favoriteFactsDatabase: favoriteFactsDatabase, favoriteFactsListDisplayManager: favoriteFactsListDisplayManager, authenticationManager: authenticationManager)
         self.firebaseAuthentication = firebaseAuthentication
         self.authenticationManager = authenticationManager
         self.firestore = firestore
