@@ -59,27 +59,22 @@ struct RandoFactoApp: App {
 	// The windows and views in the app.
     var body: some Scene {
         // Main window scene
+        #if os(macOS)
+        Window("RandoFacto", id: "main") {
+            mainWindow
+        }
+        .commands {
+            // Menu/keyboard commands for the scene
+            RandoFactoCommands(appStateManager: appStateManager, networkConnectionManager: networkConnectionManager, errorManager: errorManager, authenticationManager: authenticationManager, favoriteFactsDatabase: favoriteFactsDatabase)
+        }
+        #else
         WindowGroup {
-			ContentView()
-            // Pass model objects to views using .environmentObject(<#object#>). You don't need to pass them to each child view--just pass them once and all child views have access.
-                .environmentObject(appStateManager)
-                .environmentObject(networkConnectionManager)
-                .environmentObject(errorManager)
-                .environmentObject(favoriteFactsDatabase)
-                .environmentObject(authenticationManager)
-                .environmentObject(favoriteFactsListDisplayManager)
-            #if os(macOS)
-				.frame(minWidth: 800, minHeight: 300, alignment: .center)
-            #endif
-            #if os(iOS)
-                .pickerStyle(.navigationLink)
-            #endif
-				.ignoresSafeArea(edges: .all)
-		}
-        // Menu/keyboard commands for the scene
+            mainWindow
+        }
         .commands {
             RandoFactoCommands(appStateManager: appStateManager, networkConnectionManager: networkConnectionManager, errorManager: errorManager, authenticationManager: authenticationManager, favoriteFactsDatabase: favoriteFactsDatabase)
         }
+        #endif
         #if os(macOS)
         // Settings window scene
         // On macOS, Settings are presented as a window instead of as one of the app's pages.
@@ -93,6 +88,25 @@ struct RandoFactoApp: App {
 		}
 		#endif
 	}
+
+    @ViewBuilder
+    var mainWindow: some View {
+        ContentView()
+        // Pass model objects to views using .environmentObject(<#object#>). You don't need to pass them to each child view--just pass them once and all child views have access.
+            .environmentObject(appStateManager)
+            .environmentObject(networkConnectionManager)
+            .environmentObject(errorManager)
+            .environmentObject(favoriteFactsDatabase)
+            .environmentObject(authenticationManager)
+            .environmentObject(favoriteFactsListDisplayManager)
+        #if os(macOS)
+            .frame(minWidth: 800, minHeight: 300, alignment: .center)
+        #endif
+        #if os(iOS)
+            .pickerStyle(.navigationLink)
+        #endif
+            .ignoresSafeArea(edges: .all)
+    }
 
 	// MARK: - Initiailization
 
