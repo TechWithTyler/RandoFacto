@@ -24,8 +24,6 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
 
     var errorManager: ErrorManager
 
-    var networkConnectionManager: NetworkConnectionManager
-
     var favoriteFactsDatabase: FavoriteFactsDatabase
 
     var favoriteFactsListDisplayManager: FavoriteFactsListDisplayManager
@@ -107,10 +105,9 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
 
     // MARK: - Initialization
 
-    init(errorManager: ErrorManager, networkConnectionManager: NetworkConnectionManager, favoriteFactsDatabase: FavoriteFactsDatabase, favoriteFactsListDisplayManager: FavoriteFactsListDisplayManager, authenticationManager: AuthenticationManager) {
+    init(errorManager: ErrorManager, favoriteFactsDatabase: FavoriteFactsDatabase, favoriteFactsListDisplayManager: FavoriteFactsListDisplayManager, authenticationManager: AuthenticationManager) {
         // 1. Link the managers.
         self.errorManager = errorManager
-        self.networkConnectionManager = networkConnectionManager
         self.favoriteFactsDatabase = favoriteFactsDatabase
         self.favoriteFactsListDisplayManager = favoriteFactsListDisplayManager
         self.authenticationManager = authenticationManager
