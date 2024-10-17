@@ -206,10 +206,9 @@ struct FactView: View {
                                 }
                             }
                         } label: {
-                            Image(systemName: appStateManager.displayedFactIsSaved ? "star.fill" : "star")
+                            Label(appStateManager.displayedFactIsSaved ? "Unfavorite" : "Favorite", systemImage: appStateManager.displayedFactIsSaved ? "star.fill" : "star")
                                 .symbolRenderingMode(appStateManager.displayedFactIsSaved ? .multicolor : .monochrome)
                                 .animatedSymbolReplacement()
-                                .accessibilityLabel(appStateManager.displayedFactIsSaved ? "Unfavorite This Fact" : "Favorite This Fact")
                         }
                         .help(appStateManager.displayedFactIsSaved ? "Unfavorite This Fact" : "Favorite This Fact")
                         .disabled(appStateManager.factText == factUnavailableString || authenticationManager.isDeletingAccount)
