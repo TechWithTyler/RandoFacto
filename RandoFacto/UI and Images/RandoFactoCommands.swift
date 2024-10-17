@@ -29,7 +29,11 @@ struct RandoFactoCommands: Commands {
         CommandGroup(replacing: .undoRedo) {}
         CommandGroup(replacing: .importExport) {}
         CommandGroup(replacing: .printItem) {}
-        CommandGroup(replacing: .textEditing) {}
+        CommandGroup(replacing: .textEditing) {
+            SpeakButton(for: appStateManager.factText, useShortTitle: false)
+                .environmentObject(appStateManager)
+                .disabled(appStateManager.factTextDisplayingMessage || appStateManager.selectedPage != .randomFact)
+        }
         CommandGroup(replacing: .help) {
             Button("\(appName!) Help") {
                 showHelp()
