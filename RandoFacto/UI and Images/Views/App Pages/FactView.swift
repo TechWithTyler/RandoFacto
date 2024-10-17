@@ -79,6 +79,7 @@ struct FactView: View {
             .animation(.default, value: appStateManager.factTextSize)
             .blur(radius: favoriteFactsDatabase.randomizerIterations > 0 ? 20 : 0)
             .accessibilityHidden(favoriteFactsDatabase.randomizerIterations > 0)
+            .scrollDisabled(favoriteFactsDatabase.randomizerIterations > 0)
     }
 
     // MARK: - Fact Text Size Buttons
