@@ -74,10 +74,10 @@ struct FactView: View {
     var factTextView: some View {
         ScrollableText(appStateManager.factText)
             .font(.system(size: CGFloat(appStateManager.factTextSize)))
-            .isTextSelectable(!(appStateManager.factTextDisplayingMessage || appStateManager.factText == factUnavailableString))
+            .isTextSelectable(!(appStateManager.factTextDisplayingMessage || appStateManager.factText == factUnavailableString || favoriteFactsDatabase.randomizerIterations > 0))
             .multilineTextAlignment(.center)
             .animation(.default, value: appStateManager.factTextSize)
-            .blur(radius: favoriteFactsDatabase.randomizerIterations > 0 ? 20 : 0)
+            .blur(radius: favoriteFactsDatabase.randomizerIterations > 0 ? favoriteFactsDatabase.randomizerBlurRadius : 0)
             .accessibilityHidden(favoriteFactsDatabase.randomizerIterations > 0)
             .scrollDisabled(favoriteFactsDatabase.randomizerIterations > 0)
     }

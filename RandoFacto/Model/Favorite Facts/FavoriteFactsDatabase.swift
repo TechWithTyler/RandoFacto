@@ -60,6 +60,11 @@ class FavoriteFactsDatabase: ObservableObject {
     // The number of iterations the randomizer effect has gone through. The randomizer stops after this property reaches maxRandomizerIterations.
     var randomizerIterations: Int = 0
 
+    // MARK: - Properties - Floats
+
+    // The blur radius of the fact text view when the randomizer effect is playing.
+    let randomizerBlurRadius: CGFloat = 30
+
     // MARK: - Properties - Randomizer Timer
 
     // The timer used for the randomizer effect.
