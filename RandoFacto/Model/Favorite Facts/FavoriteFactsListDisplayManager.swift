@@ -26,7 +26,7 @@ class FavoriteFactsListDisplayManager: ObservableObject {
     // The search text.
     @Published var searchText = String()
 
-    // The favorite facts that match searchText.
+    // The favorite facts that match searchText, or all favorite facts if searchText is empty.
     var searchResults: [String] {
         // 1. Define the content being searched.
         let content = favoriteFactsDatabase.favoriteFacts

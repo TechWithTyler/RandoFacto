@@ -172,10 +172,10 @@ struct AuthenticationFormView: View {
         }
         .disabled(authenticationManager.isAuthenticating)
         .onChange(of: authenticationManager.emailFieldText) { value in
-            authenticationManager.credentialFieldsChanged()
+            authenticationManager.clearAuthenticationMessages()
         }
         .onChange(of: authenticationManager.passwordFieldText) { value in
-            authenticationManager.credentialFieldsChanged()
+            authenticationManager.clearAuthenticationMessages()
         }
         .alert("Send password reset request to \"\(authenticationManager.emailFieldText)\"?", isPresented: $authenticationManager.showingResetPasswordAlert) {
             Button("Send") {

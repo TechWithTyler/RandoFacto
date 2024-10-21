@@ -37,20 +37,26 @@ class NetworkConnectionManager: ObservableObject {
     func configureNetworkPathMonitor() {
         // 1. Configure the network path monitor's path update handler.
         networkPathMonitor.pathUpdateHandler = {
-            path in
-            if path.status == .satisfied {
-                // 2. If the path status is satisfied, the device is online, so enable online mode.
-                self.goOnline()
-            } else {
-                // 3. Otherwise, the device is offline, so enable offline mode.
-                self.goOffline()
-            }
+            [self] path in
+            // 2. Check the network status when it changes.
+                networkStatusChanged(status: path.status)
         }
-        // 4. Start the network path monitor, using a separate DispatchQueue for it.
+        // 2. Start the network path monitor, using a separate DispatchQueue for it.
         let dispatchQueue = DispatchQueue(label: "Network Path Monitor", qos: .utility)
         networkPathMonitor.start(queue: dispatchQueue)
     }
-    
+
+    func networkStatusChanged(status: NWPath.Status) {
+        switch status {
+        case .satisfied:
+            // 1. If the path status is satisfied, the device is online, so enable online mode.
+            goOnline()
+        default:
+            // 2. Otherwise, the device is offline, so enable offline mode.
+            goOffline()
+        }
+    }
+
     // MARK: - Online
     
     // This method enables online mode.

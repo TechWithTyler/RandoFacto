@@ -30,7 +30,7 @@ class FavoriteFactsDatabase: ObservableObject {
     
     // MARK: - Properties - Favorite Facts Listener
     
-    // Listens for changes to the current user's favorite facts, whether it's from RandoFacto on this device, RandoFacto on another device, or RandoFacto's Firebase console.
+    // Listens for changes to the current user's favorite facts, whether it's from RandoFacto on this device, RandoFacto on another device, or RandoFacto's Firebase console. Changes are synced to the device.
     var favoriteFactsListener: ListenerRegistration? = nil
 
     // MARK: - Properties - Booleans
@@ -43,7 +43,12 @@ class FavoriteFactsDatabase: ObservableObject {
     
     // Whether the "delete all favorite facts" alert should be/is being displayed.
     @Published var showingDeleteAllFavoriteFacts: Bool = false
-    
+
+    // Whether the randomizer effect is playing.
+    var randomizerRunning: Bool {
+        return randomizerIterations > 0
+    }
+
     // MARK: - Properties - Strings
     
     // The favorite fact to be deleted when pressing "Delete" in the alert.

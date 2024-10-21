@@ -95,7 +95,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
 
     // Whether the fact text view is displaying something other than a fact (i.e., a loading message).
     var factTextDisplayingMessage: Bool {
-        return isLoading || factText == generatingRandomFactString || favoriteFactsDatabase.randomizerIterations > 0
+        return isLoading || factText == generatingRandomFactString || favoriteFactsDatabase.randomizerRunning
     }
 
     // Whether the displayed fact is saved as a favorite.

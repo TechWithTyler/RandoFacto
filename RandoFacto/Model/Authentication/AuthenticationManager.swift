@@ -191,11 +191,7 @@ class AuthenticationManager: ObservableObject {
         DispatchQueue.main.async { [self] in
             // 1. Tell the app that an authentication request is in progress.
             isAuthenticating = true
-            // 2. Dismiss any messages/alerts that are being displayed.
-            errorManager.errorToShow = nil
-            showingResetPasswordEmailSent = false
-            showingResetPasswordAlert = false
-            formErrorText = nil
+            clearAuthenticationMessages()
             // 3. Ask Firebase to send the password reset email to the entered email address.
             firebaseAuthentication.sendPasswordReset(withEmail: emailFieldText, actionCodeSettings: ActionCodeSettings(), completion: { [self] error in
                 isAuthenticating = false
@@ -254,9 +250,7 @@ class AuthenticationManager: ObservableObject {
             return
         }
         // 3. Clear all authentication messages.
-        showingResetPasswordEmailSent = false
-        errorManager.errorToShow = nil
-        formErrorText = nil
+        clearAuthenticationMessages()
         // 4. Make the email lowercase before performing the authentication request. Emails are case-insensitive, but this just makes sure the email is always displayed and passed around in the traditional all-lowercase format.
         emailFieldText = emailFieldText.lowercased()
         // 5. Choose the authentication request (signup/login/password change) to perform based on formType. The guard-let above is used so the switch statement doesn't need an unused nil case.
@@ -398,15 +392,15 @@ class AuthenticationManager: ObservableObject {
         }
     }
 
-    // MARK: - Credential Field Change Handler
+    // MARK: - Clear Authentication Messages
 
-    // This method clears all authentication messages when the credential field values are changed.
-    func credentialFieldsChanged() {
-        DispatchQueue.main.async { [self] in
-            errorManager.errorToShow = nil
-            formErrorText = nil
-            showingResetPasswordEmailSent = false
-        }
+    // This method clears all authentication messages when the credential field values are changed or when sending a password reset email.
+    func clearAuthenticationMessages() {
+        // 2. Dismiss any messages/alerts that are being displayed.
+        errorManager.errorToShow = nil
+        showingResetPasswordEmailSent = false
+        showingResetPasswordAlert = false
+        formErrorText = nil
     }
 
     // MARK: - Dismiss Form

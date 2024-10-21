@@ -13,11 +13,14 @@ struct FactGenerator {
     // MARK: - Properties - Result Type Aliases
     
     // A Result is made up of 2 types, Success (can be anything) and Error (must conform to Error). These type aliases simplify the type names.
-    
+
+    // The type of fact generator JSON parsing results.
     typealias FactGeneratorJSONParsingResult = Result<String, Error>
-    
+
+    // The type of inappropriate words checker JSON parsing results.
     typealias InappropriateWordsCheckerJSONParsingResult = Result<Bool, Error>
-    
+
+    // The type of inappropriate words checker HTTP request results.
     typealias InappropriateWordsCheckerHTTPRequestResult = Result<URLRequest, Error>
     
     // MARK: - Properties - Strings
@@ -39,7 +42,7 @@ struct FactGenerator {
     var factURLString: String {
         // 1. The scheme specifies the protocol used to access the resource. In this case, it's "https" (Hypertext Transfer Protocol Secure). This indicates that the data transferred between the app (client) and the web API (server) is encrypted for security.
         let scheme = "https"
-        // 2. The domain and subdomain are the main parts of the URL that identify the server where the resource is located. In this case, the domain is "jsph.pl" and the subdomain is "uselessfacts". "jsph.pl" in this case stands for Joeseph Paul, the creator of this API and others (usually "pl" refers to a website in Poland).
+        // 2. The domain and subdomain are the main parts of the URL that identify the server where the resource is located. In this case, the domain is "jsph.pl" and the subdomain is "uselessfacts". "jsph.pl" in this case stands for Joeseph Paul, the creator of this API and others (usually "pl" refers to a website in Poland). Each of his API URLs have a different subdomain in the same "jsph.pl" domain.
         let subdomainAndDomain = randomFactsAPIName
         // 3. The path indicates the specific resource or location on the server that the client (in this case RandoFacto) is requesting. In this URL, the path is "/api/vX/facts/random", where X represents the API version.
         let randomFactPath = "api/v\(randomFactsAPIVersion)/facts/random"

@@ -24,7 +24,7 @@ struct FactView: View {
     @EnvironmentObject var errorManager: ErrorManager
 
 #if os(iOS)
-    // Gives an iPhone, MacBook, or 2015-present Magic Trackpad user ultra-slick haptic taps for each favorite fact randomizer iteration (like the clicks of a spinner).
+    // Gives a MacBook, 2015-present Magic Trackpad, or iPhone user ultra-slick haptic taps for each favorite fact randomizer iteration (like the clicks of a spinner).
     let randomizerHaptics = UIImpactFeedbackGenerator(style: .light)
 #elseif os(macOS)
     let randomizerHaptics = NSHapticFeedbackManager.defaultPerformer
@@ -73,13 +73,13 @@ struct FactView: View {
     @ViewBuilder
     var factTextView: some View {
         ScrollableText(appStateManager.factText)
-            .font(.system(size: CGFloat(appStateManager.factTextSize)))
-            .isTextSelectable(!(appStateManager.factTextDisplayingMessage || appStateManager.factText == factUnavailableString || favoriteFactsDatabase.randomizerIterations > 0))
             .multilineTextAlignment(.center)
+            .font(.system(size: CGFloat(appStateManager.factTextSize)))
             .animation(.default, value: appStateManager.factTextSize)
-            .blur(radius: favoriteFactsDatabase.randomizerIterations > 0 ? favoriteFactsDatabase.randomizerBlurRadius : 0)
-            .accessibilityHidden(favoriteFactsDatabase.randomizerIterations > 0)
-            .scrollDisabled(favoriteFactsDatabase.randomizerIterations > 0)
+            .isTextSelectable(!(appStateManager.factTextDisplayingMessage || appStateManager.factText == factUnavailableString || favoriteFactsDatabase.randomizerRunning))
+            .blur(radius: favoriteFactsDatabase.randomizerRunning ? favoriteFactsDatabase.randomizerBlurRadius : 0)
+            .accessibilityHidden(favoriteFactsDatabase.randomizerRunning)
+            .scrollDisabled(favoriteFactsDatabase.randomizerRunning)
     }
 
     // MARK: - Fact Text Size Buttons
@@ -176,16 +176,16 @@ struct FactView: View {
         }
         .padding(.top, 1)
         .font(.footnote)
-        .multilineTextAlignment(.center)
         .foregroundStyle(.secondary)
+        .multilineTextAlignment(.center)
     }
 
     // MARK: - Toolbar
 
     @ToolbarContentBuilder
     var toolbarContent: some ToolbarContent {
-        let displayingLoadingMessage = appStateManager.factText.last == "…" || appStateManager.factText.isEmpty || favoriteFactsDatabase.randomizerIterations > 0
-        if displayingLoadingMessage {
+        let shouldShowLoadingIndicator = appStateManager.factText.last == "…" || appStateManager.factText.isEmpty || favoriteFactsDatabase.randomizerRunning
+        if shouldShowLoadingIndicator {
             ToolbarItem(placement: .automatic) {
                 LoadingIndicator()
             }
