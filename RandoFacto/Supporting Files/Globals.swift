@@ -27,7 +27,7 @@ typealias Authentication = Auth
 // MARK: - Properties - Strings
 
 // The application name.
-let appName: String? = (Bundle.main.infoDictionary![String(kCFBundleNameKey)] as? String)!
+let appName: String? = (Bundle.main.infoDictionary?[String(kCFBundleNameKey)] as? String)!
 
 // Displayed while the app is loading.
 let loadingString = "Loading…"
