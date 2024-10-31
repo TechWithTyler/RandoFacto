@@ -187,8 +187,7 @@ extension AppStateManager {
                 }
             } else {
                 // 4. Otherwise, nil-out the randomizer timer and call the above block once.
-                favoriteFactsDatabase.randomizerTimer?.invalidate()
-                favoriteFactsDatabase.randomizerTimer = nil
+                favoriteFactsDatabase.stopRandomizerTimer()
                 block()
             }
         }

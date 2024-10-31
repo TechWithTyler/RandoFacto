@@ -380,12 +380,14 @@ class AuthenticationManager: ObservableObject {
     // This method tries to logout the current user, clearing the app's favorite facts list if successful.
     func logoutCurrentUser() {
         do {
-            // 1. Try to logout the current user.
+            // 1. Stop the randomizer timer.
+            favoriteFactsDatabase?.stopRandomizerTimer()
+            // 2. Try to logout the current user.
             try firebaseAuthentication.signOut()
-            // 2. If successful, reset the app's local Firestore data and related settings.
+            // 3. If successful, reset the app's local Firestore data and related settings.
             resetLocalFirestoreData()
         } catch {
-            // 3. If unsuccessful, log an error.
+            // 4. If unsuccessful, log an error.
             DispatchQueue.main.async { [self] in
                 errorManager.showError(error)
             }

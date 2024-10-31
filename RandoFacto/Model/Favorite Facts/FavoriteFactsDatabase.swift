@@ -132,7 +132,7 @@ class FavoriteFactsDatabase: ObservableObject {
         }
     }
 
-    // MARK: - Randomizer Timer
+    // MARK: - Randomizer Timer - Setup
 
     // This method sets up the randomizer timer.
     func setupRandomizerTimer(block: @escaping (() -> Void)) {
@@ -154,6 +154,15 @@ class FavoriteFactsDatabase: ObservableObject {
             }
             block()
         })
+    }
+
+    // MARK: - Randomizer Timer - Stop
+
+    // This method stops the randomizer timer and sets it to nil.
+    func stopRandomizerTimer() {
+        randomizerTimer?.invalidate()
+        randomizerTimer = nil
+        randomizerIterations = 0
     }
 
     // MARK: - Saving/Deleting
