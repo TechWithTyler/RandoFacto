@@ -126,7 +126,7 @@ struct AccountSettingsPageView: View {
             Text("You won't be able to save favorite facts to view offline until you login again!")
         }
         // Authentication form
-        .sheet(item: $authenticationManager.formType) {_ in
+        .sheet(item: $authenticationManager.formType) { _ in
             AuthenticationFormView()
                 .environmentObject(appStateManager)
                 .environmentObject(networkConnectionManager)
