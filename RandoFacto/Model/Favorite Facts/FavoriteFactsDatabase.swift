@@ -13,7 +13,8 @@ import Firebase
 class FavoriteFactsDatabase: ObservableObject {
     
     // MARK: - Properties - Objects
-    
+
+    // Handles all Firestore database-related tasks.
     var firestore: Firestore
     
     var authenticationManager: AuthenticationManager? = nil
@@ -29,12 +30,12 @@ class FavoriteFactsDatabase: ObservableObject {
     
     // MARK: - Properties - Favorite Facts Listener
     
-    // Listens for changes to the current user's favorite facts.
+    // Listens for changes to the current user's favorite facts, whether it's from RandoFacto on this device, RandoFacto on another device, or RandoFacto's Firebase console. Changes are synced to the device.
     var favoriteFactsListener: ListenerRegistration? = nil
 
     // MARK: - Properties - Booleans
 
-    // Whether a randomizer effect should be used when getting a random favorite fact.
+    // Whether RandoFacto should "spin through" a user's favorite facts when getting a random favorite fact. This setting resets to off and is hidden when the user logs out or deletes their account.
     @AppStorage("favoriteFactsRandomizerEffect") var favoriteFactsRandomizerEffect: Bool = false
 
     // Whether the "delete this favorite fact" alert should be/is being displayed.
@@ -42,7 +43,12 @@ class FavoriteFactsDatabase: ObservableObject {
     
     // Whether the "delete all favorite facts" alert should be/is being displayed.
     @Published var showingDeleteAllFavoriteFacts: Bool = false
-    
+
+    // Whether the randomizer effect is playing.
+    var randomizerRunning: Bool {
+        return randomizerIterations > 0
+    }
+
     // MARK: - Properties - Strings
     
     // The favorite fact to be deleted when pressing "Delete" in the alert.
@@ -50,7 +56,7 @@ class FavoriteFactsDatabase: ObservableObject {
     
     // MARK: - Properties - Integers
     
-    // Whether to display one of the user's favorite facts (1) or generate a random fact (0) when the app launches. This setting resets to 0 (Random Fact), and is hidden, when the user logs out or deletes their account.
+    // Whether to display one of the user's favorite facts (1) or generate a random fact (0) when the app launches. This setting resets to 0 (Random Fact) and is hidden when the user logs out or deletes their account.
     @AppStorage("initialFact") var initialFact: Int = 0
 
     // The maximum number of iterations for the randomizer effect. The randomizer effect starts out fast and gradually slows down, by using the equation randomizerIterations divided by (maxRandomizerIterations times 4).
@@ -58,6 +64,11 @@ class FavoriteFactsDatabase: ObservableObject {
 
     // The number of iterations the randomizer effect has gone through. The randomizer stops after this property reaches maxRandomizerIterations.
     var randomizerIterations: Int = 0
+
+    // MARK: - Properties - Floats
+
+    // The blur radius of the fact text view when the randomizer effect is playing.
+    let randomizerBlurRadius: CGFloat = 30
 
     // MARK: - Properties - Randomizer Timer
 
@@ -87,7 +98,7 @@ class FavoriteFactsDatabase: ObservableObject {
             favoriteFactsListener = firestore.collection(Firestore.CollectionName.favoriteFacts)
             // 3. Filter the result to include only the current user's favorite facts.
                 .whereField(Firestore.KeyName.user, isEqualTo: userEmail)
-            // 4. Listen for any changes made to the favorite facts list, whether it's on this device, another device, or the Firebase console.
+            // 4. Listen for any changes made to the favorite facts list, whether it's on this device, another device, or the Firebase console. The result of steps 2-4 is the value of favoriteFactsListener. It isn't necessary to assign the result of this method call to a QuerySnapshotListener object unless you want to be able to remove the listener later.
                 .addSnapshotListener(includeMetadataChanges: true) { [self] snapshot, error in
                     // 5. Log any errors.
                     if let error = error {
@@ -106,7 +117,7 @@ class FavoriteFactsDatabase: ObservableObject {
     
     // This method updates the app's favorite facts list with snapshot's data.
     func updateFavoriteFactsList(from snapshot: QuerySnapshot) {
-        // 1. Try to replace the data in favoriteFacts with snapshot's data by decoding it to a FavoriteFact object.
+        // 1. Try to replace the data in favoriteFacts with snapshot's data by decoding each of its documents to FavoriteFact objects.
         do {
             // compactMap is marked throws so you can call throwing functions in its closure. Errors are then "rethrown" so the catch block of this do statement can handle them.
             // compactMap throws out any documents where the data couldn't be decoded to a FavoriteFact object (the result of the transformation is nil).
@@ -121,12 +132,13 @@ class FavoriteFactsDatabase: ObservableObject {
         }
     }
 
-    // MARK: - Randomizer Timer
+    // MARK: - Randomizer Timer - Setup
 
     // This method sets up the randomizer timer.
     func setupRandomizerTimer(block: @escaping (() -> Void)) {
         // 1. Start the randomizerTimer without repeat, since the timer's interval increases as randomizerIterations increases and the time interval of running Timers can't be changed directly.
-        randomizerTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(Double(randomizerIterations)/Double(maxRandomizerIterations*4)), repeats: false, block: { [self] timer in
+        let randomizerTimeInterval = TimeInterval(randomizerIterations) / TimeInterval(maxRandomizerIterations * 4)
+        randomizerTimer = Timer.scheduledTimer(withTimeInterval: randomizerTimeInterval, repeats: false, block: { [self] timer in
             // 2. If randomizerIterations equals maxRandomizerIterations, stop the timer and reset the count.
             if randomizerIterations == maxRandomizerIterations {
                 timer.invalidate()
@@ -144,19 +156,31 @@ class FavoriteFactsDatabase: ObservableObject {
         })
     }
 
+    // MARK: - Randomizer Timer - Stop
+
+    // This method stops the randomizer timer and sets it to nil.
+    func stopRandomizerTimer() {
+        randomizerTimer?.invalidate()
+        randomizerTimer = nil
+        randomizerIterations = 0
+    }
+
     // MARK: - Saving/Deleting
     
     // This method creates a FavoriteFact from factText and saves it to the favorite facts database.
     func saveFactToFavorites(_ factText: String) {
         // 1. Make sure the fact doesn't already exist and that the current user has an email (who would have an account but no email?!).
-        guard let email = authenticationManager?.firebaseAuthentication.currentUser?.email else { return }
-        let fact = FavoriteFact(text: factText, user: email)
+        guard let userEmail = authenticationManager?.firebaseAuthentication.currentUser?.email else { return }
+        // 2. Create a FavoriteFact object with the fact text and the current user's email.
+        let fact = FavoriteFact(text: factText, user: userEmail)
+        // 3. Make sure the favorite fact doesn't already exist.
         guard !favoriteFacts.contains(fact) else { return }
-        // 2. Create a FavoriteFact object with the fact text and the current user's email, and try to create a new document with that data in the favorite facts Firestore collection.
+        // 4. Try to create a new document with that data in the favorite facts Firestore collection
         do {
             try firestore.collection(Firestore.CollectionName.favoriteFacts)
                 .addDocument(from: fact)
         } catch {
+            // 5. If that fails, log an error.
             DispatchQueue.main.async { [self] in
                 errorManager.showError(error)
             }
@@ -238,7 +262,7 @@ class FavoriteFactsDatabase: ObservableObject {
                         }
                     }
                 }
-                // 9. Notify the DispatchGroup on the main thread and call the completion handler.
+                // 9. Notify the DispatchGroup on the main thread and call the completion handler with any errors that may have been encountered above.
                 group.notify(queue: .main) {
                     completionHandler(deletionError)
                 }

@@ -17,12 +17,6 @@ struct DisplaySettingsPageView: View {
 
     @EnvironmentObject var favoriteFactsDatabase: FavoriteFactsDatabase
 
-    // MARK: - Properties - Fact Text Size Slider Text
-
-    var factTextSizeSliderText: String {
-        return "Fact Text Size: \(appStateManager.factTextSizeAsInt)pt"
-    }
-
     var body: some View {
         Form {
             if authenticationManager.userLoggedIn {
@@ -36,52 +30,26 @@ struct DisplaySettingsPageView: View {
                 }
                 Section {
                     Toggle("Favorite Fact Randomizer Effect", isOn: $favoriteFactsDatabase.favoriteFactsRandomizerEffect)
+                    if favoriteFactsDatabase.favoriteFacts.count < 5 {
+                        InfoText("The randomizer effect only works if you have at least 5 favorite facts (you currently have \(favoriteFactsDatabase.favoriteFacts.count)).")
+                    }
                 } footer: {
-                    Text("Turn this on if you want \(appName!) to \"spin through\" several random favorite facts instead of simply displaying a random favorite fact.")
+                    Text("Turn this on if you want \(appName!) to \"spin through\" several random favorite facts instead of simply displaying a random favorite fact.\nThis setting will reset to off when you logout or delete your account.")
                 }
             }
             Section {
-#if os(macOS)
-                // Sliders show their labels by default on macOS.
-                factTextSizeSlider
-#else
-                VStack(spacing: 0) {
-                    Text(factTextSizeSliderText)
-                        .padding(5)
-                    factTextSizeSlider
-                }
-#endif
-            }
-            Section {
-                Text(sampleFact)
-                    .font(.system(size: CGFloat(appStateManager.factTextSize)))
+                TextSizeSlider(labelText: "Fact Text Size", textSize: $appStateManager.factTextSize, previewText: sampleFact)
             }
             .animation(.default, value: appStateManager.factTextSize)
         }
         .formStyle(.grouped)
     }
 
-    // MARK: - Fact Text Size Slider
-
-    @ViewBuilder
-    var factTextSizeSlider: some View {
-        Slider(value: $appStateManager.factTextSize, in: SATextViewFontSizeRange, step: 1) {
-            Text(factTextSizeSliderText)
-        } minimumValueLabel: {
-            Image(systemName: "textformat.size.smaller")
-                .accessibilityLabel("Smaller")
-        } maximumValueLabel: {
-            Image(systemName: "textformat.size.larger")
-                .accessibilityLabel("Larger")
-        }
-        .accessibilityValue("\(appStateManager.factTextSizeAsInt)")
-    }
-
 }
 
 #Preview {
-    DisplaySettingsPageView()
-        #if DEBUG
-        .withPreviewData()
-    #endif
+        DisplaySettingsPageView()
+#if DEBUG
+    .withPreviewData()
+#endif
 }

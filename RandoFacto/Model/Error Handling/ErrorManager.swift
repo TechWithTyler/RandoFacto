@@ -23,7 +23,7 @@ class ErrorManager: ObservableObject {
     
     // This method shows error's localizedDescription as an alert or in the authentication form.
     func showError(_ error: Error, completionHandler: ((RandoFactoError) -> Void)? = nil) {
-        // 1. Convert the error to NSError and print it.
+        // 1. Convert the error to NSError, and print it in internal builds.
         let nsError = error as NSError
 #if DEBUG
         // If an unfamiliar error appears, check its code in the console and add a friendlier message if necessary.
@@ -42,6 +42,8 @@ class ErrorManager: ObservableObject {
             errorToShow = .networkConnectionLost
         case URLError.timedOut.rawValue:
             errorToShow = .factGenerationTimedOut
+        case URLError.cannotFindHost.rawValue:
+            errorToShow = .factGeneratorURLNotFound
             // Fact data errors
         case FactGenerator.ErrorCode.factDataHTTPResponseCodeRange: /*HTTP response code + 33000 to add 33 (FD) to the beginning*/
             errorToShow = .badHTTPResponse(domain: nsError.domain)
@@ -58,6 +60,8 @@ class ErrorManager: ObservableObject {
             errorToShow = .attemptToLoginToInvalidAccount
         case AuthErrorCode.wrongPassword.rawValue:
             errorToShow = .incorrectPassword
+        case AuthErrorCode.weakPassword.rawValue:
+            errorToShow = .passwordTooShort
         case AuthErrorCode.invalidEmail.rawValue:
             errorToShow = .invalidEmailFormat
         case AuthErrorCode.requiresRecentLogin.rawValue:

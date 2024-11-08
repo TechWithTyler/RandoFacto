@@ -35,7 +35,7 @@ class AuthenticationManager: ObservableObject {
     
     // MARK: - Properties - Integers
     
-    // the credential field pertaining to an authentication error.
+    // The credential field pertaining to an authentication error.
     var invalidCredentialField: Authentication.FormField? {
         if let errorText = formErrorText {
             let emailError = errorText.lowercased().contains("email")
@@ -64,16 +64,19 @@ class AuthenticationManager: ObservableObject {
     
     // MARK: - Properties - Booleans
     
-    // Whether the "logout" alert should be displayed.
+    // Whether the "logout" alert should be/is being displayed.
     @Published var showingLogout: Bool = false
     
-    // Whether the "delete account" alert should be displayed.
+    // Whether the "delete account" alert should be/is being displayed.
     @Published var showingDeleteAccount: Bool = false
-    
+
+    // Whether the "send reset password request" alert should be/is being displayed.
+    @Published var showingResetPasswordAlert: Bool = false
+
     // Whether the AuthenticationFormView should show a confirmation that a password reset email has been sent to the entered email address.
     @Published var showingResetPasswordEmailSent: Bool = false
     
-    // Whether an authentication request is in progress.
+    // Whether an authentication request (login, signup, password change, password reset email send) is in progress.
     @Published var isAuthenticating: Bool = false
     
     // Whether a user is logged in.
@@ -107,7 +110,7 @@ class AuthenticationManager: ObservableObject {
     
     // MARK: - Registered Users Handler
     
-    // This method sets up the app to listen for changes to registered user references. The email addresses and IDs of registered users get added to a Firestore collection called "users" when they signup, because Firebase doesn't yet have an ability to immediately notify the app of creations/deletions of accounts or checking whether they exist.
+    // This method sets up the app to listen for changes to the current user's reference (i.e. if it goes missing). The email addresses and IDs of registered users get added to a Firestore collection called "users" when they signup, because Firebase doesn't yet have an ability to immediately notify the app of creations/deletions of accounts or checking whether they exist.
     func addRegisteredUsersHandler() {
         DispatchQueue.main.async { [self] in
             // 1. Make sure the current user is logged in.
@@ -131,7 +134,7 @@ class AuthenticationManager: ObservableObject {
                             errorManager.showError(error)
                         }
                     } else {
-                        // 6. Logout the user if they've been deleted from another device. We need to make sure the snapshot is from the server, not the cache, to prevent the detection of a missing user reference when logging in on a new device for the first time. We also need to make sure a user isn't currently being logged in or deleted on this device, otherwise a missing user would be detected and logged out, causing the operation to never complete.
+                        // 6. Logout the user if they've been deleted from another device. We need to make sure the snapshot is from the server, not the cache, to prevent the detection of a missing user reference when logging in on a new device for the first time. We also need to make sure a user isn't currently being logged in or deleted on this device, otherwise a missing user would be detected and logged out, causing the operation to never complete, or a new user might be logged out immediately after signup. This was one of the big bugs during development of the initial release (2023.12).
                         guard !isDeletingAccount && !isAuthenticating else { return }
                         /*
                          A user reference is considered "missing"/the user is considered "deleted" if any of the following are true:
@@ -151,6 +154,117 @@ class AuthenticationManager: ObservableObject {
         }
     }
     
+    // MARK: - Signup
+
+    // This method takes the user's credentials and tries to sign them up for a RandoFacto account.
+    func signup(successHandler: @escaping ((Bool) -> Void)) {
+        DispatchQueue.main.async { [self] in
+            // 1. Tell the app that an authentication request is in progress.
+            isAuthenticating = true
+            // 2. Try to sign the user up for an account with the given credentials.
+            firebaseAuthentication.createUser(withEmail: emailFieldText, password: passwordFieldText) { [self] result, error in
+                // 3. Handle the success or error.
+                self.handleAuthenticationRequest(with: result, error: error, isSignup: true, successHandler: successHandler)
+            }
+        }
+    }
+    
+    // MARK: - Login
+    
+    // This method takes the user's credentials and tries to log them into their RandoFacto account.
+    func login(successHandler: @escaping ((Bool) -> Void)) {
+        DispatchQueue.main.async { [self] in
+            // 1. Tell the app that an authentication request is in progress.
+            isAuthenticating = true
+            // 2. Try to log the user in with the given credentials.
+            firebaseAuthentication.signIn(withEmail: emailFieldText, password: passwordFieldText) { [self] result, error in
+                // 3. Handle the success or error.
+                handleAuthenticationRequest(with: result, error: error, isSignup: false, successHandler: successHandler)
+            }
+        }
+    }
+
+    // MARK: - Password Reset/Update
+    
+    // This method sends a password reset email to the entered email address. The message body is customized in RandoFacto's Firebase console. The recipient has to click the link in the email to begin the reset process--the email is customized in Firebase to tell the user to ignore it if they didn't send the request.
+    func sendPasswordResetLinkToEnteredEmailAddress() {
+        DispatchQueue.main.async { [self] in
+            // 1. Tell the app that an authentication request is in progress.
+            isAuthenticating = true
+            clearAuthenticationMessages()
+            // 3. Ask Firebase to send the password reset email to the entered email address.
+            firebaseAuthentication.sendPasswordReset(withEmail: emailFieldText, actionCodeSettings: ActionCodeSettings(), completion: { [self] error in
+                isAuthenticating = false
+                // 4. If an error occurs (e.g., the entered email address doesn't correspond to an account), log it.
+                if let error = error {
+                    errorManager.showError(error) { [self] randoFactoError in
+                        formErrorText = randoFactoError.localizedDescription
+                    }
+                } else {
+                    // 5. If successful, show the "reset password email sent" message.
+                    showingResetPasswordEmailSent = true
+                }
+            })
+        }
+    }
+    
+    // This method changes the current user's password to the password field's text.
+    func changePasswordForCurrentUser(completionHandler: @escaping ((Bool) -> Void)) {
+        // 1. Make sure we can get the current user.
+        guard let user = firebaseAuthentication.currentUser else { return }
+        DispatchQueue.main.async { [self] in
+            // 2. Tell the app that an authentication request is in progress.
+            isAuthenticating = true
+            // 3. Update user's password to the new password. If unsuccessful, show an error.
+            user.updatePassword(to: passwordFieldText) { [self] error in
+                isAuthenticating = false
+                if let error = error {
+                    errorManager.showError(error) { [self] randoFactoError in
+                        if randoFactoError == .tooLongSinceLastLogin {
+                            dismissForm()
+                            logoutCurrentUser()
+                            errorManager.showingErrorAlert = true
+                        }
+                        formErrorText = randoFactoError.localizedDescription
+                        completionHandler(false)
+                    }
+                } else {
+                    completionHandler(true)
+                }
+            }
+        }
+    }
+
+    // MARK: - Perform Action
+
+    // This method performs the authentication request when pressing the default button in the toolbar or keyboard.
+    func performAuthenticationAction(completionHandler: @escaping ((Bool) -> Void)) {
+        // 1. Make sure the authentication form is being displayed. This method will never be called unless it's displayed, so we can simply return in the else block.
+        guard let formType = formType else {
+            completionHandler(false)
+            return }
+        // 2. Make sure the password doesn't contain emoji. Emoji can only be entered when the password is visible, so we don't allow emojis at all.
+        guard !passwordFieldText.containsEmoji else {
+            formErrorText = "Passwords can't contain emoji."
+            completionHandler(false)
+            return
+        }
+        // 3. Clear all authentication messages.
+        clearAuthenticationMessages()
+        // 4. Make the email lowercase before performing the authentication request. Emails are case-insensitive, but this just makes sure the email is always displayed and passed around in the traditional all-lowercase format.
+        emailFieldText = emailFieldText.lowercased()
+        // 5. Choose the authentication request (signup/login/password change) to perform based on formType. The guard-let above is used so the switch statement doesn't need an unused nil case.
+        // The delay between when a Firebase server method (such as createUser(withEmail:password:completionHandler:) and its completion handler are called is an actual network-based delay, compared to the app's initial loading delay which is mostly artificial (there may be an actual delay depending on the number of favorite facts and/or registered user references being loaded into the app). If there's no internet connection, the completion handler is called immediately with an error. Completion handlers are passed up the call hierarchy until it reaches this method.
+        switch formType {
+        case .signup:
+            signup(successHandler: completionHandler)
+        case .login:
+            login(successHandler: completionHandler)
+        case .passwordChange:
+            changePasswordForCurrentUser(completionHandler: completionHandler)
+        }
+    }
+
     // MARK: - Post-Signup/Login Request Handler
 
     // This method loads the user's favorite facts if authentication is successful. Otherwise, it logs an error.
@@ -209,7 +323,7 @@ class AuthenticationManager: ObservableObject {
             }
         }
     }
-    
+
     // MARK: - New/Missing User References
 
     // This method adds a reference for the current user once they signup, or if they login and such reference is missing.
@@ -227,7 +341,7 @@ class AuthenticationManager: ObservableObject {
             completionHandler(error)
         }
     }
-    
+
     // This method checks for the current user's reference upon logging in and adds it if it doesn't exist.
     func addMissingUserReferenceForLogin(email: String, id: String, completionHandler: @escaping ((Error?) -> Void)) {
         // 1. Create the block which will add the missing user reference if needed.
@@ -260,20 +374,39 @@ class AuthenticationManager: ObservableObject {
                 }
             }
     }
-    
-    // MARK: - Credential Field Change Handler
 
-    // This method clears all authentication messages when the credential field values are changed.
-    func credentialFieldsChanged() {
-        DispatchQueue.main.async { [self] in
-            errorManager.errorToShow = nil
-            formErrorText = nil
-            showingResetPasswordEmailSent = false
+    // MARK: - Logout
+
+    // This method tries to logout the current user, clearing the app's favorite facts list if successful.
+    func logoutCurrentUser() {
+        do {
+            // 1. Stop the randomizer timer.
+            favoriteFactsDatabase?.stopRandomizerTimer()
+            // 2. Try to logout the current user.
+            try firebaseAuthentication.signOut()
+            // 3. If successful, reset the app's local Firestore data and related settings.
+            resetLocalFirestoreData()
+        } catch {
+            // 4. If unsuccessful, log an error.
+            DispatchQueue.main.async { [self] in
+                errorManager.showError(error)
+            }
         }
     }
-    
+
+    // MARK: - Clear Authentication Messages
+
+    // This method clears all authentication messages when the credential field values are changed or when sending a password reset email.
+    func clearAuthenticationMessages() {
+        // 2. Dismiss any messages/alerts that are being displayed.
+        errorManager.errorToShow = nil
+        showingResetPasswordEmailSent = false
+        showingResetPasswordAlert = false
+        formErrorText = nil
+    }
+
     // MARK: - Dismiss Form
-    
+
     // This method clears the authentication form for dismissal.
     func dismissForm() {
         DispatchQueue.main.async { [self] in
@@ -283,143 +416,37 @@ class AuthenticationManager: ObservableObject {
             showingResetPasswordEmailSent = false
         }
     }
-    
-    // MARK: - Perform Action
-    
-    // This method performs the authentication request when pressing the default button in the toolbar or keyboard.
-    func performAuthenticationAction(completionHandler: @escaping ((Bool) -> Void)) {
-        // 1. Make sure the authentication form is being displayed. This method will never be called unless it's displayed, so we can simply return in the else block.
-        guard let formType = formType else {
-            completionHandler(false)
-            return }
-        // 2. Make sure the password doesn't contain emoji. Emoji can only be entered when the password is visible, so we don't allow emojis at all.
-        guard !passwordFieldText.containsEmoji else {
-            formErrorText = "Passwords can't contain emoji."
-            completionHandler(false)
-            return
-        }
-        // 3. Clear all authentication messages.
-        showingResetPasswordEmailSent = false
-        errorManager.errorToShow = nil
-        formErrorText = nil
-        // 4. Make the email lowercase before performing the authentication request. Emails are case-insensitive, but this just makes sure the email is always displayed and passed around in the traditional all-lowercase format.
-        emailFieldText = emailFieldText.lowercased()
-        // 5. Perform the desired authentication request (signup/login/password change) based on formType. The guard-let above is used so the switch statement doesn't need an unused nil case.
-        // The delay between when a Firebase method and its completion handler are called is an actual network-based delay, compared to the app's initial loading delay, which is mostly artificial. If there's no internet connection, the completion handler is called immediately with an error. Completion handlers are passed up the call hierarchy until it reaches this method.
-        switch formType {
-        case .signup:
-            signup(successHandler: completionHandler)
-        case .login:
-            login(successHandler: completionHandler)
-        case .passwordChange:
-            updatePasswordForCurrentUser(completionHandler: completionHandler)
-        }
-    }
-    
-    // MARK: - Signup
 
-    // This method takes the user's credentials and tries to sign them up for a RandoFacto account.
-    func signup(successHandler: @escaping ((Bool) -> Void)) {
+    // MARK: - Reset Local Firestore Data
+
+    // This method deletes all local (cached) Firestore data when a user logs out of/deletes their account.
+    func resetLocalFirestoreData() {
+        // 1. Clear the favorite facts list.
         DispatchQueue.main.async { [self] in
-            // 1. Try to sign the user up for an account with the given credentials.
-            isAuthenticating = true
-            firebaseAuthentication.createUser(withEmail: emailFieldText, password: passwordFieldText) { [self] result, error in
-                // 2. Handle the success or error.
-                self.handleAuthenticationRequest(with: result, error: error, isSignup: true, successHandler: successHandler)
-            }
+            favoriteFactsDatabase?.favoriteFacts.removeAll()
         }
+        // 2. Reset all favorite fact-related settings as the favorite facts database (and its related settings) don't apply when logged out.
+        resetFavoriteFactSettings()
+        // 3. Remove and nil-out the user listener and favorite facts listener.
+        removeFirestoreListeners()
     }
-    
-    // MARK: - Login
-    
-    // This method takes the user's credentials and tries to log them into their RandoFacto account.
-    func login(successHandler: @escaping ((Bool) -> Void)) {
-        DispatchQueue.main.async { [self] in
-            // 1. Try to log the user in with the given credentials.
-            isAuthenticating = true
-            firebaseAuthentication.signIn(withEmail: emailFieldText, password: passwordFieldText) { [self] result, error in
-                // 2. Handle the success or error.
-                handleAuthenticationRequest(with: result, error: error, isSignup: false, successHandler: successHandler)
-            }
-        }
+
+    // This method resets all settings pertaining to favorite facts, which don't apply when logged out and you can't access the favorite facts database.
+    func resetFavoriteFactSettings() {
+        // 1. Reset the Fact on Launch setting to "Random Fact".
+        favoriteFactsDatabase?.initialFact = 0
+        // 2. Reset the Favorite Fact Randomizer Effect setting to off.
+        favoriteFactsDatabase?.favoriteFactsRandomizerEffect = false
     }
-    
-    // MARK: - Logout
-    
-    // This method tries to logout the current user, clearing the app's favorite facts list if successful.
-    func logoutCurrentUser() {
-        do {
-            // 1. Try to logout the current user.
-            try firebaseAuthentication.signOut()
-            // 2. If successful, clear the favorite facts list, remove the user listener and favorite facts listener, and reset the Fact on Launch setting to "Random Fact".
-            DispatchQueue.main.async { [self] in
-                favoriteFactsDatabase?.favoriteFacts.removeAll()
-            }
-            favoriteFactsDatabase?.initialFact = 0
-            favoriteFactsDatabase?.favoriteFactsRandomizerEffect = false
-            registeredUsersListener?.remove()
-            registeredUsersListener = nil
-            favoriteFactsDatabase?.favoriteFactsListener?.remove()
-            favoriteFactsDatabase?.favoriteFactsListener = nil
-        } catch {
-            // 3. If unsuccessful, log an error.
-            DispatchQueue.main.async { [self] in
-                errorManager.showError(error)
-            }
-        }
+
+    // This method removes all Firestore listeners from the app when logging out.
+    func removeFirestoreListeners() {
+        registeredUsersListener?.remove()
+        registeredUsersListener = nil
+        favoriteFactsDatabase?.favoriteFactsListener?.remove()
+        favoriteFactsDatabase?.favoriteFactsListener = nil
     }
-    
-    // MARK: - Password Reset/Update
-    
-    // This method sends a password reset email to the entered email address. The message body is customized in RandoFacto's Firebase console. The recipient has to click the link in the email to begin the reset process--the email is customized in Firebase to tell the user to ignore it if they didn't send the request.
-    func sendPasswordResetLinkToEnteredEmailAddress() {
-        DispatchQueue.main.async { [self] in
-            // 1. Ask Firebase to send the password reset email to the entered email address.
-            isAuthenticating = true
-            errorManager.errorToShow = nil
-            showingResetPasswordEmailSent = false
-            formErrorText = nil
-            firebaseAuthentication.sendPasswordReset(withEmail: emailFieldText, actionCodeSettings: ActionCodeSettings(), completion: { [self] error in
-                // 2. If an error occurs (e.g., the entered email address doesn't correspond to an account), log it.
-                isAuthenticating = false
-                if let error = error {
-                    errorManager.showError(error) { [self] randoFactoError in
-                        formErrorText = randoFactoError.localizedDescription
-                    }
-                } else {
-                    // 3. If successful, show the "reset password email sent" message.
-                    showingResetPasswordEmailSent = true
-                }
-            })
-        }
-    }
-    
-    // This method updates the current user's password to the password field's text.
-    func updatePasswordForCurrentUser(completionHandler: @escaping ((Bool) -> Void)) {
-        // 1. Make sure we can get the current user.
-        guard let user = firebaseAuthentication.currentUser else { return }
-        DispatchQueue.main.async { [self] in
-            // 2. Update user's password to the new password. If unsuccessful, show an error.
-            isAuthenticating = true
-            user.updatePassword(to: passwordFieldText) { [self] error in
-                isAuthenticating = false
-                if let error = error {
-                    errorManager.showError(error) { [self] randoFactoError in
-                        if randoFactoError == .tooLongSinceLastLogin {
-                            dismissForm()
-                            logoutCurrentUser()
-                            errorManager.showingErrorAlert = true
-                        }
-                        formErrorText = randoFactoError.localizedDescription
-                        completionHandler(false)
-                    }
-                } else {
-                    completionHandler(true)
-                }
-            }
-        }
-    }
-    
+
     // MARK: - Delete User
     
     // This method deletes the current user's favorite facts, their reference, and then their account.
@@ -430,7 +457,7 @@ class AuthenticationManager: ObservableObject {
             completionHandler(userNotFoundError)
             return
         }
-        // 2. Delete all their favorite facts, getting data from the server instead of the cache.
+        // 2. Delete all their favorite facts, getting data from the server instead of the cache to ensure proper deletion.
         accountDeletionStage = .data
         favoriteFactsDatabase?.deleteAllFavoriteFactsForCurrentUser(forUserDeletion: true) { [self] error in
             // 3. If that fails, log an error and cancel deletion.
@@ -445,10 +472,10 @@ class AuthenticationManager: ObservableObject {
                         accountDeletionStage = nil
                         completionHandler(error)
                     } else {
-                        // 6. If successful, all user data has been deleted, so the account can be safely deleted.
+                        // 6. If favorite fact deletion and user reference deletion are successful, all user data has been deleted, so the account can be safely deleted.
                         user.delete { [self] error in
                             if error == nil {
-                                // 7. If account deletion is successful, log the now-deleted user out of this device and reset all login-required settings to their defaults.
+                                // 7. If account deletion is successful, log the now-deleted user out of this device and reset all login-required settings to their defaults. Other devices will be logged out of automatically, either immediately or within an hour after account deletion.
                                 logoutCurrentUser()
                             }
                             accountDeletionStage = nil

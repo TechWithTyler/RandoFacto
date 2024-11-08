@@ -8,6 +8,7 @@
 
 import SwiftUI
 import SheftAppsStylishUI
+import Firebase
 
 struct AuthenticationFormView: View {
     
@@ -21,7 +22,7 @@ struct AuthenticationFormView: View {
     
     @EnvironmentObject var errorManager: ErrorManager
     
-    @FocusState private var focusedField: Authentication.FormField?
+    @FocusState private var focusedCredentialField: Authentication.FormField?
     
     // MARK: - Dismiss
     
@@ -40,19 +41,16 @@ struct AuthenticationFormView: View {
                     }
                     credentialFields
                     if authenticationManager.formType == .passwordChange {
-                        HStack {
-                            Image(systemName: "info.circle")
-                                .accessibilityHidden(true)
-                            Text("Changing your password will log you out of your other devices within an hour.")
-                        }
-                        .font(.callout)
-                        .foregroundStyle(.secondary)
+                        WarningText("Changing your password will log you out of your other devices within an hour.", prefix: .importantUrgent)
                     }
                     if authenticationManager.showingResetPasswordEmailSent {
-                        AuthenticationMessageView(text: "A password reset email has been sent to \"\(authenticationManager.emailFieldText)\". Follow the instructions to reset your password.", type: .confirmation)
+                        AuthenticationMessageView(text: "A password reset email has been sent to \"\(authenticationManager.emailFieldText)\". Follow the instructions in the email to reset your password. If you don't see the email from \(appName!), check your spam folder.", type: .confirmation)
                     }
                     if let errorText = authenticationManager.formErrorText {
                         AuthenticationMessageView(text: errorText, type: .error)
+                    }
+                    if authenticationManager.formType == .signup {
+                        PrivacyPolicyAgreementText()
                     }
                 }
             }
@@ -73,7 +71,7 @@ struct AuthenticationFormView: View {
                     }
                 }
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
+                    Button("Cancel", role: .cancel) {
                         dismiss()
                     }
                     .controlSize(.large)
@@ -95,10 +93,10 @@ struct AuthenticationFormView: View {
         .onAppear {
             switch authenticationManager.formType {
             case .passwordChange:
-                focusedField = .password
+                focusedCredentialField = .password
                 authenticationManager.emailFieldText = (authenticationManager.firebaseAuthentication.currentUser?.email)!
             default:
-                focusedField = .email
+                focusedCredentialField = .email
             }
         }
         .onDisappear {
@@ -111,6 +109,7 @@ struct AuthenticationFormView: View {
     
     // MARK: - Credential Fields
     
+    @ViewBuilder
     var credentialFields: some View {
         Group {
             if authenticationManager.formType != .passwordChange {
@@ -121,22 +120,25 @@ struct AuthenticationFormView: View {
                         .keyboardType(.emailAddress)
 #endif
                         .submitLabel(.next)
-                        .focused($focusedField, equals: .email)
+                        .focused($focusedCredentialField, equals: .email)
                         .onSubmit(of: .text) {
-                            focusedField = .password
+                            focusedCredentialField = .password
                         }
                     if authenticationManager.invalidCredentialField == .email {
                         FieldNeedsAttentionView()
+                            .onAppear {
+                                focusedCredentialField = .email
+                            }
                     }
                 }
             }
             VStack(alignment: .trailing) {
                 ViewablePasswordField("Password", text: $authenticationManager.passwordFieldText, signup: authenticationManager.formType == .signup)
-                    .focused($focusedField, equals: .password)
+                    .focused($focusedCredentialField, equals: .password)
                     .submitLabel(.done)
                     .onSubmit(of: .text) {
                         guard !authenticationManager.formInvalid else {
-                            focusedField = .email
+                            focusedCredentialField = .email
                             return }
                         authenticationManager.performAuthenticationAction { success in
                             if success {
@@ -146,15 +148,18 @@ struct AuthenticationFormView: View {
                     }
                 if authenticationManager.invalidCredentialField == .password {
                     FieldNeedsAttentionView()
+                        .onAppear {
+                            focusedCredentialField = .password
+                        }
                 }
             }
             if authenticationManager.formType == .login && !authenticationManager.emailFieldText.isEmpty && authenticationManager.passwordFieldText.isEmpty {
                 HStack {
                     Spacer()
                     Button {
-                        authenticationManager.sendPasswordResetLinkToEnteredEmailAddress()
+                        authenticationManager.showingResetPasswordAlert = true
                     } label: {
-                        Label(forgotPasswordButtonTitle, systemImage: "questionmark.circle.fill")
+                        Label(authenticationManager.showingResetPasswordEmailSent ? "Resend Password Reset" : forgotPasswordButtonTitle, systemImage: "questionmark.circle.fill")
                             .labelStyle(.titleAndIcon)
                     }
                     .frame(alignment: .trailing)
@@ -167,18 +172,74 @@ struct AuthenticationFormView: View {
         }
         .disabled(authenticationManager.isAuthenticating)
         .onChange(of: authenticationManager.emailFieldText) { value in
-            authenticationManager.credentialFieldsChanged()
+            authenticationManager.clearAuthenticationMessages()
         }
         .onChange(of: authenticationManager.passwordFieldText) { value in
-            authenticationManager.credentialFieldsChanged()
+            authenticationManager.clearAuthenticationMessages()
+        }
+        .alert("Send password reset request to \"\(authenticationManager.emailFieldText)\"?", isPresented: $authenticationManager.showingResetPasswordAlert) {
+            Button("Send") {
+                authenticationManager.sendPasswordResetLinkToEnteredEmailAddress()
+            }
+            Button("Cancel", role: .cancel) {
+                authenticationManager.showingResetPasswordAlert = false
+            }
+        } message: {
+            Text("By continuing, you confirm that \"\(authenticationManager.emailFieldText)\" is your email address.")
         }
     }
     
 }
 
-#Preview {
+#Preview("Login (Empty)") {
     AuthenticationFormView()
         #if DEBUG
-        .withPreviewData()
+        .withPreviewData { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
+            authenticationManager.formType = .login
+        }
+    #endif
+}
+
+#Preview("Login (Forgot Password Button)") {
+    AuthenticationFormView()
+        #if DEBUG
+        .withPreviewData { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
+            authenticationManager.formType = .login
+            authenticationManager.emailFieldText = "someone@example.com"
+        }
+    #endif
+}
+
+#Preview("Login (Forgot Password Sent)") {
+    AuthenticationFormView()
+        #if DEBUG
+        .withPreviewData { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
+            authenticationManager.formType = .login
+            authenticationManager.emailFieldText = "someone@example.com"
+            authenticationManager.showingResetPasswordEmailSent = true
+        }
+    #endif
+}
+
+#Preview("Signup") {
+    AuthenticationFormView()
+        #if DEBUG
+        .withPreviewData { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
+            authenticationManager.formType = .signup
+        }
+    #endif
+}
+
+#Preview("Change Password") {
+    AuthenticationFormView()
+        #if DEBUG
+        .withPreviewData { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
+            if !authenticationManager.userLoggedIn {
+                authenticationManager.formType = .login
+                authenticationManager.formErrorText = "Change Password preview requires you to be logged in. You can login here using Live Preview mode and try again."
+            } else {
+                authenticationManager.formType = .passwordChange
+            }
+        }
     #endif
 }

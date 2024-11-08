@@ -55,14 +55,6 @@ struct AdvancedSettingsPageView: View {
 #if os(macOS)
         .dialogSeverity(.critical)
 #endif
-        // Authentication form
-        .sheet(item: $authenticationManager.formType) {_ in
-            AuthenticationFormView()
-                .environmentObject(appStateManager)
-                .environmentObject(networkConnectionManager)
-                .environmentObject(authenticationManager)
-                .environmentObject(errorManager)
-        }
     }
     
 }

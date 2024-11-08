@@ -27,7 +27,7 @@ typealias Authentication = Auth
 // MARK: - Properties - Strings
 
 // The application name.
-let appName: String? = (Bundle.main.infoDictionary![String(kCFBundleNameKey)] as? String)!
+let appName: String? = (Bundle.main.infoDictionary?[String(kCFBundleNameKey)] as? String)!
 
 // Displayed while the app is loading.
 let loadingString = "Loading…"
@@ -62,11 +62,10 @@ let signupText = "Signup"
 // The name of the filled-circle exclamation mark SF Symbol used for errors.
 let errorSymbolName = "exclamationmark.circle.fill"
 
-// The name of the filled-bubble speaker SF Symbol used for speech/
-let speechSymbolName = "speaker.wave.2.bubble.left.fill"
+// The name of the bubble speaker SF Symbol used for speech.
+let speechSymbolName = "speaker.wave.2.bubble.left"
 
-let defaultVoiceID = "com.apple.voice.compact.en-US.Samantha"
-
+// The fact displayed in the settings window to preview the fact text size setting.
 let sampleFact = "\(appName!) was coded in Swift by Tyler Sheft!"
 
 // MARK: - Properties - Doubles

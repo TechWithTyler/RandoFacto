@@ -13,8 +13,10 @@ extension Authentication {
     // A field in the authentication form.
     enum FormField {
         
+        // The email field.
         case email
         
+        // The password field.
         case password
         
     }

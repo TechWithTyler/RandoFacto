@@ -13,11 +13,14 @@ struct FactGenerator {
     // MARK: - Properties - Result Type Aliases
     
     // A Result is made up of 2 types, Success (can be anything) and Error (must conform to Error). These type aliases simplify the type names.
-    
+
+    // The type of fact generator JSON parsing results.
     typealias FactGeneratorJSONParsingResult = Result<String, Error>
-    
+
+    // The type of inappropriate words checker JSON parsing results.
     typealias InappropriateWordsCheckerJSONParsingResult = Result<Bool, Error>
-    
+
+    // The type of inappropriate words checker HTTP request results.
     typealias InappropriateWordsCheckerHTTPRequestResult = Result<URLRequest, Error>
     
     // MARK: - Properties - Strings
@@ -39,9 +42,9 @@ struct FactGenerator {
     var factURLString: String {
         // 1. The scheme specifies the protocol used to access the resource. In this case, it's "https" (Hypertext Transfer Protocol Secure). This indicates that the data transferred between the app (client) and the web API (server) is encrypted for security.
         let scheme = "https"
-        // 2. The domain and subdomain are the main parts of the URL that identify the server where the resource is located. In this case, the domain is "jsph.pl" and the subdomain is "uselessfacts". "jsph.pl" in this case stands for Joeseph Paul, the creator of this API and others (usually "pl" means a website in Poland).
+        // 2. The domain and subdomain are the main parts of the URL that identify the server where the resource is located. In this case, the domain is "jsph.pl" and the subdomain is "uselessfacts". "jsph.pl" in this case stands for Joeseph Paul, the creator of this API and others (usually "pl" refers to a website in Poland). Each of his API URLs have a different subdomain in the same "jsph.pl" domain.
         let subdomainAndDomain = randomFactsAPIName
-        // 3. The path indicates the specific resource or location on the server that the client (RandoFacto) is requesting. In this URL, the path is "/api/vX/facts/random", where X represents the API version.
+        // 3. The path indicates the specific resource or location on the server that the client (in this case RandoFacto) is requesting. In this URL, the path is "/api/vX/facts/random", where X represents the API version.
         let randomFactPath = "api/v\(randomFactsAPIVersion)/facts/random"
         // 4. Query parameters are additional information provided in the URL to modify the request. They follow a question mark (?) and are separated by ampersands (&). In this URL, there is one query parameter, "language=en", indicating that the client is requesting a fact in English. Sometimes, parts of the request are modified by setting one or more HTTP header fields.
         let lowercaseLanguageCode = "en"
@@ -84,7 +87,7 @@ struct FactGenerator {
         didBeginHandler()
         // 2. Create the URL, URL request, and URL session.
         guard let url = URL(string: factURLString) else {
-                completionHandler(nil, logFactDataError())
+            completionHandler(nil, logFactDataError())
             return
         }
         let urlRequest = createFactGeneratorHTTPRequest(with: url)
@@ -93,7 +96,7 @@ struct FactGenerator {
         let dataTask = urlSession.dataTask(with: urlRequest) { [self] data, response, error in
             handleFactGenerationDataTaskResult(didBeginHandler: didBeginHandler, data: data, response: response, error: error, completionHandler: completionHandler)
         }
-        // To start a URLSessionDataTask, we resume it.
+        // 4. To start a URLSessionDataTask, we resume it.
         dataTask.resume()
     }
     
@@ -110,10 +113,10 @@ struct FactGenerator {
         } else {
             // 3. Make sure we can get the fact text. If we can't, an error is logged.
             let jsonParsingResult = parseFactDataJSON(data: data)
-            // With the Result generic type, we can use a switch statement to handle the result based on whether it's a success or a failure.
+            // With the Result generic type, we can use a switch statement to handle the result based on whether it's a success (of the desired type) or a failure (of any type that conforms to the Error protocol, including Error itself).
             switch jsonParsingResult {
             case .success(let factText):
-                // 4. Screen the fact to make sure it doesn't contain inappropriate words. If we get an error or an HTTP response with a code that's not in the 2xx range, log an error. If we get a fact, we know the fact is safe and we can display it. If we get nothing, keep trying to generate a fact until we get a safe one. Once a safe fact is generated, give it to the view.
+                // 4. Screen the fact to make sure it doesn't contain inappropriate words. If we get an error or an HTTP response with a code that's not in the 2xx range, log an error. If we get a fact, we know the fact is safe and we can display it. If we get nothing, keep trying to generate a fact until we get a safe one. Once a safe fact is generated, pass it to the completion handler.
                 screenFact(fact: factText) { fact, error in
                     if let error = error {
                         completionHandler(nil, error)
@@ -174,7 +177,7 @@ struct FactGenerator {
     
     // MARK: - Inappropriate Words Checker
     
-    // This method screens a fact to make sure it doesn't contain inappropriate words. If it does, fact generation is retried. While early builds of the initial release, 2023.12 (November 2022-October 2023), displayed messages to the user during the screening process or if an inappropriate fact was returned, we decided to not make the presence of an inappropriate words checker visible to the user, and it's not mentioned anywhere in the app's documentation or info.
+    // This method screens a fact to make sure it doesn't contain inappropriate words. If it does, fact generation is retried. While early builds of the initial release, 2023.12 (November 2022-December 2023), displayed messages to the user during the screening process or if an inappropriate fact was returned, we decided to not make the presence of an inappropriate words checker visible to the user, and it's not mentioned anywhere in the app's documentation or info.
     func screenFact(fact: String, completionHandler: @escaping ((String?, Error?) -> Void)) {
         // 1. Create the URL and URL session.
         guard let url = URL(string: inappropriateWordsCheckerURLString) else {
@@ -225,7 +228,7 @@ struct FactGenerator {
         request.setValue(httpRequestContentType, forHTTPHeaderField: URLRequest.HTTPHeaderField.contentType)
         // 3. Set the timeout interval for the URL request, after which an error will be thrown if the request can't complete.
         request.timeoutInterval = urlRequestTimeoutInterval
-        // 4. Specify the data model that you want to send.
+        // 4. Specify the data model to send.
         let body = ["content": fact]
         // 5. Try to convert body to JSON data and return the created request. If conversion fails, log an error.
         do {

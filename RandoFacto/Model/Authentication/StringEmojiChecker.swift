@@ -10,6 +10,7 @@ import Foundation
 
 extension String {
 
+    // Whether a string contains emoji.
 	var containsEmoji: Bool {
 		for scalar in unicodeScalars {
 			// Check if the scalar is an emoji and not a numeric character

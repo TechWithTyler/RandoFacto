@@ -10,23 +10,29 @@ import SwiftUI
 
 struct PreviewDataModifier: ViewModifier {
 
+    let previewManager: PreviewManager
+
+    init(prepBlock: ((AppStateManager, ErrorManager, NetworkConnectionManager, FavoriteFactsDatabase, AuthenticationManager, FavoriteFactsListDisplayManager) -> Void)? = nil) {
+        self.previewManager = PreviewManager(prepBlock: prepBlock)
+    }
+
     func body(content: Content) -> some View {
         content
-            .environmentObject(PreviewManager.shared.appStateManager)
-            .environmentObject(PreviewManager.shared.errorManager)
-            .environmentObject(PreviewManager.shared.networkConnectionManager)
-            .environmentObject(PreviewManager.shared.favoriteFactsDatabase)
-            .environmentObject(PreviewManager.shared.authenticationManager)
-            .environmentObject(PreviewManager.shared.favoriteFactsListDisplayManager)
+            .environmentObject(previewManager.appStateManager)
+            .environmentObject(previewManager.errorManager)
+            .environmentObject(previewManager.networkConnectionManager)
+            .environmentObject(previewManager.favoriteFactsDatabase)
+            .environmentObject(previewManager.authenticationManager)
+            .environmentObject(previewManager.favoriteFactsListDisplayManager)
     }
 
 }
 
 extension View {
 
-    // Injects the app's model objects into Xcode Previews.
-    func withPreviewData() -> some View {
-        modifier(PreviewDataModifier())
+    // Injects the app's model objects into Xcode Previews and allows access to them.
+    func withPreviewData(prepBlock: ((AppStateManager, ErrorManager, NetworkConnectionManager, FavoriteFactsDatabase, AuthenticationManager, FavoriteFactsListDisplayManager) -> Void)? = nil) -> some View {
+        modifier(PreviewDataModifier(prepBlock: prepBlock))
     }
 
 }

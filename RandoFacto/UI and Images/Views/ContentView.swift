@@ -71,7 +71,11 @@ struct ContentView: View {
                 favoriteFactsDatabase.favoriteFactToDelete = nil
             }
         } message: { factText in
-            Text("Make sure to re-favorite this fact BEFORE generating a new one if you change your mind!")
+            if appStateManager.selectedPage == .randomFact || appStateManager.factText == factText.wrappedValue {
+                Text("Make sure to re-favorite this fact BEFORE generating a new one if you change your mind!")
+            } else {
+                Text("This can't be undone!")
+            }
         }
         // Unfavorite all facts alert
         .alert("Are you sure you REALLY want to unfavorite all facts?", isPresented: $favoriteFactsDatabase.showingDeleteAllFavoriteFacts) {
@@ -117,11 +121,15 @@ struct ContentView: View {
 		// User login state change/user deletion
 		.onChange(of: authenticationManager.accountDeletionStage) { deletionStage in
             if deletionStage != nil {
+                favoriteFactsDatabase.showingDeleteFavoriteFact = false
+                favoriteFactsDatabase.showingDeleteAllFavoriteFacts = false
                 appStateManager.dismissFavoriteFacts()
             }
 		}
 		.onChange(of: authenticationManager.userLoggedIn) { loggedIn in
             if !loggedIn {
+                favoriteFactsDatabase.showingDeleteFavoriteFact = false
+                favoriteFactsDatabase.showingDeleteAllFavoriteFacts = false
                 appStateManager.dismissFavoriteFacts()
             }
 		}
@@ -150,7 +158,7 @@ struct ContentView: View {
                 NavigationLink(value: AppPage.favoriteFacts) {
                     label(for: .favoriteFacts)
                 }
-                .disabled(appStateManager.factText == generatingRandomFactString || favoriteFactsDatabase.randomizerIterations > 0)
+                .disabled(appStateManager.factText == generatingRandomFactString || favoriteFactsDatabase.randomizerRunning)
                 .contextMenu {
                     UnfavoriteAllButton()
                         .environmentObject(favoriteFactsDatabase)
@@ -207,9 +215,30 @@ struct ContentView: View {
 
 }
 
-#Preview {
+#Preview("Loading") {
     ContentView()
         #if DEBUG
-        .withPreviewData()
+        .withPreviewData { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
+            appStateManager.factText = loadingString
+        }
     #endif
 }
+
+#Preview("Loaded") {
+    ContentView()
+        #if DEBUG
+        .withPreviewData { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
+            appStateManager.factText = sampleFact
+        }
+    #endif
+}
+
+#Preview("Generating") {
+    ContentView()
+        #if DEBUG
+        .withPreviewData { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
+            appStateManager.factText = generatingRandomFactString
+        }
+    #endif
+}
+

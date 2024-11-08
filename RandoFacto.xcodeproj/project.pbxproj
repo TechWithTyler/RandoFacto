@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8D012F7D2C0E5D3100A6254B /* PrivacyPolicyAgreementText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D012F7C2C0E5D3100A6254B /* PrivacyPolicyAgreementText.swift */; };
 		8D0312222AF995AF00DBB2B2 /* AuthenticationFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0312212AF995AF00DBB2B2 /* AuthenticationFormView.swift */; };
 		8D0312242AF9CAB100DBB2B2 /* LoadingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0312232AF9CAB100DBB2B2 /* LoadingIndicator.swift */; };
 		8D051C5E2AFB15590064E90E /* AppPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D051C5D2AFB15590064E90E /* AppPage.swift */; };
@@ -87,6 +88,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		8D012F7C2C0E5D3100A6254B /* PrivacyPolicyAgreementText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyAgreementText.swift; sourceTree = "<group>"; };
 		8D0312212AF995AF00DBB2B2 /* AuthenticationFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationFormView.swift; sourceTree = "<group>"; };
 		8D0312232AF9CAB100DBB2B2 /* LoadingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingIndicator.swift; sourceTree = "<group>"; };
 		8D051C5D2AFB15590064E90E /* AppPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPage.swift; sourceTree = "<group>"; };
@@ -273,11 +275,11 @@
 			isa = PBXGroup;
 			children = (
 				8DFEB0A22AFAF64800F57DB1 /* SettingsView.swift */,
-				8D95DD202BDAF0C1006FAE63 /* DeveloperSettingsPageView.swift */,
 				8D95DD232BDAF888006FAE63 /* DisplaySettingsPageView.swift */,
-				8D95DD252BDAF899006FAE63 /* AccountSettingsPageView.swift */,
 				8D95DD272BDAF8B0006FAE63 /* SpeechSettingsPageView.swift */,
+				8D95DD252BDAF899006FAE63 /* AccountSettingsPageView.swift */,
 				8D95DD292BDAF8C3006FAE63 /* AdvancedSettingsPageView.swift */,
+				8D95DD202BDAF0C1006FAE63 /* DeveloperSettingsPageView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -363,6 +365,7 @@
 				8D8F1AF72AFDF25600DB9B7D /* AuthenticationMessageView.swift */,
 				8D8899E12AFDF80300BDDDFD /* ViewablePasswordField.swift */,
 				8DAFBC832B1AB52400C0907F /* FieldNeedsAttentionView.swift */,
+				8D012F7C2C0E5D3100A6254B /* PrivacyPolicyAgreementText.swift */,
 			);
 			path = Authentication;
 			sourceTree = "<group>";
@@ -515,6 +518,7 @@
 				8D5E25052B5B8EFF00B51730 /* OnboardingView.swift in Sources */,
 				8D5511402B059B3D00BB61D4 /* FactGeneratorErrors.swift in Sources */,
 				8D95DD212BDAF0C1006FAE63 /* DeveloperSettingsPageView.swift in Sources */,
+				8D012F7D2C0E5D3100A6254B /* PrivacyPolicyAgreementText.swift in Sources */,
 				8D0312242AF9CAB100DBB2B2 /* LoadingIndicator.swift in Sources */,
 				8D5E9A2A2B226DE800C261B8 /* NetworkConnectionManager.swift in Sources */,
 				8D69ADEA2B1FCC20002BA65E /* ErrorManager.swift in Sources */,
@@ -679,7 +683,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 500;
+				CURRENT_PROJECT_VERSION = 600;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"RandoFacto/UI and Images/Preview Content\"";
@@ -709,7 +713,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 2024.5;
+				MARKETING_VERSION = 2024.11;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.tylersheft.RandoFacto;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -734,7 +738,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 500;
+				CURRENT_PROJECT_VERSION = 600;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"RandoFacto/UI and Images/Preview Content\"";
 				DEVELOPMENT_TEAM = 3B6G4T54X3;
@@ -763,7 +767,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 2024.5;
+				MARKETING_VERSION = 2024.11;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.tylersheft.RandoFacto;
 				PRODUCT_NAME = "$(TARGET_NAME)";

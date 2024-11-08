@@ -33,5 +33,4 @@ struct PrivacyPolicyButton: View {
 
 #Preview {
     PrivacyPolicyButton()
-        .padding()
 }

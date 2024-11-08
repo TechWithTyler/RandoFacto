@@ -20,28 +20,40 @@ struct AccountSettingsPageView: View {
 
     var body: some View {
         Form {
-            Text((authenticationManager.firebaseAuthentication.currentUser?.email) ?? "Login to your \(appName!) account to save favorite facts to view on all your devices, even while offline.")
-                .font(.system(size: 24))
-                .fontWeight(.bold)
+            if let email = authenticationManager.firebaseAuthentication.currentUser?.email {
+                HStack {
+                    Spacer()
+                    Image(systemName: "person.circle.fill")
+                        .foregroundStyle(.secondary)
+                        .font(.system(size: 24))
+                        .fontWeight(.bold)
+                        .accessibilityLabel(email)
+                    VStack(alignment: .center) {
+                        Text("Logged in as")
+                        Text(email)
+                            .font(.system(size: 24))
+                            .fontWeight(.bold)
+                    }
+                    Spacer()
+                }
+            } else {
+                Text("Login to your \(appName!) account to save favorite facts to view on all your devices, even while offline.")
+                    .font(.system(size: 24))
+            }
             if let deletionStage = authenticationManager.accountDeletionStage {
                 LoadingIndicator(message: "Deleting \(deletionStage)…")
             } else if authenticationManager.userLoggedIn {
                 if networkConnectionManager.deviceIsOnline {
-                    Section {
                         Button("Change Password…", systemImage: "key") {
                             authenticationManager.formType = .passwordChange
                         }
-                    }
                     .controlSize(.large)
                 }
-                Section {
                     Button("Logout…", systemImage: "door.left.hand.open") {
                         authenticationManager.showingLogout = true
                     }
                     .controlSize(.large)
-                }
                 if networkConnectionManager.deviceIsOnline {
-                    Section {
                         Button(role: .destructive) {
                             authenticationManager.showingDeleteAccount = true
                         } label: {
@@ -52,7 +64,6 @@ struct AccountSettingsPageView: View {
                         }
 
                         .controlSize(.large)
-                    }
                 }
             } else {
                 if networkConnectionManager.deviceIsOnline {
@@ -103,7 +114,7 @@ struct AccountSettingsPageView: View {
         .dialogSeverity(.critical)
 #endif
         // Logout alert
-        .alert("Logout?", isPresented: $authenticationManager.showingLogout) {
+        .alert("Logout of your \(appName!) account?", isPresented: $authenticationManager.showingLogout) {
             Button("Cancel", role: .cancel) {
                 authenticationManager.showingLogout = false
             }
@@ -115,7 +126,7 @@ struct AccountSettingsPageView: View {
             Text("You won't be able to save favorite facts to view offline until you login again!")
         }
         // Authentication form
-        .sheet(item: $authenticationManager.formType) {_ in
+        .sheet(item: $authenticationManager.formType) { _ in
             AuthenticationFormView()
                 .environmentObject(appStateManager)
                 .environmentObject(networkConnectionManager)

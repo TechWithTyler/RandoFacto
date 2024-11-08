@@ -11,7 +11,7 @@ import FirebaseFirestoreSwift
 
 // MARK: - Favorite Fact Data
 
-// We need to represent favorite facts as a separate object from facts returned by the fact generator API, because having more properties than needed will result in the object not decoding properly.
+// We need to represent favorite facts as a separate object from facts returned by the fact generator API, because having more properties than the JSON data has will result in the object not decoding properly.
 struct FavoriteFact: Codable, Equatable {
 
     // The ID which identifies this favorite fact. The @DocumentID property wrapper is provided by Firebase.

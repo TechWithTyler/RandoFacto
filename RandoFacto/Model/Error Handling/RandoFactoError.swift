@@ -11,8 +11,8 @@ import Foundation
 // Errors produced by the app.
 enum RandoFactoError: LocalizedError, Equatable, Identifiable {
     
-    // MARK: - Error Case Definitions - Internet Connection
-    
+    // MARK: - Error Case Definitions - Network/Internet Connection
+
     // No internet connection.
     case noInternetFactGeneration, noInternetAuthentication
     
@@ -24,7 +24,10 @@ enum RandoFactoError: LocalizedError, Equatable, Identifiable {
 
     // MARK: - Error Case Definitions - Fact Generation
 
-    // Fact generation/screening timeout
+    // The fact generation URL wasn't found.
+    case factGeneratorURLNotFound
+
+    // Fact generation/screening timed out.
     case factGenerationTimedOut
     
     // Bad HTTP response, with the given error domain.
@@ -52,7 +55,10 @@ enum RandoFactoError: LocalizedError, Equatable, Identifiable {
     
     // The password is incorrect.
     case incorrectPassword
-    
+
+    // The password is less than 6 characters long (too weak).
+    case passwordTooShort
+
     // The email address wasn't in the format email@example.xyz.
     case invalidEmailFormat
     
@@ -87,6 +93,8 @@ enum RandoFactoError: LocalizedError, Equatable, Identifiable {
             return "Internet connection lost."
         case .secureConnectionFailed:
             return "Secure connection failed. If using a public Wi-Fi network, make sure you've activated your internet access."
+        case .factGeneratorURLNotFound:
+            return "Unable to access the fact generator URL. Your network may have restricted or no internet access."
         case .factGenerationTimedOut:
             return "Fact generation took too long. Please try again later."
         case let .badHTTPResponse(domain):
@@ -107,6 +115,8 @@ enum RandoFactoError: LocalizedError, Equatable, Identifiable {
             return "The email address must be in the format email@example.xyz."
         case .incorrectPassword:
             return "Incorrect password. If you forgot your password, clear the password field and press \"\(forgotPasswordButtonTitle)\"."
+        case .passwordTooShort:
+            return "Your password must be at least 6 characters long."
         case .tooLongSinceLastLogin:
             return "It's been more than 5 minutes since you last logged in on this device. Please re-login and try the operation again."
             // This can be written as either case .name(let propertyName) or case let .name(propertyName).

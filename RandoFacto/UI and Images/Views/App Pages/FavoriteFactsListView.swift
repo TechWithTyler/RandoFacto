@@ -40,8 +40,10 @@ struct FavoriteFactsListView: View {
                     }
                 }
                 .animation(.default, value: favoriteFactsListDisplayManager.sortedFavoriteFacts)
+                // The searchable(text:placement:prompt:) modifier adds a search box with the given search text String binding, placement, and placeholder text prompt. The list contains everything in the FavoriteFactListDisplayManager's sortedFavoriteFacts array, which returns all favorite facts if the search box is empty or only favorite facts matching search terms if the search box contains text. The sortedFavoriteFacts array is a computed property whose value depends on the search text.
                 .searchable(text: $favoriteFactsListDisplayManager.searchText, placement: .toolbar, prompt: "Search Favorite Facts")
                 // Toolbar
+                // The search box is placed in the toolbar by the modifier above.
                 .toolbar {
                     toolbarContent
                 }
@@ -49,7 +51,7 @@ struct FavoriteFactsListView: View {
         }
         .navigationTitle("Favorite Facts List")
         .onDisappear {
-            favoriteFactsListDisplayManager.searchText.removeAll()
+            favoriteFactsListDisplayManager.clearSearchText()
         }
     }
     
@@ -68,13 +70,13 @@ struct FavoriteFactsListView: View {
     @ViewBuilder
     var favoriteFactsEmptyDisplay: some View {
         VStack {
-            Text("No Favorites")
+            Text("No favorite facts")
                 .font(.largeTitle)
             // In SwiftUI, you don't need to use attributed strings to embed SF Symbols in text--you can simply use an Image view as you would any other value in string interpolation!
-            Text("Save facts to view offline by pressing the \(Image(systemName: "star")) button.")
+            Text("Save facts to view offline by pressing the \(Image(systemName: "star")) button while viewing a fact.")
                 .font(.callout)
         }
-        .foregroundColor(.secondary)
+        .foregroundStyle(.secondary)
         .padding()
     }
     
@@ -83,12 +85,13 @@ struct FavoriteFactsListView: View {
     @ViewBuilder
     var noMatchesDisplay: some View {
         VStack {
-            Text("No Favorites Containing \"\(favoriteFactsListDisplayManager.searchText)\"")
+            Text("No favorite facts containing \"\(favoriteFactsListDisplayManager.searchText)\"")
                 .font(.largeTitle)
+                .foregroundStyle(.secondary)
             Text("Please check your search terms.")
                 .font(.callout)
+                .foregroundStyle(.tertiary)
         }
-        .foregroundColor(.secondary)
         .padding()
     }
     
@@ -97,7 +100,12 @@ struct FavoriteFactsListView: View {
     @ViewBuilder
     var favoriteFactsList: some View {
         List {
-            Section(header: header) {
+            Section {
+                header
+            }
+            .listRowSeparator(.hidden)
+            .listRowBackground(Color.clear)
+            Section {
                 ForEach(favoriteFactsListDisplayManager.sortedFavoriteFacts, id: \.self) {
                     favorite in
                     HStack {
@@ -109,32 +117,28 @@ struct FavoriteFactsListView: View {
                             Text(favoriteFactsListDisplayManager.favoriteFactWithColoredMatchingTerms(favorite))
                                 .font(.system(size: CGFloat(appStateManager.factTextSize)))
                                 .multilineTextAlignment(.leading)
-                                .foregroundColor(.primary)
+                                .tint(.primary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.vertical)
                         }
                         Divider()
                         SpeakButton(for: favorite)
                             .labelStyle(.topIconBottomTitle)
+                            .imageScale(.large)
                             .padding(.horizontal)
-                        #if os(iOS)
+#if os(iOS)
                             .hoverEffect(.highlight)
-                        #endif
+#endif
                     }
                     .buttonStyle(.borderless)
                     .contextMenu {
                         Button {
-#if os(macOS)
-                            NSPasteboard.general.declareTypes([.string], owner: self)
-                            NSPasteboard.general.setString(favorite, forType: .string)
-#else
-                            UIPasteboard.general.string = favorite
-#endif
+                            favoriteFactsListDisplayManager.copyFact(favorite)
                         } label: {
                             Label("Copy", systemImage: "doc.on.doc")
                         }
                         Divider()
-                        unfavoriteAction(for: favorite)
+                        unfavoriteAction(for: favorite, inMenu: true)
                     }
                     .swipeActions {
                         unfavoriteAction(for: favorite)
@@ -153,11 +157,10 @@ struct FavoriteFactsListView: View {
             VStack(alignment: .center) {
                 Text("\(favoriteFactsListDisplayManager.searchText.isEmpty ? "Favorite facts" : "Search results"): \(favoriteFactsListDisplayManager.sortedFavoriteFacts.count)")
                     .multilineTextAlignment(.center)
-                    .padding(10)
                     .font(.title)
                 Text("Select a favorite fact to display it.")
                     .multilineTextAlignment(.center)
-                    .padding(10)
+                    .padding(1)
                     .font(.callout)
             }
             Spacer()
@@ -167,12 +170,12 @@ struct FavoriteFactsListView: View {
     // MARK: - Unfavorite Action
     
     @ViewBuilder
-    func unfavoriteAction(for favorite: String) -> some View {
+    func unfavoriteAction(for favorite: String, inMenu: Bool = false) -> some View {
         Button(role: .destructive) {
             favoriteFactsDatabase.favoriteFactToDelete = favorite
             favoriteFactsDatabase.showingDeleteFavoriteFact = true
         } label: {
-            Label("Unfavorite…", systemImage: "star.slash")
+            Label(inMenu ? "Unfavorite…" : "Unfavorite", systemImage: "star.slash")
         }
     }
     
@@ -196,10 +199,26 @@ struct FavoriteFactsListView: View {
     
 }
 
-#Preview {
+#Preview("Loading") {
     FavoriteFactsListView()
         #if DEBUG
-        .withPreviewData()
+        .withPreviewData {
+            appStateManager, _, _, _, _, _ in
+            appStateManager.factText = loadingString
+        }
+    #endif
+    #if os(macOS)
+        .frame(width: 800, height: 600)
+    #endif
+}
+
+#Preview("Loaded") {
+    FavoriteFactsListView()
+        #if DEBUG
+        .withPreviewData {
+            appStateManager, _, _, _, _, _ in
+            appStateManager.factText = sampleFact
+        }
     #endif
     #if os(macOS)
         .frame(width: 800, height: 600)
