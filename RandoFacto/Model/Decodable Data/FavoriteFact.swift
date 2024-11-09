@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import FirebaseFirestoreSwift
+import FirebaseFirestore
 
 // MARK: - Favorite Fact Data
 
