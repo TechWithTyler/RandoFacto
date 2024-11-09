@@ -8,7 +8,9 @@
 
 import Foundation
 import FirebaseAuth
+#if canImport(AppKit)
 import AppKit
+#endif
 
 // MARK: - Functions
 
