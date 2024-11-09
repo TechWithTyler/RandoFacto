@@ -7,7 +7,8 @@
 //
 
 import SwiftUI
-import Firebase
+import FirebaseAuth
+import FirebaseFirestore
 
 // Handles authentication and user accounts.
 class AuthenticationManager: ObservableObject {

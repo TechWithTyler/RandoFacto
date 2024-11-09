@@ -7,7 +7,8 @@
 //
 
 import SwiftUI
-import Firebase
+import FirebaseAuth
+import FirebaseFirestore
 
 class ErrorManager: ObservableObject {
     
