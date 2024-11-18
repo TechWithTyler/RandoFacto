@@ -6,14 +6,8 @@
 //  Copyright © 2022-2024 SheftApps. All rights reserved.
 //
 
-import Foundation
+import SwiftUI
 import FirebaseAuth
-#if canImport(AppKit)
-import AppKit
-#endif
-#if canImport(UIKit)
-import UIKit
-#endif
 
 // MARK: - Functions
 
