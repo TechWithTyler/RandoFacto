@@ -50,6 +50,7 @@ struct AuthenticationFormView: View {
                         AuthenticationMessageView(text: errorText, type: .error)
                     }
                     if authenticationManager.formType == .signup {
+                        WarningText("You need an active email mailbox on your account in order to reset your password in case you forget it.", prefix: .importantUrgent)
                         PrivacyPolicyAgreementText()
                     }
                 }
