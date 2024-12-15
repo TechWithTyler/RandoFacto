@@ -97,9 +97,7 @@ struct FactView: View {
                     Label("Decrease Fact Text Size", systemImage: "textformat.size.smaller")
                         .frame(width: 105, height: 20)
                 }
-                #if os(iOS)
                 .hoverEffect(.highlight)
-                #endif
                 .disabled(appStateManager.factTextSize == SATextViewMinFontSize)
                 Button {
                     appStateManager.factTextSize += 1
@@ -107,9 +105,7 @@ struct FactView: View {
                     Label("Increase Fact Text Size", systemImage: "textformat.size.larger")
                         .frame(width: 105, height: 20)
                 }
-                #if os(iOS)
                 .hoverEffect(.highlight)
-                #endif
                 .disabled(appStateManager.factTextSize == SATextViewMaxFontSize)
             }
             .font(.system(size: 25))
