@@ -72,11 +72,12 @@ struct FactView: View {
 
     @ViewBuilder
     var factTextView: some View {
+        let canSelectFactText = !(appStateManager.factTextDisplayingMessage || appStateManager.factText == factUnavailableString || favoriteFactsDatabase.randomizerRunning)
         ScrollableText(appStateManager.factText)
             .multilineTextAlignment(.center)
             .font(.system(size: CGFloat(appStateManager.factTextSize)))
             .animation(.default, value: appStateManager.factTextSize)
-            .isTextSelectable(!(appStateManager.factTextDisplayingMessage || appStateManager.factText == factUnavailableString || favoriteFactsDatabase.randomizerRunning))
+            .isTextSelectable(canSelectFactText)
             .blur(radius: favoriteFactsDatabase.randomizerRunning ? favoriteFactsDatabase.randomizerBlurRadius : 0)
             .accessibilityHidden(favoriteFactsDatabase.randomizerRunning)
             .scrollDisabled(favoriteFactsDatabase.randomizerRunning)
@@ -128,11 +129,9 @@ struct FactView: View {
                     Label(getRandomFavoriteFactButtonTitle, systemImage: "star")
                         .frame(width: factGenerationButtonWidth)
                 }
-#if os(iOS)
-                .padding(2.5)
-#endif
                 .buttonStyle(.bordered)
 #if os(iOS)
+                .padding(2.5)
                 .hoverEffect(.highlight)
 #endif
             }
@@ -143,11 +142,9 @@ struct FactView: View {
                     Label(generateRandomFactButtonTitle, systemImage: "dice")
                         .frame(width: factGenerationButtonWidth)
                 }
-#if os(iOS)
-                .padding(2.5)
-#endif
                 .buttonStyle(.bordered)
 #if os(iOS)
+                .padding(2.5)
                 .hoverEffect(.highlight)
 #endif
             }

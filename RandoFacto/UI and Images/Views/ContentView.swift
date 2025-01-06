@@ -204,7 +204,7 @@ struct ContentView: View {
             case .favoriteFacts:
                 Label("Favorite Facts", systemImage: "list.star")
                 .symbolRenderingMode(.hierarchical)
-                // A badge is only displayed if its count isn't 0.
+                // A numeric badge is only displayed if its count isn't 0.
                 .badge(favoriteFactsDatabase.favoriteFacts.count)
             #if !os(macOS)
             case .settings:
