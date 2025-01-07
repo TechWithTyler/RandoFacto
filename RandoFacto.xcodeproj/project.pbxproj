@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		8D012F7D2C0E5D3100A6254B /* PrivacyPolicyAgreementText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D012F7C2C0E5D3100A6254B /* PrivacyPolicyAgreementText.swift */; };
 		8D0312222AF995AF00DBB2B2 /* AuthenticationFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0312212AF995AF00DBB2B2 /* AuthenticationFormView.swift */; };
-		8D0312242AF9CAB100DBB2B2 /* LoadingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0312232AF9CAB100DBB2B2 /* LoadingIndicator.swift */; };
 		8D051C5E2AFB15590064E90E /* AppPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D051C5D2AFB15590064E90E /* AppPage.swift */; };
 		8D0A3C3F2B1FA6F500B7345D /* FavoriteFactsListDisplayManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0A3C3E2B1FA6F500B7345D /* FavoriteFactsListDisplayManager.swift */; };
 		8D2A7B302B5B277300142BDA /* SpeakButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2A7B2F2B5B277300142BDA /* SpeakButton.swift */; };
@@ -91,7 +90,6 @@
 /* Begin PBXFileReference section */
 		8D012F7C2C0E5D3100A6254B /* PrivacyPolicyAgreementText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyAgreementText.swift; sourceTree = "<group>"; };
 		8D0312212AF995AF00DBB2B2 /* AuthenticationFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationFormView.swift; sourceTree = "<group>"; };
-		8D0312232AF9CAB100DBB2B2 /* LoadingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingIndicator.swift; sourceTree = "<group>"; };
 		8D051C5D2AFB15590064E90E /* AppPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPage.swift; sourceTree = "<group>"; };
 		8D0A3C3E2B1FA6F500B7345D /* FavoriteFactsListDisplayManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteFactsListDisplayManager.swift; sourceTree = "<group>"; };
 		8D0C38D52ADDC9AB00EBB03A /* SheftAppsStylishUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SheftAppsStylishUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -184,7 +182,6 @@
 		8D31D8552B27C0C9009F29EE /* Controls */ = {
 			isa = PBXGroup;
 			children = (
-				8D0312232AF9CAB100DBB2B2 /* LoadingIndicator.swift */,
 				8DCE5DE82B084F6000DD3CE7 /* UnfavoriteAllButton.swift */,
 				8D2A7B2F2B5B277300142BDA /* SpeakButton.swift */,
 				8DC867D12BC4866300A51787 /* PrivacyPolicyButton.swift */,
@@ -522,7 +519,6 @@
 				8D5511402B059B3D00BB61D4 /* FactGeneratorErrors.swift in Sources */,
 				8D95DD212BDAF0C1006FAE63 /* DeveloperSettingsPageView.swift in Sources */,
 				8D012F7D2C0E5D3100A6254B /* PrivacyPolicyAgreementText.swift in Sources */,
-				8D0312242AF9CAB100DBB2B2 /* LoadingIndicator.swift in Sources */,
 				8D5E9A2A2B226DE800C261B8 /* NetworkConnectionManager.swift in Sources */,
 				8D69ADEA2B1FCC20002BA65E /* ErrorManager.swift in Sources */,
 				8D31D8532B27B759009F29EE /* APIKeys.swift in Sources */,
