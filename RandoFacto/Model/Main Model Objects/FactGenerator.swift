@@ -68,10 +68,10 @@ struct FactGenerator {
     
     // The timeout interval of URL requests, which determines the maximum number of seconds they can try to run before a "request timed out" error is thrown if unsuccessful.
     #if(DEBUG)
-    // Allow this to be changed in in-development (internal) builds...
+    // Allow this to be changed in in-development (internal) builds…
     @AppStorage("urlRequestTimeoutInterval")
     #endif
-    // ...but not final (release) builds.
+    // …but not final (release) builds.
     var urlRequestTimeoutInterval: TimeInterval = defaultURLRequestTimeoutInterval
     
     // MARK: - Properties - Errors
