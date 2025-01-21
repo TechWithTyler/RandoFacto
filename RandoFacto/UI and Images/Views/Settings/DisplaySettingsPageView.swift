@@ -21,12 +21,13 @@ struct DisplaySettingsPageView: View {
         Form {
             if authenticationManager.userLoggedIn {
                 Section {
-                    Picker("Fact on Launch", selection: $favoriteFactsDatabase.initialFact) {
-                        Text(randomFactSettingTitle).tag(0)
-                        Text("Random Favorite Fact").tag(1)
+                    Picker("Initial Display", selection: $favoriteFactsDatabase.initialFact) {
+                        Text(generateRandomFactButtonTitle).tag(0)
+                        Text(getRandomFavoriteFactButtonTitle).tag(1)
+                        Text("Show Favorite Facts List").tag(2)
                     }
                 } footer: {
-                    Text("This setting will reset to \"\(randomFactSettingTitle)\" when you logout or delete your account.")
+                    Text("This setting will reset to \"\(generateRandomFactButtonTitle)\" when you logout or delete your account.")
                 }
                 Section {
                     Toggle("Favorite Fact Randomizer Effect", isOn: $favoriteFactsDatabase.favoriteFactsRandomizerEffect)

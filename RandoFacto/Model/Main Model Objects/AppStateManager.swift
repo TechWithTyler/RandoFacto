@@ -127,9 +127,12 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     func displayInitialFact() {
         // 1. Wait 2 seconds to give the network path monitor time to configure.
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(initializationTime)) { [self] in
-            // 2. Display a fact to the user.
+            // 2. If "Initial Display" is set to "Generate Random Fact", or there are no favorite facts/the user isn't logged in, generate a random fact. If it's set to "Get Random Favorite Fact", display a random favorite fact. If it's set to "Show Favorite Facts List", switch to the favorite facts list.
             if favoriteFactsDatabase.initialFact == 0 || favoriteFactsDatabase.favoriteFacts.isEmpty || !authenticationManager.userLoggedIn {
                 generateRandomFact()
+            } else if favoriteFactsDatabase.initialFact == 2 {
+                displayFavoriteFact((favoriteFactsDatabase.favoriteFacts.randomElement()?.text)!, forInitialization: true)
+                selectedPage = .favoriteFacts
             } else {
                 getRandomFavoriteFact()
             }
@@ -196,11 +199,13 @@ extension AppStateManager {
     // MARK: - Favorite Facts - Display Favorite Fact
 
     // This method displays favorite and switches to the "Random Fact" page.
-    func displayFavoriteFact(_ favorite: String) {
+    func displayFavoriteFact(_ favorite: String, forInitialization: Bool = false) {
         DispatchQueue.main.async { [self] in
             factText = favorite
             speechSynthesizer.stopSpeaking(at: .immediate)
-            dismissFavoriteFacts()
+            if !forInitialization {
+                dismissFavoriteFacts()
+            }
         }
     }
 
