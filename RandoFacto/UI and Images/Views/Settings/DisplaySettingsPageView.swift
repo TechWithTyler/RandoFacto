@@ -19,6 +19,10 @@ struct DisplaySettingsPageView: View {
 
     var body: some View {
         Form {
+            Section {
+                TextSizeSlider(labelText: "Fact Text Size", textSize: $appStateManager.factTextSize, previewText: sampleFact)
+            }
+            .animation(.default, value: appStateManager.factTextSize)
             if authenticationManager.userLoggedIn {
                 Section {
                     Picker("Initial Display", selection: $favoriteFactsDatabase.initialFact) {
@@ -38,10 +42,6 @@ struct DisplaySettingsPageView: View {
                     Text("Turn this on if you want \(appName!) to \"spin through\" several random favorite facts instead of simply displaying a random favorite fact.\nThis setting will reset to off when you logout or delete your account.")
                 }
             }
-            Section {
-                TextSizeSlider(labelText: "Fact Text Size", textSize: $appStateManager.factTextSize, previewText: sampleFact)
-            }
-            .animation(.default, value: appStateManager.factTextSize)
         }
         .formStyle(.grouped)
     }
