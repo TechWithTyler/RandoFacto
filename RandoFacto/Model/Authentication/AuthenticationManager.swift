@@ -293,6 +293,7 @@ class AuthenticationManager: ObservableObject {
                     addUserReference(email: email, id: id) { [self] error in
                         if let error = error {
                             errorManager.showError(error) { [self] randoFactoError in
+                                logoutCurrentUser()
                                 formErrorText = randoFactoError.localizedDescription
                                 successHandler(false)
                             }
@@ -301,6 +302,7 @@ class AuthenticationManager: ObservableObject {
                         }
                     }
                 } else {
+                    logoutCurrentUser()
                     isAuthenticating = false
                     successHandler(false)
                 }
@@ -309,6 +311,7 @@ class AuthenticationManager: ObservableObject {
                     addMissingUserReferenceForLogin(email: email, id: id) { [self] error in
                         if let error = error {
                             errorManager.showError(error) { [self] randoFactoError in
+                                logoutCurrentUser()
                                 formErrorText = randoFactoError.localizedDescription
                                 isAuthenticating = false
                                 successHandler(false)
@@ -318,6 +321,7 @@ class AuthenticationManager: ObservableObject {
                         }
                     }
                 } else {
+                    logoutCurrentUser()
                     isAuthenticating = false
                     successHandler(false)
                 }

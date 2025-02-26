@@ -52,7 +52,7 @@ class ErrorManager: ObservableObject {
             errorToShow = .noFactText
         case FactGenerator.ErrorCode.failedToGetData.rawValue:
             errorToShow = .factDataError
-            // Database errors
+            // Favorite facts database errors
         case FirestoreErrorCode.unavailable.rawValue:
             errorToShow = .favoriteFactsDatabaseServerDataRetrievalError
         case FavoriteFactsDatabase.ErrorCode.favoriteFactReferenceNotFound.rawValue:
