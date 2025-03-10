@@ -240,12 +240,12 @@ extension AppStateManager {
     // MARK: - Speech - Speak Fact
     
     // This method speaks fact using the selected voice, or if fact is the fact currently being spoken, stops speech.
-    func speakFact(fact: String) {
+    func speakFact(fact: String, forSettingsPreview: Bool = false) {
         DispatchQueue.main.async { [self] in
             // 1. Stop any in-progress speech.
             speechSynthesizer.stopSpeaking(at: .immediate)
             // 2. If the fact to be spoken is the fact currently being spoken, speech is stopped and we don't continue. The exception is the sample fact which is spoken when choosing a voice--the sample fact is spoken each time the voice is changed regardless of whether it's currently being spoken.
-            if factBeingSpoken != fact || fact == sampleFact {
+            if factBeingSpoken != fact || forSettingsPreview {
                 // 3. If we get here, create an AVSpeechUtterance with the given String (in this case, the fact passed into this method).
                 let utterance = AVSpeechUtterance(string: fact)
                 // 4. Set the voice for the utterance.
