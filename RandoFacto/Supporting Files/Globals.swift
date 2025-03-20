@@ -63,7 +63,7 @@ let errorSymbolName = "exclamationmark.circle.fill"
 let speechSymbolName = "speaker.wave.2.bubble.left"
 
 // The fact displayed in the settings window to preview the fact text size setting.
-let sampleFact = "\(appName!) was coded in Swift by Tyler Sheft!"
+let sampleFact = "\(appName!) was coded in Swift!"
 
 // MARK: - Properties - Doubles
 
