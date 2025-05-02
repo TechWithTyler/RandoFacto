@@ -50,7 +50,7 @@ struct FactGenerator {
          6. Presentation
          7. Application
          Layer 2 is the physical layer, the hardware which connects the device running RandoFacto to the internet, and layer 1 is how the data is transmitted over the internet.
-         /*
+         */
         let scheme = "https"
         // 2. The domain and subdomain are the main parts of the URL that identify the server where the resource is located. In this case, the domain is "jsph.pl" and the subdomain is "uselessfacts". "jsph.pl" in this case stands for Joeseph Paul, the creator of this API and others (usually "pl" refers to a website in Poland). Each of his API URLs have a different subdomain in the same "jsph.pl" domain.
         let subdomainAndDomain = randomFactsAPIName
