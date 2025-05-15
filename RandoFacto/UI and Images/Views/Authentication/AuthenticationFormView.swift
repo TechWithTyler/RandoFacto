@@ -3,7 +3,7 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 11/6/23.
-//  Copyright © 2022-2024 SheftApps. All rights reserved.
+//  Copyright © 2022-2025 SheftApps. All rights reserved.
 //
 
 import SwiftUI
@@ -50,6 +50,7 @@ struct AuthenticationFormView: View {
                         AuthenticationMessageView(text: errorText, type: .error)
                     }
                     if authenticationManager.formType == .signup {
+                        WarningText("You need an active email mailbox on your account in order to reset your password in case you forget it.", prefix: .importantUrgent)
                         PrivacyPolicyAgreementText()
                     }
                 }

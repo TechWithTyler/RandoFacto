@@ -3,7 +3,7 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 11/7/23.
-//  Copyright © 2022-2024 SheftApps. All rights reserved.
+//  Copyright © 2022-2025 SheftApps. All rights reserved.
 //
 
 import SwiftUI
@@ -204,7 +204,7 @@ struct ContentView: View {
             case .favoriteFacts:
                 Label("Favorite Facts", systemImage: "list.star")
                 .symbolRenderingMode(.hierarchical)
-                // A badge is only displayed if its count isn't 0.
+                // A numeric badge is only displayed if its count isn't 0.
                 .badge(favoriteFactsDatabase.favoriteFacts.count)
             #if !os(macOS)
             case .settings:

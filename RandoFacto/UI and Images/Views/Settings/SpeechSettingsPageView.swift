@@ -3,7 +3,7 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 4/25/24.
-//  Copyright © 2022-2024 SheftApps. All rights reserved.
+//  Copyright © 2022-2025 SheftApps. All rights reserved.
 //
 
 import SwiftUI
@@ -17,8 +17,15 @@ struct SpeechSettingsPageView: View {
         Form {
             Section(footer: Text("This is the voice \(appName!) will use to read facts aloud.")) {
                 VoicePicker(selectedVoiceID: $appStateManager.selectedVoiceID, voices: appStateManager.voices) { voice in
-                        appStateManager.speakFact(fact: sampleFact)
+                    appStateManager.speakFact(fact: sampleFact, forSettingsPreview: true)
                     }
+                PlayButton(noun: "Sample Fact", isPlaying: appStateManager.factBeingSpoken == sampleFact) {
+                    if appStateManager.factBeingSpoken == sampleFact {
+                        appStateManager.speechSynthesizer.stopSpeaking(at: .immediate)
+                    } else {
+                        appStateManager.speakFact(fact: sampleFact, forSettingsPreview: true)
+                    }
+                }
             }
             .onAppear {
                 appStateManager.loadVoices()

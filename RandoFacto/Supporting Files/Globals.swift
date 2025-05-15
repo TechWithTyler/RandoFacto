@@ -3,17 +3,11 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 11/9/23.
-//  Copyright © 2022-2024 SheftApps. All rights reserved.
+//  Copyright © 2022-2025 SheftApps. All rights reserved.
 //
 
-import Foundation
+import SwiftUI
 import FirebaseAuth
-#if canImport(AppKit)
-import AppKit
-#endif
-#if canImport(UIKit)
-import UIKit
-#endif
 
 // MARK: - Functions
 
@@ -56,9 +50,6 @@ let getRandomFavoriteFactButtonTitle = "Get Random Favorite Fact"
 // The title of the button used to send a password reset email.
 let forgotPasswordButtonTitle = "Forgot Password"
 
-// The title of the "Fact on Launch" option to start the app with a random fact.
-let randomFactSettingTitle = "Random Fact"
-
 // The title of the login dialog/buttons.
 let loginText = "Login"
 
@@ -72,7 +63,7 @@ let errorSymbolName = "exclamationmark.circle.fill"
 let speechSymbolName = "speaker.wave.2.bubble.left"
 
 // The fact displayed in the settings window to preview the fact text size setting.
-let sampleFact = "\(appName!) was coded in Swift by Tyler Sheft!"
+let sampleFact = "\(appName!) was coded in Swift!"
 
 // MARK: - Properties - Doubles
 

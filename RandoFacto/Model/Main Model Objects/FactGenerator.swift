@@ -3,7 +3,7 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 11/21/22.
-//  Copyright © 2022-2024 SheftApps. All rights reserved.
+//  Copyright © 2022-2025 SheftApps. All rights reserved.
 //
 
 import SwiftUI
@@ -40,7 +40,17 @@ struct FactGenerator {
     
     // The URL of the random facts API.
     var factURLString: String {
-        // 1. The scheme specifies the protocol used to access the resource. In this case, it's "https" (Hypertext Transfer Protocol Secure). This indicates that the data transferred between the app (client) and the web API (server) is encrypted for security.
+        // 1. The scheme specifies the application layer protocol used to access the resource. In this case, it's "https" (Hypertext Transfer Protocol Secure), used for web traffic. The "s" in HTTPS indicates that the data transferred between the app (client) and the web API (server) is encrypted for security. This is not to be confused with presentation layer protocols like SSL (Secure Sockets Layer) or TLS (Transport Layer Security), which are used to secure the connection between the client and server, transport layer protocols like TCP (Transmission Control Protocol) or UDP (User Datagram Protocol), which are used to transmit data over the network, or network layer protocols like IP (Internet Protocol), which are used to route data between devices on a network. The API requests in this app use some of these protocols under the hood.
+        /* HTTPS is on layer 7 of the OSI model, the application layer, which is the topmost layer. The OSI model is a conceptual framework used to understand how different networking protocols interact with each other. The OSI model consists of 7 layers, each representing a different aspect of network communication. The layers are:
+         1. Physical
+         2. Data Link
+         3. Network
+         4. Transport
+         5. Session
+         6. Presentation
+         7. Application
+         Layer 2 is the physical layer, the hardware which connects the device running RandoFacto to the internet (e.g., the Wi-Fi radio in a MacBook or iPhone), and layer 1 is how the data is transmitted over the internet (usually very fast pulses of light through fiber optic cables).
+         */
         let scheme = "https"
         // 2. The domain and subdomain are the main parts of the URL that identify the server where the resource is located. In this case, the domain is "jsph.pl" and the subdomain is "uselessfacts". "jsph.pl" in this case stands for Joeseph Paul, the creator of this API and others (usually "pl" refers to a website in Poland). Each of his API URLs have a different subdomain in the same "jsph.pl" domain.
         let subdomainAndDomain = randomFactsAPIName
@@ -68,10 +78,10 @@ struct FactGenerator {
     
     // The timeout interval of URL requests, which determines the maximum number of seconds they can try to run before a "request timed out" error is thrown if unsuccessful.
     #if(DEBUG)
-    // Allow this to be changed in in-development (internal) builds...
+    // Allow this to be changed in in-development (internal) builds…
     @AppStorage("urlRequestTimeoutInterval")
     #endif
-    // ...but not final (release) builds.
+    // …but not final (release) builds.
     var urlRequestTimeoutInterval: TimeInterval = defaultURLRequestTimeoutInterval
     
     // MARK: - Properties - Errors

@@ -3,7 +3,7 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 11/29/22.
-//  Copyright © 2022-2024 SheftApps. All rights reserved.
+//  Copyright © 2022-2025 SheftApps. All rights reserved.
 //
 
 import SwiftUI
@@ -127,9 +127,12 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     func displayInitialFact() {
         // 1. Wait 2 seconds to give the network path monitor time to configure.
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(initializationTime)) { [self] in
-            // 2. Display a fact to the user.
+            // 2. If "Initial Display" is set to "Generate Random Fact", or there are no favorite facts/the user isn't logged in, generate a random fact. If it's set to "Get Random Favorite Fact", display a random favorite fact. If it's set to "Show Favorite Facts List", switch to the favorite facts list.
             if favoriteFactsDatabase.initialFact == 0 || favoriteFactsDatabase.favoriteFacts.isEmpty || !authenticationManager.userLoggedIn {
                 generateRandomFact()
+            } else if favoriteFactsDatabase.initialFact == 2 {
+                displayFavoriteFact((favoriteFactsDatabase.favoriteFacts.randomElement()?.text)!, forInitialization: true)
+                selectedPage = .favoriteFacts
             } else {
                 getRandomFavoriteFact()
             }
@@ -196,11 +199,13 @@ extension AppStateManager {
     // MARK: - Favorite Facts - Display Favorite Fact
 
     // This method displays favorite and switches to the "Random Fact" page.
-    func displayFavoriteFact(_ favorite: String) {
+    func displayFavoriteFact(_ favorite: String, forInitialization: Bool = false) {
         DispatchQueue.main.async { [self] in
             factText = favorite
             speechSynthesizer.stopSpeaking(at: .immediate)
-            dismissFavoriteFacts()
+            if !forInitialization {
+                dismissFavoriteFacts()
+            }
         }
     }
 
@@ -235,12 +240,12 @@ extension AppStateManager {
     // MARK: - Speech - Speak Fact
     
     // This method speaks fact using the selected voice, or if fact is the fact currently being spoken, stops speech.
-    func speakFact(fact: String) {
+    func speakFact(fact: String, forSettingsPreview: Bool = false) {
         DispatchQueue.main.async { [self] in
             // 1. Stop any in-progress speech.
             speechSynthesizer.stopSpeaking(at: .immediate)
             // 2. If the fact to be spoken is the fact currently being spoken, speech is stopped and we don't continue. The exception is the sample fact which is spoken when choosing a voice--the sample fact is spoken each time the voice is changed regardless of whether it's currently being spoken.
-            if factBeingSpoken != fact || fact == sampleFact {
+            if factBeingSpoken != fact || forSettingsPreview {
                 // 3. If we get here, create an AVSpeechUtterance with the given String (in this case, the fact passed into this method).
                 let utterance = AVSpeechUtterance(string: fact)
                 // 4. Set the voice for the utterance.

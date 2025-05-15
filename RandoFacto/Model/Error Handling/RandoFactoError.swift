@@ -3,7 +3,7 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 11/29/22.
-//  Copyright © 2022-2024 SheftApps. All rights reserved.
+//  Copyright © 2022-2025 SheftApps. All rights reserved.
 //
 
 import Foundation
@@ -46,7 +46,7 @@ enum RandoFactoError: LocalizedError, Equatable, Identifiable {
     
     // Favorite fact no longer exists.
     case favoriteFactNoLongerExists
-    
+
     // Couldn't get data from server.
     case favoriteFactsDatabaseServerDataRetrievalError
     
@@ -104,9 +104,9 @@ enum RandoFactoError: LocalizedError, Equatable, Identifiable {
         case .factDataError:
             return "Failed to retrieve or decode fact data."
         case .favoriteFactsDatabaseQuotaExceeded:
-            return "Too many favorite fact database requests at once. Try again later."
+            return "Too many favorite fact database requests at once. Please try again later."
         case .favoriteFactsDatabaseServerDataRetrievalError:
-            return "Failed to download data from server. Using device data."
+            return "Failed to download data from server."
         case .favoriteFactNoLongerExists:
             return "The favorite fact to be deleted no longer exists."
         case .attemptToLoginToInvalidAccount:

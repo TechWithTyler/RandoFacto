@@ -3,7 +3,7 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 11/7/23.
-//  Copyright © 2022-2024 SheftApps. All rights reserved.
+//  Copyright © 2022-2025 SheftApps. All rights reserved.
 //
 
 import SwiftUI
@@ -45,7 +45,7 @@ struct SettingsView: View {
                 SAMVisualEffectViewSwiftUIRepresentable {
                     SpeechSettingsPageView()
                 }
-                .frame(width: 400, height: 110)
+                .frame(width: 400, height: 150)
                 .formStyle(.grouped)
                 .tabItem {
                     Label(SettingsPage.speech.rawValue.capitalized, systemImage: SettingsPage.Icons.speech.rawValue)
@@ -143,9 +143,9 @@ struct SettingsView: View {
     NavigationStack {
         SettingsView()
     }
-    #if DEBUG
-    .withPreviewData()
-    #endif
+#if DEBUG
+.withPreviewData()
+#endif
 }
 
 #Preview("Loading") {

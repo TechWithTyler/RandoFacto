@@ -3,7 +3,7 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 12/5/23.
-//  Copyright © 2022-2024 SheftApps. All rights reserved.
+//  Copyright © 2022-2025 SheftApps. All rights reserved.
 //
 
 import SwiftUI
@@ -52,7 +52,7 @@ class ErrorManager: ObservableObject {
             errorToShow = .noFactText
         case FactGenerator.ErrorCode.failedToGetData.rawValue:
             errorToShow = .factDataError
-            // Database errors
+            // Favorite facts database errors
         case FirestoreErrorCode.unavailable.rawValue:
             errorToShow = .favoriteFactsDatabaseServerDataRetrievalError
         case FavoriteFactsDatabase.ErrorCode.favoriteFactReferenceNotFound.rawValue:

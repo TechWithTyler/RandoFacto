@@ -3,7 +3,7 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 12/8/23.
-//  Copyright © 2022-2024 SheftApps. All rights reserved.
+//  Copyright © 2022-2025 SheftApps. All rights reserved.
 //
 
 import SwiftUI
@@ -293,6 +293,7 @@ class AuthenticationManager: ObservableObject {
                     addUserReference(email: email, id: id) { [self] error in
                         if let error = error {
                             errorManager.showError(error) { [self] randoFactoError in
+                                logoutCurrentUser()
                                 formErrorText = randoFactoError.localizedDescription
                                 successHandler(false)
                             }
@@ -301,6 +302,7 @@ class AuthenticationManager: ObservableObject {
                         }
                     }
                 } else {
+                    logoutCurrentUser()
                     isAuthenticating = false
                     successHandler(false)
                 }
@@ -309,6 +311,7 @@ class AuthenticationManager: ObservableObject {
                     addMissingUserReferenceForLogin(email: email, id: id) { [self] error in
                         if let error = error {
                             errorManager.showError(error) { [self] randoFactoError in
+                                logoutCurrentUser()
                                 formErrorText = randoFactoError.localizedDescription
                                 isAuthenticating = false
                                 successHandler(false)
@@ -318,6 +321,7 @@ class AuthenticationManager: ObservableObject {
                         }
                     }
                 } else {
+                    logoutCurrentUser()
                     isAuthenticating = false
                     successHandler(false)
                 }

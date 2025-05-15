@@ -3,7 +3,7 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 12/5/23.
-//  Copyright © 2022-2024 SheftApps. All rights reserved.
+//  Copyright © 2022-2025 SheftApps. All rights reserved.
 //
 
 import SwiftUI
@@ -15,13 +15,7 @@ class FavoriteFactsListDisplayManager: ObservableObject {
 
     var favoriteFactsDatabase: FavoriteFactsDatabase
 
-    // MARK: - Initialization
-
-    init(favoriteFactsDatabase: FavoriteFactsDatabase) {
-        self.favoriteFactsDatabase = favoriteFactsDatabase
-    }
-
-    // MARK: - Properties - Searching
+    // MARK: - Properties - Strings
 
     // The search text.
     @Published var searchText = String()
@@ -45,17 +39,23 @@ class FavoriteFactsListDisplayManager: ObservableObject {
         }
     }
 
-    // MARK: - Properties - Sorting
-
-    // The sort order of the favorite facts list (false = Z-A, true = A-Z).
-    @AppStorage("sortFavoriteFactsAscending") var sortFavoriteFactsAscending: Bool = false
-
-    // The favorite facts list/search results, sorted in either A-Z or Z-A order.
+    // The favorite facts list/search results, sorted in either ascending (A-Z) or descending (Z-A) order.
     var sortedFavoriteFacts: [String] {
         return searchResults.sorted { a, z in
             let sortCondition = sortFavoriteFactsAscending ? a < z : z < a
             return sortCondition
         }
+    }
+
+    // MARK: - Properties - Booleans
+
+    // The sort order of the favorite facts list (false = Z-A, true = A-Z).
+    @AppStorage("sortFavoriteFactsAscending") var sortFavoriteFactsAscending: Bool = false
+
+    // MARK: - Initialization
+
+    init(favoriteFactsDatabase: FavoriteFactsDatabase) {
+        self.favoriteFactsDatabase = favoriteFactsDatabase
     }
 
     // MARK: - Color Matching Terms
@@ -66,7 +66,7 @@ class FavoriteFactsListDisplayManager: ObservableObject {
         var attributedString = AttributedString(favorite)
         // 2. Check to see if the fact text contains the entered search text, case insensitive. If so, change the color of the matching part.
         if let range = attributedString.range(of: searchText, options: .caseInsensitive) {
-            attributedString[range].foregroundColor = .accentColor
+            attributedString[range].backgroundColor = .accentColor.opacity(0.5)
         }
         // 3. Return the attributed string.
         return attributedString

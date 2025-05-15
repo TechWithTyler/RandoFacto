@@ -3,7 +3,7 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 11/21/22.
-//  Copyright © 2022-2024 SheftApps. All rights reserved.
+//  Copyright © 2022-2025 SheftApps. All rights reserved.
 //
 
 import SwiftUI
@@ -72,11 +72,12 @@ struct FactView: View {
 
     @ViewBuilder
     var factTextView: some View {
+        let canSelectFactText = !(appStateManager.factTextDisplayingMessage || appStateManager.factText == factUnavailableString || favoriteFactsDatabase.randomizerRunning)
         ScrollableText(appStateManager.factText)
             .multilineTextAlignment(.center)
             .font(.system(size: CGFloat(appStateManager.factTextSize)))
             .animation(.default, value: appStateManager.factTextSize)
-            .isTextSelectable(!(appStateManager.factTextDisplayingMessage || appStateManager.factText == factUnavailableString || favoriteFactsDatabase.randomizerRunning))
+            .isTextSelectable(canSelectFactText)
             .blur(radius: favoriteFactsDatabase.randomizerRunning ? favoriteFactsDatabase.randomizerBlurRadius : 0)
             .accessibilityHidden(favoriteFactsDatabase.randomizerRunning)
             .scrollDisabled(favoriteFactsDatabase.randomizerRunning)
@@ -97,9 +98,7 @@ struct FactView: View {
                     Label("Decrease Fact Text Size", systemImage: "textformat.size.smaller")
                         .frame(width: 105, height: 20)
                 }
-                #if os(iOS)
                 .hoverEffect(.highlight)
-                #endif
                 .disabled(appStateManager.factTextSize == SATextViewMinFontSize)
                 Button {
                     appStateManager.factTextSize += 1
@@ -107,9 +106,7 @@ struct FactView: View {
                     Label("Increase Fact Text Size", systemImage: "textformat.size.larger")
                         .frame(width: 105, height: 20)
                 }
-                #if os(iOS)
                 .hoverEffect(.highlight)
-                #endif
                 .disabled(appStateManager.factTextSize == SATextViewMaxFontSize)
             }
             .font(.system(size: 25))
@@ -132,11 +129,9 @@ struct FactView: View {
                     Label(getRandomFavoriteFactButtonTitle, systemImage: "star")
                         .frame(width: factGenerationButtonWidth)
                 }
-#if os(iOS)
-                .padding(2.5)
-#endif
                 .buttonStyle(.bordered)
 #if os(iOS)
+                .padding(2.5)
                 .hoverEffect(.highlight)
 #endif
             }
@@ -147,11 +142,9 @@ struct FactView: View {
                     Label(generateRandomFactButtonTitle, systemImage: "dice")
                         .frame(width: factGenerationButtonWidth)
                 }
-#if os(iOS)
-                .padding(2.5)
-#endif
                 .buttonStyle(.bordered)
 #if os(iOS)
+                .padding(2.5)
                 .hoverEffect(.highlight)
 #endif
             }
