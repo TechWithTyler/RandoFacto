@@ -54,13 +54,11 @@ struct ViewablePasswordField: View {
     }
 }
 
-@available(macOS 14, iOS 17, visionOS 1, *)
 #Preview {
 	@Previewable @State var password = "password"
 	return ViewablePasswordField("Password", text: $password, signup: false)
 }
 
-@available(macOS 14, iOS 17, visionOS 1, *)
 #Preview {
 	@Previewable @State var password = "newpassword"
 	return ViewablePasswordField("Password", text: $password, signup: true)

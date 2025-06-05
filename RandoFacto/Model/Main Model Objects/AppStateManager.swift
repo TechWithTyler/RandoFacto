@@ -228,13 +228,9 @@ extension AppStateManager {
     
     // This method loads all installed voices into the app.
     func loadVoices() {
-        if #available(macOS 14, iOS 17, visionOS 1, *) {
             AVSpeechSynthesizer.requestPersonalVoiceAuthorization { [self] status in
                 voices = AVSpeechSynthesisVoice.speechVoices().filter({$0.language == "en-US"})
             }
-        } else {
-            voices = AVSpeechSynthesisVoice.speechVoices().filter({$0.language == "en-US"})
-        }
     }
     
     // MARK: - Speech - Speak Fact
