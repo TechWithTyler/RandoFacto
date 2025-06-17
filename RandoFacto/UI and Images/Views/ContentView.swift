@@ -108,19 +108,19 @@ struct ContentView: View {
             }
         }
 		// Nil selection catcher
-        .onChange(of: horizontalSizeClass) { sizeClass in
-            if appStateManager.selectedPage == nil && sizeClass != .compact {
+        .onChange(of: horizontalSizeClass) { oldSizeClass, newSizeClass in
+            if appStateManager.selectedPage == nil && newSizeClass != .compact {
                 appStateManager.selectedPage = .randomFact
             }
         }
-		.onChange(of: appStateManager.selectedPage) { page in
-			if page == nil && horizontalSizeClass == .regular {
+		.onChange(of: appStateManager.selectedPage) { oldPage, newPage in
+			if newPage == nil && horizontalSizeClass == .regular {
 				appStateManager.selectedPage = .randomFact
 			}
 		}
 		// User login state change/user deletion
-		.onChange(of: authenticationManager.accountDeletionStage) { deletionStage in
-            if deletionStage != nil {
+		.onChange(of: authenticationManager.accountDeletionStage) { oldDeletionStage, newDeletionStage in
+            if newDeletionStage != nil {
                 favoriteFactsDatabase.showingDeleteFavoriteFact = false
                 favoriteFactsDatabase.showingDeleteAllFavoriteFacts = false
                 appStateManager.dismissFavoriteFacts()
