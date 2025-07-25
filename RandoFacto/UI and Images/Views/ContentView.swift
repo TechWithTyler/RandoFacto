@@ -126,16 +126,16 @@ struct ContentView: View {
                 appStateManager.dismissFavoriteFacts()
             }
 		}
-		.onChange(of: authenticationManager.userLoggedIn) { loggedIn in
-            if !loggedIn {
+        .onChange(of: authenticationManager.userLoggedIn) { wasLoggedIn, isLoggedIn in
+            if !isLoggedIn {
                 favoriteFactsDatabase.showingDeleteFavoriteFact = false
                 favoriteFactsDatabase.showingDeleteAllFavoriteFacts = false
                 appStateManager.dismissFavoriteFacts()
             }
 		}
 		// Error sound (Mac) or haptics (iPhone)
-		.onChange(of: errorManager.errorToShow) { error in
-			if error != nil {
+		.onChange(of: errorManager.errorToShow) { oldError, newError in
+			if newError != nil {
 #if os(macOS)
 				NSSound.beep()
 #elseif os(iOS)
