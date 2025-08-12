@@ -230,6 +230,10 @@ extension AppStateManager {
     func loadVoices() {
             AVSpeechSynthesizer.requestPersonalVoiceAuthorization { [self] status in
                 voices = AVSpeechSynthesisVoice.speechVoices().filter({$0.language == "en-US"})
+                if voices.filter({$0.identifier == selectedVoiceID}).isEmpty {
+                    // If the selected voice ID is not available, set it to the default voice ID.
+                    selectedVoiceID = SADefaultVoiceID
+                }
             }
     }
     
