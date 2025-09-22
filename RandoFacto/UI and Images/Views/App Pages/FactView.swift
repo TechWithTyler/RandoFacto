@@ -56,7 +56,7 @@ struct FactView: View {
             toolbarContent
         }
 #if os(iOS) || os(macOS)
-        .onChange(of: favoriteFactsDatabase.randomizerIterations) { value in
+        .onChange(of: favoriteFactsDatabase.randomizerIterations) { oldValue, newValue in
 #if os(iOS)
             // iPhone supports a wide range of intensities for its haptics.
             randomizerHaptics.impactOccurred(intensity: 0.5)

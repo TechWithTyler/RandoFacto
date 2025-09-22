@@ -185,9 +185,11 @@ struct FavoriteFactsListView: View {
     var toolbarContent: some ToolbarContent {
         ToolbarItem(placement: .automatic) {
             OptionsMenu(title: .menu) {
-                Picker("Sort", selection: $favoriteFactsListDisplayManager.sortFavoriteFactsAscending) {
+                Picker(selection: $favoriteFactsListDisplayManager.sortFavoriteFactsAscending) {
                     Text("Ascending (A-Z)").tag(true)
                     Text("Descending (Z-A)").tag(false)
+                } label: {
+                    Label("Sort", systemImage: "arrow.up.arrow.down")
                 }
                 .pickerStyle(.menu)
                 Divider()

@@ -22,7 +22,7 @@ struct SettingsView: View {
     var body: some View {
         if appStateManager.isLoading {
 #if os(macOS)
-            SAMVisualEffectViewSwiftUIRepresentable {
+            SAMVisualEffectViewSwiftUIRepresentable(activeState: .active) {
                 loadingDisplay
                     .frame(width: 400, height: 280)
             }
@@ -33,7 +33,7 @@ struct SettingsView: View {
 #if os(macOS)
             // macOS settings window
             TabView(selection: $appStateManager.selectedSettingsPage) {
-                SAMVisualEffectViewSwiftUIRepresentable {
+                SAMVisualEffectViewSwiftUIRepresentable(activeState: .active) {
                     DisplaySettingsPageView()
                 }
                 .frame(width: 400, height: authenticationManager.userLoggedIn ? 450 : 280)
@@ -42,7 +42,7 @@ struct SettingsView: View {
                     Label(SettingsPage.display.rawValue.capitalized, systemImage: SettingsPage.Icons.display.rawValue)
                 }
                 .tag(SettingsPage.display)
-                SAMVisualEffectViewSwiftUIRepresentable {
+                SAMVisualEffectViewSwiftUIRepresentable(activeState: .active) {
                     SpeechSettingsPageView()
                 }
                 .frame(width: 400, height: 150)
@@ -51,7 +51,7 @@ struct SettingsView: View {
                     Label(SettingsPage.speech.rawValue.capitalized, systemImage: SettingsPage.Icons.speech.rawValue)
                 }
                 .tag(SettingsPage.speech)
-                SAMVisualEffectViewSwiftUIRepresentable {
+                SAMVisualEffectViewSwiftUIRepresentable(activeState: .active) {
                     AccountSettingsPageView()
                 }
                 .frame(width: 400, height: 270)
@@ -60,7 +60,7 @@ struct SettingsView: View {
                     Label(SettingsPage.account.rawValue.capitalized, systemImage: SettingsPage.Icons.account.rawValue)
                 }
                 .tag(SettingsPage.account)
-                SAMVisualEffectViewSwiftUIRepresentable {
+                SAMVisualEffectViewSwiftUIRepresentable(activeState: .active) {
                     AdvancedSettingsPageView()
                 }
                 .frame(width: 400, height: 240)
@@ -70,7 +70,7 @@ struct SettingsView: View {
                 }
                 .tag(SettingsPage.advanced)
 #if(DEBUG)
-                SAMVisualEffectViewSwiftUIRepresentable {
+                SAMVisualEffectViewSwiftUIRepresentable(activeState: .active) {
                     DeveloperSettingsPageView()
                 }
                 .frame(width: 400, height: 535)
