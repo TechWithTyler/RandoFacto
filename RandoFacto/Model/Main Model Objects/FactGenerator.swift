@@ -180,8 +180,16 @@ struct FactGenerator {
     
     // This method replaces incorrect characters in the generated fact text.
     func correctedFactText(_ fact: String) -> String {
-        // Replace incorrect characters.
-        let correctedFact = fact.replacingOccurrences(of: "`", with: "'")
+        // 1. Replace incorrect characters.
+        var correctedFact = fact.replacingOccurrences(of: "`", with: "'")
+        // 2. Remove any leading or trailing spaces.
+        if correctedFact.last == " " {
+            correctedFact = String(correctedFact.dropLast())
+        }
+        if correctedFact.first == " " {
+            correctedFact = String(correctedFact.dropFirst())
+        }
+        // 3. Return the corrected fact text.
         return correctedFact
     }
     

@@ -34,6 +34,11 @@ struct DisplaySettingsPageView: View {
                     Text("This setting will reset to \"\(generateRandomFactButtonTitle)\" when you logout or delete your account.")
                 }
                 Section {
+                    Toggle("Skip Favorites On Fact Generation", isOn: $favoriteFactsDatabase.skipFavoritesOnFactGeneration)
+                } footer: {
+                    Text("Turn this on if you want \(appName!) to skip your favorite facts when generating random facts.\nThis setting will reset to off when you logout or delete your account.")
+                }
+                Section {
                     Toggle("Favorite Fact Randomizer Effect", isOn: $favoriteFactsDatabase.favoriteFactsRandomizerEffect)
                     if favoriteFactsDatabase.favoriteFacts.count < 5 {
                         InfoText("The randomizer effect only works if you have at least 5 favorite facts (you currently have \(favoriteFactsDatabase.favoriteFacts.count)).")

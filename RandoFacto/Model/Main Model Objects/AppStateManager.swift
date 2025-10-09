@@ -154,7 +154,11 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
             DispatchQueue.main.async { [self] in
                 if let fact = fact {
                     // 3. If we get a fact, display it.
-                    factText = fact
+                    if favoriteFactsDatabase.favoriteFacts.contains(where: {$0.text == fact}) && favoriteFactsDatabase.skipFavoritesOnFactGeneration {
+                        generateRandomFact()
+                    } else {
+                        factText = fact
+                    }
                 } else if let error = error {
                     // 4. If an error occurs, log it.
                     factText = factUnavailableString

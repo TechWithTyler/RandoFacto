@@ -38,6 +38,9 @@ class FavoriteFactsDatabase: ObservableObject {
     // Whether RandoFacto should "spin through" a user's favorite facts when getting a random favorite fact. This setting resets to off and is hidden when the user logs out or deletes their account.
     @AppStorage("favoriteFactsRandomizerEffect") var favoriteFactsRandomizerEffect: Bool = false
 
+    // Whether RandoFacto should generate a new random fact if it generates a fact that matches a favorite.
+    @AppStorage("skipFavoritesOnFactGeneration") var skipFavoritesOnFactGeneration: Bool = false
+
     // Whether the "delete this favorite fact" alert should be/is being displayed.
     @Published var showingDeleteFavoriteFact: Bool = false
     
