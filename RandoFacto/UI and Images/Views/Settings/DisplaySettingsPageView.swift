@@ -13,11 +13,15 @@ import SheftAppsStylishUI
 
 struct DisplaySettingsPageView: View {
 
+    // MARK: - Properties - Objects
+
     @EnvironmentObject var appStateManager: AppStateManager
 
     @EnvironmentObject var authenticationManager: AuthenticationManager
 
     @EnvironmentObject var favoriteFactsDatabase: FavoriteFactsDatabase
+
+    // MARK: - Body
 
     var body: some View {
         Form {
@@ -54,6 +58,8 @@ struct DisplaySettingsPageView: View {
     }
 
 }
+
+// MARK: - Preview
 
 #Preview {
         DisplaySettingsPageView()

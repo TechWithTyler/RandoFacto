@@ -12,6 +12,8 @@ import SwiftUI
 
 struct AdvancedSettingsPageView: View {
 
+    // MARK: - Properties - Objects
+
     @EnvironmentObject var appStateManager: AppStateManager
 
     @EnvironmentObject var networkConnectionManager: NetworkConnectionManager
@@ -19,6 +21,8 @@ struct AdvancedSettingsPageView: View {
     @EnvironmentObject var authenticationManager: AuthenticationManager
 
     @EnvironmentObject var errorManager: ErrorManager
+
+    // MARK: - Body
 
     var body: some View {
         Form {
@@ -60,6 +64,8 @@ struct AdvancedSettingsPageView: View {
     }
     
 }
+
+// MARK: - Preview
 
 #Preview {
     AdvancedSettingsPageView()

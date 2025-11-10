@@ -11,7 +11,9 @@
 import SwiftUI
 
 struct FieldNeedsAttentionView: View {
-    
+
+    // MARK: - Body
+
     var body: some View {
         VStack {
                 fieldNeedsAttentionArrow
@@ -22,13 +24,17 @@ struct FieldNeedsAttentionView: View {
         }
             .foregroundStyle(.red)
     }
-    
+
+    // MARK: - "Field Needs Attention" Arrow
+
     @ViewBuilder var fieldNeedsAttentionArrow: some View {
         Image(systemName: "chevron.up")
             .accessibilityHidden(true)
     }
     
 }
+
+// MARK: - Preview
 
 #Preview {
     FieldNeedsAttentionView()

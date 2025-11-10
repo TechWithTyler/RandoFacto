@@ -13,19 +13,27 @@ import SheftAppsStylishUI
 
 struct ViewablePasswordField: View {
 
+    // MARK: - Properties - Strings
+
 	var label: String
 
 	@Binding var text: String
 
+    // MARK: - Properties - Booleans
+
 	@State var showPassword: Bool = false
 
 	var signup: Bool
+
+    // MARK: - Initialization
 
 	init(_ label: String, text: Binding<String>, signup: Bool) {
 		self.label = label
 		self._text = text
 		self.signup = signup
 	}
+
+    // MARK: - Body
 
     var body: some View {
         HStack {
@@ -54,7 +62,10 @@ struct ViewablePasswordField: View {
                 .tint(.primary)
         }
     }
+
 }
+
+// MARK: - Preview
 
 #Preview {
 	@Previewable @State var password = "password"

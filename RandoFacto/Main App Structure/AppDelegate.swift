@@ -6,7 +6,10 @@
 //  Copyright © 2022-2025 SheftApps. All rights reserved.
 //
 
-#if os(macOS) 
+#if os(macOS)
+
+// MARK: - Imports
+
 import Cocoa
 
 // Unlike in AppKit or UIKit apps, the app delegate in SwiftUI App-based apps isn't the main entry point. The main App struct is instead, and it has a property for the AppDelegate.

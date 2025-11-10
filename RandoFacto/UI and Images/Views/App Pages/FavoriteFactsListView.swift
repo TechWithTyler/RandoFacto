@@ -203,6 +203,8 @@ struct FavoriteFactsListView: View {
     
 }
 
+// MARK: - Preview
+
 #Preview("Loading") {
     FavoriteFactsListView()
         #if DEBUG

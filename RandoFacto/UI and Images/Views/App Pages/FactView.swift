@@ -216,6 +216,8 @@ struct FactView: View {
 
 }
 
+// MARK: - Preview
+
 #Preview("Loading") {
     FactView()
         #if DEBUG

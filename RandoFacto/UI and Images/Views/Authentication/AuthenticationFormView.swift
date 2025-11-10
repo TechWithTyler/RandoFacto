@@ -26,12 +26,12 @@ struct AuthenticationFormView: View {
     
     @FocusState private var focusedCredentialField: Authentication.FormField?
     
-    // MARK: - Dismiss
-    
+    // MARK: - Properties - Dismiss Action
+
     @Environment(\.dismiss) var dismiss
     
-    // MARK: - Authentication Form
-    
+    // MARK: - Body
+
     var body: some View {
         NavigationStack {
             Form {
@@ -193,6 +193,8 @@ struct AuthenticationFormView: View {
     }
     
 }
+
+// MARK: - Preview
 
 #Preview("Login (Empty)") {
     AuthenticationFormView()

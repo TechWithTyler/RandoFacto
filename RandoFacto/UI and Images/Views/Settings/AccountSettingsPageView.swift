@@ -13,6 +13,8 @@ import SheftAppsStylishUI
 
 struct AccountSettingsPageView: View {
 
+    // MARK: - Properties - Objects
+
     @EnvironmentObject var appStateManager: AppStateManager
 
     @EnvironmentObject var networkConnectionManager: NetworkConnectionManager
@@ -20,6 +22,8 @@ struct AccountSettingsPageView: View {
     @EnvironmentObject var authenticationManager: AuthenticationManager
 
     @EnvironmentObject var errorManager: ErrorManager
+
+    // MARK: - Body
 
     var body: some View {
         Form {
@@ -139,6 +143,8 @@ struct AccountSettingsPageView: View {
     }
 
 }
+
+// MARK: - Preview
 
 #Preview {
     AccountSettingsPageView()

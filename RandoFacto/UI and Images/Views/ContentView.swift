@@ -215,6 +215,8 @@ struct ContentView: View {
 
 }
 
+// MARK: - Preview
+
 #Preview("Loading") {
     ContentView()
 #if DEBUG

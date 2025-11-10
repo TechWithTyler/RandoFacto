@@ -141,6 +141,8 @@ struct SettingsView: View {
 
 }
 
+// MARK: - Preview
+
 #Preview("Loaded") {
     NavigationStack {
         SettingsView()
