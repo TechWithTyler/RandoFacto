@@ -33,6 +33,8 @@ struct PrivacyPolicyButton: View {
 
 }
 
+// MARK: - Preview
+
 #Preview {
     PrivacyPolicyButton()
 }

@@ -11,18 +11,28 @@
 import SwiftUI
 
 struct SpeakButton: View {
-    
+
+    // MARK: - Properties - App State Manager
+
     @EnvironmentObject var appStateManager: AppStateManager
-    
+
+    // MARK: - Properties - Strings
+
     let fact: String
 
+    // MARK: - Properties - Booleans
+
     let useShortTitle: Bool
+
+    // MARK: - Initialization
 
     init(for fact: String, useShortTitle: Bool = true) {
         self.fact = fact
         self.useShortTitle = useShortTitle
     }
-    
+
+    // MARK: - Body
+
     var body: some View {
         Button {
             appStateManager.speakFact(fact: fact)
@@ -33,6 +43,8 @@ struct SpeakButton: View {
         }
     }
 }
+
+// MARK: - Preview
 
 #Preview {
         SpeakButton(for: "This is a test")

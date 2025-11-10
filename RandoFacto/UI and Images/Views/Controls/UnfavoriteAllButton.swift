@@ -11,9 +11,13 @@
 import SwiftUI
 
 struct UnfavoriteAllButton: View {
-    
+
+    // MARK: - Properties - Favorite Facts Database
+
     @EnvironmentObject var favoriteFactsDatabase: FavoriteFactsDatabase
-    
+
+    // MARK: - Body
+
     var body: some View {
         Button(role: .destructive) {
             favoriteFactsDatabase.showingDeleteAllFavoriteFacts = true
@@ -23,6 +27,8 @@ struct UnfavoriteAllButton: View {
     }
 
 }
+
+// MARK: - Preview
 
 #Preview {
     UnfavoriteAllButton()
