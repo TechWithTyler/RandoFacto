@@ -58,7 +58,7 @@ struct AuthenticationFormView: View {
                 }
             }
             .formStyle(.grouped)
-            .navigationTitle(authenticationManager.formType?.titleText ?? Authentication.FormType.login.titleText)
+            .navigationTitle(authenticationManager.formType?.title ?? Authentication.FormType.login.title)
 #if os(iOS)
             .navigationBarTitleDisplayMode(.automatic)
 #endif
@@ -81,7 +81,7 @@ struct AuthenticationFormView: View {
                     .disabled(authenticationManager.isAuthenticating)
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(authenticationManager.formType?.confirmButtonText ?? Authentication.FormType.login.confirmButtonText) {
+                    Button(authenticationManager.formType?.confirmButtonTitle ?? Authentication.FormType.login.confirmButtonTitle) {
                         authenticationManager.performAuthenticationAction { success in
                             if success {
                                 dismiss()

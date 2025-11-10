@@ -16,6 +16,8 @@ extension User {
 	// The current stage of a user's account deletion.
 	enum AccountDeletionStage : String {
 
+        // MARK: - User Deletion Stages
+
         // The account's favorite facts and user reference are being deleted.
 		case data
 		

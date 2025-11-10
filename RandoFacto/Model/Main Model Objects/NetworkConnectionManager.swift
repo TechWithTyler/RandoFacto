@@ -15,25 +15,27 @@ import Firebase
 // Handles network connection.
 class NetworkConnectionManager: ObservableObject {
     
-    // MARK: - Properties - Network Path Monitor
-    
+    // MARK: - Properties - Objects
+
     // Observes changes to the device's network connection to tell the app whether it should run in online or offline mode.
     var networkPathMonitor = NWPathMonitor()
     
+    var errorManager: ErrorManager
+
+    var firestore: Firestore
+
     // Whether the device is online.
     @Published var deviceIsOnline: Bool = false
-    
-    var errorManager: ErrorManager
-    
-    var firestore: Firestore
-    
+
+    // MARK: - Initialization
+
     init(errorManager: ErrorManager, firestore: Firestore) {
         self.errorManager = errorManager
         self.firestore = firestore
         configureNetworkPathMonitor()
     }
     
-    // MARK: - Network Path Monitor Configuration
+    // MARK: - Network Path Monitor - Configuration
 
     // This method configures the network path monitor's path update handler, which tells the app to enable or disable online mode, showing or hiding internet-connection-required UI based on network connection.
     func configureNetworkPathMonitor() {
@@ -48,6 +50,9 @@ class NetworkConnectionManager: ObservableObject {
         networkPathMonitor.start(queue: dispatchQueue)
     }
 
+    // MARK: - Network Path Monitor - Network Status Change Handler
+
+    // This method handles changes to the device's network status.
     func networkStatusChanged(status: NWPath.Status) {
         switch status {
         case .satisfied:

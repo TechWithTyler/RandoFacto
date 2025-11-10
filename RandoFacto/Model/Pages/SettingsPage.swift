@@ -10,8 +10,12 @@
 
 import Foundation
 
+// MARK: - Settings Page Enum
+
 // A page in Settings.
 enum SettingsPage : String {
+
+    // MARK: - Settings Page Icons Enum
 
     enum Icons: String {
 
@@ -28,6 +32,8 @@ enum SettingsPage : String {
         #endif
 
     }
+
+    // MARK: - Settings Page Enum Cases
 
     case display
 

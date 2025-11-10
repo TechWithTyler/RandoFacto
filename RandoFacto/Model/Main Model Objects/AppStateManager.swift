@@ -50,15 +50,17 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     // The voices that are currently available on the device.
     @Published var voices: [AVSpeechSynthesisVoice] = []
 
+    // MARK: - Properties - Doubles
+
+    // The text size for facts.
+    @AppStorage("factTextSize") var factTextSize: Double = SATextViewMinFontSize
+
     // MARK: - Properties - Integers
 
     // The current fact text size as an Int.
     var factTextSizeAsInt: Int {
         return Int(factTextSize)
     }
-
-    // The text size for facts.
-    @AppStorage("factTextSize") var factTextSize: Double = SATextViewMinFontSize
 
     // MARK: - Properties - Pages
 

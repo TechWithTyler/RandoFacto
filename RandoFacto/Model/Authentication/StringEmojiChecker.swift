@@ -12,6 +12,8 @@ import Foundation
 
 extension String {
 
+    // MARK: - String Emoji Checker
+
     // Whether a string contains emoji.
 	var containsEmoji: Bool {
 		for scalar in unicodeScalars {

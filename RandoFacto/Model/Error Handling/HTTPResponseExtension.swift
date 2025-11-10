@@ -28,15 +28,15 @@ extension HTTPURLResponse {
 		switch statusCode {
 			case 400: return "Bad Request"
 			case 401: return "Unauthorized"
-			case 403: return "Forbidden (maybe access to this service isn't allowed from your current network)"
-			case 404: return "Not Found (maybe service temporarily down)"
-			case 408: return "Request Timeout (maybe bad internet connection)"
+			case 403: return "Forbidden (Maybe Access To This Service Isn't Allowed From Your Current Network)"
+			case 404: return "Not Found (Maybe Service Temporarily Down)"
+			case 408: return "Request Timeout (Maybe Bad Internet Connection)"
 			case 500: return "Internal Server Error"
 			case 502: return "Bad Gateway"
 			case 503: return "Service Unavailable"
 			case 504: return "Gateway Timeout"
 			case 505: return "HTTP Version Not Supported"
-			default: return "Unknown Response Code"
+			default: return "Unknown Response Code: \(statusCode)"
 		}
 	}
 

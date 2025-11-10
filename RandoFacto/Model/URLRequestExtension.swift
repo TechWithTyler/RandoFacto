@@ -11,7 +11,9 @@
 import Foundation
 
 extension URLRequest {
-    
+
+    // MARK: - HTTP Methods
+
     // HTTP methods for a URL request.
     struct HTTPMethod {
 
@@ -22,7 +24,9 @@ extension URLRequest {
         static let post: String = "POST"
         
     }
-    
+
+    // MARK: - HTTP Header Fields
+
     // HTTP header fields for a URL request.
     struct HTTPHeaderField {
 

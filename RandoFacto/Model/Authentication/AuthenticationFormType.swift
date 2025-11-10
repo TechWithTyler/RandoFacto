@@ -33,10 +33,10 @@ extension Authentication {
 			return hashValue
 		}
         
-        // MARK: - Confirm Button Text
+        // MARK: - Confirm Button Title
 
 		// The text for the form's default button.
-		var confirmButtonText: String {
+		var confirmButtonTitle: String {
 			switch self {
                 // "Signup"
 				case .signup: return signupText
@@ -47,10 +47,10 @@ extension Authentication {
 			}
 		}
         
-        // MARK: - Title Text
+        // MARK: - Form Title
 
 		// The form's title text.
-		var titleText: String {
+		var title: String {
 			switch self {
                 // "Signup"
 				case .signup: return signupText

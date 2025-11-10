@@ -10,8 +10,10 @@
 
 import Foundation
 
+// MARK: - App Page Enum
+
 // A page in the app.
-// CaseIterable allows you to iterate through an enum's caaes as if it were a collection. Getting the rawValue String of a case without an explicit raw value returns the case name converted from camelCase to all lowercase. When displaying page names, we want them in title-case, so the rawValue is capitalized anywhere it's displayed.
+// CaseIterable allows you to iterate through an enum's cases as if it were a collection. Getting the rawValue String of a case without an explicit raw value returns the case name converted from camelCase to all lowercase. When displaying page names, we want them in title-case, so the rawValue is capitalized anywhere it's displayed.
 enum AppPage : String, CaseIterable {
 
 	case randomFact

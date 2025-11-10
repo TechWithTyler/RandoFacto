@@ -111,7 +111,20 @@ struct FactGenerator {
         // 4. To start a URLSessionDataTask, we resume it.
         dataTask.resume()
     }
-    
+
+    // This method creates the fact generator HTTP request.
+    func createFactGeneratorHTTPRequest(with url: URL) -> URLRequest {
+        // 1. Create the URL request.
+        var request = URLRequest(url: url)
+        // 2. Specify the HTTP method and the type of content to give back. For this HTTP request, it's optional.
+        request.httpMethod = URLRequest.HTTPMethod.get
+        request.setValue(httpRequestContentType, forHTTPHeaderField: URLRequest.HTTPHeaderField.accept)
+        // 3. Set the timeout interval for the URL request, after which an error will be thrown if the request can't complete.
+        request.timeoutInterval = urlRequestTimeoutInterval
+        // 4. Return the created request.
+        return request
+    }
+
     // This method handles the fact generation data task result.
     func handleFactGenerationDataTaskResult(didBeginHandler: @escaping (() -> Void), data: Data?, response: URLResponse?, error: Error?, completionHandler: @escaping ((String?, Error?) -> Void)) {
         // 1. If an HTTP response is returned and its code isn't within the 2xx range, log it as an error.
@@ -146,19 +159,6 @@ struct FactGenerator {
                 completionHandler(nil, error)
             }
         }
-    }
-    
-    // This method creates the fact generator HTTP request.
-    func createFactGeneratorHTTPRequest(with url: URL) -> URLRequest {
-        // 1. Create the URL request.
-        var request = URLRequest(url: url)
-        // 2. Specify the HTTP method and the type of content to give back. For this HTTP request, it's optional.
-        request.httpMethod = URLRequest.HTTPMethod.get
-        request.setValue(httpRequestContentType, forHTTPHeaderField: URLRequest.HTTPHeaderField.accept)
-        // 3. Set the timeout interval for the URL request, after which an error will be thrown if the request can't complete.
-        request.timeoutInterval = urlRequestTimeoutInterval
-        // 4. Return the created request.
-        return request
     }
     
     // This method parses the JSON data returned by the fact generator web API and creates a GeneratedFact object from it, returning the resulting fact text String if successful or an Error if unsuccessful.
@@ -218,27 +218,6 @@ struct FactGenerator {
         }
     }
     
-    // This method handles the inappropriate words checker HTTP request for the given fact.
-    func handleInappropriateWordsCheckerDataTaskResult(fact: String, data: Data?, response: URLResponse?, error: Error?, completionHandler: ((String?, Error?) -> Void)) {
-        if let error = error {
-            completionHandler(nil, error)
-        }
-        if let httpResponse = response as? HTTPURLResponse, httpResponse.isUnsuccessful {
-            completionHandler(nil, httpResponse.logAsError())
-        }
-        let jsonParsingResult = parseInappropriateWordsCheckerJSON(data: data)
-        switch jsonParsingResult {
-        case .success(let factIsInappropriate):
-            if !factIsInappropriate {
-                completionHandler(fact, nil)
-            } else {
-                completionHandler(nil, nil)
-            }
-        case .failure(let error):
-            completionHandler(nil, error)
-        }
-    }
-    
     // This method creates the inappropriate words checker HTTP request.
     func createInappropriateWordsCheckerHTTPRequest(with url: URL, toScreenFact fact: String) -> InappropriateWordsCheckerHTTPRequestResult {
         // 1. Create the URL request.
@@ -259,7 +238,28 @@ struct FactGenerator {
             return .failure(error)
         }
     }
-    
+
+    // This method handles the inappropriate words checker HTTP request for the given fact.
+    func handleInappropriateWordsCheckerDataTaskResult(fact: String, data: Data?, response: URLResponse?, error: Error?, completionHandler: ((String?, Error?) -> Void)) {
+        if let error = error {
+            completionHandler(nil, error)
+        }
+        if let httpResponse = response as? HTTPURLResponse, httpResponse.isUnsuccessful {
+            completionHandler(nil, httpResponse.logAsError())
+        }
+        let jsonParsingResult = parseInappropriateWordsCheckerJSON(data: data)
+        switch jsonParsingResult {
+        case .success(let factIsInappropriate):
+            if !factIsInappropriate {
+                completionHandler(fact, nil)
+            } else {
+                completionHandler(nil, nil)
+            }
+        case .failure(let error):
+            completionHandler(nil, error)
+        }
+    }
+
     // This method parses the JSON data returned by the inappropriate words checker web API and creates an InappropriateWordsCheckerData object from it, returning the resulting Bool indicating whether the fact contains inappropriate words.
     func parseInappropriateWordsCheckerJSON(data: Data?) -> InappropriateWordsCheckerJSONParsingResult {
         // 1. If data is nil, log an error.

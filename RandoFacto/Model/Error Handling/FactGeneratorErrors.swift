@@ -31,6 +31,7 @@ extension FactGenerator {
 		case noText = 423
 
         static var factDataHTTPResponseCodeRange: ClosedRange<Int> {
+            // FD (33) + HTTP status code
             return 33000...33999
         }
 
