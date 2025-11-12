@@ -36,19 +36,5 @@ extension FactGenerator {
         }
 
 	}
-    
-    // MARK: - Fact Generator Custom Error Logging
-
-    // These methods log any errors not handled by catch blocks or completion handlers.
-
-    func logFactDataError() -> Error {
-        let dataError = factDataError
-        return dataError
-    }
-
-    func logNoTextError() -> Error {
-        let dataError = NSError(domain: ErrorDomain.noText.rawValue, code: ErrorCode.noText.rawValue)
-        return dataError
-    }
 
 }
