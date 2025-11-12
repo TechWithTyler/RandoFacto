@@ -42,7 +42,7 @@ struct DisplaySettingsPageView: View {
                 Section {
                     Toggle("Skip Favorites On Fact Generation", isOn: $favoriteFactsDatabase.skipFavoritesOnFactGeneration)
                 } footer: {
-                    Text("Turn this on if you want \(appName!) to skip your favorite facts when generating random facts.\nThis setting will reset to off when you logout or delete your account.")
+                    Text("Turn this on if you want \(appName!) to skip your favorite facts when generating random facts.\nThis setting will reset to off when you logout or delete your account.\nNote: If this setting is on, fact generation may take longer than usual.")
                 }
                 Section {
                     Toggle("Favorite Fact Randomizer Effect", isOn: $favoriteFactsDatabase.favoriteFactsRandomizerEffect)
