@@ -157,7 +157,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
             fact, error in
             DispatchQueue.main.async { [self] in
                 if let fact = fact {
-                    // 3. If we get a fact, display it.
+                    // 3. If we get a fact, display it. If it matches a favorite fact and "Skip Favorites On Fact Generation" is enabled, generate a new random fact until we get a non-favorite.
                     if favoriteFactsDatabase.favoriteFacts.contains(where: {$0.text == fact}) && favoriteFactsDatabase.skipFavoritesOnFactGeneration {
                         generateRandomFact()
                     } else {

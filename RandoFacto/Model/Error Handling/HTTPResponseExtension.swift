@@ -25,7 +25,7 @@ extension HTTPURLResponse {
 
 	// Returns the given HTTP response code's corresponding message.
 	var errorDomainForResponseCode: String {
-		switch statusCode {
+        switch statusCode {
 			case 400: return "Bad Request"
 			case 401: return "Unauthorized"
 			case 403: return "Forbidden (Maybe Access To This Service Isn't Allowed From Your Current Network)"
@@ -44,10 +44,14 @@ extension HTTPURLResponse {
 
 	// This method creates an error from the given HTTP response's code and logs it.
 	func logAsError() -> Error {
+        // 1. Get the error domain and response code.
 		let responseMessage = errorDomainForResponseCode
 		let responseCode = statusCode
+        // 2. Use the error domain and response code to create a new error domain including the code.
         let errorDomain = "\(responseMessage): HTTP Response Status Code \(responseCode)"
+        // 3. Add 33000 to the response code.
         let errorCode = responseCode + 33000 // e.g. 33404 (FD404)
+        // 4. Create and return the error.
 		let error = NSError(domain: errorDomain, code: errorCode)
 		return error
 	}
