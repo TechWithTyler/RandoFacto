@@ -6,9 +6,13 @@
 //  Copyright © 2022-2025 SheftApps. All rights reserved.
 //
 
+// MARK: - Imports
+
 import SwiftUI
 
 struct AdvancedSettingsPageView: View {
+
+    // MARK: - Properties - Objects
 
     @EnvironmentObject var appStateManager: AppStateManager
 
@@ -17,6 +21,8 @@ struct AdvancedSettingsPageView: View {
     @EnvironmentObject var authenticationManager: AuthenticationManager
 
     @EnvironmentObject var errorManager: ErrorManager
+
+    // MARK: - Body
 
     var body: some View {
         Form {
@@ -58,6 +64,8 @@ struct AdvancedSettingsPageView: View {
     }
     
 }
+
+// MARK: - Preview
 
 #Preview {
     AdvancedSettingsPageView()

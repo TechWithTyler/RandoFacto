@@ -6,6 +6,8 @@
 //  Copyright © 2022-2025 SheftApps. All rights reserved.
 //
 
+// MARK: - Imports
+
 import SwiftUI
 import Firebase
 import SheftAppsStylishUI
@@ -53,6 +55,47 @@ struct RandoFactoApp: App {
     
     // Handles errors.
     @ObservedObject var errorManager: ErrorManager
+
+    // MARK: - Initiailization
+
+    // This initializer configures Firebase and all the model objects for this app.
+    init() {
+        // 1. Configure Firebase.
+        RandoFactoApp.setupFirebaseConfiguration()
+        // Firebase objects are initialized using Thing.thing(), with Thing being the class name and thing() being the same-name-but-lowercase singleton initializer method. Firebase objects can be initialized only once, and simply using Thing() won't compile.
+        let firestore = Firestore.firestore()
+        // To make the Firebase authentication object, Auth, easier to understand, we use a custom type alias called Authentication.
+        let firebaseAuthentication = Authentication.auth()
+        // 2. Create a FirestoreSettings object.
+        let firestoreSettings = FirestoreSettings()
+        // 3. Enable syncing Firestore data to the device for use offline. Cached Firestore data is stored in the Application Support folder in the app's container.
+        // Persistent cache must be at least 1,048,576 bytes/1024KB/1MB. Here we use unlimited storage.
+        let persistentCacheSizeBytes = FirestoreCacheSizeUnlimited as NSNumber
+        let persistentCache = PersistentCacheSettings(sizeBytes: persistentCacheSizeBytes)
+        firestoreSettings.cacheSettings = persistentCache
+        // 4. Enable SSL and set the DispatchQueue to the main queue, then set the configured FirestoreSettings object as Firestore's settings.
+        firestoreSettings.isSSLEnabled = true
+        firestoreSettings.dispatchQueue = .main
+        firestore.settings = firestoreSettings
+        // 5. Configure the managers after having set Firestore's settings (you must set all desired Firestore settings BEFORE calling any other methods on the Firestore object).
+        let errorManager = ErrorManager()
+        let networkConnectionManager = NetworkConnectionManager(errorManager: errorManager, firestore: firestore)
+        let authenticationManager = AuthenticationManager(firebaseAuthentication: firebaseAuthentication, networkConnectionManager: networkConnectionManager, errorManager: errorManager)
+        let favoriteFactsDatabase = FavoriteFactsDatabase(firestore: firestore, networkConnectionManager: networkConnectionManager, errorManager: errorManager)
+        let favoriteFactsListDisplayManager = FavoriteFactsListDisplayManager(favoriteFactsDatabase: favoriteFactsDatabase)
+        let appStateManager = AppStateManager(errorManager: errorManager, favoriteFactsDatabase: favoriteFactsDatabase, favoriteFactsListDisplayManager: favoriteFactsListDisplayManager, authenticationManager: authenticationManager)
+        self.firebaseAuthentication = firebaseAuthentication
+        self.authenticationManager = authenticationManager
+        self.firestore = firestore
+        self.favoriteFactsDatabase = favoriteFactsDatabase
+        self.appStateManager = appStateManager
+        self.errorManager = errorManager
+        self.networkConnectionManager = networkConnectionManager
+        self.favoriteFactsListDisplayManager = favoriteFactsListDisplayManager
+        // 6. Link the FavoriteFactsDatabase and AuthenticationManager to each other. This can't be done at initialization time, so these properties are optional, allowing them to be nil until after initialization, where they're then set to their proper values here.
+        self.favoriteFactsDatabase.authenticationManager = authenticationManager
+        self.authenticationManager.favoriteFactsDatabase = favoriteFactsDatabase
+    }
 
 	// MARK: - Windows and Views
 
@@ -107,47 +150,6 @@ struct RandoFactoApp: App {
         #endif
             .ignoresSafeArea(edges: .all)
     }
-
-	// MARK: - Initiailization
-
-    // This initializer configures Firebase and all the model objects for this app.
-	init() {
-        // 1. Configure Firebase.
-        RandoFactoApp.setupFirebaseConfiguration()
-        // Firebase objects are initialized using Thing.thing(), with Thing being the class name and thing() being the same-name-but-lowercase singleton initializer method. Firebase objects can be initialized only once, and simply using Thing() won't compile.
-        let firestore = Firestore.firestore()
-        // To make the Firebase authentication object, Auth, easier to understand, we use a custom type alias called Authentication.
-        let firebaseAuthentication = Authentication.auth()
-        // 2. Create a FirestoreSettings object.
-        let firestoreSettings = FirestoreSettings()
-        // 3. Enable syncing Firestore data to the device for use offline. Cached Firestore data is stored in the Application Support folder in the app's container.
-        // Persistent cache must be at least 1,048,576 bytes/1024KB/1MB. Here we use unlimited storage.
-        let persistentCacheSizeBytes = FirestoreCacheSizeUnlimited as NSNumber
-        let persistentCache = PersistentCacheSettings(sizeBytes: persistentCacheSizeBytes)
-        firestoreSettings.cacheSettings = persistentCache
-        // 4. Enable SSL and set the DispatchQueue to the main queue, then set the configured FirestoreSettings object as Firestore's settings.
-        firestoreSettings.isSSLEnabled = true
-        firestoreSettings.dispatchQueue = .main
-        firestore.settings = firestoreSettings
-        // 5. Configure the managers after having set Firestore's settings (you must set all desired Firestore settings BEFORE calling any other methods on the Firestore object).
-        let errorManager = ErrorManager()
-        let networkConnectionManager = NetworkConnectionManager(errorManager: errorManager, firestore: firestore)
-        let authenticationManager = AuthenticationManager(firebaseAuthentication: firebaseAuthentication, networkConnectionManager: networkConnectionManager, errorManager: errorManager)
-        let favoriteFactsDatabase = FavoriteFactsDatabase(firestore: firestore, networkConnectionManager: networkConnectionManager, errorManager: errorManager)
-        let favoriteFactsListDisplayManager = FavoriteFactsListDisplayManager(favoriteFactsDatabase: favoriteFactsDatabase)
-        let appStateManager = AppStateManager(errorManager: errorManager, favoriteFactsDatabase: favoriteFactsDatabase, favoriteFactsListDisplayManager: favoriteFactsListDisplayManager, authenticationManager: authenticationManager)
-        self.firebaseAuthentication = firebaseAuthentication
-        self.authenticationManager = authenticationManager
-        self.firestore = firestore
-        self.favoriteFactsDatabase = favoriteFactsDatabase
-        self.appStateManager = appStateManager
-        self.errorManager = errorManager
-        self.networkConnectionManager = networkConnectionManager
-        self.favoriteFactsListDisplayManager = favoriteFactsListDisplayManager
-        // 6. Link the FavoriteFactsDatabase and AuthenticationManager to each other. This can't be done at initialization time, so these properties are optional, allowing them to be nil until after initialization, where they're then set to their proper values here.
-        self.favoriteFactsDatabase.authenticationManager = authenticationManager
-        self.authenticationManager.favoriteFactsDatabase = favoriteFactsDatabase
-	}
     
     // This method sets up the app's Firebase configuration.
     static func setupFirebaseConfiguration() {

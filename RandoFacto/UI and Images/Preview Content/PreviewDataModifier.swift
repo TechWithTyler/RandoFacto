@@ -6,15 +6,23 @@
 //  Copyright © 2022-2025 SheftApps. All rights reserved.
 //
 
+// MARK: - Imports
+
 import SwiftUI
 
 struct PreviewDataModifier: ViewModifier {
 
+    // MARK: - Properties - Preview Manager
+
     let previewManager: PreviewManager
+
+    // MARK: - Initialization
 
     init(prepBlock: ((AppStateManager, ErrorManager, NetworkConnectionManager, FavoriteFactsDatabase, AuthenticationManager, FavoriteFactsListDisplayManager) -> Void)? = nil) {
         self.previewManager = PreviewManager(prepBlock: prepBlock)
     }
+
+    // MARK: - Body
 
     func body(content: Content) -> some View {
         content
@@ -27,6 +35,8 @@ struct PreviewDataModifier: ViewModifier {
     }
 
 }
+
+// MARK: - View Extension
 
 extension View {
 

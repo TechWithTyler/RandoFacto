@@ -6,6 +6,8 @@
 //  Copyright © 2022-2025 SheftApps. All rights reserved.
 //
 
+// MARK: - Imports
+
 import SwiftUI
 import SheftAppsStylishUI
 
@@ -138,6 +140,8 @@ struct SettingsView: View {
     }
 
 }
+
+// MARK: - Preview
 
 #Preview("Loaded") {
     NavigationStack {

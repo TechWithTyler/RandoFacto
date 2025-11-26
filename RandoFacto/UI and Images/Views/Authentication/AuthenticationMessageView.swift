@@ -6,18 +6,28 @@
 //  Copyright © 2022-2025 SheftApps. All rights reserved.
 //
 
+// MARK: - Imports
+
 import SwiftUI
 import SheftAppsStylishUI
 
 struct AuthenticationMessageView: View {
 
+    // MARK: - Properties - Strings
+
 	var text: String
 
+    // MARK: - Properties - Form Type
+
 	var type: Authentication.MessageType
-    
+
+    // MARK: - Properties - Colors
+
     var color: Color {
         return type == .confirmation ? .green : .red
     }
+
+    // MARK: - Body
 
     var body: some View {
             HStack {
@@ -47,6 +57,8 @@ struct AuthenticationMessageView: View {
     }
 
 }
+
+// MARK: - Preview
 
 #Preview("Success") {
 	AuthenticationMessageView(text: "Success!", type: .confirmation)

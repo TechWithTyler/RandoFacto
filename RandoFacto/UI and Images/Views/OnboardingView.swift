@@ -6,12 +6,18 @@
 //  Copyright © 2022-2025 SheftApps. All rights reserved.
 //
 
+// MARK: - Imports
+
 import SwiftUI
 
 struct OnboardingView: View {
-    
+
+    // MARK: - Properties - App State Manager
+
     @EnvironmentObject var appStateManager: AppStateManager
-    
+
+    // MARK: - Body
+
     var body: some View {
         VStack {
             Text("Welcome to \(appName!)!")
@@ -49,6 +55,8 @@ struct OnboardingView: View {
         .interactiveDismissDisabled()
     }
 }
+
+// MARK: - Preview
 
 #Preview {
     OnboardingView()

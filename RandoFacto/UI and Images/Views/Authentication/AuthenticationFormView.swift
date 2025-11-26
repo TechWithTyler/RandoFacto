@@ -6,6 +6,8 @@
 //  Copyright © 2022-2025 SheftApps. All rights reserved.
 //
 
+// MARK: - Imports
+
 import SwiftUI
 import SheftAppsStylishUI
 import Firebase
@@ -24,12 +26,12 @@ struct AuthenticationFormView: View {
     
     @FocusState private var focusedCredentialField: Authentication.FormField?
     
-    // MARK: - Dismiss
-    
+    // MARK: - Properties - Dismiss Action
+
     @Environment(\.dismiss) var dismiss
     
-    // MARK: - Authentication Form
-    
+    // MARK: - Body
+
     var body: some View {
         NavigationStack {
             Form {
@@ -56,7 +58,7 @@ struct AuthenticationFormView: View {
                 }
             }
             .formStyle(.grouped)
-            .navigationTitle(authenticationManager.formType?.titleText ?? Authentication.FormType.login.titleText)
+            .navigationTitle(authenticationManager.formType?.title ?? Authentication.FormType.login.title)
 #if os(iOS)
             .navigationBarTitleDisplayMode(.automatic)
 #endif
@@ -79,7 +81,7 @@ struct AuthenticationFormView: View {
                     .disabled(authenticationManager.isAuthenticating)
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(authenticationManager.formType?.confirmButtonText ?? Authentication.FormType.login.confirmButtonText) {
+                    Button(authenticationManager.formType?.confirmButtonTitle ?? Authentication.FormType.login.confirmButtonTitle) {
                         authenticationManager.performAuthenticationAction { success in
                             if success {
                                 dismiss()
@@ -191,6 +193,8 @@ struct AuthenticationFormView: View {
     }
     
 }
+
+// MARK: - Preview
 
 #Preview("Login (Empty)") {
     AuthenticationFormView()

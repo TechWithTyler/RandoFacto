@@ -6,6 +6,8 @@
 //  Copyright © 2022-2025 SheftApps. All rights reserved.
 //
 
+// MARK: - Imports
+
 import SwiftUI
 import FirebaseAuth
 import FirebaseFirestore
@@ -438,9 +440,11 @@ class AuthenticationManager: ObservableObject {
 
     // This method resets all settings pertaining to favorite facts, which don't apply when logged out and you can't access the favorite facts database.
     func resetFavoriteFactSettings() {
-        // 1. Reset the Fact on Launch setting to "Random Fact".
+        // 1. Reset the Initial Display setting to "Generate Random Fact".
         favoriteFactsDatabase?.initialFact = 0
-        // 2. Reset the Favorite Fact Randomizer Effect setting to off.
+        // 2. Reset the Skip Favorites On Fact Generation setting to off.
+        favoriteFactsDatabase?.skipFavoritesOnFactGeneration = false
+        // 3. Reset the Favorite Fact Randomizer Effect setting to off.
         favoriteFactsDatabase?.favoriteFactsRandomizerEffect = false
     }
 

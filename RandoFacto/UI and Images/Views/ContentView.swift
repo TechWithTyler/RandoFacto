@@ -6,6 +6,8 @@
 //  Copyright © 2022-2025 SheftApps. All rights reserved.
 //
 
+// MARK: - Imports
+
 import SwiftUI
 import SheftAppsStylishUI
 import Speech
@@ -212,6 +214,8 @@ struct ContentView: View {
     }
 
 }
+
+// MARK: - Preview
 
 #Preview("Loading") {
     ContentView()

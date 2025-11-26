@@ -6,9 +6,14 @@
 //  Copyright © 2022-2025 SheftApps. All rights reserved.
 //
 
+// MARK: - Imports
+
 import SwiftUI
 
 struct PrivacyPolicyAgreementText: View {
+
+    // MARK: - Body
+
     var body: some View {
         Text("By creating a \(appName!) account, you agree to our [privacy policy](https://techwithtyler20.weebly.com/randofactoprivacypolicy.html).")
             .font(.footnote)
@@ -16,6 +21,8 @@ struct PrivacyPolicyAgreementText: View {
             .multilineTextAlignment(.center)
     }
 }
+
+// MARK: - Preview
 
 #Preview {
     PrivacyPolicyAgreementText()

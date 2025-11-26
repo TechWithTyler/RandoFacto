@@ -6,6 +6,8 @@
 //  Copyright © 2022-2025 SheftApps. All rights reserved.
 //
 
+// MARK: - Imports
+
 import SwiftUI
 
 struct PrivacyPolicyButton: View {
@@ -30,6 +32,8 @@ struct PrivacyPolicyButton: View {
     }
 
 }
+
+// MARK: - Preview
 
 #Preview {
     PrivacyPolicyButton()

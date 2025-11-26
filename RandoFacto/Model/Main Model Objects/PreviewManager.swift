@@ -7,11 +7,16 @@
 //
 
 #if(DEBUG)
+
+// MARK: - Imports
+
 import Foundation
 import Firebase
 
 // An object that encapsulates all model objects for use in Xcode previews.
 class PreviewManager: ObservableObject {
+
+    // MARK: - Properties - Objects
 
     var appStateManager: AppStateManager
 
@@ -24,6 +29,8 @@ class PreviewManager: ObservableObject {
     var authenticationManager: AuthenticationManager
 
     var favoriteFactsListDisplayManager: FavoriteFactsListDisplayManager
+
+    // MARK: - Initialization
 
     init(prepBlock: ((AppStateManager, ErrorManager, NetworkConnectionManager, FavoriteFactsDatabase, AuthenticationManager, FavoriteFactsListDisplayManager) -> Void)? = nil) {
         let errorManager = ErrorManager()

@@ -6,11 +6,14 @@
 //  Copyright © 2022-2025 SheftApps. All rights reserved.
 //
 
+// MARK: - Imports
+
 import Firebase
 
 extension Firestore {
     
-    // RandoFacto Firestore collection names
+    // MARK - RandoFacto Firestore Collection Names
+
     struct CollectionName {
         
         // The name of the collection containing registered users in the Firestore database.
@@ -21,7 +24,8 @@ extension Firestore {
         
     }
     
-    // RandoFacto Firestore key names
+    // MARK: - RandoFacto Firestore Key Names
+    
     struct KeyName {
         
         // The key name of a fact's text in the Firestore database.

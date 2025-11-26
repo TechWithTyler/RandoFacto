@@ -6,13 +6,15 @@
 //  Copyright © 2022-2025 SheftApps. All rights reserved.
 //
 
+// MARK: - Imports
+
 import SwiftUI
 
 struct FactGenerator {
     
     // MARK: - Properties - Result Type Aliases
     
-    // A Result is made up of 2 types, Success (can be anything) and Error (must conform to Error). These type aliases simplify the type names.
+    // A Result is made up of 2 types: Success (can be anything) and Error (must conform to Error). These type aliases simplify the type names.
 
     // The type of fact generator JSON parsing results.
     typealias FactGeneratorJSONParsingResult = Result<String, Error>
@@ -40,8 +42,8 @@ struct FactGenerator {
     
     // The URL of the random facts API.
     var factURLString: String {
-        // 1. The scheme specifies the application layer protocol used to access the resource. In this case, it's "https" (Hypertext Transfer Protocol Secure), used for web traffic. The "s" in HTTPS indicates that the data transferred between the app (client) and the web API (server) is encrypted for security. This is not to be confused with presentation layer protocols like SSL (Secure Sockets Layer) or TLS (Transport Layer Security), which are used to secure the connection between the client and server, transport layer protocols like TCP (Transmission Control Protocol) or UDP (User Datagram Protocol), which are used to transmit data over the network, or network layer protocols like IP (Internet Protocol), which are used to route data between devices on a network. The API requests in this app use some of these protocols under the hood.
-        /* HTTPS is on layer 7 of the OSI model, the application layer, which is the topmost layer. The OSI model is a conceptual framework used to understand how different networking protocols interact with each other. The OSI model consists of 7 layers, each representing a different aspect of network communication. The layers are:
+        // 1. The scheme specifies the application layer protocol used to access the resource. In this case, it's "https" (HyperText Transfer Protocol Secure), used for web traffic. The "s" in HTTPS indicates that the data transferred between the app (client) and the web API (server) is encrypted for security. This is not to be confused with presentation layer protocols like SSL (Secure Sockets Layer) or TLS (Transport Layer Security), which are used to secure the connection between the client and server, transport layer protocols like TCP (Transmission Control Protocol) or UDP (User Datagram Protocol), which are used to transmit data over the network, or network layer protocols like IP (Internet Protocol), which are used to route data between devices on a network. The API requests in this app use some of these protocols under the hood.
+        /* HTTPS is on layer 7 of the OSI (Open Systems Interconnection) model, the application layer, which is the topmost layer. The OSI model is a conceptual framework used to understand how different networking protocols interact with each other. The OSI model consists of 7 layers, each representing a different aspect of network communication. The layers are:
          1. Physical
          2. Data Link
          3. Network
@@ -52,7 +54,7 @@ struct FactGenerator {
          Layer 2 is the physical layer, the hardware which connects the device running RandoFacto to the internet (e.g., the Wi-Fi radio in a MacBook or iPhone), and layer 1 is how the data is transmitted over the internet (usually very fast pulses of light through fiber optic cables).
          */
         let scheme = "https"
-        // 2. The domain and subdomain are the main parts of the URL that identify the server where the resource is located. In this case, the domain is "jsph.pl" and the subdomain is "uselessfacts". "jsph.pl" in this case stands for Joeseph Paul, the creator of this API and others (usually "pl" refers to a website in Poland). Each of his API URLs have a different subdomain in the same "jsph.pl" domain.
+        // 2. The domain and subdomain are the main parts of the URL that identify the server where the resource is located. In this case, the domain is "jsph.pl" and the subdomain is "uselessfacts". "jsph.pl" in this case stands for Joseph Paul, the creator of this API and others (usually "pl" refers to a website in Poland). Each of his API URLs has a different subdomain in the same "jsph.pl" domain.
         let subdomainAndDomain = randomFactsAPIName
         // 3. The path indicates the specific resource or location on the server that the client (in this case RandoFacto) is requesting. In this URL, the path is "/api/vX/facts/random", where X represents the API version.
         let randomFactPath = "api/v\(randomFactsAPIVersion)/facts/random"
@@ -88,7 +90,10 @@ struct FactGenerator {
     
     // The error logged when a Result returns a Failure.
     let factDataError = NSError(domain: FactGenerator.ErrorDomain.failedToGetData.rawValue, code: FactGenerator.ErrorCode.failedToGetData.rawValue)
-    
+
+    // The error logged when a fact doesn't contain text.
+    let noTextError = NSError(domain: ErrorDomain.noText.rawValue, code: ErrorCode.noText.rawValue)
+
     // MARK: - Fact Generation
     
     // This method uses a random facts web API which returns JSON data to generate a random fact.
@@ -97,7 +102,7 @@ struct FactGenerator {
         didBeginHandler()
         // 2. Create the URL, URL request, and URL session.
         guard let url = URL(string: factURLString) else {
-            completionHandler(nil, logFactDataError())
+            completionHandler(nil, factDataError)
             return
         }
         let urlRequest = createFactGeneratorHTTPRequest(with: url)
@@ -109,10 +114,23 @@ struct FactGenerator {
         // 4. To start a URLSessionDataTask, we resume it.
         dataTask.resume()
     }
-    
+
+    // This method creates the fact generator HTTP request.
+    func createFactGeneratorHTTPRequest(with url: URL) -> URLRequest {
+        // 1. Create the URL request.
+        var request = URLRequest(url: url)
+        // 2. Specify the HTTP method and the type of content to give back. For this HTTP request, it's optional.
+        request.httpMethod = URLRequest.HTTPMethod.get
+        request.setValue(httpRequestContentType, forHTTPHeaderField: URLRequest.HTTPHeaderField.accept)
+        // 3. Set the timeout interval for the URL request, after which an error will be thrown if the request can't complete.
+        request.timeoutInterval = urlRequestTimeoutInterval
+        // 4. Return the created request.
+        return request
+    }
+
     // This method handles the fact generation data task result.
     func handleFactGenerationDataTaskResult(didBeginHandler: @escaping (() -> Void), data: Data?, response: URLResponse?, error: Error?, completionHandler: @escaping ((String?, Error?) -> Void)) {
-        // 1. If an HTTP response is returned and its code isn't within the 2xx range, log it as an error.
+        // 1. If an HTTP response is returned and its code isn't within the 2xx (success) range, log it as an error.
         if let httpResponse = response as? HTTPURLResponse, httpResponse.isUnsuccessful {
                 completionHandler(nil, httpResponse.logAsError())
         }
@@ -132,7 +150,7 @@ struct FactGenerator {
                         completionHandler(nil, error)
                     } else if let fact = fact {
                         if fact.isEmpty {
-                           completionHandler(nil, logNoTextError())
+                           completionHandler(nil, noTextError)
                         } else {
                             completionHandler(fact, nil)
                         }
@@ -144,19 +162,6 @@ struct FactGenerator {
                 completionHandler(nil, error)
             }
         }
-    }
-    
-    // This method creates the fact generator HTTP request.
-    func createFactGeneratorHTTPRequest(with url: URL) -> URLRequest {
-        // 1. Create the URL request.
-        var request = URLRequest(url: url)
-        // 2. Specify the HTTP method and the type of content to give back. For this HTTP request, it's optional.
-        request.httpMethod = URLRequest.HTTPMethod.get
-        request.setValue(httpRequestContentType, forHTTPHeaderField: URLRequest.HTTPHeaderField.accept)
-        // 3. Set the timeout interval for the URL request, after which an error will be thrown if the request can't complete.
-        request.timeoutInterval = urlRequestTimeoutInterval
-        // 4. Return the created request.
-        return request
     }
     
     // This method parses the JSON data returned by the fact generator web API and creates a GeneratedFact object from it, returning the resulting fact text String if successful or an Error if unsuccessful.
@@ -180,8 +185,16 @@ struct FactGenerator {
     
     // This method replaces incorrect characters in the generated fact text.
     func correctedFactText(_ fact: String) -> String {
-        // Replace incorrect characters.
-        let correctedFact = fact.replacingOccurrences(of: "`", with: "'")
+        // 1. Replace incorrect characters.
+        var correctedFact = fact.replacingOccurrences(of: "`", with: "'")
+        // 2. Remove any leading or trailing spaces.
+        if correctedFact.last == " " {
+            correctedFact = String(correctedFact.dropLast())
+        }
+        if correctedFact.first == " " {
+            correctedFact = String(correctedFact.dropFirst())
+        }
+        // 3. Return the corrected fact text.
         return correctedFact
     }
     
@@ -208,27 +221,6 @@ struct FactGenerator {
         }
     }
     
-    // This method handles the inappropriate words checker HTTP request for the given fact.
-    func handleInappropriateWordsCheckerDataTaskResult(fact: String, data: Data?, response: URLResponse?, error: Error?, completionHandler: ((String?, Error?) -> Void)) {
-        if let error = error {
-            completionHandler(nil, error)
-        }
-        if let httpResponse = response as? HTTPURLResponse, httpResponse.isUnsuccessful {
-            completionHandler(nil, httpResponse.logAsError())
-        }
-        let jsonParsingResult = parseInappropriateWordsCheckerJSON(data: data)
-        switch jsonParsingResult {
-        case .success(let factIsInappropriate):
-            if !factIsInappropriate {
-                completionHandler(fact, nil)
-            } else {
-                completionHandler(nil, nil)
-            }
-        case .failure(let error):
-            completionHandler(nil, error)
-        }
-    }
-    
     // This method creates the inappropriate words checker HTTP request.
     func createInappropriateWordsCheckerHTTPRequest(with url: URL, toScreenFact fact: String) -> InappropriateWordsCheckerHTTPRequestResult {
         // 1. Create the URL request.
@@ -249,7 +241,28 @@ struct FactGenerator {
             return .failure(error)
         }
     }
-    
+
+    // This method handles the inappropriate words checker HTTP request for the given fact.
+    func handleInappropriateWordsCheckerDataTaskResult(fact: String, data: Data?, response: URLResponse?, error: Error?, completionHandler: ((String?, Error?) -> Void)) {
+        if let error = error {
+            completionHandler(nil, error)
+        }
+        if let httpResponse = response as? HTTPURLResponse, httpResponse.isUnsuccessful {
+            completionHandler(nil, httpResponse.logAsError())
+        }
+        let jsonParsingResult = parseInappropriateWordsCheckerJSON(data: data)
+        switch jsonParsingResult {
+        case .success(let factIsInappropriate):
+            if !factIsInappropriate {
+                completionHandler(fact, nil)
+            } else {
+                completionHandler(nil, nil)
+            }
+        case .failure(let error):
+            completionHandler(nil, error)
+        }
+    }
+
     // This method parses the JSON data returned by the inappropriate words checker web API and creates an InappropriateWordsCheckerData object from it, returning the resulting Bool indicating whether the fact contains inappropriate words.
     func parseInappropriateWordsCheckerJSON(data: Data?) -> InappropriateWordsCheckerJSONParsingResult {
         // 1. If data is nil, log an error.

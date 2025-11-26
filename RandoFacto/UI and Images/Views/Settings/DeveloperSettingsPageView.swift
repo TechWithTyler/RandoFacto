@@ -11,6 +11,8 @@ import SwiftUI
 
 struct DeveloperSettingsPageView: View {
 
+    // MARK: - Properties - Objects
+
     @EnvironmentObject var appStateManager: AppStateManager
 
     @EnvironmentObject var networkConnectionManager: NetworkConnectionManager
@@ -21,7 +23,7 @@ struct DeveloperSettingsPageView: View {
 
     @EnvironmentObject var favoriteFactsDatabase: FavoriteFactsDatabase
 
-    // MARK: - Developer Settings Page (Internal Builds Only)
+    // MARK: - Body
 
     var body: some View {
         // Put any internal/development-related features/settings here to hide them from release builds.
@@ -68,10 +70,10 @@ struct DeveloperSettingsPageView: View {
 
 }
 
+// MARK: - Preview
+
 #Preview {
     DeveloperSettingsPageView()
-        #if DEBUG
         .withPreviewData()
-    #endif
 }
 #endif

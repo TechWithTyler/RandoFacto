@@ -6,16 +6,22 @@
 //  Copyright © 2022-2025 SheftApps. All rights reserved.
 //
 
+// MARK: - Imports
+
 import SwiftUI
 import SheftAppsStylishUI
 
 struct DisplaySettingsPageView: View {
+
+    // MARK: - Properties - Objects
 
     @EnvironmentObject var appStateManager: AppStateManager
 
     @EnvironmentObject var authenticationManager: AuthenticationManager
 
     @EnvironmentObject var favoriteFactsDatabase: FavoriteFactsDatabase
+
+    // MARK: - Body
 
     var body: some View {
         Form {
@@ -34,6 +40,11 @@ struct DisplaySettingsPageView: View {
                     Text("This setting will reset to \"\(generateRandomFactButtonTitle)\" when you logout or delete your account.")
                 }
                 Section {
+                    Toggle("Skip Favorites On Fact Generation", isOn: $favoriteFactsDatabase.skipFavoritesOnFactGeneration)
+                } footer: {
+                    Text("Turn this on if you want \(appName!) to skip your favorite facts when generating random facts.\nThis setting will reset to off when you logout or delete your account.\nNote: If this setting is on, fact generation may take longer than usual.")
+                }
+                Section {
                     Toggle("Favorite Fact Randomizer Effect", isOn: $favoriteFactsDatabase.favoriteFactsRandomizerEffect)
                     if favoriteFactsDatabase.favoriteFacts.count < 5 {
                         InfoText("The randomizer effect only works if you have at least 5 favorite facts (you currently have \(favoriteFactsDatabase.favoriteFacts.count)).")
@@ -47,6 +58,8 @@ struct DisplaySettingsPageView: View {
     }
 
 }
+
+// MARK: - Preview
 
 #Preview {
         DisplaySettingsPageView()

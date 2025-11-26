@@ -6,6 +6,8 @@
 //  Copyright © 2022-2025 SheftApps. All rights reserved.
 //
 
+// MARK: - Imports
+
 import Foundation
 
 extension FactGenerator {
@@ -29,23 +31,10 @@ extension FactGenerator {
 		case noText = 423
 
         static var factDataHTTPResponseCodeRange: ClosedRange<Int> {
+            // FD (33) + HTTP status code
             return 33000...33999
         }
 
 	}
-    
-    // MARK: - Fact Generator Custom Error Logging
-
-    // These methods log any errors not handled by catch blocks or completion handlers.
-
-    func logFactDataError() -> Error {
-        let dataError = factDataError
-        return dataError
-    }
-
-    func logNoTextError() -> Error {
-        let dataError = NSError(domain: ErrorDomain.noText.rawValue, code: ErrorCode.noText.rawValue)
-        return dataError
-    }
 
 }

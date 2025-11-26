@@ -6,12 +6,16 @@
 //  Copyright © 2022-2025 SheftApps. All rights reserved.
 //
 
+// MARK: - Imports
+
 import SwiftUI
 import FirebaseAuth
 import FirebaseFirestore
 
 class ErrorManager: ObservableObject {
-    
+
+    // MARK: - Properties - Booleans
+
     // Whether an error alert should be/is being displayed.
     @Published var showingErrorAlert: Bool = false
     

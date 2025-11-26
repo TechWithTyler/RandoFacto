@@ -6,6 +6,8 @@
 //  Copyright © 2022-2025 SheftApps. All rights reserved.
 //
 
+// MARK: - Imports
+
 import SwiftUI
 import Firebase
 
@@ -38,6 +40,9 @@ class FavoriteFactsDatabase: ObservableObject {
     // Whether RandoFacto should "spin through" a user's favorite facts when getting a random favorite fact. This setting resets to off and is hidden when the user logs out or deletes their account.
     @AppStorage("favoriteFactsRandomizerEffect") var favoriteFactsRandomizerEffect: Bool = false
 
+    // Whether RandoFacto should generate a new random fact if it generates a fact that matches a favorite.
+    @AppStorage("skipFavoritesOnFactGeneration") var skipFavoritesOnFactGeneration: Bool = false
+
     // Whether the "delete this favorite fact" alert should be/is being displayed.
     @Published var showingDeleteFavoriteFact: Bool = false
     
@@ -56,7 +61,7 @@ class FavoriteFactsDatabase: ObservableObject {
     
     // MARK: - Properties - Integers
     
-    // Whether to display one of the user's favorite facts (1) or generate a random fact (0) when the app launches. This setting resets to 0 (Random Fact) and is hidden when the user logs out or deletes their account.
+    // Whether to display one of the user's favorite facts (1), show the favorite facts list (2), or generate a random fact (0) when the app launches. This setting resets to 0 (Random Fact) and is hidden when the user logs out or deletes their account.
     @AppStorage("initialFact") var initialFact: Int = 0
 
     // The maximum number of iterations for the randomizer effect. The randomizer effect starts out fast and gradually slows down, by using the equation randomizerIterations divided by (maxRandomizerIterations times 4).
@@ -169,7 +174,7 @@ class FavoriteFactsDatabase: ObservableObject {
     
     // This method creates a FavoriteFact from factText and saves it to the favorite facts database.
     func saveFactToFavorites(_ factText: String) {
-        // 1. Make sure the fact doesn't already exist and that the current user has an email (who would have an account but no email?!).
+        // 1. Make sure the current user has an email (who would have an account but no email?!).
         guard let userEmail = authenticationManager?.firebaseAuthentication.currentUser?.email else { return }
         // 2. Create a FavoriteFact object with the fact text and the current user's email.
         let fact = FavoriteFact(text: factText, user: userEmail)
@@ -209,7 +214,7 @@ class FavoriteFactsDatabase: ObservableObject {
     func getFavoriteFactSnapshotAndDelete(_ snapshot: QuerySnapshot?) {
         let favoriteFactReferenceError = NSError(domain: ErrorDomain.favoriteFactReferenceNotFound.rawValue, code: ErrorCode.favoriteFactReferenceNotFound.rawValue)
         DispatchQueue.main.async { [self] in
-            // 1. Make sure the snapshot and the corresponding data is there.
+            // 1. Make sure the snapshot and the corresponding data are there.
             if let snapshot = snapshot, let document = snapshot.documents.first {
                 // 2. Delete the corresponding document.
                 document.reference.delete { [self]

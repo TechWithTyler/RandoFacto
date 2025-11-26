@@ -6,6 +6,8 @@
 //  Copyright © 2022-2025 SheftApps. All rights reserved.
 //
 
+// MARK: - Imports
+
 import SwiftUI
 import Firebase
 import Speech
@@ -48,15 +50,17 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     // The voices that are currently available on the device.
     @Published var voices: [AVSpeechSynthesisVoice] = []
 
+    // MARK: - Properties - Doubles
+
+    // The text size for facts.
+    @AppStorage("factTextSize") var factTextSize: Double = SATextViewMinFontSize
+
     // MARK: - Properties - Integers
 
     // The current fact text size as an Int.
     var factTextSizeAsInt: Int {
         return Int(factTextSize)
     }
-
-    // The text size for facts.
-    @AppStorage("factTextSize") var factTextSize: Double = SATextViewMinFontSize
 
     // MARK: - Properties - Pages
 
@@ -153,8 +157,12 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
             fact, error in
             DispatchQueue.main.async { [self] in
                 if let fact = fact {
-                    // 3. If we get a fact, display it.
-                    factText = fact
+                    // 3. If we get a fact, display it. If it matches a favorite fact and "Skip Favorites On Fact Generation" is enabled, generate a new random fact until we get a non-favorite.
+                    if favoriteFactsDatabase.favoriteFacts.contains(where: {$0.text == fact}) && favoriteFactsDatabase.skipFavoritesOnFactGeneration {
+                        generateRandomFact()
+                    } else {
+                        factText = fact
+                    }
                 } else if let error = error {
                     // 4. If an error occurs, log it.
                     factText = factUnavailableString

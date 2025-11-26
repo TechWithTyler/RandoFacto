@@ -6,12 +6,18 @@
 //  Copyright © 2022-2025 SheftApps. All rights reserved.
 //
 
+// MARK: - Imports
+
 import SwiftUI
 import SheftAppsStylishUI
 
 struct SpeechSettingsPageView: View {
 
+    // MARK: - Properties - App State Manager
+
     @EnvironmentObject var appStateManager: AppStateManager
+
+    // MARK: - Body
 
     var body: some View {
         Form {
@@ -35,6 +41,8 @@ struct SpeechSettingsPageView: View {
     }
 
 }
+
+// MARK: - Preview
 
 #Preview {
     SpeechSettingsPageView()
