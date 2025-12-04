@@ -130,7 +130,7 @@ struct AccountSettingsPageView: View {
                 authenticationManager.showingLogout = false
             }
         } message: {
-            Text("You won't be able to save favorite facts to view offline until you login again!")
+            Text("All favorite fact-related settings will be reset. You won't be able to save favorite facts to view offline until you login again!")
         }
         // Authentication form
         .sheet(item: $authenticationManager.formType) { _ in

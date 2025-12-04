@@ -188,29 +188,7 @@ class AuthenticationManager: ObservableObject {
     }
 
     // MARK: - Password Reset/Update
-    
-    // This method sends a password reset email to the entered email address. The message body is customized in RandoFacto's Firebase console. The recipient has to click the link in the email to begin the reset process--the email is customized in Firebase to tell the user to ignore it if they didn't send the request.
-    func sendPasswordResetLinkToEnteredEmailAddress() {
-        DispatchQueue.main.async { [self] in
-            // 1. Tell the app that an authentication request is in progress.
-            isAuthenticating = true
-            clearAuthenticationMessages()
-            // 3. Ask Firebase to send the password reset email to the entered email address.
-            firebaseAuthentication.sendPasswordReset(withEmail: emailFieldText, actionCodeSettings: ActionCodeSettings(), completion: { [self] error in
-                isAuthenticating = false
-                // 4. If an error occurs (e.g., the entered email address doesn't correspond to an account), log it.
-                if let error = error {
-                    errorManager.showError(error) { [self] randoFactoError in
-                        formErrorText = randoFactoError.localizedDescription
-                    }
-                } else {
-                    // 5. If successful, show the "reset password email sent" message.
-                    showingResetPasswordEmailSent = true
-                }
-            })
-        }
-    }
-    
+
     // This method changes the current user's password to the password field's text.
     func changePasswordForCurrentUser(completionHandler: @escaping ((Bool) -> Void)) {
         // 1. Make sure we can get the current user.
@@ -235,6 +213,28 @@ class AuthenticationManager: ObservableObject {
                     completionHandler(true)
                 }
             }
+        }
+    }
+
+    // This method sends a password reset email to the entered email address. The message body is customized in RandoFacto's Firebase console. The recipient has to click the link in the email to begin the reset process--the email is customized in Firebase to tell the user to ignore it if they didn't send the request.
+    func sendPasswordResetLinkToEnteredEmailAddress() {
+        DispatchQueue.main.async { [self] in
+            // 1. Tell the app that an authentication request is in progress.
+            isAuthenticating = true
+            clearAuthenticationMessages()
+            // 3. Ask Firebase to send the password reset email to the entered email address.
+            firebaseAuthentication.sendPasswordReset(withEmail: emailFieldText, actionCodeSettings: ActionCodeSettings(), completion: { [self] error in
+                isAuthenticating = false
+                // 4. If an error occurs (e.g., the entered email address doesn't correspond to an account), log it.
+                if let error = error {
+                    errorManager.showError(error) { [self] randoFactoError in
+                        formErrorText = randoFactoError.localizedDescription
+                    }
+                } else {
+                    // 5. If successful, show the "reset password email sent" message.
+                    showingResetPasswordEmailSent = true
+                }
+            })
         }
     }
 
