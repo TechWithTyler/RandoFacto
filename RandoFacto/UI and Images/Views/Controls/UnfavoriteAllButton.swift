@@ -14,13 +14,13 @@ struct UnfavoriteAllButton: View {
 
     // MARK: - Properties - Favorite Facts Database
 
-    @EnvironmentObject var favoriteFactsDatabase: FavoriteFactsDatabase
+    @EnvironmentObject var favoriteFactsDisplayManager: FavoriteFactsDisplayManager
 
     // MARK: - Body
 
     var body: some View {
         Button(role: .destructive) {
-            favoriteFactsDatabase.showingDeleteAllFavoriteFacts = true
+            favoriteFactsDisplayManager.showingDeleteAllFavoriteFacts = true
         } label: {
             Label("Unfavorite All…", systemImage: "star.slash.fill")
         }

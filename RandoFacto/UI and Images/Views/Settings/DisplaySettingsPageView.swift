@@ -15,20 +15,26 @@ struct DisplaySettingsPageView: View {
 
     // MARK: - Properties - Objects
 
-    @EnvironmentObject var appStateManager: AppStateManager
+    @EnvironmentObject var windowStateManager: WindowStateManager
 
     @EnvironmentObject var authenticationManager: AuthenticationManager
 
     @EnvironmentObject var favoriteFactsDatabase: FavoriteFactsDatabase
+
+    // MARK: - Properties - Booleans
+
+    @AppStorage(UserDefaults.KeyNames.favoriteFactsRandomizerEffect) var favoriteFactsRandomizerEffect: Bool = false
+
+    @AppStorage(UserDefaults.KeyNames.skipFavoritesOnFactGeneration) var skipFavoritesOnFactGeneration: Bool = false
 
     // MARK: - Body
 
     var body: some View {
         Form {
             Section {
-                TextSizeSlider(labelText: "Fact Text Size", textSize: $appStateManager.factTextSize, previewText: sampleFact)
+                TextSizeSlider(labelText: "Fact Text Size", textSize: $windowStateManager.factTextSize, previewText: sampleFact)
             }
-            .animation(.default, value: appStateManager.factTextSize)
+            .animation(.default, value: windowStateManager.factTextSize)
             if authenticationManager.userLoggedIn {
                 Section {
                     Picker("Initial Display", selection: $favoriteFactsDatabase.initialFact) {
@@ -40,12 +46,12 @@ struct DisplaySettingsPageView: View {
                     Text("This setting will reset to \"\(generateRandomFactButtonTitle)\" when you logout or delete your account.")
                 }
                 Section {
-                    Toggle("Skip Favorites On Fact Generation", isOn: $favoriteFactsDatabase.skipFavoritesOnFactGeneration)
+                    Toggle("Skip Favorites On Fact Generation", isOn: $skipFavoritesOnFactGeneration)
                 } footer: {
                     Text("Turn this on if you want \(appName!) to skip your favorite facts when generating random facts.\nThis setting will reset to off when you logout or delete your account.\nNote: If this setting is on, fact generation may take longer than usual.")
                 }
                 Section {
-                    Toggle("Favorite Fact Randomizer Effect", isOn: $favoriteFactsDatabase.favoriteFactsRandomizerEffect)
+                    Toggle("Favorite Fact Randomizer Effect", isOn: $favoriteFactsRandomizerEffect)
                     if favoriteFactsDatabase.favoriteFacts.count < 5 {
                         InfoText("The randomizer effect only works if you have at least 5 favorite facts (you currently have \(favoriteFactsDatabase.favoriteFacts.count)).")
                     }

@@ -10,7 +10,8 @@
 		8D012F7D2C0E5D3100A6254B /* PrivacyPolicyAgreementText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D012F7C2C0E5D3100A6254B /* PrivacyPolicyAgreementText.swift */; };
 		8D0312222AF995AF00DBB2B2 /* AuthenticationFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0312212AF995AF00DBB2B2 /* AuthenticationFormView.swift */; };
 		8D051C5E2AFB15590064E90E /* AppPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D051C5D2AFB15590064E90E /* AppPage.swift */; };
-		8D0A3C3F2B1FA6F500B7345D /* FavoriteFactsListDisplayManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0A3C3E2B1FA6F500B7345D /* FavoriteFactsListDisplayManager.swift */; };
+		8D0A3C3F2B1FA6F500B7345D /* FavoriteFactsDisplayManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0A3C3E2B1FA6F500B7345D /* FavoriteFactsDisplayManager.swift */; };
+		8D1CD2D02EE2525A001B6AD0 /* UserDefaultsKeyNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1CD2CF2EE2525A001B6AD0 /* UserDefaultsKeyNames.swift */; };
 		8D2A7B302B5B277300142BDA /* SpeakButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2A7B2F2B5B277300142BDA /* SpeakButton.swift */; };
 		8D2A7B362B5B48A400142BDA /* FirestoreNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2A7B352B5B48A400142BDA /* FirestoreNames.swift */; };
 		8D31D8532B27B759009F29EE /* APIKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D31D8522B27B758009F29EE /* APIKeys.swift */; };
@@ -66,7 +67,7 @@
 		8DEB53222BBB54E600788A04 /* PreviewDataModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEB53212BBB54E600788A04 /* PreviewDataModifier.swift */; };
 		8DEF074C2B241D5B00F0375F /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEF074B2B241D5B00F0375F /* AuthenticationManager.swift */; };
 		8DEF074E2B241DBA00F0375F /* FavoriteFactsDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEF074D2B241DBA00F0375F /* FavoriteFactsDatabase.swift */; };
-		8DF48E312936A80700152681 /* AppStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF48E302936A80700152681 /* AppStateManager.swift */; };
+		8DF48E312936A80700152681 /* WindowStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF48E302936A80700152681 /* WindowStateManager.swift */; };
 		8DF48E392936B02900152681 /* RandoFactoError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF48E382936B02900152681 /* RandoFactoError.swift */; };
 		8DF8D9DF2A27DDA700874AFC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8DF48E2E2936A62900152681 /* GoogleService-Info.plist */; };
 		8DFEB0A32AFAF64800F57DB1 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DFEB0A22AFAF64800F57DB1 /* SettingsView.swift */; };
@@ -92,8 +93,9 @@
 		8D012F7C2C0E5D3100A6254B /* PrivacyPolicyAgreementText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyAgreementText.swift; sourceTree = "<group>"; };
 		8D0312212AF995AF00DBB2B2 /* AuthenticationFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationFormView.swift; sourceTree = "<group>"; };
 		8D051C5D2AFB15590064E90E /* AppPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPage.swift; sourceTree = "<group>"; };
-		8D0A3C3E2B1FA6F500B7345D /* FavoriteFactsListDisplayManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteFactsListDisplayManager.swift; sourceTree = "<group>"; };
+		8D0A3C3E2B1FA6F500B7345D /* FavoriteFactsDisplayManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteFactsDisplayManager.swift; sourceTree = "<group>"; };
 		8D0C38D52ADDC9AB00EBB03A /* SheftAppsStylishUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SheftAppsStylishUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D1CD2CF2EE2525A001B6AD0 /* UserDefaultsKeyNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsKeyNames.swift; sourceTree = "<group>"; };
 		8D2A7B2F2B5B277300142BDA /* SpeakButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeakButton.swift; sourceTree = "<group>"; };
 		8D2A7B352B5B48A400142BDA /* FirestoreNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreNames.swift; sourceTree = "<group>"; };
 		8D31D8522B27B758009F29EE /* APIKeys.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIKeys.swift; sourceTree = "<group>"; };
@@ -144,7 +146,7 @@
 		8DEF074B2B241D5B00F0375F /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
 		8DEF074D2B241DBA00F0375F /* FavoriteFactsDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteFactsDatabase.swift; sourceTree = "<group>"; };
 		8DF48E2E2936A62900152681 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		8DF48E302936A80700152681 /* AppStateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStateManager.swift; sourceTree = "<group>"; };
+		8DF48E302936A80700152681 /* WindowStateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowStateManager.swift; sourceTree = "<group>"; };
 		8DF48E382936B02900152681 /* RandoFactoError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandoFactoError.swift; sourceTree = "<group>"; };
 		8DFEB0A22AFAF64800F57DB1 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		8DFEB0A42AFAF6FD00F57DB1 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -172,6 +174,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8D1CD2CE2EE25239001B6AD0 /* Key and Collection Names */ = {
+			isa = PBXGroup;
+			children = (
+				8D2A7B352B5B48A400142BDA /* FirestoreNames.swift */,
+				8D1CD2CF2EE2525A001B6AD0 /* UserDefaultsKeyNames.swift */,
+			);
+			path = "Key and Collection Names";
+			sourceTree = "<group>";
+		};
 		8D31D8542B27C0C0009F29EE /* App Pages */ = {
 			isa = PBXGroup;
 			children = (
@@ -207,7 +218,7 @@
 		8D5E25112B606AC400B51730 /* Main Model Objects */ = {
 			isa = PBXGroup;
 			children = (
-				8DF48E302936A80700152681 /* AppStateManager.swift */,
+				8DF48E302936A80700152681 /* WindowStateManager.swift */,
 				8DA2C420292C1E6000705A2F /* FactGenerator.swift */,
 				8D5E9A292B226DE800C261B8 /* NetworkConnectionManager.swift */,
 				8DEB531E2BBB4E5400788A04 /* PreviewManager.swift */,
@@ -243,7 +254,7 @@
 			isa = PBXGroup;
 			children = (
 				8DEF074D2B241DBA00F0375F /* FavoriteFactsDatabase.swift */,
-				8D0A3C3E2B1FA6F500B7345D /* FavoriteFactsListDisplayManager.swift */,
+				8D0A3C3E2B1FA6F500B7345D /* FavoriteFactsDisplayManager.swift */,
 			);
 			path = "Favorite Facts";
 			sourceTree = "<group>";
@@ -354,7 +365,7 @@
 				8DCE5DE32B080A8C00DD3CE7 /* Pages */,
 				8D63D5F72AFEBBE90084BACF /* Authentication */,
 				8D55113E2B05976800BB61D4 /* Error Handling */,
-				8D2A7B352B5B48A400142BDA /* FirestoreNames.swift */,
+				8D1CD2CE2EE25239001B6AD0 /* Key and Collection Names */,
 				8D5E25122B6198B500B51730 /* URLRequestExtension.swift */,
 			);
 			path = Model;
@@ -513,7 +524,7 @@
 				8DCE5DE92B084F6000DD3CE7 /* UnfavoriteAllButton.swift in Sources */,
 				8D2A7B302B5B277300142BDA /* SpeakButton.swift in Sources */,
 				8DFEB0A32AFAF64800F57DB1 /* SettingsView.swift in Sources */,
-				8DF48E312936A80700152681 /* AppStateManager.swift in Sources */,
+				8DF48E312936A80700152681 /* WindowStateManager.swift in Sources */,
 				8DFEB0A72AFAF77800F57DB1 /* FactView.swift in Sources */,
 				8DEB531F2BBB4E5400788A04 /* PreviewManager.swift in Sources */,
 				8DCE5DE52B080AA200DD3CE7 /* SettingsPage.swift in Sources */,
@@ -545,10 +556,11 @@
 				8D86430E2AEC594F0084C772 /* AuthenticationFormType.swift in Sources */,
 				8D87C83E2B0306A7009BBE56 /* FavoriteFact.swift in Sources */,
 				8D87C8402B030890009BBE56 /* UserReference.swift in Sources */,
+				8D1CD2D02EE2525A001B6AD0 /* UserDefaultsKeyNames.swift in Sources */,
 				8DEF074C2B241D5B00F0375F /* AuthenticationManager.swift in Sources */,
 				8D95DD242BDAF888006FAE63 /* DisplaySettingsPageView.swift in Sources */,
 				8D8899E02AFDF3D100BDDDFD /* AuthenticationMessageType.swift in Sources */,
-				8D0A3C3F2B1FA6F500B7345D /* FavoriteFactsListDisplayManager.swift in Sources */,
+				8D0A3C3F2B1FA6F500B7345D /* FavoriteFactsDisplayManager.swift in Sources */,
 				8DA2C412292C1E1100705A2F /* RandoFactoApp.swift in Sources */,
 				8DCF671F297F58B7006DE41E /* FavoriteFactsListView.swift in Sources */,
 				8DCE5DE72B08272B00DD3CE7 /* RandoFactoCommands.swift in Sources */,
@@ -705,6 +717,7 @@
 				ENABLE_USER_SELECTED_FILES = readwrite;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "RandoFacto/Supporting Files/Info.plist";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022-2025 SheftApps. All rights reserved.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -761,6 +774,7 @@
 				ENABLE_USER_SELECTED_FILES = readwrite;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "RandoFacto/Supporting Files/Info.plist";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022-2025 SheftApps. All rights reserved.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;

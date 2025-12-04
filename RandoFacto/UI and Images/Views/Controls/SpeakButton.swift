@@ -14,7 +14,7 @@ struct SpeakButton: View {
 
     // MARK: - Properties - App State Manager
 
-    @EnvironmentObject var appStateManager: AppStateManager
+    @EnvironmentObject var windowStateManager: WindowStateManager
 
     // MARK: - Properties - Strings
 
@@ -35,9 +35,9 @@ struct SpeakButton: View {
 
     var body: some View {
         Button {
-            appStateManager.speakFact(fact: fact)
+            windowStateManager.speakFact(fact: fact)
         } label: {
-            Label(appStateManager.factBeingSpoken == fact ? (useShortTitle ? "Stop" : "Stop Speaking") : (useShortTitle ? "Speak" : "Speak Fact"), systemImage: appStateManager.factBeingSpoken == fact ? "stop" : speechSymbolName)
+            Label(windowStateManager.factBeingSpoken == fact ? (useShortTitle ? "Stop" : "Stop Speaking") : (useShortTitle ? "Speak" : "Speak Fact"), systemImage: windowStateManager.factBeingSpoken == fact ? "stop" : speechSymbolName)
                 .frame(width: 30)
                 .animatedSymbolReplacement()
         }

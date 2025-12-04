@@ -14,7 +14,7 @@ struct AdvancedSettingsPageView: View {
 
     // MARK: - Properties - Objects
 
-    @EnvironmentObject var appStateManager: AppStateManager
+    @EnvironmentObject var windowStateManager: WindowStateManager
 
     @EnvironmentObject var networkConnectionManager: NetworkConnectionManager
 
@@ -36,7 +36,7 @@ struct AdvancedSettingsPageView: View {
             }
             Section {
                 Button(role: .destructive) {
-                    appStateManager.showingResetAlert = true
+                    windowStateManager.showingResetAlert = true
                 } label: {
                     Label("RESET ALL SETTINGS…", systemImage: "trash.fill")
 #if !os(macOS)
@@ -48,12 +48,12 @@ struct AdvancedSettingsPageView: View {
         }
         .formStyle(.grouped)
         // Reset alert
-        .alert("Are you sure you REALLY want to reset \(appName!)?", isPresented: $appStateManager.showingResetAlert) {
+        .alert("Are you sure you REALLY want to reset \(appName!)?", isPresented: $windowStateManager.showingResetAlert) {
             Button("Cancel", role: .cancel) {
-                appStateManager.showingResetAlert = false
+                windowStateManager.showingResetAlert = false
             }
             Button("Reset", role: .destructive) {
-                appStateManager.resetApp()
+                windowStateManager.resetApp()
             }
         } message: {
             Text("This will reset all settings to default\(authenticationManager.userLoggedIn ? " and log you out of your account" : String()). This can't be undone!")

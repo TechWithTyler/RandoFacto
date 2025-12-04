@@ -15,14 +15,14 @@ struct SettingsView: View {
 
     // MARK: - Properties - Objects
 
-    @EnvironmentObject var appStateManager: AppStateManager
+    @EnvironmentObject var windowStateManager: WindowStateManager
 
     @EnvironmentObject var authenticationManager: AuthenticationManager
 
     // MARK: - Body
 
     var body: some View {
-        if appStateManager.isLoading {
+        if windowStateManager.isLoading {
 #if os(macOS)
             SAMVisualEffectViewSwiftUIRepresentable(activeState: .active) {
                 loadingDisplay
@@ -34,7 +34,7 @@ struct SettingsView: View {
         } else {
 #if os(macOS)
             // macOS settings window
-            TabView(selection: $appStateManager.selectedSettingsPage) {
+            TabView(selection: $windowStateManager.selectedSettingsPage) {
                 SAMVisualEffectViewSwiftUIRepresentable(activeState: .active) {
                     DisplaySettingsPageView()
                 }

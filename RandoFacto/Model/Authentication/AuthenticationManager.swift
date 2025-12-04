@@ -20,7 +20,7 @@ class AuthenticationManager: ObservableObject {
     @Published var firebaseAuthentication: Authentication
     
     var favoriteFactsDatabase: FavoriteFactsDatabase? = nil
-    
+
     var networkConnectionManager: NetworkConnectionManager
     
     var errorManager: ErrorManager
@@ -96,6 +96,12 @@ class AuthenticationManager: ObservableObject {
     var isDeletingAccount: Bool {
         return accountDeletionStage != nil
     }
+
+    @AppStorage(UserDefaults.KeyNames.favoriteFactsRandomizerEffect) var favoriteFactsRandomizerEffect: Bool = false
+
+    @AppStorage(UserDefaults.KeyNames.skipFavoritesOnFactGeneration) var skipFavoritesOnFactGeneration: Bool = false
+
+    @AppStorage(UserDefaults.KeyNames.initialFact) var initialFact: Int = 0
 
     // MARK: - Properties - Registered Users Listener
     
@@ -387,14 +393,12 @@ class AuthenticationManager: ObservableObject {
     // This method tries to logout the current user, clearing the app's favorite facts list if successful.
     func logoutCurrentUser() {
         do {
-            // 1. Stop the randomizer timer.
-            favoriteFactsDatabase?.stopRandomizerTimer()
-            // 2. Try to logout the current user.
+            // 1. Try to logout the current user.
             try firebaseAuthentication.signOut()
-            // 3. If successful, reset the app's local Firestore data and related settings.
+            // 2. If successful, reset the app's local Firestore data and related settings.
             resetLocalFirestoreData()
         } catch {
-            // 4. If unsuccessful, log an error.
+            // 3. If unsuccessful, log an error.
             DispatchQueue.main.async { [self] in
                 errorManager.showError(error)
             }
@@ -441,11 +445,11 @@ class AuthenticationManager: ObservableObject {
     // This method resets all settings pertaining to favorite facts, which don't apply when logged out and you can't access the favorite facts database.
     func resetFavoriteFactSettings() {
         // 1. Reset the Initial Display setting to "Generate Random Fact".
-        favoriteFactsDatabase?.initialFact = 0
+        initialFact = 0
         // 2. Reset the Skip Favorites On Fact Generation setting to off.
-        favoriteFactsDatabase?.skipFavoritesOnFactGeneration = false
+        skipFavoritesOnFactGeneration = false
         // 3. Reset the Favorite Fact Randomizer Effect setting to off.
-        favoriteFactsDatabase?.favoriteFactsRandomizerEffect = false
+        favoriteFactsRandomizerEffect = false
     }
 
     // This method removes all Firestore listeners from the app when logging out.

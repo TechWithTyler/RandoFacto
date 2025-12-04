@@ -35,50 +35,10 @@ class FavoriteFactsDatabase: ObservableObject {
     // Listens for changes to the current user's favorite facts, whether it's from RandoFacto on this device, RandoFacto on another device, or RandoFacto's Firebase console. Changes are synced to the device.
     var favoriteFactsListener: ListenerRegistration? = nil
 
-    // MARK: - Properties - Booleans
-
-    // Whether RandoFacto should "spin through" a user's favorite facts when getting a random favorite fact. This setting resets to off and is hidden when the user logs out or deletes their account.
-    @AppStorage("favoriteFactsRandomizerEffect") var favoriteFactsRandomizerEffect: Bool = false
-
-    // Whether RandoFacto should generate a new random fact if it generates a fact that matches a favorite.
-    @AppStorage("skipFavoritesOnFactGeneration") var skipFavoritesOnFactGeneration: Bool = false
-
-    // Whether the "delete this favorite fact" alert should be/is being displayed.
-    @Published var showingDeleteFavoriteFact: Bool = false
-    
-    // Whether the "delete all favorite facts" alert should be/is being displayed.
-    @Published var showingDeleteAllFavoriteFacts: Bool = false
-
-    // Whether the randomizer effect is playing.
-    var randomizerRunning: Bool {
-        return randomizerIterations > 0
-    }
-
-    // MARK: - Properties - Strings
-    
-    // The favorite fact to be deleted when pressing "Delete" in the alert.
-    var favoriteFactToDelete: String? = nil
-    
     // MARK: - Properties - Integers
     
     // Whether to display one of the user's favorite facts (1), show the favorite facts list (2), or generate a random fact (0) when the app launches. This setting resets to 0 (Random Fact) and is hidden when the user logs out or deletes their account.
-    @AppStorage("initialFact") var initialFact: Int = 0
-
-    // The maximum number of iterations for the randomizer effect. The randomizer effect starts out fast and gradually slows down, by using the equation randomizerIterations divided by (maxRandomizerIterations times 4).
-    let maxRandomizerIterations: Int = 20
-
-    // The number of iterations the randomizer effect has gone through. The randomizer stops after this property reaches maxRandomizerIterations.
-    var randomizerIterations: Int = 0
-
-    // MARK: - Properties - Floats
-
-    // The blur radius of the fact text view when the randomizer effect is playing.
-    let randomizerBlurRadius: CGFloat = 30
-
-    // MARK: - Properties - Randomizer Timer
-
-    // The timer used for the randomizer effect.
-    var randomizerTimer: Timer? = nil
+    @AppStorage(UserDefaults.KeyNames.initialFact) var initialFact: Int = 0
 
     // MARK: - Initialization
     
@@ -135,39 +95,6 @@ class FavoriteFactsDatabase: ObservableObject {
             // 2. If that fails, log an error.
             errorManager.showError(error)
         }
-    }
-
-    // MARK: - Randomizer Timer - Setup
-
-    // This method sets up the randomizer timer.
-    func setupRandomizerTimer(block: @escaping (() -> Void)) {
-        // 1. Start the randomizerTimer without repeat, since the timer's interval increases as randomizerIterations increases and the time interval of running Timers can't be changed directly.
-        let randomizerTimeInterval = TimeInterval(randomizerIterations) / TimeInterval(maxRandomizerIterations * 4)
-        randomizerTimer = Timer.scheduledTimer(withTimeInterval: randomizerTimeInterval, repeats: false, block: { [self] timer in
-            // 2. If randomizerIterations equals maxRandomizerIterations, stop the timer and reset the count.
-            if randomizerIterations == maxRandomizerIterations {
-                timer.invalidate()
-                randomizerTimer = nil
-                randomizerIterations = 0
-            } else {
-                // 3. Otherwise, increase the count and restart the timer.
-                randomizerIterations += 1
-                timer.invalidate()
-                setupRandomizerTimer {
-                    block()
-                }
-            }
-            block()
-        })
-    }
-
-    // MARK: - Randomizer Timer - Stop
-
-    // This method stops the randomizer timer and sets it to nil.
-    func stopRandomizerTimer() {
-        randomizerTimer?.invalidate()
-        randomizerTimer = nil
-        randomizerIterations = 0
     }
 
     // MARK: - Saving/Deleting

@@ -16,7 +16,7 @@ struct AuthenticationFormView: View {
     
     // MARK: - Properties - Objects
     
-    @EnvironmentObject var appStateManager: AppStateManager
+    @EnvironmentObject var windowStateManager: WindowStateManager
     
     @EnvironmentObject var authenticationManager: AuthenticationManager
     
@@ -199,7 +199,7 @@ struct AuthenticationFormView: View {
 #Preview("Login (Empty)") {
     AuthenticationFormView()
         #if DEBUG
-        .withPreviewData { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
+        .withPreviewData { windowStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsDisplayManager in
             authenticationManager.formType = .login
         }
     #endif
@@ -208,7 +208,7 @@ struct AuthenticationFormView: View {
 #Preview("Login (Forgot Password Button)") {
     AuthenticationFormView()
         #if DEBUG
-        .withPreviewData { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
+        .withPreviewData { windowStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsDisplayManager in
             authenticationManager.formType = .login
             authenticationManager.emailFieldText = "someone@example.com"
         }
@@ -218,7 +218,7 @@ struct AuthenticationFormView: View {
 #Preview("Login (Forgot Password Sent)") {
     AuthenticationFormView()
         #if DEBUG
-        .withPreviewData { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
+        .withPreviewData { windowStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsDisplayManager in
             authenticationManager.formType = .login
             authenticationManager.emailFieldText = "someone@example.com"
             authenticationManager.showingResetPasswordEmailSent = true
@@ -229,7 +229,7 @@ struct AuthenticationFormView: View {
 #Preview("Signup") {
     AuthenticationFormView()
         #if DEBUG
-        .withPreviewData { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
+        .withPreviewData { windowStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsDisplayManager in
             authenticationManager.formType = .signup
         }
     #endif
@@ -238,7 +238,7 @@ struct AuthenticationFormView: View {
 #Preview("Change Password") {
     AuthenticationFormView()
         #if DEBUG
-        .withPreviewData { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
+        .withPreviewData { windowStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsDisplayManager in
             if !authenticationManager.userLoggedIn {
                 authenticationManager.formType = .login
                 authenticationManager.formErrorText = "Change Password preview requires you to be logged in. You can login here using Live Preview mode and try again."

@@ -18,7 +18,7 @@ class PreviewManager: ObservableObject {
 
     // MARK: - Properties - Objects
 
-    var appStateManager: AppStateManager
+    var windowStateManager: WindowStateManager
 
     var errorManager: ErrorManager
 
@@ -28,24 +28,24 @@ class PreviewManager: ObservableObject {
 
     var authenticationManager: AuthenticationManager
 
-    var favoriteFactsListDisplayManager: FavoriteFactsListDisplayManager
+    var favoriteFactsDisplayManager: FavoriteFactsDisplayManager
 
     // MARK: - Initialization
 
-    init(prepBlock: ((AppStateManager, ErrorManager, NetworkConnectionManager, FavoriteFactsDatabase, AuthenticationManager, FavoriteFactsListDisplayManager) -> Void)? = nil) {
+    init(prepBlock: ((WindowStateManager, ErrorManager, NetworkConnectionManager, FavoriteFactsDatabase, AuthenticationManager, FavoriteFactsDisplayManager) -> Void)? = nil) {
         let errorManager = ErrorManager()
         let firestore = Firestore.firestore()
         let firebaseAuthentication = Authentication.auth()
         let networkConnectionManager = NetworkConnectionManager(errorManager: errorManager, firestore: firestore)
         let authenticationManager = AuthenticationManager(firebaseAuthentication: firebaseAuthentication, networkConnectionManager: networkConnectionManager, errorManager: errorManager)
         let favoriteFactsDatabase = FavoriteFactsDatabase(firestore: firestore, networkConnectionManager: networkConnectionManager, errorManager: errorManager)
-        let favoriteFactsListDisplayManager = FavoriteFactsListDisplayManager(favoriteFactsDatabase: favoriteFactsDatabase)
-        let appStateManager = AppStateManager(errorManager: errorManager, favoriteFactsDatabase: favoriteFactsDatabase, favoriteFactsListDisplayManager: favoriteFactsListDisplayManager, authenticationManager: authenticationManager)
-        prepBlock?(appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager)
-        self.appStateManager = appStateManager
+        let favoriteFactsDisplayManager = FavoriteFactsDisplayManager(favoriteFactsDatabase: favoriteFactsDatabase)
+        let windowStateManager = WindowStateManager(errorManager: errorManager, favoriteFactsDatabase: favoriteFactsDatabase, favoriteFactsDisplayManager: favoriteFactsDisplayManager, authenticationManager: authenticationManager)
+        prepBlock?(windowStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsDisplayManager)
+        self.windowStateManager = windowStateManager
         self.errorManager = errorManager
         self.networkConnectionManager = networkConnectionManager
-        self.favoriteFactsListDisplayManager = favoriteFactsListDisplayManager
+        self.favoriteFactsDisplayManager = favoriteFactsDisplayManager
         self.favoriteFactsDatabase = favoriteFactsDatabase
         self.authenticationManager = authenticationManager
         self.favoriteFactsDatabase.authenticationManager = authenticationManager

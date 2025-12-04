@@ -16,13 +16,13 @@ struct ContentView: View {
 
     // MARK: - Properties - Objects
 
-    @EnvironmentObject var appStateManager: AppStateManager
+    @EnvironmentObject var windowStateManager: WindowStateManager
 
     @EnvironmentObject var authenticationManager: AuthenticationManager
 
     @EnvironmentObject var favoriteFactsDatabase: FavoriteFactsDatabase
 
-    @EnvironmentObject var favoriteFactSearcher: FavoriteFactsListDisplayManager
+    @EnvironmentObject var favoriteFactsDisplayManager: FavoriteFactsDisplayManager
 
     @EnvironmentObject var networkConnectionManager: NetworkConnectionManager
 
@@ -62,23 +62,23 @@ struct ContentView: View {
         .dialogSeverity(.critical)
 #endif
         // Unfavorite this fact alert
-        .alert("Unfavorite this fact?", isPresented: $favoriteFactsDatabase.showingDeleteFavoriteFact, presenting: $favoriteFactsDatabase.favoriteFactToDelete) { factText in
+        .alert("Unfavorite this fact?", isPresented: $favoriteFactsDisplayManager.showingDeleteFavoriteFact, presenting: $favoriteFactsDisplayManager.favoriteFactToDelete) { factText in
             Button("Unfavorite", role: .destructive) {
                 favoriteFactsDatabase.unfavoriteFact(factText.wrappedValue!)
             }
             Button("Cancel", role: .cancel) {
-                favoriteFactsDatabase.showingDeleteFavoriteFact = false
-                favoriteFactsDatabase.favoriteFactToDelete = nil
+                favoriteFactsDisplayManager.showingDeleteFavoriteFact = false
+                favoriteFactsDisplayManager.favoriteFactToDelete = nil
             }
         } message: { factText in
-            if appStateManager.selectedPage == .randomFact || appStateManager.factText == factText.wrappedValue {
+            if windowStateManager.selectedPage == .randomFact || windowStateManager.factText == factText.wrappedValue {
                 Text("Make sure to re-favorite this fact BEFORE generating a new one if you change your mind!")
             } else {
                 Text("This can't be undone!")
             }
         }
         // Unfavorite all facts alert
-        .alert("Are you sure you REALLY want to unfavorite all facts?", isPresented: $favoriteFactsDatabase.showingDeleteAllFavoriteFacts) {
+        .alert("Are you sure you REALLY want to unfavorite all facts?", isPresented: $favoriteFactsDisplayManager.showingDeleteAllFavoriteFacts) {
             Button("Unfavorite", role: .destructive) {
                 favoriteFactsDatabase.deleteAllFavoriteFactsForCurrentUser { error in
                     if let error = error {
@@ -86,11 +86,11 @@ struct ContentView: View {
                             errorManager.showError(error)
                         }
                     }
-                    favoriteFactsDatabase.showingDeleteAllFavoriteFacts = false
+                    favoriteFactsDisplayManager.showingDeleteAllFavoriteFacts = false
                 }
             }
             Button("Cancel", role: .cancel) {
-                favoriteFactsDatabase.showingDeleteAllFavoriteFacts = false
+                favoriteFactsDisplayManager.showingDeleteAllFavoriteFacts = false
             }
         } message: {
             Text("This can't be undone!")
@@ -99,38 +99,38 @@ struct ContentView: View {
         .dialogSeverity(.critical)
 #endif
         // Onboarding sheet
-        .sheet(isPresented: $appStateManager.showingOnboarding) {
+        .sheet(isPresented: $windowStateManager.showingOnboarding) {
             OnboardingView()
         }
         .onAppear {
-            if appStateManager.shouldOnboard {
-                appStateManager.showingOnboarding = true
+            if windowStateManager.shouldOnboard {
+                windowStateManager.showingOnboarding = true
             }
         }
         // Nil selection catcher
         .onChange(of: horizontalSizeClass) { oldSizeClass, newSizeClass in
-            if appStateManager.selectedPage == nil && newSizeClass != .compact {
-                appStateManager.selectedPage = .randomFact
+            if windowStateManager.selectedPage == nil && newSizeClass != .compact {
+                windowStateManager.selectedPage = .randomFact
             }
         }
-        .onChange(of: appStateManager.selectedPage) { oldPage, newPage in
+        .onChange(of: windowStateManager.selectedPage) { oldPage, newPage in
             if newPage == nil && horizontalSizeClass == .regular {
-                appStateManager.selectedPage = .randomFact
+                windowStateManager.selectedPage = .randomFact
             }
         }
         // User login state change/user deletion
         .onChange(of: authenticationManager.accountDeletionStage) { oldDeletionStage, newDeletionStage in
             if newDeletionStage != nil {
-                favoriteFactsDatabase.showingDeleteFavoriteFact = false
-                favoriteFactsDatabase.showingDeleteAllFavoriteFacts = false
-                appStateManager.dismissFavoriteFacts()
+                favoriteFactsDisplayManager.showingDeleteFavoriteFact = false
+                favoriteFactsDisplayManager.showingDeleteAllFavoriteFacts = false
+                windowStateManager.dismissFavoriteFacts()
             }
         }
         .onChange(of: authenticationManager.userLoggedIn) { wasLoggedIn, isLoggedIn in
             if !isLoggedIn {
-                favoriteFactsDatabase.showingDeleteFavoriteFact = false
-                favoriteFactsDatabase.showingDeleteAllFavoriteFacts = false
-                appStateManager.dismissFavoriteFacts()
+                favoriteFactsDisplayManager.showingDeleteFavoriteFact = false
+                favoriteFactsDisplayManager.showingDeleteAllFavoriteFacts = false
+                windowStateManager.dismissFavoriteFacts()
             }
         }
         // Error sound (Mac) or haptics (iPhone)
@@ -143,13 +143,14 @@ struct ContentView: View {
 #endif
             }
         }
+        .focusedSceneObject(windowStateManager)
     }
 
     // MARK: - Sidebar
 
     @ViewBuilder
     var sidebarContent: some View {
-        List(selection: $appStateManager.selectedPage) {
+        List(selection: $windowStateManager.selectedPage) {
             // We can't simply iterate through the AppPage enum's cases to create the navigation links, as one of them (Favorite Facts) only appears when a condition (user logged in and not being deleted) is true.
             NavigationLink(value: AppPage.randomFact) {
                 label(for: .randomFact)
@@ -158,7 +159,7 @@ struct ContentView: View {
                 NavigationLink(value: AppPage.favoriteFacts) {
                     label(for: .favoriteFacts)
                 }
-                .disabled(appStateManager.factText == generatingRandomFactString || favoriteFactsDatabase.randomizerRunning)
+                .disabled(windowStateManager.factText == generatingRandomFactString || favoriteFactsDisplayManager.randomizerRunning)
                 .contextMenu {
                     UnfavoriteAllButton()
                         .environmentObject(favoriteFactsDatabase)
@@ -180,7 +181,7 @@ struct ContentView: View {
 
     @ViewBuilder
     var mainContent: some View {
-        switch appStateManager.selectedPage {
+        switch windowStateManager.selectedPage {
         case .randomFact, nil:
             FactView()
         case .favoriteFacts:
@@ -220,8 +221,8 @@ struct ContentView: View {
 #Preview("Loading") {
     ContentView()
 #if DEBUG
-        .withPreviewData { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
-            appStateManager.factText = loadingString
+        .withPreviewData { windowStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsDisplayManager in
+            windowStateManager.factText = loadingString
         }
 #endif
 }
@@ -229,8 +230,8 @@ struct ContentView: View {
 #Preview("Loaded") {
     ContentView()
 #if DEBUG
-        .withPreviewData { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
-            appStateManager.factText = sampleFact
+        .withPreviewData { windowStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsDisplayManager in
+            windowStateManager.factText = sampleFact
         }
 #endif
 }
@@ -238,8 +239,8 @@ struct ContentView: View {
 #Preview("Generating") {
     ContentView()
 #if DEBUG
-        .withPreviewData { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
-            appStateManager.factText = generatingRandomFactString
+        .withPreviewData { windowStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsDisplayManager in
+            windowStateManager.factText = generatingRandomFactString
         }
 #endif
 }

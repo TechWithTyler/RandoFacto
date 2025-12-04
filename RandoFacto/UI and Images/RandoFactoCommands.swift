@@ -15,11 +15,13 @@ struct RandoFactoCommands: Commands {
 
     // MARK: - Properties - Objects
 
-    @ObservedObject var appStateManager: AppStateManager
+    @FocusedObject var windowStateManager: WindowStateManager?
+
+    @FocusedObject var favoriteFactsDisplayManager: FavoriteFactsDisplayManager?
+
+    @EnvironmentObject var errorManager: ErrorManager
     
     @ObservedObject var networkConnectionManager: NetworkConnectionManager
-    
-    @ObservedObject var errorManager: ErrorManager
     
     @ObservedObject var authenticationManager: AuthenticationManager
     
@@ -31,10 +33,11 @@ struct RandoFactoCommands: Commands {
         CommandGroup(replacing: .undoRedo) {}
         CommandGroup(replacing: .importExport) {}
         CommandGroup(replacing: .printItem) {}
+        if let windowStateManager = windowStateManager, let favoriteFactsDisplayManager = favoriteFactsDisplayManager {
         CommandGroup(replacing: .textEditing) {
-            SpeakButton(for: appStateManager.factText, useShortTitle: false)
-                .environmentObject(appStateManager)
-                .disabled(appStateManager.factTextDisplayingMessage || appStateManager.selectedPage != .randomFact)
+            SpeakButton(for: windowStateManager.factText, useShortTitle: false)
+                .disabled(windowStateManager.factTextDisplayingMessage || windowStateManager.selectedPage != .randomFact)
+                .environmentObject(windowStateManager)
         }
         CommandGroup(replacing: .help) {
             Button("\(appName!) Help") {
@@ -47,51 +50,52 @@ struct RandoFactoCommands: Commands {
         CommandGroup(replacing: .textFormatting) {
             Section {
                 Button("Increase Fact Text Size") {
-                    appStateManager.factTextSize += 1
+                    windowStateManager.factTextSize += 1
                 }
-                .disabled(appStateManager.factTextSize == SATextViewMaxFontSize)
+                .disabled(windowStateManager.factTextSize == SATextViewMaxFontSize)
                 .keyboardShortcut(KeyEquivalent("+"), modifiers: .command)
                 Button("Decrease Fact Text Size") {
-                    appStateManager.factTextSize -= 1
+                    windowStateManager.factTextSize -= 1
                 }
-                .disabled(appStateManager.factTextSize == SATextViewMinFontSize)
+                .disabled(windowStateManager.factTextSize == SATextViewMinFontSize)
                 .keyboardShortcut(KeyEquivalent("-"), modifiers: .command)
             }
         }
-        CommandMenu("Fact") {
-            Section {
-                Button(generateRandomFactButtonTitle) {
-                    appStateManager.generateRandomFact()
-                }
-                .disabled(!networkConnectionManager.deviceIsOnline || appStateManager.factTextDisplayingMessage)
-                .keyboardShortcut(KeyboardShortcut(KeyEquivalent("g"), modifiers: [.command, .control]))
-                Button(getRandomFavoriteFactButtonTitle) {
-                    appStateManager.getRandomFavoriteFact()
-                }
-                .keyboardShortcut(KeyboardShortcut(KeyEquivalent("g"), modifiers: [.command, .control, .shift]))
-                .disabled(!appStateManager.favoriteFactsAvailable || appStateManager.factTextDisplayingMessage)
-            }
-            .disabled(appStateManager.selectedPage != .randomFact)
-            Section {
-                if !appStateManager.factTextDisplayingMessage && authenticationManager.userLoggedIn && appStateManager.displayedFactIsSaved {
-                    Button("Unfavorite Current Fact…") {
-                        favoriteFactsDatabase.favoriteFactToDelete = appStateManager.factText
-                        favoriteFactsDatabase.showingDeleteFavoriteFact = true
-                    }
-                    .keyboardShortcut(KeyboardShortcut(KeyEquivalent("f"), modifiers: [.command, .shift]))
-                } else {
-                    Button("Favorite Current Fact") {
-                        favoriteFactsDatabase.saveFactToFavorites(appStateManager.factText)
-                    }
-                    .keyboardShortcut(KeyboardShortcut(KeyEquivalent("f"), modifiers: [.command, .shift]))
-                    .disabled(appStateManager.factTextDisplayingMessage || appStateManager.factText == factUnavailableString || !authenticationManager.userLoggedIn)
-                }
-            }
-            .disabled(appStateManager.selectedPage != .randomFact)
-            if authenticationManager.userLoggedIn {
+            CommandMenu("Fact") {
                 Section {
-                    UnfavoriteAllButton()
-                        .environmentObject(favoriteFactsDatabase)
+                    Button(generateRandomFactButtonTitle) {
+                        windowStateManager.generateRandomFact()
+                    }
+                    .disabled(!networkConnectionManager.deviceIsOnline || windowStateManager.factTextDisplayingMessage)
+                    .keyboardShortcut(KeyboardShortcut(KeyEquivalent("g"), modifiers: [.command, .control]))
+                    Button(getRandomFavoriteFactButtonTitle) {
+                        windowStateManager.getRandomFavoriteFact()
+                    }
+                    .keyboardShortcut(KeyboardShortcut(KeyEquivalent("g"), modifiers: [.command, .control, .shift]))
+                    .disabled(!windowStateManager.favoriteFactsAvailable || windowStateManager.factTextDisplayingMessage)
+                }
+                .disabled(windowStateManager.selectedPage != .randomFact)
+                Section {
+                    if !windowStateManager.factTextDisplayingMessage && authenticationManager.userLoggedIn && windowStateManager.displayedFactIsSaved {
+                        Button("Unfavorite Current Fact…") {
+                            favoriteFactsDisplayManager.favoriteFactToDelete = windowStateManager.factText
+                            favoriteFactsDisplayManager.showingDeleteFavoriteFact = true
+                        }
+                        .keyboardShortcut(KeyboardShortcut(KeyEquivalent("f"), modifiers: [.command, .shift]))
+                    } else {
+                        Button("Favorite Current Fact") {
+                            favoriteFactsDatabase.saveFactToFavorites(windowStateManager.factText)
+                        }
+                        .keyboardShortcut(KeyboardShortcut(KeyEquivalent("f"), modifiers: [.command, .shift]))
+                        .disabled(windowStateManager.factTextDisplayingMessage || windowStateManager.factText == factUnavailableString || !authenticationManager.userLoggedIn)
+                    }
+                }
+                .disabled(windowStateManager.selectedPage != .randomFact)
+                if authenticationManager.userLoggedIn {
+                    Section {
+                        UnfavoriteAllButton()
+                            .environmentObject(favoriteFactsDatabase)
+                    }
                 }
             }
         }

@@ -15,26 +15,26 @@ struct SpeechSettingsPageView: View {
 
     // MARK: - Properties - App State Manager
 
-    @EnvironmentObject var appStateManager: AppStateManager
+    @EnvironmentObject var windowStateManager: WindowStateManager
 
     // MARK: - Body
 
     var body: some View {
         Form {
             Section(footer: Text("This is the voice \(appName!) will use to read facts aloud.")) {
-                VoicePicker(selectedVoiceID: $appStateManager.selectedVoiceID, voices: appStateManager.voices) { voice in
-                    appStateManager.speakFact(fact: sampleFact, forSettingsPreview: true)
+                VoicePicker(selectedVoiceID: $windowStateManager.selectedVoiceID, voices: windowStateManager.voices) { voice in
+                    windowStateManager.speakFact(fact: sampleFact, forSettingsPreview: true)
                     }
-                PlayButton(noun: "Sample Fact", isPlaying: appStateManager.factBeingSpoken == sampleFact) {
-                    if appStateManager.factBeingSpoken == sampleFact {
-                        appStateManager.speechSynthesizer.stopSpeaking(at: .immediate)
+                PlayButton(noun: "Sample Fact", isPlaying: windowStateManager.factBeingSpoken == sampleFact) {
+                    if windowStateManager.factBeingSpoken == sampleFact {
+                        windowStateManager.speechSynthesizer.stopSpeaking(at: .immediate)
                     } else {
-                        appStateManager.speakFact(fact: sampleFact, forSettingsPreview: true)
+                        windowStateManager.speakFact(fact: sampleFact, forSettingsPreview: true)
                     }
                 }
             }
             .onAppear {
-                appStateManager.loadVoices()
+                windowStateManager.loadVoices()
             }
         }
         .formStyle(.grouped)

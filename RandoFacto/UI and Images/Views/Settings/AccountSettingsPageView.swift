@@ -15,7 +15,7 @@ struct AccountSettingsPageView: View {
 
     // MARK: - Properties - Objects
 
-    @EnvironmentObject var appStateManager: AppStateManager
+    @EnvironmentObject var windowStateManager: WindowStateManager
 
     @EnvironmentObject var networkConnectionManager: NetworkConnectionManager
 
@@ -135,7 +135,7 @@ struct AccountSettingsPageView: View {
         // Authentication form
         .sheet(item: $authenticationManager.formType) { _ in
             AuthenticationFormView()
-                .environmentObject(appStateManager)
+                .environmentObject(windowStateManager)
                 .environmentObject(networkConnectionManager)
                 .environmentObject(authenticationManager)
                 .environmentObject(errorManager)

@@ -15,11 +15,13 @@ struct FactView: View {
 
     // MARK: - Properties - Objects
 
-    @EnvironmentObject var appStateManager: AppStateManager
+    @EnvironmentObject var windowStateManager: WindowStateManager
 
     @EnvironmentObject var authenticationManager: AuthenticationManager
 
     @EnvironmentObject var favoriteFactsDatabase: FavoriteFactsDatabase
+
+    @EnvironmentObject var favoriteFactsDisplayManager: FavoriteFactsDisplayManager
 
     @EnvironmentObject var networkConnectionManager: NetworkConnectionManager
 
@@ -58,7 +60,7 @@ struct FactView: View {
             toolbarContent
         }
 #if os(iOS) || os(macOS)
-        .onChange(of: favoriteFactsDatabase.randomizerIterations) { oldValue, newValue in
+        .onChange(of: favoriteFactsDisplayManager.randomizerIterations) { oldValue, newValue in
 #if os(iOS)
             // iPhone supports a wide range of intensities for its haptics.
             randomizerHaptics.impactOccurred(intensity: 0.5)
@@ -74,15 +76,15 @@ struct FactView: View {
 
     @ViewBuilder
     var factTextView: some View {
-        let canSelectFactText = !(appStateManager.factTextDisplayingMessage || appStateManager.factText == factUnavailableString || favoriteFactsDatabase.randomizerRunning)
-        ScrollableText(appStateManager.factText)
+        let canSelectFactText = !(windowStateManager.factTextDisplayingMessage || windowStateManager.factText == factUnavailableString || favoriteFactsDisplayManager.randomizerRunning)
+        ScrollableText(windowStateManager.factText)
             .multilineTextAlignment(.center)
-            .font(.system(size: CGFloat(appStateManager.factTextSize)))
-            .animation(.default, value: appStateManager.factTextSize)
+            .font(.system(size: CGFloat(windowStateManager.factTextSize)))
+            .animation(.default, value: windowStateManager.factTextSize)
             .isTextSelectable(canSelectFactText)
-            .blur(radius: favoriteFactsDatabase.randomizerRunning ? favoriteFactsDatabase.randomizerBlurRadius : 0)
-            .accessibilityHidden(favoriteFactsDatabase.randomizerRunning)
-            .scrollDisabled(favoriteFactsDatabase.randomizerRunning)
+            .blur(radius: favoriteFactsDisplayManager.randomizerRunning ? favoriteFactsDisplayManager.randomizerBlurRadius : 0)
+            .accessibilityHidden(favoriteFactsDisplayManager.randomizerRunning)
+            .scrollDisabled(favoriteFactsDisplayManager.randomizerRunning)
     }
 
     // MARK: - Fact Text Size Buttons
@@ -92,24 +94,24 @@ struct FactView: View {
     var factTextSizeButtons: some View {
         VStack {
             Text("Fact Text Size")
-            Text("\(appStateManager.factTextSizeAsInt)pt")
+            Text("\(windowStateManager.factTextSizeAsInt)pt")
             HStack(spacing: 0) {
                 Button {
-                    appStateManager.factTextSize -= 1
+                    windowStateManager.factTextSize -= 1
                 } label: {
                     Label("Decrease Fact Text Size", systemImage: "textformat.size.smaller")
                         .frame(width: 105, height: 20)
                 }
                 .hoverEffect(.highlight)
-                .disabled(appStateManager.factTextSize == SATextViewMinFontSize)
+                .disabled(windowStateManager.factTextSize == SATextViewMinFontSize)
                 Button {
-                    appStateManager.factTextSize += 1
+                    windowStateManager.factTextSize += 1
                 } label: {
                     Label("Increase Fact Text Size", systemImage: "textformat.size.larger")
                         .frame(width: 105, height: 20)
                 }
                 .hoverEffect(.highlight)
-                .disabled(appStateManager.factTextSize == SATextViewMaxFontSize)
+                .disabled(windowStateManager.factTextSize == SATextViewMaxFontSize)
             }
             .font(.system(size: 25))
             .labelStyle(.iconOnly)
@@ -124,9 +126,9 @@ struct FactView: View {
     @ViewBuilder
     var factGenerationButtons: some View {
         ConditionalHVStack {
-            if appStateManager.favoriteFactsAvailable {
+            if windowStateManager.favoriteFactsAvailable {
                 Button {
-                    appStateManager.getRandomFavoriteFact()
+                    windowStateManager.getRandomFavoriteFact()
                 } label: {
                     Label(getRandomFavoriteFactButtonTitle, systemImage: "star")
                         .frame(width: factGenerationButtonWidth)
@@ -139,7 +141,7 @@ struct FactView: View {
             }
             if networkConnectionManager.deviceIsOnline {
                 Button {
-                    appStateManager.generateRandomFact()
+                    windowStateManager.generateRandomFact()
                 } label: {
                     Label(generateRandomFactButtonTitle, systemImage: "dice")
                         .frame(width: factGenerationButtonWidth)
@@ -155,7 +157,7 @@ struct FactView: View {
         // Sometimes, while a section of code can be used on multiple platforms, you may not want to compile it for all of them. In this case, the large control size is just right for this app on macOS, but not for iOS (bordered buttons on iOS are already large by default because of its touch-first UI), so we use the large control size on macOS but leave it as is on the other platforms.
         .controlSize(.large)
 #endif
-        .disabled(appStateManager.factTextDisplayingMessage)
+        .disabled(windowStateManager.factTextDisplayingMessage)
     }
 
     // MARK: - Footer
@@ -164,7 +166,7 @@ struct FactView: View {
     var creditsText: some View {
         VStack {
             // To include a clickable link in a string, use the format [text](URL), where text is the text to be displayed and URL is the URL the link goes to. String interpolation can't be used in the URL part of a string link.
-            Text("Facts provided by [\(appStateManager.factGenerator.randomFactsAPIName)](https://uselessfacts.jsph.pl).")
+            Text("Facts provided by [\(windowStateManager.factGenerator.randomFactsAPIName)](https://uselessfacts.jsph.pl).")
             if authenticationManager.userLoggedIn {
                 Text("Favorite facts database powered by [Firebase](https://firebase.google.com).")
             }
@@ -179,35 +181,35 @@ struct FactView: View {
 
     @ToolbarContentBuilder
     var toolbarContent: some ToolbarContent {
-        let shouldShowLoadingIndicator = appStateManager.factText.last == "…" || appStateManager.factText.isEmpty || favoriteFactsDatabase.randomizerRunning
+        let shouldShowLoadingIndicator = windowStateManager.factText.last == "…" || windowStateManager.factText.isEmpty || favoriteFactsDisplayManager.randomizerRunning
         if shouldShowLoadingIndicator {
             ToolbarItem(placement: .automatic) {
                 LoadingIndicator()
             }
         } else {
-            if !appStateManager.factTextDisplayingMessage && appStateManager.factText != factUnavailableString {
+            if !windowStateManager.factTextDisplayingMessage && windowStateManager.factText != factUnavailableString {
                 ToolbarItem(placement: .automatic) {
-                    SpeakButton(for: appStateManager.factText)
-                        .help(appStateManager.factBeingSpoken.isEmpty ? "Speak fact" : "Stop speaking")
+                    SpeakButton(for: windowStateManager.factText)
+                        .help(windowStateManager.factBeingSpoken.isEmpty ? "Speak fact" : "Stop speaking")
                 }
                 if authenticationManager.userLoggedIn {
                     ToolbarItem(placement: .automatic) {
                         Button {
                             DispatchQueue.main.async {
-                                if appStateManager.displayedFactIsSaved {
-                                    favoriteFactsDatabase.favoriteFactToDelete = appStateManager.factText
-                                    favoriteFactsDatabase.showingDeleteFavoriteFact = true
+                                if windowStateManager.displayedFactIsSaved {
+                                    favoriteFactsDisplayManager.favoriteFactToDelete = windowStateManager.factText
+                                    favoriteFactsDisplayManager.showingDeleteFavoriteFact = true
                                 } else {
-                                    favoriteFactsDatabase.saveFactToFavorites(appStateManager.factText)
+                                    favoriteFactsDatabase.saveFactToFavorites(windowStateManager.factText)
                                 }
                             }
                         } label: {
-                            Label(appStateManager.displayedFactIsSaved ? "Unfavorite" : "Favorite", systemImage: appStateManager.displayedFactIsSaved ? "star.fill" : "star")
-                                .symbolRenderingMode(appStateManager.displayedFactIsSaved ? .multicolor : .monochrome)
+                            Label(windowStateManager.displayedFactIsSaved ? "Unfavorite" : "Favorite", systemImage: windowStateManager.displayedFactIsSaved ? "star.fill" : "star")
+                                .symbolRenderingMode(windowStateManager.displayedFactIsSaved ? .multicolor : .monochrome)
                                 .animatedSymbolReplacement()
                         }
-                        .help(appStateManager.displayedFactIsSaved ? "Unfavorite This Fact" : "Favorite This Fact")
-                        .disabled(appStateManager.factText == factUnavailableString || authenticationManager.isDeletingAccount)
+                        .help(windowStateManager.displayedFactIsSaved ? "Unfavorite This Fact" : "Favorite This Fact")
+                        .disabled(windowStateManager.factText == factUnavailableString || authenticationManager.isDeletingAccount)
                     }
                 }
             }
@@ -221,8 +223,8 @@ struct FactView: View {
 #Preview("Loading") {
     FactView()
         #if DEBUG
-        .withPreviewData { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
-            appStateManager.factText = loadingString
+        .withPreviewData { windowStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsDisplayManager in
+            windowStateManager.factText = loadingString
         }
     #endif
 }
@@ -230,8 +232,8 @@ struct FactView: View {
 #Preview("Loaded") {
     FactView()
         #if DEBUG
-        .withPreviewData { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
-            appStateManager.factText = sampleFact
+        .withPreviewData { windowStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsDisplayManager in
+            windowStateManager.factText = sampleFact
         }
     #endif
 }
@@ -239,8 +241,8 @@ struct FactView: View {
 #Preview("Generating") {
     FactView()
         #if DEBUG
-        .withPreviewData { appStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsListDisplayManager in
-            appStateManager.factText = generatingRandomFactString
+        .withPreviewData { windowStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsDisplayManager in
+            windowStateManager.factText = generatingRandomFactString
         }
     #endif
 }

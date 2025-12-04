@@ -1,5 +1,5 @@
 //
-//  AppStateManager.swift
+//  WindowStateManager.swift
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 11/29/22.
@@ -14,7 +14,7 @@ import Speech
 import SheftAppsStylishUI
 
 // Manages the fact generation/display and pages. This is not to be confused with an NSApplicationDelegate or UIApplicationDelegate.
-class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
+class WindowStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
 
     // MARK: - Properties - Objects
 
@@ -28,7 +28,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
 
     var favoriteFactsDatabase: FavoriteFactsDatabase
 
-    var favoriteFactsListDisplayManager: FavoriteFactsListDisplayManager
+    var favoriteFactsDisplayManager: FavoriteFactsDisplayManager
 
     var authenticationManager: AuthenticationManager
 
@@ -45,7 +45,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
 
     // The @AppStorage property wrapper binds a property to the given UserDefaults key name. Such properties behave the same as UserDefaults get/set properties such as the "5- or 10-frame" setting in SkippyNums, but with the added benefit of automatic UI refreshing.
     // The ID string of the currently selected voice.
-    @AppStorage("selectedVoiceID") var selectedVoiceID: String = SADefaultVoiceID
+    @AppStorage(UserDefaults.KeyNames.selectedVoiceID) var selectedVoiceID: String = SADefaultVoiceID
 
     // The voices that are currently available on the device.
     @Published var voices: [AVSpeechSynthesisVoice] = []
@@ -53,7 +53,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     // MARK: - Properties - Doubles
 
     // The text size for facts.
-    @AppStorage("factTextSize") var factTextSize: Double = SATextViewMinFontSize
+    @AppStorage(UserDefaults.KeyNames.factTextSize) var factTextSize: Double = SATextViewMinFontSize
 
     // MARK: - Properties - Integers
 
@@ -73,13 +73,13 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
 
 #if os(macOS)
     // The page currently selected in the Settings window on macOS.
-    @AppStorage("selectedSettingsPage") var selectedSettingsPage: SettingsPage = .display
+    @AppStorage(UserDefaults.KeyNames.selectedSettingsPage) var selectedSettingsPage: SettingsPage = .display
 #endif
 
     // MARK: - Properties - Booleans
 
     // Whether the onboarding sheet should appear on the next app launch (i.e., the first launch of version 2024.2 or later, or after resetting the app).
-    @AppStorage("shouldOnboard") var shouldOnboard: Bool = true
+    @AppStorage(UserDefaults.KeyNames.shouldOnboard) var shouldOnboard: Bool = true
 
     // Whether the onboarding sheet should be/is being displayed.
     @Published var showingOnboarding: Bool = false
@@ -99,7 +99,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
 
     // Whether the fact text view is displaying something other than a fact (i.e., a loading message).
     var factTextDisplayingMessage: Bool {
-        return isLoading || factText == generatingRandomFactString || favoriteFactsDatabase.randomizerRunning
+        return isLoading || factText == generatingRandomFactString || favoriteFactsDisplayManager.randomizerRunning
     }
 
     // Whether the displayed fact is saved as a favorite.
@@ -109,11 +109,11 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
 
     // MARK: - Initialization
 
-    init(errorManager: ErrorManager, favoriteFactsDatabase: FavoriteFactsDatabase, favoriteFactsListDisplayManager: FavoriteFactsListDisplayManager, authenticationManager: AuthenticationManager) {
+    init(errorManager: ErrorManager, favoriteFactsDatabase: FavoriteFactsDatabase, favoriteFactsDisplayManager: FavoriteFactsDisplayManager, authenticationManager: AuthenticationManager) {
         // 1. Link the managers.
         self.errorManager = errorManager
         self.favoriteFactsDatabase = favoriteFactsDatabase
-        self.favoriteFactsListDisplayManager = favoriteFactsListDisplayManager
+        self.favoriteFactsDisplayManager = favoriteFactsDisplayManager
         self.authenticationManager = authenticationManager
         super.init()
         // 3. Set the speech synthesizer delegate and load the list of installed voices.
@@ -158,7 +158,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
             DispatchQueue.main.async { [self] in
                 if let fact = fact {
                     // 3. If we get a fact, display it. If it matches a favorite fact and "Skip Favorites On Fact Generation" is enabled, generate a new random fact until we get a non-favorite.
-                    if favoriteFactsDatabase.favoriteFacts.contains(where: {$0.text == fact}) && favoriteFactsDatabase.skipFavoritesOnFactGeneration {
+                    if favoriteFactsDatabase.favoriteFacts.contains(where: {$0.text == fact}) && favoriteFactsDisplayManager.skipFavoritesOnFactGeneration {
                         generateRandomFact()
                     } else {
                         factText = fact
@@ -174,7 +174,7 @@ class AppStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
 
 }
 
-extension AppStateManager {
+extension WindowStateManager {
 
     // MARK: - Favorite Facts - Get Random Favorite Fact
 
@@ -190,15 +190,15 @@ extension AppStateManager {
             speechSynthesizer.stopSpeaking(at: .immediate)
             dismissFavoriteFacts()
             // 3. If the randomizer effect is enabled and there are at least 5 favorite facts, start the randomizer timer, calling the above block with each iteration.
-            if favoriteFactsDatabase.favoriteFactsRandomizerEffect && favoriteFactsDatabase.favoriteFacts.count >= 5 {
-                favoriteFactsDatabase.setupRandomizerTimer {
+            if favoriteFactsDisplayManager.favoriteFactsRandomizerEffect && favoriteFactsDatabase.favoriteFacts.count >= 5 {
+                favoriteFactsDisplayManager.setupRandomizerTimer {
                     withAnimation {
                         block()
                     }
                 }
             } else {
                 // 4. Otherwise, nil-out the randomizer timer and call the above block once.
-                favoriteFactsDatabase.stopRandomizerTimer()
+                favoriteFactsDisplayManager.stopRandomizerTimer()
                 block()
             }
         }
@@ -230,7 +230,7 @@ extension AppStateManager {
 
 }
 
-extension AppStateManager {
+extension WindowStateManager {
     
     // MARK: - Speech - Load Voices
     
@@ -278,7 +278,7 @@ extension AppStateManager {
     
 }
 
-extension AppStateManager {
+extension WindowStateManager {
 
     // MARK: - Reset
 
@@ -289,8 +289,8 @@ extension AppStateManager {
         // 2. Reset all in-app/non-accessibility settings.
         factTextSize = SATextViewMinFontSize
         selectedPage = .randomFact
-        favoriteFactsListDisplayManager.searchText.removeAll()
-        favoriteFactsListDisplayManager.sortFavoriteFactsAscending = false
+        favoriteFactsDisplayManager.searchText.removeAll()
+        favoriteFactsDisplayManager.sortFavoriteFactsAscending = false
         selectedVoiceID = SADefaultVoiceID
         // 3. Reset the selected settings page on macOS.
         #if os(macOS)
