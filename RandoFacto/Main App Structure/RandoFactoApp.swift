@@ -96,14 +96,13 @@ struct RandoFactoApp: App {
                 favoriteFactsDisplayManager: favoriteFactsDisplayManager,
                 authenticationManager: authenticationManager
             )
-
             ContentView()
-                .environmentObject(windowStateManager)
                 .environmentObject(networkConnectionManager)
-                .environmentObject(windowErrorManager)
                 .environmentObject(favoriteFactsDatabase)
                 .environmentObject(authenticationManager)
+                .environmentObject(windowStateManager)
                 .environmentObject(favoriteFactsDisplayManager)
+                .environmentObject(windowErrorManager)
             #if !os(macOS)
                 .pickerStyle(.navigationLink)
             #endif
@@ -118,18 +117,16 @@ struct RandoFactoApp: App {
 		Settings {
             let windowErrorManager = ErrorManager()
             let favoriteFactsDisplayManager = FavoriteFactsDisplayManager(favoriteFactsDatabase: favoriteFactsDatabase)
-            let windowStateManager = WindowStateManager(
-                errorManager: windowErrorManager,
-                favoriteFactsDatabase: favoriteFactsDatabase,
+            let windowStateManager = WindowStateManager(favoriteFactsDatabase: favoriteFactsDatabase,
                 favoriteFactsDisplayManager: favoriteFactsDisplayManager,
                 authenticationManager: authenticationManager
             )
 			SettingsView()
                 .environmentObject(networkConnectionManager)
-                .environmentObject(errorManager)
                 .environmentObject(favoriteFactsDatabase)
                 .environmentObject(authenticationManager)
                 .environmentObject(windowStateManager)
+                .environmentObject(windowErrorManager)
                 .environmentObject(favoriteFactsDisplayManager)
 		}
 		#endif

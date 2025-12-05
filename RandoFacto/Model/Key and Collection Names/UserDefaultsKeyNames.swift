@@ -3,12 +3,7 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 12/4/25.
-//  Copyright © 2025 SheftApps. All rights reserved.
-//
-
-import Foundation
-
-//  Copyright © 2024-2026 SheftApps. All rights reserved.
+//  Copyright © 2022-2026 SheftApps. All rights reserved.
 //
 
 // MARK: - Imports

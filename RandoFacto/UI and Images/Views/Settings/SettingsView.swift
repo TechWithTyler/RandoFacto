@@ -19,6 +19,8 @@ struct SettingsView: View {
 
     @EnvironmentObject var authenticationManager: AuthenticationManager
 
+    @EnvironmentObject var errorManager: ErrorManager
+
     // MARK: - Body
 
     var body: some View {
@@ -82,6 +84,22 @@ struct SettingsView: View {
                 }
                 .tag(SettingsPage.developer)
 #endif
+            }
+            // Error alert
+            .alert(isPresented: $errorManager.showingErrorAlert, error: errorManager.errorToShow) {
+                Button {
+                    errorManager.showingErrorAlert = false
+                    errorManager.errorToShow = nil
+                } label: {
+                    Text("OK")
+                }
+            }
+            .dialogSeverity(.critical)
+            // Error sound
+            .onChange(of: errorManager.errorToShow) { oldError, newError in
+                if newError != nil {
+                    NSSound.beep()
+                }
             }
 #else
             // iOS/visionOS settings page

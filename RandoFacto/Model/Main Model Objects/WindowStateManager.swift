@@ -24,7 +24,7 @@ class WindowStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegat
 #endif
     var factGenerator = FactGenerator()
 
-    var errorManager: ErrorManager
+    var errorManager: ErrorManager?
 
     var favoriteFactsDatabase: FavoriteFactsDatabase
 
@@ -109,7 +109,7 @@ class WindowStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegat
 
     // MARK: - Initialization
 
-    init(errorManager: ErrorManager, favoriteFactsDatabase: FavoriteFactsDatabase, favoriteFactsDisplayManager: FavoriteFactsDisplayManager, authenticationManager: AuthenticationManager) {
+    init(errorManager: ErrorManager? = nil, favoriteFactsDatabase: FavoriteFactsDatabase, favoriteFactsDisplayManager: FavoriteFactsDisplayManager, authenticationManager: AuthenticationManager) {
         // 1. Link the managers.
         self.errorManager = errorManager
         self.favoriteFactsDatabase = favoriteFactsDatabase
@@ -166,7 +166,9 @@ class WindowStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegat
                 } else if let error = error {
                     // 4. If an error occurs, log it.
                     factText = factUnavailableString
-                    errorManager.showError(error)
+                    if let errorManager = errorManager {
+                        errorManager.showError(error)
+                    }
                 }
             }
         }
