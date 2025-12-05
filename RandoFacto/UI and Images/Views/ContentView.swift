@@ -144,6 +144,7 @@ struct ContentView: View {
             }
         }
         .focusedSceneObject(windowStateManager)
+        .focusedSceneObject(favoriteFactsDisplayManager)
     }
 
     // MARK: - Sidebar
