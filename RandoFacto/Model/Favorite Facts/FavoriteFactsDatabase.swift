@@ -43,10 +43,10 @@ class FavoriteFactsDatabase: ObservableObject {
     init(firestore: Firestore, networkConnectionManager: NetworkConnectionManager) {
         self.firestore = firestore
         self.networkConnectionManager = networkConnectionManager
-            loadFavoriteFactsForCurrentUser { error in
-                if let error = error {
-                    fatalError("Failed to load favorite facts: \(error)")
-                }
+        loadFavoriteFactsForCurrentUser { error in
+            if let error = error {
+                fatalError("Failed to load favorite facts: \(error)")
+            }
         }
     }
     
@@ -56,7 +56,7 @@ class FavoriteFactsDatabase: ObservableObject {
     func loadFavoriteFactsForCurrentUser(completionHandler: @escaping ((Error?) -> Void)) {
         DispatchQueue.main.async { [self] in
             // 1. Make sure we can get the current user.
-            guard (authenticationManager?.userLoggedIn)!, let user = authenticationManager?.firebaseAuthentication.currentUser, let userEmail = user.email else {
+            guard let authenticationManager = authenticationManager, authenticationManager.userLoggedIn, let user = authenticationManager.firebaseAuthentication.currentUser, let userEmail = user.email else {
                 return
             }
             // 2. Get the Firestore collection containing favorite facts.
