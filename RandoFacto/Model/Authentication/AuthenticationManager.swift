@@ -31,8 +31,6 @@ class AuthenticationManager: ObservableObject {
         return firebaseAuthentication.currentUser != nil
     }
     
-    // MARK: - Properties - Integers
-    
     // Whether user account deletion is in progress (accountDeletionStage is not nil).
     var isDeletingAccount: Bool {
         return accountDeletionStage != nil
@@ -41,6 +39,8 @@ class AuthenticationManager: ObservableObject {
     @AppStorage(UserDefaults.KeyNames.favoriteFactsRandomizerEffect) var favoriteFactsRandomizerEffect: Bool = false
 
     @AppStorage(UserDefaults.KeyNames.skipFavoritesOnFactGeneration) var skipFavoritesOnFactGeneration: Bool = false
+
+    // MARK: - Properties - Integers
 
     @AppStorage(UserDefaults.KeyNames.initialFact) var initialFact: Int = 0
 
