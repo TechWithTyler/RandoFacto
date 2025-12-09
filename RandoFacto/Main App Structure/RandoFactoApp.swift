@@ -40,8 +40,6 @@ struct RandoFactoApp: App {
 
     let authenticationManager: AuthenticationManager
 
-    let errorManager: ErrorManager
-
     let favoriteFactsDatabase: FavoriteFactsDatabase
 
     // MARK: - Initialization
@@ -67,14 +65,13 @@ struct RandoFactoApp: App {
         firestore.settings = firestoreSettings
         // 5. Configure the shared services after having set Firestore's settings (you must set all desired Firestore settings BEFORE calling any other methods on the Firestore object).
         let errorManager = ErrorManager()
-        let networkConnectionManager = NetworkConnectionManager(errorManager: errorManager, firestore: firestore)
-        let authenticationManager = AuthenticationManager(firebaseAuthentication: firebaseAuthentication, networkConnectionManager: networkConnectionManager, errorManager: errorManager)
-        let favoriteFactsDatabase = FavoriteFactsDatabase(firestore: firestore, networkConnectionManager: networkConnectionManager, errorManager: errorManager)
+        let networkConnectionManager = NetworkConnectionManager(firestore: firestore)
+        let authenticationManager = AuthenticationManager(firebaseAuthentication: firebaseAuthentication, networkConnectionManager: networkConnectionManager)
+        let favoriteFactsDatabase = FavoriteFactsDatabase(firestore: firestore, networkConnectionManager: networkConnectionManager)
         self.firebaseAuthentication = firebaseAuthentication
         self.authenticationManager = authenticationManager
         self.firestore = firestore
         self.favoriteFactsDatabase = favoriteFactsDatabase
-        self.errorManager = errorManager
         self.networkConnectionManager = networkConnectionManager
         // 6. Link the FavoriteFactsDatabase and AuthenticationManager to each other. This can't be done at initialization time, so these properties are optional, allowing them to be nil until after initialization, where they're then set to their proper values here.
         self.favoriteFactsDatabase.authenticationManager = authenticationManager
@@ -88,21 +85,23 @@ struct RandoFactoApp: App {
         // Main window scene
         WindowGroup {
             // Per-window objects
-            let windowErrorManager = ErrorManager()
+            let errorManager = ErrorManager()
             let favoriteFactsDisplayManager = FavoriteFactsDisplayManager(favoriteFactsDatabase: favoriteFactsDatabase)
             let windowStateManager = WindowStateManager(
-                errorManager: windowErrorManager,
+                errorManager: errorManager,
                 favoriteFactsDatabase: favoriteFactsDatabase,
                 favoriteFactsDisplayManager: favoriteFactsDisplayManager,
                 authenticationManager: authenticationManager
             )
+            let authenticationDialogManager = AuthenticationDialogManager(authenticationManager: authenticationManager, errorManager: errorManager)
             ContentView()
                 .environmentObject(networkConnectionManager)
                 .environmentObject(favoriteFactsDatabase)
                 .environmentObject(authenticationManager)
                 .environmentObject(windowStateManager)
                 .environmentObject(favoriteFactsDisplayManager)
-                .environmentObject(windowErrorManager)
+                .environmentObject(errorManager)
+                .environmentObject(authenticationDialogManager)
             #if !os(macOS)
                 .pickerStyle(.navigationLink)
             #endif
@@ -115,19 +114,21 @@ struct RandoFactoApp: App {
         // Settings window scene
         // On macOS, Settings are presented as a window instead of as one of the app's pages.
 		Settings {
-            let windowErrorManager = ErrorManager()
+            let errorManager = ErrorManager()
             let favoriteFactsDisplayManager = FavoriteFactsDisplayManager(favoriteFactsDatabase: favoriteFactsDatabase)
-            let windowStateManager = WindowStateManager(favoriteFactsDatabase: favoriteFactsDatabase,
+            let windowStateManager = WindowStateManager(errorManager: errorManager, favoriteFactsDatabase: favoriteFactsDatabase,
                 favoriteFactsDisplayManager: favoriteFactsDisplayManager,
                 authenticationManager: authenticationManager
             )
+            let authenticationDialogManager = AuthenticationDialogManager(authenticationManager: authenticationManager, errorManager: errorManager)
 			SettingsView()
                 .environmentObject(networkConnectionManager)
                 .environmentObject(favoriteFactsDatabase)
                 .environmentObject(authenticationManager)
                 .environmentObject(windowStateManager)
-                .environmentObject(windowErrorManager)
+                .environmentObject(errorManager)
                 .environmentObject(favoriteFactsDisplayManager)
+                .environmentObject(authenticationDialogManager)
 		}
 		#endif
 	}

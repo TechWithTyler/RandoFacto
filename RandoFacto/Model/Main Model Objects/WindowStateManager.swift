@@ -24,7 +24,7 @@ class WindowStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegat
 #endif
     var factGenerator = FactGenerator()
 
-    var errorManager: ErrorManager?
+    var errorManager: ErrorManager
 
     var favoriteFactsDatabase: FavoriteFactsDatabase
 
@@ -109,7 +109,7 @@ class WindowStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegat
 
     // MARK: - Initialization
 
-    init(errorManager: ErrorManager? = nil, favoriteFactsDatabase: FavoriteFactsDatabase, favoriteFactsDisplayManager: FavoriteFactsDisplayManager, authenticationManager: AuthenticationManager) {
+    init(errorManager: ErrorManager, favoriteFactsDatabase: FavoriteFactsDatabase, favoriteFactsDisplayManager: FavoriteFactsDisplayManager, authenticationManager: AuthenticationManager) {
         // 1. Link the managers.
         self.errorManager = errorManager
         self.favoriteFactsDatabase = favoriteFactsDatabase
@@ -166,9 +166,7 @@ class WindowStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegat
                 } else if let error = error {
                     // 4. If an error occurs, log it.
                     factText = factUnavailableString
-                    if let errorManager = errorManager {
                         errorManager.showError(error)
-                    }
                 }
             }
         }
@@ -287,7 +285,11 @@ extension WindowStateManager {
     // This method resets all settings to default and logs out the current user.
     func resetApp() {
         // 1. Logout the current user, which will reset all login-required settings to default.
-        authenticationManager.logoutCurrentUser()
+        authenticationManager.logoutCurrentUser { [self] error in
+            if let error = error {
+                errorManager.showError(error)
+            }
+        }
         // 2. Reset all in-app/non-accessibility settings.
         factTextSize = SATextViewMinFontSize
         selectedPage = .randomFact

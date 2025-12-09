@@ -84,7 +84,11 @@ struct RandoFactoCommands: Commands {
                         .keyboardShortcut(KeyboardShortcut(KeyEquivalent("f"), modifiers: [.command, .shift]))
                     } else {
                         Button("Favorite Current Fact") {
-                            favoriteFactsDatabase.saveFactToFavorites(windowStateManager.factText)
+                            favoriteFactsDatabase.saveFactToFavorites(windowStateManager.factText) { [self] error in
+                                if let error = error {
+                                    errorManager.showError(error)
+                                }
+                            }
                         }
                         .keyboardShortcut(KeyboardShortcut(KeyEquivalent("f"), modifiers: [.command, .shift]))
                         .disabled(windowStateManager.factTextDisplayingMessage || windowStateManager.factText == factUnavailableString || !authenticationManager.userLoggedIn)

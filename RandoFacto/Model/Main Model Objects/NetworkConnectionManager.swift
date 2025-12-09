@@ -19,8 +19,6 @@ class NetworkConnectionManager: ObservableObject {
 
     // Observes changes to the device's network connection to tell the app whether it should run in online or offline mode.
     var networkPathMonitor = NWPathMonitor()
-    
-    var errorManager: ErrorManager
 
     var firestore: Firestore
 
@@ -29,8 +27,7 @@ class NetworkConnectionManager: ObservableObject {
 
     // MARK: - Initialization
 
-    init(errorManager: ErrorManager, firestore: Firestore) {
-        self.errorManager = errorManager
+    init(firestore: Firestore) {
         self.firestore = firestore
         configureNetworkPathMonitor()
     }
@@ -70,11 +67,9 @@ class NetworkConnectionManager: ObservableObject {
     func goOnline() {
         // 1. Try to enable Firestore's network features.
         firestore.enableNetwork { error in
-            // 2. If that fails, log an error.
+            // 2. If that fails, throw a fatal error.
             if let error = error {
-                DispatchQueue.main.async {
-                    self.errorManager.showError(error)
-                }
+                fatalError("Failed to enable online mode: \(error)")
             } else {
                 // 3. If successful, tell the app that the device is online.
                 // Updating a published property must be done on the main thread, so we use DispatchQueue.main.async to run any code that sets such properties.
@@ -92,11 +87,9 @@ class NetworkConnectionManager: ObservableObject {
         // 1. Try to disable Firestore's network features.
         firestore.disableNetwork {
             error in
-            // 2. If that fails, log an error.
+            // 2. If that fails, throw a fatal error.
             if let error = error {
-                DispatchQueue.main.async {
-                    self.errorManager.showError(error)
-                }
+                fatalError("Failed to enable offline mode: \(error)")
             } else {
                 // 3. If successful, tell the app that the device is offline.
                 DispatchQueue.main.async {

@@ -200,7 +200,11 @@ struct FactView: View {
                                     favoriteFactsDisplayManager.favoriteFactToDelete = windowStateManager.factText
                                     favoriteFactsDisplayManager.showingDeleteFavoriteFact = true
                                 } else {
-                                    favoriteFactsDatabase.saveFactToFavorites(windowStateManager.factText)
+                                    favoriteFactsDatabase.saveFactToFavorites(windowStateManager.factText) { [self] error in
+                                        if let error = error {
+                                            errorManager.showError(error)
+                                        }
+                                    }
                                 }
                             }
                         } label: {
@@ -223,7 +227,7 @@ struct FactView: View {
 #Preview("Loading") {
     FactView()
         #if DEBUG
-        .withPreviewData { windowStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsDisplayManager in
+        .withPreviewData { windowStateManager, errorManager, authenticationDialogManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsDisplayManager in
             windowStateManager.factText = loadingString
         }
     #endif
@@ -232,7 +236,7 @@ struct FactView: View {
 #Preview("Loaded") {
     FactView()
         #if DEBUG
-        .withPreviewData { windowStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsDisplayManager in
+        .withPreviewData { windowStateManager, errorManager, authenticationDialogManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsDisplayManager in
             windowStateManager.factText = sampleFact
         }
     #endif
@@ -241,7 +245,7 @@ struct FactView: View {
 #Preview("Generating") {
     FactView()
         #if DEBUG
-        .withPreviewData { windowStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsDisplayManager in
+        .withPreviewData { windowStateManager, errorManager, authenticationDialogManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsDisplayManager in
             windowStateManager.factText = generatingRandomFactString
         }
     #endif

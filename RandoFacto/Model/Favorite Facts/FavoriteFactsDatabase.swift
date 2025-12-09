@@ -23,8 +23,6 @@ class FavoriteFactsDatabase: ObservableObject {
     
     var networkConnectionManager: NetworkConnectionManager
     
-    var errorManager: ErrorManager
-    
     // MARK: - Properties - Favorite Facts Array
     
     // The current user's favorite facts loaded from the Firestore database. Storing the data in this array makes getting favorite facts easier than getting the corresponding Firestore data each time, which could cause errors.
@@ -42,17 +40,20 @@ class FavoriteFactsDatabase: ObservableObject {
 
     // MARK: - Initialization
     
-    init(firestore: Firestore, networkConnectionManager: NetworkConnectionManager, errorManager: ErrorManager) {
+    init(firestore: Firestore, networkConnectionManager: NetworkConnectionManager) {
         self.firestore = firestore
         self.networkConnectionManager = networkConnectionManager
-        self.errorManager = errorManager
-        loadFavoriteFactsForCurrentUser()
+            loadFavoriteFactsForCurrentUser { error in
+                if let error = error {
+                    fatalError("Failed to load favorite facts: \(error)")
+                }
+        }
     }
     
     // MARK: - Loading
     
     // This method asynchronously loads all the favorite facts associated with the current user upon launch or authentication. Firestore doesn't yet have a way to associate data with the user that created it, so we have to add a "user" key to each favorite fact so when a user deletes their account, their favorite facts, but no one else's, are deleted.
-    func loadFavoriteFactsForCurrentUser() {
+    func loadFavoriteFactsForCurrentUser(completionHandler: @escaping ((Error?) -> Void)) {
         DispatchQueue.main.async { [self] in
             // 1. Make sure we can get the current user.
             guard (authenticationManager?.userLoggedIn)!, let user = authenticationManager?.firebaseAuthentication.currentUser, let userEmail = user.email else {
@@ -64,43 +65,44 @@ class FavoriteFactsDatabase: ObservableObject {
             // 3. Filter the result to include only the current user's favorite facts.
                 .whereField(Firestore.KeyName.user, isEqualTo: userEmail)
             // 4. Listen for any changes made to the favorite facts list, whether it's on this device, another device, or the Firebase console. The result of steps 2-4 is the value of favoriteFactsListener. It isn't necessary to assign the result of this method call to a QuerySnapshotListener object unless you want to be able to remove the listener later.
-                .addSnapshotListener(includeMetadataChanges: true) { [self] snapshot, error in
+                .addSnapshotListener(includeMetadataChanges: true) { snapshot, error in
                     // 5. Log any errors.
                     if let error = error {
-                        errorManager.showError(error)
+                        completionHandler(error)
                     } else {
                         // 6. If no data can be found, return.
                         guard let snapshot = snapshot else {
                             return
                         }
                         // 7. If a change was successfully detected, update the app's favorite facts array.
-                        updateFavoriteFactsList(from: snapshot)
+                        updateFavoriteFactsList(from: snapshot, completionHandler: completionHandler)
                     }
                 }
         }
-    }
-    
-    // This method updates the app's favorite facts list with snapshot's data.
-    func updateFavoriteFactsList(from snapshot: QuerySnapshot) {
-        // 1. Try to replace the data in favoriteFacts with snapshot's data by decoding each of its documents to FavoriteFact objects.
-        do {
-            // compactMap is marked throws so you can call throwing functions in its closure. Errors are then "rethrown" so the catch block of this do statement can handle them.
-            // compactMap throws out any documents where the data couldn't be decoded to a FavoriteFact object (the result of the transformation is nil).
-            favoriteFacts = try snapshot.documents.compactMap { document in
-                // data(as:) handles the decoding of the data, so we don't need to use a Decoder object.
-                let documentData = try document.data(as: FavoriteFact.self)
-                return documentData
+        
+        // This method updates the app's favorite facts list with snapshot's data.
+        func updateFavoriteFactsList(from snapshot: QuerySnapshot, completionHandler: @escaping ((Error?) -> Void)) {
+            // 1. Try to replace the data in favoriteFacts with snapshot's data by decoding each of its documents to FavoriteFact objects.
+            do {
+                // compactMap is marked throws so you can call throwing functions in its closure. Errors are then "rethrown" so the catch block of this do statement can handle them.
+                // compactMap throws out any documents where the data couldn't be decoded to a FavoriteFact object (the result of the transformation is nil).
+                favoriteFacts = try snapshot.documents.compactMap { document in
+                    // data(as:) handles the decoding of the data, so we don't need to use a Decoder object.
+                    let documentData = try document.data(as: FavoriteFact.self)
+                    return documentData
+                }
+                completionHandler(nil)
+            } catch {
+                // 2. If that fails, log an error.
+                completionHandler(error)
             }
-        } catch {
-            // 2. If that fails, log an error.
-            errorManager.showError(error)
         }
     }
 
     // MARK: - Saving/Deleting
     
     // This method creates a FavoriteFact from factText and saves it to the favorite facts database.
-    func saveFactToFavorites(_ factText: String) {
+    func saveFactToFavorites(_ factText: String, completionHandler: @escaping ((Error?) -> Void)) {
         // 1. Make sure the current user has an email (who would have an account but no email?!).
         guard let userEmail = authenticationManager?.firebaseAuthentication.currentUser?.email else { return }
         // 2. Create a FavoriteFact object with the fact text and the current user's email.
@@ -111,16 +113,15 @@ class FavoriteFactsDatabase: ObservableObject {
         do {
             try firestore.collection(Firestore.CollectionName.favoriteFacts)
                 .addDocument(from: fact)
+            completionHandler(nil)
         } catch {
             // 5. If that fails, log an error.
-            DispatchQueue.main.async { [self] in
-                errorManager.showError(error)
-            }
+            completionHandler(error)
         }
     }
     
     // This method finds a favorite fact in the database and deletes it if its text matches factText.
-    func unfavoriteFact(_ factText: String) {
+    func unfavoriteFact(_ factText: String, completionHandler: @escaping ((Error?) -> Void)) {
         // 1. Get facts with text that matches the given fact text (there should only be 1).
         DispatchQueue.main.async { [self] in
             firestore.collection(Firestore.CollectionName.favoriteFacts)
@@ -128,34 +129,34 @@ class FavoriteFactsDatabase: ObservableObject {
                 .getDocuments(source: .cache) { [self] snapshot, error in
                     // 2. If that fails, log an error.
                     if let error = error {
-                        errorManager.showError(error)
+                        completionHandler(error)
                     } else {
                         // 3. Or if we're error-free, get the snapshot and delete.
-                        getFavoriteFactSnapshotAndDelete(snapshot)
+                        getFavoriteFactSnapshotAndDelete(snapshot, completionHandler: completionHandler)
                     }
                 }
         }
     }
     
     // This method gets the data from snapshot and deletes it.
-    func getFavoriteFactSnapshotAndDelete(_ snapshot: QuerySnapshot?) {
+    func getFavoriteFactSnapshotAndDelete(_ snapshot: QuerySnapshot?, completionHandler: @escaping ((Error?) -> Void)) {
         let favoriteFactReferenceError = NSError(domain: ErrorDomain.favoriteFactReferenceNotFound.rawValue, code: ErrorCode.favoriteFactReferenceNotFound.rawValue)
-        DispatchQueue.main.async { [self] in
             // 1. Make sure the snapshot and the corresponding data are there.
             if let snapshot = snapshot, let document = snapshot.documents.first {
                 // 2. Delete the corresponding document.
-                document.reference.delete { [self]
+                document.reference.delete {
                     error in
                     // 3. Log an error if deletion fails.
                     if let error = error {
-                        errorManager.showError(error)
+                        completionHandler(error)
+                    } else {
+                        completionHandler(nil)
                     }
                 }
             } else {
                 // 4. If we can't get the snapshot or corresponding data, log an error.
-                errorManager.showError(favoriteFactReferenceError)
+                completionHandler(favoriteFactReferenceError)
             }
-        }
     }
     
     // This method deletes all of the current user's favorite facts from the database.

@@ -23,6 +23,8 @@ struct AccountSettingsPageView: View {
 
     @EnvironmentObject var errorManager: ErrorManager
 
+    @EnvironmentObject var authenticationDialogManager: AuthenticationDialogManager
+
     // MARK: - Body
 
     var body: some View {
@@ -52,17 +54,17 @@ struct AccountSettingsPageView: View {
             } else if authenticationManager.userLoggedIn {
                 if networkConnectionManager.deviceIsOnline {
                         Button("Change Password…", systemImage: "key") {
-                            authenticationManager.formType = .passwordChange
+                            authenticationDialogManager.formType = .passwordChange
                         }
                     .controlSize(.large)
                 }
                     Button("Logout…", systemImage: "door.left.hand.open") {
-                        authenticationManager.showingLogout = true
+                        authenticationDialogManager.showingLogout = true
                     }
                     .controlSize(.large)
                 if networkConnectionManager.deviceIsOnline {
                         Button(role: .destructive) {
-                            authenticationManager.showingDeleteAccount = true
+                            authenticationDialogManager.showingDeleteAccount = true
                         } label: {
                             Label("DELETE ACCOUNT…", systemImage: "person.crop.circle.fill.badge.minus")
 #if !os(macOS)
@@ -75,11 +77,11 @@ struct AccountSettingsPageView: View {
             } else {
                 if networkConnectionManager.deviceIsOnline {
                     Button(loginText, systemImage: "entry.lever.keypad") {
-                        authenticationManager.formType = .login
+                        authenticationDialogManager.formType = .login
                     }
                     .controlSize(.large)
                     Button(signupText, systemImage: "person.crop.circle.fill.badge.plus") {
-                        authenticationManager.formType = .signup
+                        authenticationDialogManager.formType = .signup
                     }
                     .controlSize(.large)
                 } else {
@@ -90,9 +92,9 @@ struct AccountSettingsPageView: View {
         }
         .formStyle(.grouped)
         // Delete account alert
-        .alert("Are you sure you REALLY want to delete your \(appName!) account?", isPresented: $authenticationManager.showingDeleteAccount) {
+        .alert("Are you sure you REALLY want to delete your \(appName!) account?", isPresented: $authenticationDialogManager.showingDeleteAccount) {
             Button("Cancel", role: .cancel) {
-                authenticationManager.showingDeleteAccount = false
+                authenticationDialogManager.showingDeleteAccount = false
             }
             Button("Delete", role: .destructive) {
                 authenticationManager.deleteCurrentUser {
@@ -102,16 +104,20 @@ struct AccountSettingsPageView: View {
                             errorManager.showError(error) {
                                 randoFactoError in
                                 if randoFactoError == .tooLongSinceLastLogin {
-                                    authenticationManager.formType = nil
-                                    authenticationManager.logoutCurrentUser()
-                                    errorManager.showingErrorAlert = true
+                                    authenticationDialogManager.formType = nil
+                                    authenticationManager.logoutCurrentUser { [self] logoutError in
+                                        if let logoutError = logoutError {
+                                            errorManager.showError(logoutError)
+                                        }
+                                    }
+                                    errorManager.showError(error)
                                 } else {
-                                    errorManager.showingErrorAlert = true
+                                    errorManager.showError(error)
                                 }
                             }
                         }
                     }
-                    authenticationManager.showingDeleteAccount = false
+                    authenticationDialogManager.showingDeleteAccount = false
                 }
             }
         } message: {
@@ -121,19 +127,23 @@ struct AccountSettingsPageView: View {
         .dialogSeverity(.critical)
 #endif
         // Logout alert
-        .alert("Logout of your \(appName!) account?", isPresented: $authenticationManager.showingLogout) {
+        .alert("Logout of your \(appName!) account?", isPresented: $authenticationDialogManager.showingLogout) {
             Button("Cancel", role: .cancel) {
-                authenticationManager.showingLogout = false
+                authenticationDialogManager.showingLogout = false
             }
             Button("Logout") {
-                authenticationManager.logoutCurrentUser()
-                authenticationManager.showingLogout = false
+                authenticationManager.logoutCurrentUser { [self] error in
+                    if let error = error {
+                        errorManager.showError(error)
+                    }
+                }
+                authenticationDialogManager.showingLogout = false
             }
         } message: {
             Text("All favorite fact-related settings will be reset. You won't be able to save favorite facts to view offline until you login again!")
         }
         // Authentication form
-        .sheet(item: $authenticationManager.formType) { _ in
+        .sheet(item: $authenticationDialogManager.formType) { _ in
             AuthenticationFormView()
                 .environmentObject(windowStateManager)
                 .environmentObject(networkConnectionManager)

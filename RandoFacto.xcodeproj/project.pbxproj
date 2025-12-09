@@ -12,6 +12,7 @@
 		8D051C5E2AFB15590064E90E /* AppPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D051C5D2AFB15590064E90E /* AppPage.swift */; };
 		8D0A3C3F2B1FA6F500B7345D /* FavoriteFactsDisplayManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0A3C3E2B1FA6F500B7345D /* FavoriteFactsDisplayManager.swift */; };
 		8D1CD2D02EE2525A001B6AD0 /* UserDefaultsKeyNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1CD2CF2EE2525A001B6AD0 /* UserDefaultsKeyNames.swift */; };
+		8D1CD2D22EE7776A001B6AD0 /* AuthenticationDialogManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1CD2D12EE7776A001B6AD0 /* AuthenticationDialogManager.swift */; };
 		8D2A7B302B5B277300142BDA /* SpeakButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2A7B2F2B5B277300142BDA /* SpeakButton.swift */; };
 		8D2A7B362B5B48A400142BDA /* FirestoreNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2A7B352B5B48A400142BDA /* FirestoreNames.swift */; };
 		8D31D8532B27B759009F29EE /* APIKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D31D8522B27B758009F29EE /* APIKeys.swift */; };
@@ -96,6 +97,7 @@
 		8D0A3C3E2B1FA6F500B7345D /* FavoriteFactsDisplayManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteFactsDisplayManager.swift; sourceTree = "<group>"; };
 		8D0C38D52ADDC9AB00EBB03A /* SheftAppsStylishUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SheftAppsStylishUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D1CD2CF2EE2525A001B6AD0 /* UserDefaultsKeyNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsKeyNames.swift; sourceTree = "<group>"; };
+		8D1CD2D12EE7776A001B6AD0 /* AuthenticationDialogManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationDialogManager.swift; sourceTree = "<group>"; };
 		8D2A7B2F2B5B277300142BDA /* SpeakButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeakButton.swift; sourceTree = "<group>"; };
 		8D2A7B352B5B48A400142BDA /* FirestoreNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreNames.swift; sourceTree = "<group>"; };
 		8D31D8522B27B758009F29EE /* APIKeys.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIKeys.swift; sourceTree = "<group>"; };
@@ -235,6 +237,7 @@
 				8D8899DF2AFDF3D100BDDDFD /* AuthenticationMessageType.swift */,
 				8D63D5FC2AFF4A180084BACF /* StringEmojiChecker.swift */,
 				8D63D5F82AFF1D470084BACF /* UserDeletionStage.swift */,
+				8D1CD2D12EE7776A001B6AD0 /* AuthenticationDialogManager.swift */,
 			);
 			path = Authentication;
 			sourceTree = "<group>";
@@ -521,6 +524,7 @@
 				8DF48E392936B02900152681 /* RandoFactoError.swift in Sources */,
 				8DFEB0A52AFAF6FD00F57DB1 /* ContentView.swift in Sources */,
 				8D63D5F92AFF1D470084BACF /* UserDeletionStage.swift in Sources */,
+				8D1CD2D22EE7776A001B6AD0 /* AuthenticationDialogManager.swift in Sources */,
 				8DCE5DE92B084F6000DD3CE7 /* UnfavoriteAllButton.swift in Sources */,
 				8D2A7B302B5B277300142BDA /* SpeakButton.swift in Sources */,
 				8DFEB0A32AFAF64800F57DB1 /* SettingsView.swift in Sources */,

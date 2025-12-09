@@ -18,7 +18,7 @@ struct PreviewDataModifier: ViewModifier {
 
     // MARK: - Initialization
 
-    init(prepBlock: ((WindowStateManager, ErrorManager, NetworkConnectionManager, FavoriteFactsDatabase, AuthenticationManager, FavoriteFactsDisplayManager) -> Void)? = nil) {
+    init(prepBlock: ((WindowStateManager, ErrorManager, AuthenticationDialogManager, NetworkConnectionManager, FavoriteFactsDatabase, AuthenticationManager, FavoriteFactsDisplayManager) -> Void)? = nil) {
         self.previewManager = PreviewManager(prepBlock: prepBlock)
     }
 
@@ -41,7 +41,7 @@ struct PreviewDataModifier: ViewModifier {
 extension View {
 
     // Injects the app's model objects into Xcode Previews and allows access to them.
-    func withPreviewData(prepBlock: ((WindowStateManager, ErrorManager, NetworkConnectionManager, FavoriteFactsDatabase, AuthenticationManager, FavoriteFactsDisplayManager) -> Void)? = nil) -> some View {
+    func withPreviewData(prepBlock: ((WindowStateManager, ErrorManager, AuthenticationDialogManager, NetworkConnectionManager, FavoriteFactsDatabase, AuthenticationManager, FavoriteFactsDisplayManager) -> Void)? = nil) -> some View {
         modifier(PreviewDataModifier(prepBlock: prepBlock))
     }
 

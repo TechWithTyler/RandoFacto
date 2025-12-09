@@ -22,6 +22,8 @@ class PreviewManager: ObservableObject {
 
     var errorManager: ErrorManager
 
+    var authenticationDialogManager: AuthenticationDialogManager
+
     var networkConnectionManager: NetworkConnectionManager
 
     var favoriteFactsDatabase: FavoriteFactsDatabase
@@ -32,18 +34,20 @@ class PreviewManager: ObservableObject {
 
     // MARK: - Initialization
 
-    init(prepBlock: ((WindowStateManager, ErrorManager, NetworkConnectionManager, FavoriteFactsDatabase, AuthenticationManager, FavoriteFactsDisplayManager) -> Void)? = nil) {
+    init(prepBlock: ((WindowStateManager, ErrorManager, AuthenticationDialogManager, NetworkConnectionManager, FavoriteFactsDatabase, AuthenticationManager, FavoriteFactsDisplayManager) -> Void)? = nil) {
         let errorManager = ErrorManager()
         let firestore = Firestore.firestore()
         let firebaseAuthentication = Authentication.auth()
-        let networkConnectionManager = NetworkConnectionManager(errorManager: errorManager, firestore: firestore)
-        let authenticationManager = AuthenticationManager(firebaseAuthentication: firebaseAuthentication, networkConnectionManager: networkConnectionManager, errorManager: errorManager)
-        let favoriteFactsDatabase = FavoriteFactsDatabase(firestore: firestore, networkConnectionManager: networkConnectionManager, errorManager: errorManager)
+        let networkConnectionManager = NetworkConnectionManager(firestore: firestore)
+        let authenticationManager = AuthenticationManager(firebaseAuthentication: firebaseAuthentication, networkConnectionManager: networkConnectionManager)
+        let authenticationDialogManager = AuthenticationDialogManager(authenticationManager: authenticationManager, errorManager: errorManager)
+        let favoriteFactsDatabase = FavoriteFactsDatabase(firestore: firestore, networkConnectionManager: networkConnectionManager)
         let favoriteFactsDisplayManager = FavoriteFactsDisplayManager(favoriteFactsDatabase: favoriteFactsDatabase)
         let windowStateManager = WindowStateManager(errorManager: errorManager, favoriteFactsDatabase: favoriteFactsDatabase, favoriteFactsDisplayManager: favoriteFactsDisplayManager, authenticationManager: authenticationManager)
-        prepBlock?(windowStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsDisplayManager)
+        prepBlock?(windowStateManager, errorManager, authenticationDialogManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsDisplayManager)
         self.windowStateManager = windowStateManager
         self.errorManager = errorManager
+        self.authenticationDialogManager = authenticationDialogManager
         self.networkConnectionManager = networkConnectionManager
         self.favoriteFactsDisplayManager = favoriteFactsDisplayManager
         self.favoriteFactsDatabase = favoriteFactsDatabase

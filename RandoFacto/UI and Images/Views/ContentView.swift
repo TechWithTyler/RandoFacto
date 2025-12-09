@@ -64,7 +64,13 @@ struct ContentView: View {
         // Unfavorite this fact alert
         .alert("Unfavorite this fact?", isPresented: $favoriteFactsDisplayManager.showingDeleteFavoriteFact, presenting: $favoriteFactsDisplayManager.favoriteFactToDelete) { factText in
             Button("Unfavorite", role: .destructive) {
-                favoriteFactsDatabase.unfavoriteFact(factText.wrappedValue!)
+                favoriteFactsDatabase.unfavoriteFact(factText.wrappedValue!) { [self] error in
+                    DispatchQueue.main.async { [self] in
+                        if let error = error {
+                            errorManager.showError(error)
+                        }
+                    }
+                }
             }
             Button("Cancel", role: .cancel) {
                 favoriteFactsDisplayManager.showingDeleteFavoriteFact = false
@@ -222,7 +228,7 @@ struct ContentView: View {
 #Preview("Loading") {
     ContentView()
 #if DEBUG
-        .withPreviewData { windowStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsDisplayManager in
+        .withPreviewData { windowStateManager, errorManager, authenticationDialogManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsDisplayManager in
             windowStateManager.factText = loadingString
         }
 #endif
@@ -231,7 +237,7 @@ struct ContentView: View {
 #Preview("Loaded") {
     ContentView()
 #if DEBUG
-        .withPreviewData { windowStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsDisplayManager in
+        .withPreviewData { windowStateManager, _, _, _, _, _, _ in
             windowStateManager.factText = sampleFact
         }
 #endif
@@ -240,7 +246,7 @@ struct ContentView: View {
 #Preview("Generating") {
     ContentView()
 #if DEBUG
-        .withPreviewData { windowStateManager, errorManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsDisplayManager in
+        .withPreviewData { windowStateManager, _, _, _, _, _, _ in
             windowStateManager.factText = generatingRandomFactString
         }
 #endif
