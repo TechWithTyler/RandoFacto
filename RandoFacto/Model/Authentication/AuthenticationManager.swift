@@ -44,10 +44,6 @@ class AuthenticationManager: ObservableObject {
 
     @AppStorage(UserDefaults.KeyNames.initialFact) var initialFact: Int = 0
 
-    // MARK: - Properties - Errors
-
-    let noUserError = NSError(domain: "Can't get user from authentication result", code: 427)
-
     // MARK: - Properties - Account Deletion Stage
     
     // The current stage of user deletion. Deleting a user deletes their favorite facts and reference first, then their actual account. If the user is still able to login after deletion, the actual account failed to be deleted, so the user reference will be put back.
@@ -404,15 +400,3 @@ class AuthenticationManager: ObservableObject {
     }
     
 }
-
-#if DEBUG
-// Fallback definitions if not provided elsewhere
-private enum ErrorDomain: String {
-    case userAccountNotFound
-    case userReferenceNotFound
-}
-private enum ErrorCode: Int {
-    case userAccountNotFound = 1
-    case userReferenceNotFound = 2
-}
-#endif

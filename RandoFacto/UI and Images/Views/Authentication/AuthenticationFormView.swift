@@ -44,6 +44,16 @@ struct AuthenticationFormView: View {
                     credentialFields
                     if authenticationDialogManager.formType == .passwordChange {
                         WarningText("Changing your password will log you out of your other devices within an hour.", prefix: .importantUrgent)
+                    } else {
+                        HStack {
+                            Text(authenticationDialogManager.formType == .signup ? "Already have an account?" : "No account yet?")
+                            Button(authenticationDialogManager.formType == .signup ? "Login" : "Signup") {
+                                authenticationDialogManager.toggleForm()
+                            }
+#if os(macOS)
+                    .buttonStyle(.link)
+#endif
+                        }
                     }
                     if authenticationDialogManager.showingResetPasswordEmailSent {
                         AuthenticationMessageView(text: "A password reset email has been sent to \"\(authenticationDialogManager.emailFieldText)\". Follow the instructions in the email to reset your password. If you don't see the email from \(appName!), check your spam folder.", type: .confirmation)
@@ -56,13 +66,14 @@ struct AuthenticationFormView: View {
                         PrivacyPolicyAgreementText()
                     }
                 }
+                .animation(.linear, value: authenticationDialogManager.formType)
             }
             .formStyle(.grouped)
             .navigationTitle(authenticationDialogManager.formType?.title ?? Authentication.FormType.login.title)
 #if os(iOS)
             .navigationBarTitleDisplayMode(.automatic)
 #endif
-            .interactiveDismissDisabled()
+            .interactiveDismissDisabled(authenticationManager.isAuthenticating)
             .toolbar {
                 if authenticationManager.isAuthenticating {
                     ToolbarItem(placement: .automatic) {
@@ -99,10 +110,7 @@ struct AuthenticationFormView: View {
             }
         }
         .onDisappear {
-            authenticationDialogManager.emailFieldText = ""
-            authenticationDialogManager.passwordFieldText = ""
-            authenticationDialogManager.formErrorText = nil
-            authenticationDialogManager.showingResetPasswordEmailSent = false
+            authenticationDialogManager.dismissForm()
         }
 #if os(macOS)
         .frame(minWidth: 495, maxWidth: 495, minHeight: 365, maxHeight: 365)

@@ -21,32 +21,42 @@ class AuthenticationDialogManager: ObservableObject {
 
     // MARK: - Properties - Strings
 
+    // The email field's text.
     @Published var emailFieldText: String = String()
 
+    // The password field's text.
     @Published var passwordFieldText: String = String()
 
+    // The text to display when a RandoFactoError occurs in the authentication dialog.
     @Published var formErrorText: String? = nil
 
     // MARK: - Properties - Authentication Form Type
 
+    // The type of authentication form to be displayed.
     @Published var formType: Authentication.FormType? = nil
 
     // MARK: - Properties - Booleans
 
+    // Whether the logout dialog should be/is being displayed.
     @Published var showingLogout: Bool = false
 
+    // Whether the "delete account" dialog should be/is being displayed.
     @Published var showingDeleteAccount: Bool = false
 
+    // Whether the "send password reset email?" dialog should be/is being displayed.
     @Published var showingResetPasswordAlert: Bool = false
 
+    // Whether the "password reset email sent" text should be/is being displayed.
     @Published var showingResetPasswordEmailSent: Bool = false
 
+    // Whether the form is invalid (i.e., either the email or password fields are blank).
     var formInvalid: Bool {
         return formType == .passwordChange ? passwordFieldText.isEmpty : emailFieldText.isEmpty || passwordFieldText.isEmpty
     }
 
     // MARK: - Properties - Invalid Credential Field
 
+    // The credential field (email or password) containing invalid information.
     var invalidCredentialField: Authentication.FormField? {
         if let errorText = formErrorText {
             let emailError = errorText.lowercased().contains("email")
@@ -67,10 +77,10 @@ class AuthenticationDialogManager: ObservableObject {
 
     // MARK: - Credential Field Submit Actions
 
+    // This method submits an authentication request to the AuthenticationManager based on the displayed form.
     func submit() {
         // 1. Clear the error text.
-        formErrorText = nil
-        errorManager.errorToShow = nil
+        clearErrorText()
         // 2. Try to perform the authentication action. If it fails, show the corresponding RandoFactoError for the error. If a user is trying to change their password after having been logged in for more than 5 minutes, switch to the login dialog.
         switch formType {
         case .signup:
@@ -105,6 +115,7 @@ class AuthenticationDialogManager: ObservableObject {
         }
     }
 
+    // This method tells AuthenticationManager to send a password reset link to the entered email address.
     func sendPasswordResetLink() {
         authenticationManager
             .sendPasswordResetLink(to: emailFieldText) { [self] error in
@@ -117,4 +128,33 @@ class AuthenticationDialogManager: ObservableObject {
             }
         }
     }
+
+    // MARK: - Login/Signup Toggle
+
+    // This method toggles between the login and signup forms.
+    func toggleForm() {
+        clearErrorText()
+        formType = (formType == .signup) ? .login : .signup
+    }
+
+    // MARK: - Clear Error Text
+
+    // This method clears the error text.
+    func clearErrorText() {
+        formErrorText = nil
+        errorManager.errorToShow = nil
+    }
+
+    // MARK: - Dismiss Form
+
+    // This method prepares the authentication dialog for dismissal.
+    func dismissForm() {
+        // 1. Clear the credential fields.
+        emailFieldText.removeAll()
+        passwordFieldText.removeAll()
+        // 2. Clear the error/reset password email sent text.
+        clearErrorText()
+        showingResetPasswordEmailSent = false
+    }
+
 }

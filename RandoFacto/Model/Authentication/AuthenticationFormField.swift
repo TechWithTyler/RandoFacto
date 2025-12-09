@@ -13,10 +13,9 @@ import Foundation
 extension Authentication {
     
     // A field in the authentication form.
-
     enum FormField {
 
-        // MARK: - Authentication Field Cases
+        // MARK: - Authentication Form Field Cases
 
         // The email field.
         case email

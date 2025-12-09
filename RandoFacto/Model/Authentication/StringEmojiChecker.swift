@@ -14,7 +14,7 @@ extension String {
 
     // MARK: - String Emoji Checker
 
-    // Whether a string contains emoji.
+    // Whether a string contains emoji, which can't be used as a password.
 	var containsEmoji: Bool {
 		for scalar in unicodeScalars {
 			// Check if the scalar is an emoji and not a numeric character
