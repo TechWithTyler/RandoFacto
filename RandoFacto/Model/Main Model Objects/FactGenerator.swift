@@ -33,13 +33,6 @@ struct FactGenerator {
     // The name of the random facts API, which is its base URL.
     let randomFactsAPIName = "uselessfacts.jsph.pl"
 
-    // MARK: - Properties - Integers
-
-    // The major version of the random facts API.
-    let randomFactsAPIVersion = 2
-
-    // MARK: - Properties - URLs
-    
     // The URL of the random facts API.
     var factURLString: String {
         // 1. The scheme specifies the application layer protocol used to access the resource. In this case, it's "https" (HyperText Transfer Protocol Secure), used for web traffic. The "s" in HTTPS indicates that the data transferred between the app (client) and the web API (server) is encrypted for security. This is not to be confused with presentation layer protocols like SSL (Secure Sockets Layer) or TLS (Transport Layer Security), which are used to secure the connection between the client and server, transport layer protocols like TCP (Transmission Control Protocol) or UDP (User Datagram Protocol), which are used to transmit data over the network, or network layer protocols like IP (Internet Protocol), which are used to route data between devices on a network. The API requests in this app use some of these protocols under the hood.
@@ -65,7 +58,7 @@ struct FactGenerator {
         let urlString = "\(scheme)://\(subdomainAndDomain)/\(randomFactPath)?\(languageQueryParameter)"
         return urlString
     }
-    
+
     // The URL of the inappropriate words checker API.
     var inappropriateWordsCheckerURLString: String {
         // This URL is much simpler than the fact generator one above.
@@ -75,9 +68,14 @@ struct FactGenerator {
         let urlString = "\(scheme)://\(subdomainAndDomain)/\(languageCheckerPath)"
         return urlString
     }
+
+    // MARK: - Properties - Integers
+
+    // The major version of the random facts API.
+    let randomFactsAPIVersion = 2
     
-    // MARK: - Properties - URL Request Timeout Interval
-    
+    // MARK: - Properties - Time Intervals
+
     // The timeout interval of URL requests, which determines the maximum number of seconds they can try to run before a "request timed out" error is thrown if unsuccessful.
     #if(DEBUG)
     // Allow this to be changed in in-development (internal) builds…
