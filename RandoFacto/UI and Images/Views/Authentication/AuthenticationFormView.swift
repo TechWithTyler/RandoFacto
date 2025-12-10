@@ -149,6 +149,9 @@ struct AuthenticationFormView: View {
                     .onSubmit(of: .text) {
                         authenticationDialogManager.submit()
                     }
+                if authenticationDialogManager.formType != .login {
+                    PasswordStrengthMeter(password: $authenticationDialogManager.passwordFieldText)
+                }
                 if authenticationDialogManager.invalidCredentialField == .password {
                     FieldNeedsAttentionView()
                         .onAppear {
