@@ -25,15 +25,20 @@ struct PasswordStrengthMeter: View {
     // MARK: - Body
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
+        VStack(alignment: .leading, spacing: 6) {
+            ZStack {
                 PasswordStrengthBar(fraction: evaluation.strength.scoreFraction, color: evaluation.strength.color)
-                .frame(height: 12)
+                .frame(height: 20)
                 .accessibilityLabel(evaluation.strength.label)
-                Spacer(minLength: 12)
-                Text(evaluation.strength.label)
-                    .font(.subheadline).bold()
-                    .foregroundStyle(evaluation.strength.color)
+                HStack {
+                    Spacer()
+                    Text(evaluation.strength.label)
+                        .font(.subheadline).bold()
+                        .foregroundStyle(evaluation.strength == .veryStrong ? .black : .primary)
+                        .padding(.horizontal)
+                        .animation(.easeInOut(duration: 0.25), value: evaluation.strength)
+                        .accessibilityHidden(true)
+                }
             }
                 HStack(spacing: 6) {
                     Image(systemName: PasswordEvaluator.symbol(for: evaluation.strength))
@@ -44,7 +49,7 @@ struct PasswordStrengthMeter: View {
                         .foregroundStyle(.secondary)
                 }
             if !evaluation.suggestions.isEmpty {
-                DisclosureGroup("Suggestions") {
+                DisclosureGroup("Suggestions (\(evaluation.suggestions.count))") {
                     VStack(alignment: .leading, spacing: 6) {
                         ForEach(evaluation.suggestions, id: \.self) { suggestion in
                             HStack(spacing: 6) {
@@ -61,7 +66,7 @@ struct PasswordStrengthMeter: View {
                 }
             }
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, 2)
     }
 
 }

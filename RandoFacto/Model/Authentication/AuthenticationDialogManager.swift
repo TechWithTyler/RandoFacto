@@ -10,7 +10,7 @@
 
 import SwiftUI
 
-// Manages UI-related authentication dialog state and delegates actions to AuthenticationManager.
+// Manages authentication dialog state.
 class AuthenticationDialogManager: ObservableObject {
 
     // MARK: - Properties - Objects
@@ -51,7 +51,9 @@ class AuthenticationDialogManager: ObservableObject {
 
     // Whether the form is invalid (i.e., either the email or password fields are blank).
     var formInvalid: Bool {
-        return formType == .passwordChange ? passwordFieldText.isEmpty : emailFieldText.isEmpty || passwordFieldText.isEmpty
+        let emailOrPasswordEmpty = emailFieldText.isEmpty || passwordFieldText.isEmpty
+        let passwordEmpty = passwordFieldText.isEmpty
+        return formType == .passwordChange ? passwordEmpty : emailOrPasswordEmpty
     }
 
     // MARK: - Properties - Invalid Credential Field
@@ -75,7 +77,7 @@ class AuthenticationDialogManager: ObservableObject {
         self.errorManager = errorManager
     }
 
-    // MARK: - Credential Field Submit Actions
+    // MARK: - Credential Field Submit Action
 
     // This method submits an authentication request to the AuthenticationManager based on the displayed form.
     func submit() {
@@ -104,9 +106,6 @@ class AuthenticationDialogManager: ObservableObject {
                 if let error = error {
                     errorManager.showError(error) { [self] randoFactoError in
                         formErrorText = randoFactoError.localizedDescription
-                        if randoFactoError == .tooLongSinceLastLogin {
-                            formType = .login
-                        }
                     }
                 } else { formType = nil }
             }
@@ -117,8 +116,7 @@ class AuthenticationDialogManager: ObservableObject {
 
     // This method tells AuthenticationManager to send a password reset link to the entered email address.
     func sendPasswordResetLink() {
-        authenticationManager
-            .sendPasswordResetLink(to: emailFieldText) { [self] error in
+        authenticationManager.sendPasswordResetLink(to: emailFieldText) { [self] error in
             if let error = error {
                 errorManager.showError(error) { [self] randoFactoError in
                     formErrorText = randoFactoError.localizedDescription
@@ -135,6 +133,14 @@ class AuthenticationDialogManager: ObservableObject {
     func toggleForm() {
         clearErrorText()
         formType = (formType == .signup) ? .login : .signup
+    }
+
+    // MARK: - Switch To Login
+
+    func switchToLogin() {
+        clearErrorText()
+        passwordFieldText.removeAll()
+        formType = .login
     }
 
     // MARK: - Clear Error Text

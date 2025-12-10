@@ -121,10 +121,12 @@ class AuthenticationManager: ObservableObject {
         DispatchQueue.main.async { [self] in
             // 1. Tell the app that an authentication request is in progress.
             isAuthenticating = true
-            // 2. Try to sign the user up for an account with the given credentials.
-            firebaseAuthentication.createUser(withEmail: email.lowercased(), password: password) { [self] result, error in
-                // 3. Handle the success or error.
-                self.handleAuthenticationRequest(with: result, error: error, isSignup: true, completionHandler: completionHandler)
+            // 2. Convert the email to lowercase.
+            let lowercaseEmail = email.lowercased()
+            // 3. Try to sign the user up for an account with the given credentials.
+            firebaseAuthentication.createUser(withEmail: lowercaseEmail, password: password) { [self] result, error in
+                // 4. Handle the success or error.
+                self.handleAuthenticationRequestResult(result, error: error, isSignup: true, completionHandler: completionHandler)
             }
         }
     }
@@ -136,10 +138,12 @@ class AuthenticationManager: ObservableObject {
         DispatchQueue.main.async { [self] in
             // 1. Tell the app that an authentication request is in progress.
             isAuthenticating = true
-            // 2. Try to log the user in with the given credentials.
-            firebaseAuthentication.signIn(withEmail: email.lowercased(), password: password) { [self] result, error in
-                // 3. Handle the success or error.
-                handleAuthenticationRequest(with: result, error: error, isSignup: false, completionHandler: completionHandler)
+            // 2. Convert the email to lowercase.
+            let lowercaseEmail = email.lowercased()
+            // 3. Try to log the user in with the given credentials.
+            firebaseAuthentication.signIn(withEmail: lowercaseEmail, password: password) { [self] result, error in
+                // 4. Handle the success or error.
+                handleAuthenticationRequestResult(result, error: error, isSignup: false, completionHandler: completionHandler)
             }
         }
     }
@@ -179,8 +183,8 @@ class AuthenticationManager: ObservableObject {
     // MARK: - Post-Signup/Login Request Handler
 
     // This method loads the user's favorite facts if authentication is successful. Otherwise, it logs an error.
-    func handleAuthenticationRequest(with result: AuthDataResult?, error: Error?, isSignup: Bool, completionHandler: @escaping ((Error?) -> Void)) {
-        // 1. Create the block which will be performed if authentication is successful. This block loads the user's favorite facts, adds the registered users handler, and calls the completion handler.
+    func handleAuthenticationRequestResult(_ result: AuthDataResult?, error: Error?, isSignup: Bool, completionHandler: @escaping ((Error?) -> Void)) {
+        // 1. Create the block which will be performed if authentication is successful. This block adds the registered users handler, loads the user's favorite facts, and calls the completion handler.
         let successBlock: (() -> Void) = { [self] in
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [self] in
                 isAuthenticating = false

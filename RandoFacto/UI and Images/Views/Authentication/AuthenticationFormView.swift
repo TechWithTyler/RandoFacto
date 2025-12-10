@@ -44,22 +44,19 @@ struct AuthenticationFormView: View {
                     credentialFields
                     if authenticationDialogManager.formType == .passwordChange {
                         WarningText("Changing your password will log you out of your other devices within an hour.", prefix: .importantUrgent)
-                    } else {
-                        HStack {
-                            Text(authenticationDialogManager.formType == .signup ? "Already have an account?" : "No account yet?")
-                            Button(authenticationDialogManager.formType == .signup ? "Login" : "Signup") {
-                                authenticationDialogManager.toggleForm()
-                            }
-#if os(macOS)
-                    .buttonStyle(.link)
-#endif
-                        }
+                    } else if !authenticationManager.userLoggedIn {
+                        haveAnAccountView
                     }
                     if authenticationDialogManager.showingResetPasswordEmailSent {
                         AuthenticationMessageView(text: "A password reset email has been sent to \"\(authenticationDialogManager.emailFieldText)\". Follow the instructions in the email to reset your password. If you don't see the email from \(appName!), check your spam folder.", type: .confirmation)
                     }
                     if let errorText = authenticationDialogManager.formErrorText {
                         AuthenticationMessageView(text: errorText, type: .error)
+                        if errorText == RandoFactoError.tooLongSinceLastLogin.localizedDescription {
+                            Button(loginText) {
+                                authenticationDialogManager.switchToLogin()
+                            }
+                        }
                     }
                     if authenticationDialogManager.formType == .signup {
                         WarningText("You need an active email mailbox on your account in order to reset your password in case you forget it.", prefix: .importantUrgent)
@@ -75,29 +72,7 @@ struct AuthenticationFormView: View {
 #endif
             .interactiveDismissDisabled(authenticationManager.isAuthenticating)
             .toolbar {
-                if authenticationManager.isAuthenticating {
-                    ToolbarItem(placement: .automatic) {
-#if os(macOS)
-                        LoadingIndicator(message: pleaseWaitString)
-#else
-                        LoadingIndicator()
-#endif
-                    }
-                }
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel", role: .cancel) {
-                        dismiss()
-                    }
-                    .controlSize(.large)
-                    .disabled(authenticationManager.isAuthenticating)
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button(authenticationDialogManager.formType?.confirmButtonTitle ?? Authentication.FormType.login.confirmButtonTitle) {
-                        authenticationDialogManager.submit()
-                    }
-                    .controlSize(.large)
-                    .disabled(authenticationDialogManager.formInvalid || authenticationManager.isAuthenticating)
-                }
+                toolbarContent
             }
         }
         .onAppear {
@@ -113,7 +88,7 @@ struct AuthenticationFormView: View {
             authenticationDialogManager.dismissForm()
         }
 #if os(macOS)
-        .frame(minWidth: 495, maxWidth: 495, minHeight: 365, maxHeight: 365)
+        .frame(minWidth: 495, maxWidth: 495, minHeight: 400, maxHeight: 400)
 #endif
     }
     
@@ -134,6 +109,7 @@ struct AuthenticationFormView: View {
                         .onSubmit(of: .text) {
                             focusedCredentialField = .password
                         }
+                        .disabled(authenticationManager.userLoggedIn)
                     if authenticationDialogManager.invalidCredentialField == .email {
                         FieldNeedsAttentionView()
                             .onAppear {
@@ -149,14 +125,14 @@ struct AuthenticationFormView: View {
                     .onSubmit(of: .text) {
                         authenticationDialogManager.submit()
                     }
-                if authenticationDialogManager.formType != .login {
-                    PasswordStrengthMeter(password: $authenticationDialogManager.passwordFieldText)
-                }
                 if authenticationDialogManager.invalidCredentialField == .password {
                     FieldNeedsAttentionView()
                         .onAppear {
                             focusedCredentialField = .password
                         }
+                }
+                if authenticationDialogManager.formType != .login {
+                    PasswordStrengthMeter(password: $authenticationDialogManager.passwordFieldText)
                 }
             }
             if authenticationDialogManager.formType == .login && !authenticationDialogManager.emailFieldText.isEmpty && authenticationDialogManager.passwordFieldText.isEmpty {
@@ -196,6 +172,51 @@ struct AuthenticationFormView: View {
             }
         } message: {
             Text("By continuing, you confirm that \"\(authenticationDialogManager.emailFieldText)\" is your email address.")
+        }
+    }
+
+    // MARK: - "Have an Account?"/"No Account Yet?" View
+
+    @ViewBuilder
+    var haveAnAccountView: some View {
+        HStack {
+            Text(authenticationDialogManager.formType == .signup ? "Already have an account?" : "No account yet?")
+            Button(authenticationDialogManager.formType == .signup ? "Login" : "Signup") {
+                authenticationDialogManager.toggleForm()
+            }
+#if os(macOS)
+    .buttonStyle(.link)
+#endif
+        }
+    }
+
+    // MARK: - Toolbar
+
+    @ToolbarContentBuilder
+    var toolbarContent: some ToolbarContent {
+        if authenticationManager.isAuthenticating {
+            ToolbarItem(placement: .automatic) {
+#if os(macOS)
+                LoadingIndicator(message: pleaseWaitString)
+#else
+                LoadingIndicator()
+#endif
+            }
+        } else {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Cancel", role: .cancel) {
+                    dismiss()
+                }
+                .controlSize(.large)
+                .disabled(authenticationManager.isAuthenticating)
+            }
+            ToolbarItem(placement: .confirmationAction) {
+                Button(authenticationDialogManager.formType?.confirmButtonTitle ?? Authentication.FormType.login.confirmButtonTitle) {
+                    authenticationDialogManager.submit()
+                }
+                .controlSize(.large)
+                .disabled(authenticationDialogManager.formInvalid || authenticationManager.isAuthenticating)
+            }
         }
     }
 

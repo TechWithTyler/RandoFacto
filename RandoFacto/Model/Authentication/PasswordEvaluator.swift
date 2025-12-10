@@ -31,7 +31,7 @@ struct PasswordEvaluator {
 
         case strong
 
-        case excellent
+        case veryStrong
 
         // MARK: - Password Strength Label
 
@@ -41,7 +41,7 @@ struct PasswordEvaluator {
             case .weak: return "Weak"
             case .medium: return "Medium"
             case .strong: return "Strong"
-            case .excellent: return "Excellent"
+            case .veryStrong: return "Very strong"
             }
         }
 
@@ -53,7 +53,7 @@ struct PasswordEvaluator {
             case .weak: return .orange
             case .medium: return .yellow
             case .strong: return .green.opacity(0.75)
-            case .excellent: return .green
+            case .veryStrong: return .green
             }
         }
 
@@ -68,7 +68,7 @@ struct PasswordEvaluator {
     // MARK: - Evaluate Password
 
     // This method evaluates password and returns its strength and any suggestions.
-    static func evaluate(_ password: String) -> (strength: PasswordStrength, suggestions: [String]) {
+    static func evaluate(_ password: String) -> Evaluation {
         // 1. Get the length of the password.
         let length = password.count
         // 2. Check each character category (e.g. uppercase, lowercase, numbers)
@@ -85,7 +85,7 @@ struct PasswordEvaluator {
         // Length (1 point if greater than or equal to 8, 2 if greater than or equal to 12)
         if length >= 8 { points += 1 }
         if length >= 12 { points += 1 }
-        // Mixure of uppercase and lowercase
+        // Mixture of uppercase and lowercase
         if hasLowercase && hasUppercase { points += 1 }
         // Numbers
         if hasDigit { points += 1 }
@@ -132,25 +132,27 @@ struct PasswordEvaluator {
 
     // MARK: - Short Descriptive Advice
 
+    // This method returns an advice string based on the given strength.
     static func shortAdvice(for strength: PasswordStrength) -> String {
         switch strength {
         case .veryWeak: return "Too short or predictable"
         case .weak: return "Needs more variety"
-        case .medium: return "OK but could improve"
-        case .strong: return "Strong — maybe add length"
-        case .excellent: return "Excellent strength"
+        case .medium: return "OK"
+        case .strong: return "Strong"
+        case .veryStrong: return "Very strong"
         }
     }
 
-    // MARK: - SF Symbol selection
+    // MARK: - SF Symbol Selection
 
+    // This method returns an SF Symbol name based on the given strength.
     static func symbol(for strength: PasswordStrength) -> String {
         switch strength {
         case .veryWeak: return "lock.open.trianglebadge.exclamationmark"
         case .weak: return "exclamationmark.triangle"
         case .medium: return "minus.circle"
         case .strong: return "checkmark.circle"
-        case .excellent: return "lock.circle"
+        case .veryStrong: return "lock.circle"
         }
     }
 

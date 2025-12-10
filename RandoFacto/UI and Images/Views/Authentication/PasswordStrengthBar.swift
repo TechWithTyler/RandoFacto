@@ -28,7 +28,7 @@ struct PasswordStrengthBar: View {
                 RoundedRectangle(cornerRadius: 6)
                     .foregroundStyle(Color.primary.opacity(0.08))
                 RoundedRectangle(cornerRadius: 6)
-                    .frame(width: max(1, CGFloat(fraction) * geo.size.width))
+                    .frame(width: max(1, CGFloat(fraction == 0 ? 0.05 : fraction) * geo.size.width))
                     .foregroundStyle(color)
                     .animation(.easeInOut(duration: 0.25), value: fraction)
             }

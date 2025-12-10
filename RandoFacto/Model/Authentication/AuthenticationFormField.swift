@@ -12,7 +12,7 @@ import Foundation
 
 extension Authentication {
     
-    // A field in the authentication form.
+    // A field in the authentication form to set focus to or to indicate if invalid.
     enum FormField {
 
         // MARK: - Authentication Form Field Cases
