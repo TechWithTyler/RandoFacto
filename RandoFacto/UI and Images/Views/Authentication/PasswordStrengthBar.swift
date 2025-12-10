@@ -26,10 +26,10 @@ struct PasswordStrengthBar: View {
         GeometryReader { geo in
             ZStack(alignment: .leading) {
                 RoundedRectangle(cornerRadius: 6)
-                    .foregroundColor(Color.primary.opacity(0.08))
+                    .foregroundStyle(Color.primary.opacity(0.08))
                 RoundedRectangle(cornerRadius: 6)
                     .frame(width: max(1, CGFloat(fraction) * geo.size.width))
-                    .foregroundColor(color)
+                    .foregroundStyle(color)
                     .animation(.easeInOut(duration: 0.25), value: fraction)
             }
         }
