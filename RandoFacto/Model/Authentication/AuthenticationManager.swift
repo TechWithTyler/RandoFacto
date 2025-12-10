@@ -53,7 +53,15 @@ class AuthenticationManager: ObservableObject {
     
     // Listens for changes to the references for registered users.
     var registeredUsersListener: ListenerRegistration? = nil
-    
+
+    // MARK: - Properties - Errors
+
+    // The error thrown when a user account can't be found.
+    let userNotFoundError = NSError(domain: ErrorDomain.userAccountNotFound.rawValue, code: ErrorCode.userAccountNotFound.rawValue)
+
+    // The error thrown when a user's reference can't be found.
+    let userReferenceError = NSError(domain: ErrorDomain.userReferenceNotFound.rawValue, code: ErrorCode.userReferenceNotFound.rawValue)
+
     // MARK: - Initialization
     
     init(firebaseAuthentication: Authentication, networkConnectionManager: NetworkConnectionManager) {
@@ -333,7 +341,6 @@ class AuthenticationManager: ObservableObject {
     func deleteCurrentUser(completionHandler: @escaping (Error?) -> Void) {
         // 1. Make sure we can get the current user.
         guard let user = firebaseAuthentication.currentUser else {
-            let userNotFoundError = NSError(domain: ErrorDomain.userAccountNotFound.rawValue, code: ErrorCode.userAccountNotFound.rawValue)
             completionHandler(userNotFoundError)
             return
         }
@@ -372,12 +379,11 @@ class AuthenticationManager: ObservableObject {
         // 1. Make sure we can get the user's email.
         guard let userEmail = user.email else { return }
         var deletionError: Error?
-        let userReferenceError = NSError(domain: ErrorDomain.userReferenceNotFound.rawValue, code: ErrorCode.userReferenceNotFound.rawValue)
         // 2. Create a DispatchGroup and delete the user reference the same way we delete all favorite facts.
         let group = DispatchGroup()
         favoriteFactsDatabase?.firestore.collection(Firestore.CollectionName.users)
             .whereField(Firestore.KeyName.email, isEqualTo: userEmail)
-            .getDocuments(source: .server) { (snapshot, error) in
+            .getDocuments(source: .server) { [self] (snapshot, error) in
                 if let error = error {
                     deletionError = error
                 } else {

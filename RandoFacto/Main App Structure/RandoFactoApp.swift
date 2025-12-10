@@ -64,7 +64,6 @@ struct RandoFactoApp: App {
         firestoreSettings.dispatchQueue = .main
         firestore.settings = firestoreSettings
         // 5. Configure the shared services after having set Firestore's settings (you must set all desired Firestore settings BEFORE calling any other methods on the Firestore object).
-        let errorManager = ErrorManager()
         let networkConnectionManager = NetworkConnectionManager(firestore: firestore)
         let authenticationManager = AuthenticationManager(firebaseAuthentication: firebaseAuthentication, networkConnectionManager: networkConnectionManager)
         let favoriteFactsDatabase = FavoriteFactsDatabase(firestore: firestore, networkConnectionManager: networkConnectionManager)
@@ -87,21 +86,16 @@ struct RandoFactoApp: App {
             // Per-window objects
             let errorManager = ErrorManager()
             let favoriteFactsDisplayManager = FavoriteFactsDisplayManager(favoriteFactsDatabase: favoriteFactsDatabase)
-            let windowStateManager = WindowStateManager(
-                errorManager: errorManager,
-                favoriteFactsDatabase: favoriteFactsDatabase,
-                favoriteFactsDisplayManager: favoriteFactsDisplayManager,
-                authenticationManager: authenticationManager
-            )
+            let windowStateManager = WindowStateManager(errorManager: errorManager, favoriteFactsDatabase: favoriteFactsDatabase, favoriteFactsDisplayManager: favoriteFactsDisplayManager, authenticationManager: authenticationManager)
             let authenticationDialogManager = AuthenticationDialogManager(authenticationManager: authenticationManager, errorManager: errorManager)
             ContentView()
                 .environmentObject(networkConnectionManager)
                 .environmentObject(favoriteFactsDatabase)
                 .environmentObject(authenticationManager)
                 .environmentObject(windowStateManager)
+                .environmentObject(authenticationDialogManager)
                 .environmentObject(favoriteFactsDisplayManager)
                 .environmentObject(errorManager)
-                .environmentObject(authenticationDialogManager)
             #if !os(macOS)
                 .pickerStyle(.navigationLink)
             #endif
@@ -126,9 +120,9 @@ struct RandoFactoApp: App {
                 .environmentObject(favoriteFactsDatabase)
                 .environmentObject(authenticationManager)
                 .environmentObject(windowStateManager)
-                .environmentObject(errorManager)
-                .environmentObject(favoriteFactsDisplayManager)
                 .environmentObject(authenticationDialogManager)
+                .environmentObject(favoriteFactsDisplayManager)
+                .environmentObject(errorManager)
 		}
 		#endif
 	}

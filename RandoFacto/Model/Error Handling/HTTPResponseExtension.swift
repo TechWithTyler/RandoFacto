@@ -26,6 +26,7 @@ extension HTTPURLResponse {
 	// Returns the given HTTP response code's corresponding message.
 	var errorDomainForResponseCode: String {
         switch statusCode {
+            // Known status codes
 			case 400: return "Bad Request"
 			case 401: return "Unauthorized"
 			case 403: return "Forbidden (Maybe Access To This Service Isn't Allowed From Your Current Network)"
@@ -36,7 +37,8 @@ extension HTTPURLResponse {
 			case 503: return "Service Unavailable"
 			case 504: return "Gateway Timeout"
 			case 505: return "HTTP Version Not Supported"
-			default: return "Unknown Response Code: \(statusCode)"
+            // Unknown status code
+			default: return "Unknown Response"
 		}
 	}
 

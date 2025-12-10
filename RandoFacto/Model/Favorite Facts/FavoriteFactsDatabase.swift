@@ -38,6 +38,11 @@ class FavoriteFactsDatabase: ObservableObject {
     // Whether to display one of the user's favorite facts (1), show the favorite facts list (2), or generate a random fact (0) when the app launches. This setting resets to 0 (Random Fact) and is hidden when the user logs out or deletes their account.
     @AppStorage(UserDefaults.KeyNames.initialFact) var initialFact: Int = 0
 
+    // MARK: - Properties - Errors
+
+    // The error thrown when a favorite fact's reference can't be found.
+    let favoriteFactReferenceError = NSError(domain: ErrorDomain.favoriteFactReferenceNotFound.rawValue, code: ErrorCode.favoriteFactReferenceNotFound.rawValue)
+
     // MARK: - Initialization
     
     init(firestore: Firestore, networkConnectionManager: NetworkConnectionManager) {
@@ -140,7 +145,6 @@ class FavoriteFactsDatabase: ObservableObject {
     
     // This method gets the data from snapshot and deletes it.
     func getFavoriteFactSnapshotAndDelete(_ snapshot: QuerySnapshot?, completionHandler: @escaping ((Error?) -> Void)) {
-        let favoriteFactReferenceError = NSError(domain: ErrorDomain.favoriteFactReferenceNotFound.rawValue, code: ErrorCode.favoriteFactReferenceNotFound.rawValue)
             // 1. Make sure the snapshot and the corresponding data are there.
             if let snapshot = snapshot, let document = snapshot.documents.first {
                 // 2. Delete the corresponding document.
