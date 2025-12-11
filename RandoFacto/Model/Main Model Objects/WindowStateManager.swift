@@ -293,6 +293,7 @@ extension WindowStateManager {
         // 2. Reset all in-app/non-accessibility settings.
         factTextSize = SATextViewMinFontSize
         selectedPage = .randomFact
+        favoriteFactsDisplayManager.favoriteFactsRandomizerClick = true
         favoriteFactsDisplayManager.searchText.removeAll()
         favoriteFactsDisplayManager.sortFavoriteFactsAscending = false
         selectedVoiceID = SADefaultVoiceID
