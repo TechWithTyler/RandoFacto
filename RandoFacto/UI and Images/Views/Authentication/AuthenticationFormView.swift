@@ -42,26 +42,7 @@ struct AuthenticationFormView: View {
                             .fontWeight(.bold)
                     }
                     credentialFields
-                    if authenticationDialogManager.formType == .passwordChange {
-                        WarningText("Changing your password will log you out of your other devices within an hour.", prefix: .importantUrgent)
-                    } else if !authenticationManager.userLoggedIn {
-                        haveAnAccountView
-                    }
-                    if authenticationDialogManager.showingResetPasswordEmailSent {
-                        AuthenticationMessageView(text: "A password reset email has been sent to \"\(authenticationDialogManager.emailFieldText)\". Follow the instructions in the email to reset your password. If you don't see the email from \(appName!), check your spam folder.", type: .confirmation)
-                    }
-                    if let errorText = authenticationDialogManager.formErrorText {
-                        AuthenticationMessageView(text: errorText, type: .error)
-                        if errorText == RandoFactoError.tooLongSinceLastLogin.localizedDescription {
-                            Button(loginText) {
-                                authenticationDialogManager.switchToLogin()
-                            }
-                        }
-                    }
-                    if authenticationDialogManager.formType == .signup {
-                        WarningText("You need an active email mailbox on your account in order to reset your password in case you forget it.", prefix: .importantUrgent)
-                        PrivacyPolicyAgreementText()
-                    }
+                    belowFieldUI
                 }
                 .animation(.linear, value: authenticationDialogManager.formType)
             }
@@ -175,13 +156,39 @@ struct AuthenticationFormView: View {
         }
     }
 
+    // MARK: - Below Field UI
+
+    @ViewBuilder
+    var belowFieldUI: some View {
+        if authenticationDialogManager.formType == .passwordChange {
+            WarningText("Changing your password will log you out of your other devices within an hour.", prefix: .importantUrgent)
+        } else if !authenticationManager.userLoggedIn {
+            haveAnAccountView
+        }
+        if authenticationDialogManager.showingResetPasswordEmailSent {
+            AuthenticationMessageView(text: "A password reset email has been sent to \"\(authenticationDialogManager.emailFieldText)\". Follow the instructions in the email to reset your password. If you don't see the email from \(appName!), check your spam folder.", type: .confirmation)
+        }
+        if let errorText = authenticationDialogManager.formErrorText {
+            AuthenticationMessageView(text: errorText, type: .error)
+            if errorText == RandoFactoError.tooLongSinceLastLogin.localizedDescription {
+                Button(loginText) {
+                    authenticationDialogManager.switchToLogin()
+                }
+            }
+        }
+        if authenticationDialogManager.formType == .signup {
+            WarningText("You need an active email mailbox on your account in order to reset your password in case you forget it.", prefix: .importantUrgent)
+            PrivacyPolicyAgreementText()
+        }
+    }
+
     // MARK: - "Have an Account?"/"No Account Yet?" View
 
     @ViewBuilder
     var haveAnAccountView: some View {
         HStack {
             Text(authenticationDialogManager.formType == .signup ? "Already have an account?" : "No account yet?")
-            Button(authenticationDialogManager.formType == .signup ? "Login" : "Signup") {
+            Button(authenticationDialogManager.formType == .signup ? loginText : signupText) {
                 authenticationDialogManager.toggleForm()
             }
 #if os(macOS)

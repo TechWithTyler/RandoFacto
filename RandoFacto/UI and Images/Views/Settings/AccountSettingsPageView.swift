@@ -29,7 +29,9 @@ struct AccountSettingsPageView: View {
 
     var body: some View {
         Form {
-            if let email = authenticationManager.firebaseAuthentication.currentUser?.email {
+            if let deletionStage = authenticationManager.accountDeletionStage {
+                LoadingIndicator(message: "Deleting \(deletionStage)…")
+            } else if let email = authenticationManager.firebaseAuthentication.currentUser?.email {
                 HStack {
                     Spacer()
                     Image(systemName: "person.circle.fill")
@@ -45,13 +47,6 @@ struct AccountSettingsPageView: View {
                     }
                     Spacer()
                 }
-            } else {
-                Text("Login to your \(appName!) account to save favorite facts to view on all your devices, even while offline.")
-                    .font(.system(size: 24))
-            }
-            if let deletionStage = authenticationManager.accountDeletionStage {
-                LoadingIndicator(message: "Deleting \(deletionStage)…")
-            } else if authenticationManager.userLoggedIn {
                 if networkConnectionManager.deviceIsOnline {
                         Button("Change Password…", systemImage: "key") {
                             authenticationDialogManager.formType = .passwordChange
@@ -76,6 +71,8 @@ struct AccountSettingsPageView: View {
                 }
             } else {
                 if networkConnectionManager.deviceIsOnline {
+                    Text("Login to your \(appName!) account to save favorite facts to view on all your devices, even while offline.")
+                        .font(.system(size: 24))
                     Button(loginText, systemImage: "entry.lever.keypad") {
                         authenticationDialogManager.formType = .login
                     }
@@ -97,28 +94,7 @@ struct AccountSettingsPageView: View {
                 authenticationDialogManager.showingDeleteAccount = false
             }
             Button("Delete", role: .destructive) {
-                authenticationManager.deleteCurrentUser {
-                    [self] error in
-                    if let error = error {
-                        DispatchQueue.main.async { [self] in
-                            errorManager.showError(error) {
-                                randoFactoError in
-                                if randoFactoError == .tooLongSinceLastLogin {
-                                    authenticationDialogManager.formType = nil
-                                    authenticationManager.logoutCurrentUser { [self] logoutError in
-                                        if let logoutError = logoutError {
-                                            errorManager.showError(logoutError)
-                                        }
-                                    }
-                                    errorManager.showError(error)
-                                } else {
-                                    errorManager.showError(error)
-                                }
-                            }
-                        }
-                    }
-                    authenticationDialogManager.showingDeleteAccount = false
-                }
+                authenticationDialogManager.deleteCurrentUser()
             }
         } message: {
             Text("You won't be able to save favorite facts to view offline! This can't be undone!")
@@ -132,12 +108,7 @@ struct AccountSettingsPageView: View {
                 authenticationDialogManager.showingLogout = false
             }
             Button("Logout") {
-                authenticationManager.logoutCurrentUser { [self] error in
-                    if let error = error {
-                        errorManager.showError(error)
-                    }
-                }
-                authenticationDialogManager.showingLogout = false
+                authenticationDialogManager.logoutCurrentUser()
             }
         } message: {
             Text("All favorite fact-related settings will be reset. You won't be able to save favorite facts to view offline until you login again!")
