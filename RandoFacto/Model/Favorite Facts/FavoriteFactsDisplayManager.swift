@@ -9,6 +9,7 @@
 // MARK: - Imports
 
 import SwiftUI
+import AVFoundation
 
 // Handles searching and sorting of the favorite facts list and the display of favorite facts and related dialogs.
 class FavoriteFactsDisplayManager: ObservableObject {
@@ -67,10 +68,17 @@ class FavoriteFactsDisplayManager: ObservableObject {
     // The timer used for the randomizer effect.
     var randomizerTimer: Timer? = nil
 
+    // MARK: - Properties - Randomizer Click Player
+
+    var audioPlayer: AVAudioPlayer? = nil
+
     // MARK: - Properties - Booleans
 
     // Whether RandoFacto should "spin through" a user's favorite facts when getting a random favorite fact. This setting resets to off and is hidden when the user logs out or deletes their account.
     @AppStorage(UserDefaults.KeyNames.favoriteFactsRandomizerEffect) var favoriteFactsRandomizerEffect: Bool = false
+
+    // Whether a click is heard during the favorite fact randomizer effect.
+    @AppStorage(UserDefaults.KeyNames.favoriteFactsRandomizerClick) var favoriteFactsRandomizerClick: Bool = true
 
     // Whether RandoFacto should generate a new random fact if it generates a fact that matches a favorite.
     @AppStorage(UserDefaults.KeyNames.skipFavoritesOnFactGeneration) var skipFavoritesOnFactGeneration: Bool = false
@@ -105,13 +113,17 @@ class FavoriteFactsDisplayManager: ObservableObject {
         // 1. Start the randomizerTimer without repeat, since the timer's interval increases as randomizerIterations increases and the time interval of running Timers can't be changed directly.
         let randomizerTimeInterval = TimeInterval(randomizerIterations) / TimeInterval(maxRandomizerIterations * 4)
         randomizerTimer = Timer.scheduledTimer(withTimeInterval: randomizerTimeInterval, repeats: false, block: { [self] timer in
-            // 2. If randomizerIterations equals maxRandomizerIterations, stop the timer and reset the count.
+            // 2. Play a click sound.
+            if favoriteFactsRandomizerClick {
+                playRandomizerClick()
+            }
+            // 3. If randomizerIterations equals maxRandomizerIterations, stop the timer and reset the count.
             if randomizerIterations == maxRandomizerIterations {
                 timer.invalidate()
                 randomizerTimer = nil
                 randomizerIterations = 0
             } else {
-                // 3. Otherwise, increase the count and restart the timer.
+                // 4. Otherwise, increase the count and restart the timer.
                 randomizerIterations += 1
                 timer.invalidate()
                 setupRandomizerTimer {
@@ -129,6 +141,23 @@ class FavoriteFactsDisplayManager: ObservableObject {
         randomizerTimer?.invalidate()
         randomizerTimer = nil
         randomizerIterations = 0
+    }
+
+    // MARK: - Randomizer Click
+
+    func playRandomizerClick() {
+        // 1. Make sure the audio file is present in the app bundle.
+        guard let url = Bundle.main.url(forResource: "click", withExtension: "wav") else {
+            fatalError("Failed to find click.wav in bundle")
+        }
+        // 2. Try to load the file into the player and play it.
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
+            audioPlayer?.stop()
+            audioPlayer?.play()
+        } catch {
+            fatalError("Error playing audio file click.wav: \(error.localizedDescription)")
+        }
     }
 
     // MARK: - Favorite Facts List - Color Matching Terms

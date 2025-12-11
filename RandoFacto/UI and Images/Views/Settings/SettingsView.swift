@@ -38,14 +38,14 @@ struct SettingsView: View {
             // macOS settings window
             TabView(selection: $windowStateManager.selectedSettingsPage) {
                 SAMVisualEffectViewSwiftUIRepresentable(activeState: .active) {
-                    DisplaySettingsPageView()
+                    FactSettingsPageView()
                 }
                 .frame(width: 400, height: authenticationManager.userLoggedIn ? 450 : 280)
                 .formStyle(.grouped)
                 .tabItem {
-                    Label(SettingsPage.display.rawValue.capitalized, systemImage: SettingsPage.Icons.display.rawValue)
+                    Label(SettingsPage.facts.rawValue.capitalized, systemImage: SettingsPage.Icons.facts.rawValue)
                 }
-                .tag(SettingsPage.display)
+                .tag(SettingsPage.facts)
                 SAMVisualEffectViewSwiftUIRepresentable(activeState: .active) {
                     SpeechSettingsPageView()
                 }
@@ -110,7 +110,7 @@ struct SettingsView: View {
                             DisplaySettingsPageView()
                                 .navigationTitle(SettingsPage.display.rawValue.capitalized)
                         } label: {
-                            Label(SettingsPage.display.rawValue.capitalized, systemImage: SettingsPage.Icons.display.rawValue)
+                            Label(SettingsPage.display.rawValue.capitalized, systemImage: SettingsPage.Icons.facts.rawValue)
                         }
                         NavigationLink {
                             SpeechSettingsPageView()

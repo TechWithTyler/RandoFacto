@@ -26,6 +26,8 @@ extension UserDefaults {
 
         static let favoriteFactsRandomizerEffect: String = "favoriteFactsRandomizerEffect"
 
+        static let favoriteFactsRandomizerClick: String = "favoriteFactsRandomizerClick"
+
         static let skipFavoritesOnFactGeneration: String = "skipFavoritesOnFactGeneration"
 
         static let sortFavoriteFactsAscending: String = "sortFavoriteFactsAscending"

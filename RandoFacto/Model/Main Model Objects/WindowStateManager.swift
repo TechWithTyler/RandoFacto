@@ -73,7 +73,7 @@ class WindowStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegat
 
 #if os(macOS)
     // The page currently selected in the Settings window on macOS.
-    @AppStorage(UserDefaults.KeyNames.selectedSettingsPage) var selectedSettingsPage: SettingsPage = .display
+    @AppStorage(UserDefaults.KeyNames.selectedSettingsPage) var selectedSettingsPage: SettingsPage = .facts
 #endif
 
     // MARK: - Properties - Booleans
@@ -298,7 +298,7 @@ extension WindowStateManager {
         selectedVoiceID = SADefaultVoiceID
         // 3. Reset the selected settings page on macOS.
         #if os(macOS)
-        selectedSettingsPage = .display
+        selectedSettingsPage = .facts
         #endif
         // 4. Set the onboarding sheet to show on the next launch.
         shouldOnboard = true

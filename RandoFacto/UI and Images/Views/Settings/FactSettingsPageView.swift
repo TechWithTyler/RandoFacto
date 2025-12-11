@@ -1,5 +1,5 @@
 //
-//  DisplaySettingsPageView.swift
+//  FactSettingsPageView.swift
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 4/25/24.
@@ -11,7 +11,7 @@
 import SwiftUI
 import SheftAppsStylishUI
 
-struct DisplaySettingsPageView: View {
+struct FactSettingsPageView: View {
 
     // MARK: - Properties - Objects
 
@@ -25,6 +25,8 @@ struct DisplaySettingsPageView: View {
 
     @AppStorage(UserDefaults.KeyNames.favoriteFactsRandomizerEffect) var favoriteFactsRandomizerEffect: Bool = false
 
+    @AppStorage(UserDefaults.KeyNames.favoriteFactsRandomizerClick) var favoriteFactsRandomizerClick: Bool = true
+
     @AppStorage(UserDefaults.KeyNames.skipFavoritesOnFactGeneration) var skipFavoritesOnFactGeneration: Bool = false
 
     // MARK: - Body
@@ -32,7 +34,7 @@ struct DisplaySettingsPageView: View {
     var body: some View {
         Form {
             Section {
-                TextSizeSlider(labelText: "Fact Text Size", textSize: $windowStateManager.factTextSize, previewText: sampleFact)
+                TextSizeSlider(labelText: "Text Size", textSize: $windowStateManager.factTextSize, previewText: sampleFact)
             }
             .animation(.default, value: windowStateManager.factTextSize)
             if authenticationManager.userLoggedIn {
@@ -52,6 +54,9 @@ struct DisplaySettingsPageView: View {
                 }
                 Section {
                     Toggle("Favorite Fact Randomizer Effect", isOn: $favoriteFactsRandomizerEffect)
+                    if favoriteFactsRandomizerEffect {
+                        Toggle("Click Sound", isOn: $favoriteFactsRandomizerClick)
+                    }
                     if favoriteFactsDatabase.favoriteFacts.count < 5 {
                         InfoText("The randomizer effect only works if you have at least 5 favorite facts (you currently have \(favoriteFactsDatabase.favoriteFacts.count)).")
                     }
@@ -68,7 +73,7 @@ struct DisplaySettingsPageView: View {
 // MARK: - Preview
 
 #Preview {
-        DisplaySettingsPageView()
+        FactSettingsPageView()
 #if DEBUG
     .withPreviewData()
 #endif

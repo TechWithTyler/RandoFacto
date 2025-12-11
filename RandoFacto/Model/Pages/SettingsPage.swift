@@ -19,7 +19,7 @@ enum SettingsPage : String {
 
     enum Icons: String {
 
-        case display = "textformat.size"
+        case facts = "questionmark.circle"
 
         case speech = "speaker.wave.2.bubble.left"
 
@@ -35,7 +35,7 @@ enum SettingsPage : String {
 
     // MARK: - Settings Page Enum Cases
 
-    case display
+    case facts
 
     case speech
 
