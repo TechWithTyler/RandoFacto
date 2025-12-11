@@ -186,7 +186,6 @@ class AuthenticationManager: ObservableObject {
     func handleAuthenticationRequestResult(_ result: AuthDataResult?, error: Error?, isSignup: Bool, completionHandler: @escaping ((Error?) -> Void)) {
         // 1. Create the block which will be performed if authentication is successful. This block adds the registered users handler, loads the user's favorite facts, and calls the completion handler.
         let successBlock: (() -> Void) = { [self] in
-            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [self] in
                 isAuthenticating = false
                 addRegisteredUsersHandler { [self] error in
                     if let error = error {
@@ -195,7 +194,6 @@ class AuthenticationManager: ObservableObject {
                         favoriteFactsDatabase?.loadFavoriteFactsForCurrentUser(completionHandler: completionHandler)
                     }
                 }
-            }
         }
         // 2. Log an error if unsuccessful.
         if let error = error {
