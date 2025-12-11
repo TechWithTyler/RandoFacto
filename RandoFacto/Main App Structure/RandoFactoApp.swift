@@ -96,9 +96,6 @@ struct RandoFactoApp: App {
                 .environmentObject(authenticationDialogManager)
                 .environmentObject(favoriteFactsDisplayManager)
                 .environmentObject(errorManager)
-            #if !os(macOS)
-                .pickerStyle(.navigationLink)
-            #endif
                 .ignoresSafeArea(edges: .all)
         }
         .commands {
