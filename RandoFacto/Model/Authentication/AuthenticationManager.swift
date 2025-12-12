@@ -362,13 +362,9 @@ class AuthenticationManager: ObservableObject {
                         completionHandler(error)
                     } else {
                         // 6. If favorite fact deletion and user reference deletion are successful, all user data has been deleted, so the account can be safely deleted.
+                        accountDeletionStage = .account
                         user.delete { [self] error in
-                            if error == nil {
-                                // 7. If account deletion is successful, log the now-deleted user out of this device and reset all login-required settings to their defaults. Other devices will be logged out of automatically, either immediately or within an hour after account deletion.
-                                logoutCurrentUser(completionHandler: completionHandler)
-                            }
-                            accountDeletionStage = nil
-                            completionHandler(error)
+                            handleAccountDeletion(for: user, error: error, completionHandler: completionHandler)
                         }
                     }
                 }
@@ -406,5 +402,27 @@ class AuthenticationManager: ObservableObject {
                 }
             }
     }
-    
+
+    func handleAccountDeletion(for user: User, error: Error?, completionHandler: @escaping ((Error?) -> Void)) {
+        // 1. Set accountDeletionStage to nil after deletion.
+        accountDeletionStage = nil
+        if error == nil {
+            // 2. If account deletion is successful, log the now-deleted user out of this device and reset all login-required settings to their defaults. Other devices will be logged out automatically, either immediately or within an hour after account deletion.
+            logoutCurrentUser(completionHandler: completionHandler)
+        } else {
+            // 3. If an error occurs, the user was unable to be deleted, so try to put back their user reference.
+            if let email = user.email {
+                addUserReference(email: email, id: user.uid) { addReferenceError in
+                    if let addReferenceError = addReferenceError {
+                        completionHandler(addReferenceError)
+                    } else {
+                        completionHandler(error)
+                    }
+                }
+            } else {
+                completionHandler(error)
+            }
+        }
+    }
+
 }
