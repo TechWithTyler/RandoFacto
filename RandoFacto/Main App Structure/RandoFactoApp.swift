@@ -138,6 +138,8 @@ struct RandoFactoApp: App {
             fatalError("Failed to load options from Firebase configuration file \(firebaseConfigurationFilename).\(firebaseConfigurationFileExtension).")
         }
         // Create a separate Swift file to hold a constant called firebaseAPIKey, and include its path in your git repository's .gitignore file to make sure it doesn't get committed. We set up the API key here, instead of in GoogleService-Info.plist, so anyone looking at that file in the app bundle's Contents/Resources directory on macOS won't be able to see the API key.
+        // Create a separate Swift file to hold a constant called firebaseAPIKey, and include its path in your git repository's .gitignore file to make sure it doesn't get committed. We set up the API key here, instead of in GoogleService-Info.plist, so anyone looking at that file in the app bundle's Contents/Resources directory on macOS won't be able to see the API key. This isn't absolutely necessary for Firebase API keys since they're intentionally non-secret, but this prevents tools like GitGuardian from flagging it.
+        // Firebase API keys must start with "AIza". The rest of the API key is random.
         options.apiKey = firebaseAPIKey
         // 3. Initialize Firebase with the custom options. This must be done before the Firestore and Auth objects can be initialized.
         // Since we declare the API key outside GoogleService-Info.plist, we need to use configure(options:) instead of configure().
