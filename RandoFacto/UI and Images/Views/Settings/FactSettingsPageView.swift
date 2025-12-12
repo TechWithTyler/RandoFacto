@@ -21,6 +21,8 @@ struct FactSettingsPageView: View {
 
     @EnvironmentObject var favoriteFactsDatabase: FavoriteFactsDatabase
 
+    @EnvironmentObject var favoriteFactsDisplayManager: FavoriteFactsDisplayManager
+
     // MARK: - Properties - Booleans
 
     @AppStorage(UserDefaults.KeyNames.favoriteFactsRandomizerEffect) var favoriteFactsRandomizerEffect: Bool = false
@@ -56,6 +58,11 @@ struct FactSettingsPageView: View {
                     Toggle("Favorite Fact Randomizer Effect", isOn: $favoriteFactsRandomizerEffect)
                     if favoriteFactsRandomizerEffect {
                         Toggle("Click Sound", isOn: $favoriteFactsRandomizerClick)
+                            .onChange(of: favoriteFactsRandomizerClick) { oldValue, newValue in
+                                if newValue {
+                                    favoriteFactsDisplayManager.playRandomizerClick()
+                                }
+                            }
                     }
                     if favoriteFactsDatabase.favoriteFacts.count < 5 {
                         InfoText("The randomizer effect only works if you have at least 5 favorite facts (you currently have \(favoriteFactsDatabase.favoriteFacts.count)).")
