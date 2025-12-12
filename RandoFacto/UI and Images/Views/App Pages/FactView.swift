@@ -195,18 +195,7 @@ struct FactView: View {
                 if authenticationManager.userLoggedIn {
                     ToolbarItem(placement: .automatic) {
                         Button {
-                            DispatchQueue.main.async {
-                                if windowStateManager.displayedFactIsSaved {
-                                    favoriteFactsDisplayManager.favoriteFactToDelete = windowStateManager.factText
-                                    favoriteFactsDisplayManager.showingDeleteFavoriteFact = true
-                                } else {
-                                    favoriteFactsDatabase.saveFactToFavorites(windowStateManager.factText) { [self] error in
-                                        if let error = error {
-                                            errorManager.showError(error)
-                                        }
-                                    }
-                                }
-                            }
+                            windowStateManager.toggleFavoriteFact()
                         } label: {
                             Label(windowStateManager.displayedFactIsSaved ? "Unfavorite" : "Favorite", systemImage: windowStateManager.displayedFactIsSaved ? "star.fill" : "star")
                                 .symbolRenderingMode(windowStateManager.displayedFactIsSaved ? .multicolor : .monochrome)

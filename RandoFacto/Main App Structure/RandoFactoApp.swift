@@ -84,19 +84,21 @@ struct RandoFactoApp: App {
         // Main window scene
         WindowGroup {
             // Per-window objects
+            let speechManager = SpeechManager()
             let errorManager = ErrorManager()
             let favoriteFactsDisplayManager = FavoriteFactsDisplayManager(favoriteFactsDatabase: favoriteFactsDatabase)
-            let windowStateManager = WindowStateManager(errorManager: errorManager, favoriteFactsDatabase: favoriteFactsDatabase, favoriteFactsDisplayManager: favoriteFactsDisplayManager, authenticationManager: authenticationManager)
+            let windowStateManager = WindowStateManager(speechManager: speechManager, errorManager: errorManager, favoriteFactsDatabase: favoriteFactsDatabase, favoriteFactsDisplayManager: favoriteFactsDisplayManager, authenticationManager: authenticationManager)
             let authenticationDialogManager = AuthenticationDialogManager(authenticationManager: authenticationManager, errorManager: errorManager)
             ContentView()
+                .ignoresSafeArea(edges: .all)
                 .environmentObject(networkConnectionManager)
                 .environmentObject(favoriteFactsDatabase)
                 .environmentObject(authenticationManager)
                 .environmentObject(windowStateManager)
+                .environmentObject(speechManager)
                 .environmentObject(authenticationDialogManager)
                 .environmentObject(favoriteFactsDisplayManager)
                 .environmentObject(errorManager)
-                .ignoresSafeArea(edges: .all)
         }
         .commands {
             RandoFactoCommands(networkConnectionManager: networkConnectionManager, authenticationManager: authenticationManager, favoriteFactsDatabase: favoriteFactsDatabase)
@@ -105,9 +107,10 @@ struct RandoFactoApp: App {
         // Settings window scene
         // On macOS, Settings are presented as a window instead of as one of the app's pages.
 		Settings {
+            let speechManager = SpeechManager()
             let errorManager = ErrorManager()
             let favoriteFactsDisplayManager = FavoriteFactsDisplayManager(favoriteFactsDatabase: favoriteFactsDatabase)
-            let windowStateManager = WindowStateManager(errorManager: errorManager, favoriteFactsDatabase: favoriteFactsDatabase,
+            let windowStateManager = WindowStateManager(speechManager: speechManager, errorManager: errorManager, favoriteFactsDatabase: favoriteFactsDatabase,
                 favoriteFactsDisplayManager: favoriteFactsDisplayManager,
                 authenticationManager: authenticationManager
             )
@@ -117,6 +120,7 @@ struct RandoFactoApp: App {
                 .environmentObject(favoriteFactsDatabase)
                 .environmentObject(authenticationManager)
                 .environmentObject(windowStateManager)
+                .environmentObject(speechManager)
                 .environmentObject(authenticationDialogManager)
                 .environmentObject(favoriteFactsDisplayManager)
                 .environmentObject(errorManager)
@@ -137,7 +141,6 @@ struct RandoFactoApp: App {
         guard let options = FirebaseOptions(contentsOfFile: firebaseConfigurationFilePath) else {
             fatalError("Failed to load options from Firebase configuration file \(firebaseConfigurationFilename).\(firebaseConfigurationFileExtension).")
         }
-        // Create a separate Swift file to hold a constant called firebaseAPIKey, and include its path in your git repository's .gitignore file to make sure it doesn't get committed. We set up the API key here, instead of in GoogleService-Info.plist, so anyone looking at that file in the app bundle's Contents/Resources directory on macOS won't be able to see the API key.
         // Create a separate Swift file to hold a constant called firebaseAPIKey, and include its path in your git repository's .gitignore file to make sure it doesn't get committed. We set up the API key here, instead of in GoogleService-Info.plist, so anyone looking at that file in the app bundle's Contents/Resources directory on macOS won't be able to see the API key. This isn't absolutely necessary for Firebase API keys since they're intentionally non-secret, but this prevents tools like GitGuardian from flagging it.
         // Firebase API keys must start with "AIza". The rest of the API key is random.
         options.apiKey = firebaseAPIKey

@@ -13,28 +13,28 @@ import SheftAppsStylishUI
 
 struct SpeechSettingsPageView: View {
 
-    // MARK: - Properties - App State Manager
+    // MARK: - Properties - Speech Manager
 
-    @EnvironmentObject var windowStateManager: WindowStateManager
+    @EnvironmentObject var speechManager: SpeechManager
 
     // MARK: - Body
 
     var body: some View {
         Form {
             Section(footer: Text("This is the voice \(appName!) will use to read facts aloud.")) {
-                VoicePicker(selectedVoiceID: $windowStateManager.selectedVoiceID, voices: windowStateManager.voices) { voice in
-                    windowStateManager.speakFact(fact: sampleFact, forSettingsPreview: true)
+                VoicePicker(selectedVoiceID: $speechManager.selectedVoiceID, voices: speechManager.voices) { voice in
+                    speechManager.speakFact(fact: sampleFact, forSettingsPreview: true)
                     }
-                PlayButton(noun: "Sample Fact", isPlaying: windowStateManager.factBeingSpoken == sampleFact) {
-                    if windowStateManager.factBeingSpoken == sampleFact {
-                        windowStateManager.speechSynthesizer.stopSpeaking(at: .immediate)
+                PlayButton(noun: "Sample Fact", isPlaying: speechManager.factBeingSpoken == sampleFact) {
+                    if speechManager.factBeingSpoken == sampleFact {
+                        speechManager.speechSynthesizer.stopSpeaking(at: .immediate)
                     } else {
-                        windowStateManager.speakFact(fact: sampleFact, forSettingsPreview: true)
+                        speechManager.speakFact(fact: sampleFact, forSettingsPreview: true)
                     }
                 }
             }
             .onAppear {
-                windowStateManager.loadVoices()
+                speechManager.loadVoices()
             }
         }
         .formStyle(.grouped)

@@ -17,6 +17,7 @@
 		8D1EE31B2EE8D0DE0064997F /* PasswordEvaluator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1EE31A2EE8D0DE0064997F /* PasswordEvaluator.swift */; };
 		8D1EE31D2EE8D43D0064997F /* PasswordStrengthBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1EE31C2EE8D43D0064997F /* PasswordStrengthBar.swift */; };
 		8D1EE31F2EEB6EE60064997F /* click.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8D1EE31E2EEB6EE60064997F /* click.wav */; };
+		8D1EE3212EECC3660064997F /* SpeechManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1EE3202EECC3660064997F /* SpeechManager.swift */; };
 		8D2A7B302B5B277300142BDA /* SpeakButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2A7B2F2B5B277300142BDA /* SpeakButton.swift */; };
 		8D2A7B362B5B48A400142BDA /* FirestoreNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2A7B352B5B48A400142BDA /* FirestoreNames.swift */; };
 		8D31D8532B27B759009F29EE /* APIKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D31D8522B27B758009F29EE /* APIKeys.swift */; };
@@ -106,6 +107,7 @@
 		8D1EE31A2EE8D0DE0064997F /* PasswordEvaluator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordEvaluator.swift; sourceTree = "<group>"; };
 		8D1EE31C2EE8D43D0064997F /* PasswordStrengthBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordStrengthBar.swift; sourceTree = "<group>"; };
 		8D1EE31E2EEB6EE60064997F /* click.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = click.wav; sourceTree = "<group>"; };
+		8D1EE3202EECC3660064997F /* SpeechManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechManager.swift; sourceTree = "<group>"; };
 		8D2A7B2F2B5B277300142BDA /* SpeakButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeakButton.swift; sourceTree = "<group>"; };
 		8D2A7B352B5B48A400142BDA /* FirestoreNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreNames.swift; sourceTree = "<group>"; };
 		8D31D8522B27B758009F29EE /* APIKeys.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIKeys.swift; sourceTree = "<group>"; };
@@ -232,6 +234,7 @@
 				8DA2C420292C1E6000705A2F /* FactGenerator.swift */,
 				8D5E9A292B226DE800C261B8 /* NetworkConnectionManager.swift */,
 				8DEB531E2BBB4E5400788A04 /* PreviewManager.swift */,
+				8D1EE3202EECC3660064997F /* SpeechManager.swift */,
 			);
 			path = "Main Model Objects";
 			sourceTree = "<group>";
@@ -573,6 +576,7 @@
 				8DEF074E2B241DBA00F0375F /* FavoriteFactsDatabase.swift in Sources */,
 				8D95DD282BDAF8B0006FAE63 /* SpeechSettingsPageView.swift in Sources */,
 				8D86430E2AEC594F0084C772 /* AuthenticationFormType.swift in Sources */,
+				8D1EE3212EECC3660064997F /* SpeechManager.swift in Sources */,
 				8D87C83E2B0306A7009BBE56 /* FavoriteFact.swift in Sources */,
 				8D87C8402B030890009BBE56 /* UserReference.swift in Sources */,
 				8D1CD2D02EE2525A001B6AD0 /* UserDefaultsKeyNames.swift in Sources */,

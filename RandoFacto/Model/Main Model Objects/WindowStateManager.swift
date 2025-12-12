@@ -10,11 +10,10 @@
 
 import SwiftUI
 import Firebase
-import Speech
 import SheftAppsStylishUI
 
-// Manages the fact generation/display and pages. This is not to be confused with an NSApplicationDelegate or UIApplicationDelegate.
-class WindowStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
+// Manages the fact generation/display and pages.
+class WindowStateManager: NSObject, ObservableObject {
 
     // MARK: - Properties - Objects
 
@@ -24,6 +23,8 @@ class WindowStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegat
 #endif
     var factGenerator = FactGenerator()
 
+    var speechManager: SpeechManager
+
     var errorManager: ErrorManager
 
     var favoriteFactsDatabase: FavoriteFactsDatabase
@@ -31,8 +32,6 @@ class WindowStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegat
     var favoriteFactsDisplayManager: FavoriteFactsDisplayManager
 
     var authenticationManager: AuthenticationManager
-
-    var speechSynthesizer = AVSpeechSynthesizer()
 
     // MARK: - Properties - Strings
 
@@ -67,7 +66,7 @@ class WindowStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegat
     // The page currently selected in the sidebar/top-level view. On macOS, the settings view is accessed by the Settings menu item in the app menu instead of as a page.
     @Published var selectedPage: AppPage? = .randomFact {
         didSet {
-            speechSynthesizer.stopSpeaking(at: .immediate)
+            speechManager.speechSynthesizer.stopSpeaking(at: .immediate)
         }
     }
 
@@ -89,10 +88,10 @@ class WindowStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegat
 
     // Whether favorite facts are available to be displayed.
     var favoriteFactsAvailable: Bool {
-        return authenticationManager.userLoggedIn && !favoriteFactsDatabase.favoriteFacts.isEmpty && !authenticationManager.isDeletingAccount
+        return authenticationManager.userLoggedIn && !authenticationManager.isDeletingAccount && !favoriteFactsDatabase.favoriteFacts.isEmpty
     }
 
-    // Whether the app is loading.
+    // Whether the window is loading.
     var isLoading: Bool {
         return factText == loadingString
     }
@@ -109,19 +108,15 @@ class WindowStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegat
 
     // MARK: - Initialization
 
-    init(errorManager: ErrorManager, favoriteFactsDatabase: FavoriteFactsDatabase, favoriteFactsDisplayManager: FavoriteFactsDisplayManager, authenticationManager: AuthenticationManager) {
+    init(speechManager: SpeechManager, errorManager: ErrorManager, favoriteFactsDatabase: FavoriteFactsDatabase, favoriteFactsDisplayManager: FavoriteFactsDisplayManager, authenticationManager: AuthenticationManager) {
         // 1. Link the managers.
+        self.speechManager = speechManager
         self.errorManager = errorManager
         self.favoriteFactsDatabase = favoriteFactsDatabase
         self.favoriteFactsDisplayManager = favoriteFactsDisplayManager
         self.authenticationManager = authenticationManager
         super.init()
-        // 3. Set the speech synthesizer delegate and load the list of installed voices.
-        speechSynthesizer.delegate = self
-        DispatchQueue.main.async { [self] in
-            loadVoices()
-        }
-        // 3. After waiting 2 seconds for network connection checking and favorite facts database loading to complete, display a fact to the user.
+        // 2. After waiting 2 seconds for network connection checking and favorite facts database loading to complete, display a fact to the user.
         displayInitialFact()
     }
 
@@ -150,7 +145,7 @@ class WindowStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegat
             // 2. Display a message before starting fact generation.
             DispatchQueue.main.async { [self] in
                 dismissFavoriteFacts()
-                speechSynthesizer.stopSpeaking(at: .immediate)
+                speechManager.speechSynthesizer.stopSpeaking(at: .immediate)
                 factText = generatingRandomFactString
             }
         } completionHandler: { [self]
@@ -176,6 +171,23 @@ class WindowStateManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegat
 
 extension WindowStateManager {
 
+    // MARK: - Favorite Facts - Toggle Favorite
+
+    func toggleFavoriteFact() {
+        DispatchQueue.main.async { [self] in
+            if displayedFactIsSaved {
+                favoriteFactsDisplayManager.favoriteFactToDelete = factText
+                favoriteFactsDisplayManager.showingDeleteFavoriteFact = true
+            } else {
+                favoriteFactsDatabase.saveFactToFavorites(factText) { [self] error in
+                    if let error = error {
+                        errorManager.showError(error)
+                    }
+                }
+            }
+        }
+    }
+
     // MARK: - Favorite Facts - Get Random Favorite Fact
 
     // This method gets a random fact from the favorite facts list and sets factText to its text.
@@ -187,7 +199,7 @@ extension WindowStateManager {
         }
         DispatchQueue.main.async { [self] in
             // 2. Dismiss the favorite facts list and stop speaking.
-            speechSynthesizer.stopSpeaking(at: .immediate)
+            speechManager.speechSynthesizer.stopSpeaking(at: .immediate)
             dismissFavoriteFacts()
             // 3. If the randomizer effect is enabled and there are at least 5 favorite facts, start the randomizer timer, calling the above block with each iteration.
             if favoriteFactsDisplayManager.favoriteFactsRandomizerEffect && favoriteFactsDatabase.favoriteFacts.count >= 5 {
@@ -210,7 +222,7 @@ extension WindowStateManager {
     func displayFavoriteFact(_ favorite: String, forInitialization: Bool = false) {
         DispatchQueue.main.async { [self] in
             factText = favorite
-            speechSynthesizer.stopSpeaking(at: .immediate)
+            speechManager.speechSynthesizer.stopSpeaking(at: .immediate)
             if !forInitialization {
                 dismissFavoriteFacts()
             }
@@ -228,54 +240,6 @@ extension WindowStateManager {
         }
     }
 
-}
-
-extension WindowStateManager {
-    
-    // MARK: - Speech - Load Voices
-    
-    // This method loads all installed voices into the app.
-    func loadVoices() {
-            AVSpeechSynthesizer.requestPersonalVoiceAuthorization { [self] status in
-                voices = AVSpeechSynthesisVoice.speechVoices().filter({$0.language == "en-US"})
-                if voices.filter({$0.identifier == selectedVoiceID}).isEmpty {
-                    // If the selected voice ID is not available, set it to the default voice ID.
-                    selectedVoiceID = SADefaultVoiceID
-                }
-            }
-    }
-    
-    // MARK: - Speech - Speak Fact
-    
-    // This method speaks fact using the selected voice, or if fact is the fact currently being spoken, stops speech.
-    func speakFact(fact: String, forSettingsPreview: Bool = false) {
-        DispatchQueue.main.async { [self] in
-            // 1. Stop any in-progress speech.
-            speechSynthesizer.stopSpeaking(at: .immediate)
-            // 2. If the fact to be spoken is the fact currently being spoken, speech is stopped and we don't continue. The exception is the sample fact which is spoken when choosing a voice--the sample fact is spoken each time the voice is changed regardless of whether it's currently being spoken.
-            if factBeingSpoken != fact || forSettingsPreview {
-                // 3. If we get here, create an AVSpeechUtterance with the given String (in this case, the fact passed into this method).
-                let utterance = AVSpeechUtterance(string: fact)
-                // 4. Set the voice for the utterance.
-                utterance.voice = AVSpeechSynthesisVoice(identifier: selectedVoiceID)
-                // 5. Speak the utterance.
-                speechSynthesizer.speak(utterance)
-            }
-        }
-    }
-    
-    // MARK: - Speech - Synthesizer Delegate
-    
-    // This method sets factBeingSpoken to utterance's speechString when speech starts.
-    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didStart utterance: AVSpeechUtterance) {
-        factBeingSpoken = utterance.speechString
-    }
-    
-    // This method resets factBeingSpoken to an empty String once speech completes or stops.
-    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
-        factBeingSpoken = String()
-    }
-    
 }
 
 extension WindowStateManager {

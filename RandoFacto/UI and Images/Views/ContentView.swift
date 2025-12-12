@@ -18,13 +18,13 @@ struct ContentView: View {
 
     @EnvironmentObject var windowStateManager: WindowStateManager
 
+    @EnvironmentObject var speechManager: SpeechManager
+
     @EnvironmentObject var authenticationManager: AuthenticationManager
 
     @EnvironmentObject var favoriteFactsDatabase: FavoriteFactsDatabase
 
     @EnvironmentObject var favoriteFactsDisplayManager: FavoriteFactsDisplayManager
-
-    @EnvironmentObject var networkConnectionManager: NetworkConnectionManager
 
     @EnvironmentObject var errorManager: ErrorManager
 
@@ -150,6 +150,7 @@ struct ContentView: View {
             }
         }
         .focusedSceneObject(windowStateManager)
+        .focusedSceneObject(speechManager)
         .focusedSceneObject(favoriteFactsDisplayManager)
     }
 

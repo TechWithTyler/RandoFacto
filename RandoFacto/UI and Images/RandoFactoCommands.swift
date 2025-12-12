@@ -17,6 +17,8 @@ struct RandoFactoCommands: Commands {
 
     @FocusedObject var windowStateManager: WindowStateManager?
 
+    @FocusedObject var speechManager: SpeechManager?
+
     @FocusedObject var favoriteFactsDisplayManager: FavoriteFactsDisplayManager?
 
     @EnvironmentObject var errorManager: ErrorManager
@@ -33,11 +35,11 @@ struct RandoFactoCommands: Commands {
         CommandGroup(replacing: .undoRedo) {}
         CommandGroup(replacing: .importExport) {}
         CommandGroup(replacing: .printItem) {}
-        if let windowStateManager = windowStateManager, let favoriteFactsDisplayManager = favoriteFactsDisplayManager {
+        if let windowStateManager = windowStateManager, let speechManager = speechManager, let favoriteFactsDisplayManager = favoriteFactsDisplayManager {
         CommandGroup(replacing: .textEditing) {
             SpeakButton(for: windowStateManager.factText, useShortTitle: false)
                 .disabled(windowStateManager.factTextDisplayingMessage || windowStateManager.selectedPage != .randomFact)
-                .environmentObject(windowStateManager)
+                .environmentObject(speechManager)
         }
         CommandGroup(replacing: .help) {
             Button("\(appName!) Help") {

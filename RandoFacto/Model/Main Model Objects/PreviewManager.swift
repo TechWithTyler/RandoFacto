@@ -35,6 +35,7 @@ class PreviewManager: ObservableObject {
     // MARK: - Initialization
 
     init(prepBlock: ((WindowStateManager, ErrorManager, AuthenticationDialogManager, NetworkConnectionManager, FavoriteFactsDatabase, AuthenticationManager, FavoriteFactsDisplayManager) -> Void)? = nil) {
+        let speechManager = SpeechManager()
         let errorManager = ErrorManager()
         let firestore = Firestore.firestore()
         let firebaseAuthentication = Authentication.auth()
@@ -43,7 +44,7 @@ class PreviewManager: ObservableObject {
         let authenticationDialogManager = AuthenticationDialogManager(authenticationManager: authenticationManager, errorManager: errorManager)
         let favoriteFactsDatabase = FavoriteFactsDatabase(firestore: firestore, networkConnectionManager: networkConnectionManager)
         let favoriteFactsDisplayManager = FavoriteFactsDisplayManager(favoriteFactsDatabase: favoriteFactsDatabase)
-        let windowStateManager = WindowStateManager(errorManager: errorManager, favoriteFactsDatabase: favoriteFactsDatabase, favoriteFactsDisplayManager: favoriteFactsDisplayManager, authenticationManager: authenticationManager)
+        let windowStateManager = WindowStateManager(speechManager: speechManager, errorManager: errorManager, favoriteFactsDatabase: favoriteFactsDatabase, favoriteFactsDisplayManager: favoriteFactsDisplayManager, authenticationManager: authenticationManager)
         prepBlock?(windowStateManager, errorManager, authenticationDialogManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsDisplayManager)
         self.windowStateManager = windowStateManager
         self.errorManager = errorManager
