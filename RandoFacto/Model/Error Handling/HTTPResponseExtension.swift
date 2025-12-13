@@ -45,8 +45,9 @@ extension HTTPURLResponse {
 	// MARK: - Unsuccessful HTTP Response Code As Error
 
 	// This method creates an error from the given HTTP response's code and logs it.
-	func logAsError() -> Error {
+    var error: Error? {
         // 1. Get the error domain and response code.
+        guard isUnsuccessful else { return nil }
 		let responseMessage = errorDomainForResponseCode
 		let responseCode = statusCode
         // 2. Use the error domain and response code to create a new error domain including the code.

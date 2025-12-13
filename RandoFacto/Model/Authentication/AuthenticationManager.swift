@@ -14,23 +14,23 @@ import FirebaseFirestore
 
 // Handles authentication and user accounts.
 class AuthenticationManager: ObservableObject {
-    
+
     // MARK: - Properties - Objects
-    
+
     @Published var firebaseAuthentication: Authentication
-    
+
     var favoriteFactsDatabase: FavoriteFactsDatabase? = nil
 
     var networkConnectionManager: NetworkConnectionManager
 
     // Whether an authentication request (login, signup, password change, password reset email send) is in progress.
     @Published var isAuthenticating: Bool = false
-    
+
     // Whether a user is logged in.
     var userLoggedIn: Bool {
         return firebaseAuthentication.currentUser != nil
     }
-    
+
     // Whether user account deletion is in progress (accountDeletionStage is not nil).
     var isDeletingAccount: Bool {
         return accountDeletionStage != nil
@@ -45,12 +45,12 @@ class AuthenticationManager: ObservableObject {
     @AppStorage(UserDefaults.KeyNames.initialFact) var initialFact: Int = 0
 
     // MARK: - Properties - Account Deletion Stage
-    
+
     // The current stage of user deletion. Deleting a user deletes their favorite facts and reference first, then their actual account. If the user is still able to login after deletion, the actual account failed to be deleted, so the user reference will be put back.
     @Published var accountDeletionStage: User.AccountDeletionStage? = nil
-    
+
     // MARK: - Properties - Registered Users Listener
-    
+
     // Listens for changes to the references for registered users.
     var registeredUsersListener: ListenerRegistration? = nil
 
@@ -63,7 +63,7 @@ class AuthenticationManager: ObservableObject {
     let userReferenceError = NSError(domain: ErrorDomain.userReferenceNotFound.rawValue, code: ErrorCode.userReferenceNotFound.rawValue)
 
     // MARK: - Initialization
-    
+
     init(firebaseAuthentication: Authentication, networkConnectionManager: NetworkConnectionManager) {
         self.firebaseAuthentication = firebaseAuthentication
         self.networkConnectionManager = networkConnectionManager
@@ -73,47 +73,47 @@ class AuthenticationManager: ObservableObject {
             }
         }
     }
-    
+
     // MARK: - Registered Users Handler
-    
+
     // This method sets up the app to listen for changes to the current user's reference (i.e. if it goes missing). The email addresses and IDs of registered users get added to a Firestore collection called "users" when they signup, because Firebase doesn't yet have an ability to immediately notify the app of creations/deletions of accounts or checking whether they exist.
     func addRegisteredUsersHandler(completionHandler: @escaping ((Error?) -> Void)) {
-            // 1. Make sure the current user is logged in.
-            guard let currentUser = firebaseAuthentication.currentUser, let email = currentUser.email else {
-                logoutCurrentUser(completionHandler: completionHandler)
-                return
-            }
-            // 2. Get all registered users.
-            registeredUsersListener = favoriteFactsDatabase?.firestore.collection(Firestore.CollectionName.users)
-            // 3. Filter the results to include only the current user.
-                .whereField(Firestore.KeyName.email, isEqualTo: email)
-            // 4. Listen for any changes made to the "users" collection.
-                .addSnapshotListener(includeMetadataChanges: true) { [self] documentSnapshot, error in
-                    if let error = error {
-                        // 5. If that fails, throw a fatal error.
-                        completionHandler(error)
+        // 1. Make sure the current user is logged in.
+        guard let currentUser = firebaseAuthentication.currentUser, let email = currentUser.email else {
+            logoutCurrentUser(completionHandler: completionHandler)
+            return
+        }
+        // 2. Get all registered users.
+        registeredUsersListener = favoriteFactsDatabase?.firestore.collection(Firestore.CollectionName.users)
+        // 3. Filter the results to include only the current user.
+            .whereField(Firestore.KeyName.email, isEqualTo: email)
+        // 4. Listen for any changes made to the "users" collection.
+            .addSnapshotListener(includeMetadataChanges: true) { [self] documentSnapshot, error in
+                if let error = error {
+                    // 5. If that fails, log an error.
+                    completionHandler(error)
+                } else {
+                    // 6. Logout the user if they've been deleted from another device. We need to make sure the snapshot is from the server, not the cache, to prevent the detection of a missing user reference when logging in on a new device for the first time. We also need to make sure a user isn't currently being logged in or deleted on this device, otherwise a missing user would be detected and logged out, causing the operation to never complete, or a new user might be logged out immediately after signup. This was one of the big bugs during development of the initial release (2023.12).
+                    guard !isDeletingAccount && !isAuthenticating else { return }
+                    /*
+                     A user reference is considered "missing"/the user is considered "deleted" if any of the following are true:
+                     * The snapshot or its documents collection is empty.
+                     * The snapshot's documents collection doesn't contain the current user's ID.
+                     * The snapshot is nil.
+                     */
+                    if let snapshot = documentSnapshot, !snapshot.metadata.isFromCache, (snapshot.isEmpty || snapshot.documents.isEmpty), !snapshot.documents.contains(where: { document in
+                        return document.documentID == currentUser.uid
+                    }) {
+                        logoutCurrentUser(completionHandler: completionHandler)
+                    } else if documentSnapshot == nil {
+                        logoutCurrentUser(completionHandler: completionHandler)
                     } else {
-                        // 6. Logout the user if they've been deleted from another device. We need to make sure the snapshot is from the server, not the cache, to prevent the detection of a missing user reference when logging in on a new device for the first time. We also need to make sure a user isn't currently being logged in or deleted on this device, otherwise a missing user would be detected and logged out, causing the operation to never complete, or a new user might be logged out immediately after signup. This was one of the big bugs during development of the initial release (2023.12).
-                        guard !isDeletingAccount && !isAuthenticating else { return }
-                        /*
-                         A user reference is considered "missing"/the user is considered "deleted" if any of the following are true:
-                         * The snapshot or its documents collection is empty.
-                         * The snapshot's documents collection doesn't contain the current user's ID.
-                         * The snapshot is nil.
-                         */
-                        if let snapshot = documentSnapshot, !snapshot.metadata.isFromCache, (snapshot.isEmpty || snapshot.documents.isEmpty), !snapshot.documents.contains(where: { document in
-                            return document.documentID == currentUser.uid
-                        }) {
-                            logoutCurrentUser(completionHandler: completionHandler)
-                        } else if documentSnapshot == nil {
-                            logoutCurrentUser(completionHandler: completionHandler)
-                        } else {
-                            completionHandler(nil)
-                        }
+                        completionHandler(nil)
                     }
                 }
+            }
     }
-    
+
     // MARK: - Signup
 
     // This method takes the user's credentials and tries to sign them up for a RandoFacto account.
@@ -130,9 +130,9 @@ class AuthenticationManager: ObservableObject {
             }
         }
     }
-    
+
     // MARK: - Login
-    
+
     // This method takes the user's credentials and tries to log them into their RandoFacto account.
     func login(email: String, password: String, completionHandler: @escaping ((Error?) -> Void)) {
         DispatchQueue.main.async { [self] in
@@ -175,7 +175,7 @@ class AuthenticationManager: ObservableObject {
             isAuthenticating = true
             firebaseAuthentication.sendPasswordReset(withEmail: email.lowercased(), actionCodeSettings: ActionCodeSettings(), completion: { [self] error in
                 isAuthenticating = false
-                    completionHandler(error)
+                completionHandler(error)
             })
         }
     }
@@ -186,14 +186,14 @@ class AuthenticationManager: ObservableObject {
     func handleAuthenticationRequestResult(_ result: AuthDataResult?, error: Error?, isSignup: Bool, completionHandler: @escaping ((Error?) -> Void)) {
         // 1. Create the block which will be performed if authentication is successful. This block adds the registered users handler, loads the user's favorite facts, and calls the completion handler.
         let successBlock: (() -> Void) = { [self] in
-                isAuthenticating = false
-                addRegisteredUsersHandler { [self] error in
-                    if let error = error {
-                        completionHandler(error)
-                    } else {
-                        favoriteFactsDatabase?.loadFavoriteFactsForCurrentUser(completionHandler: completionHandler)
-                    }
+            isAuthenticating = false
+            addRegisteredUsersHandler { [self] error in
+                if let error = error {
+                    completionHandler(error)
+                } else {
+                    favoriteFactsDatabase?.loadFavoriteFactsForCurrentUser(completionHandler: completionHandler)
                 }
+            }
         }
         // 2. Log an error if unsuccessful.
         if let error = error {
@@ -338,7 +338,7 @@ class AuthenticationManager: ObservableObject {
     }
 
     // MARK: - Delete User
-    
+
     // This method deletes the current user's favorite facts, their reference, and then their account.
     func deleteCurrentUser(completionHandler: @escaping (Error?) -> Void) {
         // 1. Make sure we can get the current user.
@@ -371,7 +371,7 @@ class AuthenticationManager: ObservableObject {
             }
         }
     }
-    
+
     // This method deletes user's reference from the database.
     func deleteUserReference(forUser user: User, completionHandler: @escaping ((Error?) -> Void)) {
         // 1. Make sure we can get the user's email.

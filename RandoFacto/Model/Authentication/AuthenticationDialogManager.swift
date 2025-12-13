@@ -83,30 +83,24 @@ class AuthenticationDialogManager: ObservableObject {
     func submit() {
         // 1. Clear the error text.
         clearErrorText()
-        // 2. Try to perform the authentication action. If it fails, show the corresponding RandoFactoError for the error. If a user is trying to change their password after having been logged in for more than 5 minutes, switch to the login dialog.
+        // 2. Try to perform the authentication action. If it fails, show the corresponding RandoFactoError for the error.
         switch formType {
         case .signup:
             authenticationManager.signup(email: emailFieldText, password: passwordFieldText) { [self] error in
                 if let error = error {
-                    errorManager.showError(error) { [self] randoFactoError in
-                        formErrorText = randoFactoError.localizedDescription
-                    }
+                    showErrorInline(error: error)
                 } else { formType = nil }
             }
         case .login:
             authenticationManager.login(email: emailFieldText, password: passwordFieldText) { [self] error in
                 if let error = error {
-                    errorManager.showError(error) { [self] randoFactoError in
-                        formErrorText = randoFactoError.localizedDescription
-                    }
+                    showErrorInline(error: error)
                 } else { formType = nil }
             }
         case .passwordChange:
             authenticationManager.changePasswordForCurrentUser(newPassword: passwordFieldText) { [self] error in
                 if let error = error {
-                    errorManager.showError(error) { [self] randoFactoError in
-                        formErrorText = randoFactoError.localizedDescription
-                    }
+                    showErrorInline(error: error)
                 } else { formType = nil }
             }
         case .none:
@@ -118,9 +112,7 @@ class AuthenticationDialogManager: ObservableObject {
     func sendPasswordResetLink() {
         authenticationManager.sendPasswordResetLink(to: emailFieldText) { [self] error in
             if let error = error {
-                errorManager.showError(error) { [self] randoFactoError in
-                    formErrorText = randoFactoError.localizedDescription
-                }
+                showErrorInline(error: error)
             } else {
                 showingResetPasswordEmailSent = true
             }
@@ -174,16 +166,23 @@ class AuthenticationDialogManager: ObservableObject {
         authenticationManager.deleteCurrentUser {
             [self] error in
             if let error = error {
-                DispatchQueue.main.async { [self] in
-                    // 2. If an error occurs, show it.
-                    errorManager.showError(error)
-                }
+                // 2. If an error occurs, show it.
+                errorManager.showError(error)
             }
             // 3. Dismiss the alert.
             showingDeleteAccount = false
         }
     }
-    
+
+    // MARK: - Show Error Inline
+
+    // This method shows error in the authentication dialog.
+    func showErrorInline(error: Error) {
+        errorManager.showError(error) { [self] randoFactoError in
+            formErrorText = randoFactoError.localizedDescription
+        }
+    }
+
     // MARK: - Dismiss Form
     
     // This method prepares the authentication dialog for dismissal.

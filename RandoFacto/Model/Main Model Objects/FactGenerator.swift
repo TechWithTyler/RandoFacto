@@ -129,13 +129,12 @@ struct FactGenerator {
     // This method handles the fact generation data task result.
     func handleFactGenerationDataTaskResult(didBeginHandler: @escaping (() -> Void), data: Data?, response: URLResponse?, error: Error?, completionHandler: @escaping ((String?, Error?) -> Void)) {
         // 1. If an HTTP response is returned and its code isn't within the 2xx (success) range, log it as an error.
-        if let httpResponse = response as? HTTPURLResponse, httpResponse.isUnsuccessful {
-                completionHandler(nil, httpResponse.logAsError())
+        if let httpResponse = response as? HTTPURLResponse, let httpResponseError = httpResponse.error {
+                completionHandler(nil, httpResponseError)
         }
         // 2. Log any errors.
         else if let error = error {
             completionHandler(nil, error)
-            return
         } else {
             // 3. Make sure we can get the fact text. If we can't, an error is logged.
             let jsonParsingResult = parseFactDataJSON(data: data)
@@ -242,22 +241,23 @@ struct FactGenerator {
 
     // This method handles the inappropriate words checker HTTP request for the given fact.
     func handleInappropriateWordsCheckerDataTaskResult(fact: String, data: Data?, response: URLResponse?, error: Error?, completionHandler: ((String?, Error?) -> Void)) {
+        if let httpResponse = response as? HTTPURLResponse, let httpResponseError = httpResponse.error {
+            completionHandler(nil, httpResponseError)
+        } else
         if let error = error {
             completionHandler(nil, error)
-        }
-        if let httpResponse = response as? HTTPURLResponse, httpResponse.isUnsuccessful {
-            completionHandler(nil, httpResponse.logAsError())
-        }
-        let jsonParsingResult = parseInappropriateWordsCheckerJSON(data: data)
-        switch jsonParsingResult {
-        case .success(let factIsInappropriate):
-            if !factIsInappropriate {
-                completionHandler(fact, nil)
-            } else {
-                completionHandler(nil, nil)
+        } else {
+            let jsonParsingResult = parseInappropriateWordsCheckerJSON(data: data)
+            switch jsonParsingResult {
+            case .success(let factIsInappropriate):
+                if !factIsInappropriate {
+                    completionHandler(fact, nil)
+                } else {
+                    completionHandler(nil, nil)
+                }
+            case .failure(let error):
+                completionHandler(nil, error)
             }
-        case .failure(let error):
-            completionHandler(nil, error)
         }
     }
 

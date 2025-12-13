@@ -18,8 +18,6 @@ extension FavoriteFactsDatabase {
         
         case favoriteFactReferenceNotFound = "Favorite fact reference not found."
 
-        case authenticationManagerNotReady = "Authentication manager not ready."
-
     }
     
     // MARK: - Favorite Facts Database Error Codes
@@ -27,8 +25,6 @@ extension FavoriteFactsDatabase {
     enum ErrorCode: Int {
         
         case favoriteFactReferenceNotFound = 144
-
-        case authenticationManagerNotReady = 145
 
     }
     

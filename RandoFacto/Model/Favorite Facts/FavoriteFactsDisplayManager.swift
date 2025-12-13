@@ -70,6 +70,7 @@ class FavoriteFactsDisplayManager: ObservableObject {
 
     // MARK: - Properties - Randomizer Click Player
 
+    // The audio player used for the randomizer click sound.
     var audioPlayer: AVAudioPlayer? = nil
 
     // MARK: - Properties - Booleans
@@ -113,7 +114,7 @@ class FavoriteFactsDisplayManager: ObservableObject {
         // 1. Start the randomizerTimer without repeat, since the timer's interval increases as randomizerIterations increases and the time interval of running Timers can't be changed directly.
         let randomizerTimeInterval = TimeInterval(randomizerIterations) / TimeInterval(maxRandomizerIterations * 4)
         randomizerTimer = Timer.scheduledTimer(withTimeInterval: randomizerTimeInterval, repeats: false, block: { [self] timer in
-            // 2. Play a click sound.
+            // 2. Play a click sound if enabled.
             if favoriteFactsRandomizerClick {
                 playRandomizerClick()
             }
