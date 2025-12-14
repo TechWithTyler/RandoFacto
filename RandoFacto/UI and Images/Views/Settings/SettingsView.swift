@@ -43,7 +43,7 @@ struct SettingsView: View {
                 .frame(width: 400, height: authenticationManager.userLoggedIn ? 450 : 280)
                 .formStyle(.grouped)
                 .tabItem {
-                    Label(SettingsPage.facts.rawValue.capitalized, systemImage: SettingsPage.Icons.facts.rawValue)
+                    Label(SettingsPage.facts.title, systemImage: SettingsPage.Icons.facts.rawValue)
                 }
                 .tag(SettingsPage.facts)
                 SAMVisualEffectViewSwiftUIRepresentable(activeState: .active) {
@@ -52,7 +52,7 @@ struct SettingsView: View {
                 .frame(width: 400, height: 150)
                 .formStyle(.grouped)
                 .tabItem {
-                    Label(SettingsPage.speech.rawValue.capitalized, systemImage: SettingsPage.Icons.speech.rawValue)
+                    Label(SettingsPage.speech.title, systemImage: SettingsPage.Icons.speech.rawValue)
                 }
                 .tag(SettingsPage.speech)
                 SAMVisualEffectViewSwiftUIRepresentable(activeState: .active) {
@@ -61,7 +61,7 @@ struct SettingsView: View {
                 .frame(width: 400, height: 270)
                 .formStyle(.grouped)
                 .tabItem {
-                    Label(SettingsPage.account.rawValue.capitalized, systemImage: SettingsPage.Icons.account.rawValue)
+                    Label(SettingsPage.account.title, systemImage: SettingsPage.Icons.account.rawValue)
                 }
                 .tag(SettingsPage.account)
                 SAMVisualEffectViewSwiftUIRepresentable(activeState: .active) {
@@ -70,7 +70,7 @@ struct SettingsView: View {
                 .frame(width: 400, height: 240)
                 .formStyle(.grouped)
                 .tabItem {
-                    Label(SettingsPage.advanced.rawValue.capitalized, systemImage: SettingsPage.Icons.advanced.rawValue)
+                    Label(SettingsPage.advanced.title, systemImage: SettingsPage.Icons.advanced.rawValue)
                 }
                 .tag(SettingsPage.advanced)
 #if(DEBUG)
@@ -80,7 +80,7 @@ struct SettingsView: View {
                 .frame(width: 400, height: 535)
                 .formStyle(.grouped)
                 .tabItem {
-                    Label(SettingsPage.developer.rawValue.capitalized, systemImage: SettingsPage.Icons.developer.rawValue)
+                    Label(SettingsPage.developer.title, systemImage: SettingsPage.Icons.developer.rawValue)
                 }
                 .tag(SettingsPage.developer)
 #endif
@@ -107,36 +107,36 @@ struct SettingsView: View {
                 Form {
                     Section {
                         NavigationLink {
-                            DisplaySettingsPageView()
-                                .navigationTitle(SettingsPage.display.rawValue.capitalized)
+                            FactSettingsPageView()
+                                .navigationTitle(SettingsPage.facts.title)
                         } label: {
-                            Label(SettingsPage.display.rawValue.capitalized, systemImage: SettingsPage.Icons.facts.rawValue)
+                            Label(SettingsPage.facts.title, systemImage: SettingsPage.Icons.facts.rawValue)
                         }
                         NavigationLink {
                             SpeechSettingsPageView()
-                                .navigationTitle(SettingsPage.speech.rawValue.capitalized)
+                                .navigationTitle(SettingsPage.speech.title)
                         } label: {
-                            Label(SettingsPage.speech.rawValue.capitalized, systemImage: SettingsPage.Icons.speech.rawValue)
+                            Label(SettingsPage.speech.title, systemImage: SettingsPage.Icons.speech.rawValue)
                         }
                         NavigationLink {
                             AccountSettingsPageView()
-                                .navigationTitle(SettingsPage.account.rawValue.capitalized)
+                                .navigationTitle(SettingsPage.account.title)
                         } label: {
-                            Label(SettingsPage.account.rawValue.capitalized, systemImage: SettingsPage.Icons.account.rawValue)
+                            Label(SettingsPage.account.title, systemImage: SettingsPage.Icons.account.rawValue)
                         }
                         NavigationLink {
                             AdvancedSettingsPageView()
-                                .navigationTitle(SettingsPage.advanced.rawValue.capitalized)
+                                .navigationTitle(SettingsPage.advanced.title)
                         } label: {
-                            Label(SettingsPage.advanced.rawValue.capitalized, systemImage: SettingsPage.Icons.advanced.rawValue)
+                            Label(SettingsPage.advanced.title, systemImage: SettingsPage.Icons.advanced.rawValue)
                         }
                     }
 #if(DEBUG)
                     NavigationLink {
                         DeveloperSettingsPageView()
-                            .navigationTitle(SettingsPage.developer.rawValue.capitalized)
+                            .navigationTitle(SettingsPage.developer.title)
                     } label: {
-                        Label(SettingsPage.developer.rawValue.capitalized, systemImage: SettingsPage.Icons.developer.rawValue)
+                        Label(SettingsPage.developer.title, systemImage: SettingsPage.Icons.developer.rawValue)
                     }
 #endif
                 }

@@ -47,4 +47,10 @@ enum SettingsPage : String {
     case developer
     #endif
 
+    // MARK: - Settings Page Title
+
+    var title: String {
+        return rawValue.capitalized
+    }
+
 }
