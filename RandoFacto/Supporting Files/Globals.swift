@@ -11,17 +11,6 @@
 import SwiftUI
 import FirebaseAuth
 
-// MARK: - Functions
-
-func showHelp() {
-    let helpURL = URL(string: "https://techwithtyler20.weebly.com/\((appName?.lowercased())!)help")!
-    #if os(macOS)
-    NSWorkspace.shared.open(helpURL)
-    #else
-    UIApplication.shared.open(helpURL)
-    #endif
-}
-
 // MARK: - Type Aliases
 
 typealias Authentication = Auth
@@ -67,10 +56,10 @@ let speechSymbolName = "speaker.wave.2.bubble.left"
 // The fact displayed in the settings window to preview the fact text size setting.
 let sampleFact = "\(appName!) was coded in Swift!"
 
-// MARK: - Properties - Doubles
+// MARK: - Properties - Time Intervals
 
 // The default URL request timeout interval (can't be changed in release builds).
-let defaultURLRequestTimeoutInterval: Double = 10
+let defaultURLRequestTimeoutInterval: TimeInterval = 10
 
 // MARK: - Properties - Floats
 
@@ -81,3 +70,14 @@ let factGenerationButtonWidth: CGFloat = 240
 
 // The number of seconds the app takes to load.
 let initializationTime: Int = 2
+
+// MARK: - Functions
+
+func showHelp() {
+    let helpURL = URL(string: "https://techwithtyler20.weebly.com/\((appName?.lowercased())!)help")!
+    #if os(macOS)
+    NSWorkspace.shared.open(helpURL)
+    #else
+    UIApplication.shared.open(helpURL)
+    #endif
+}
