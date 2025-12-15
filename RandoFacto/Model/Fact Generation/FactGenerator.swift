@@ -28,10 +28,10 @@ struct FactGenerator {
     // MARK: - Properties - Strings
 
     // Specifies that the fact generator and inappropriate words checker APIs should return JSON data.
-    let httpRequestContentType = "application/json"
-    
+    let httpRequestContentType: String = "application/json"
+
     // The name of the random facts API, which is its base URL.
-    let randomFactsAPIName = "uselessfacts.jsph.pl"
+    let randomFactsAPIName: String = "uselessfacts.jsph.pl"
 
     // The URL of the random facts API.
     var factURLString: String {
@@ -69,11 +69,14 @@ struct FactGenerator {
         return urlString
     }
 
+    // The name of the JSON property which stores the fact to be screened.
+    let factJSONPropertyName: String = "content"
+
     // MARK: - Properties - Integers
 
     // The major version of the random facts API.
-    let randomFactsAPIVersion = 2
-    
+    let randomFactsAPIVersion: Int = 2
+
     // MARK: - Properties - Time Intervals
 
     // The timeout interval of URL requests, which determines the maximum number of seconds they can try to run before a "request timed out" error is thrown if unsuccessful.
@@ -87,10 +90,10 @@ struct FactGenerator {
     // MARK: - Properties - Errors
     
     // The error logged when a Result returns a Failure.
-    let factDataError = NSError(domain: FactGenerator.ErrorDomain.failedToGetData.rawValue, code: FactGenerator.ErrorCode.failedToGetData.rawValue)
+    let factDataError: NSError = NSError(domain: FactGenerator.ErrorDomain.failedToGetData.rawValue, code: FactGenerator.ErrorCode.failedToGetData.rawValue)
 
     // The error logged when a fact doesn't contain text.
-    let noTextError = NSError(domain: ErrorDomain.noText.rawValue, code: ErrorCode.noText.rawValue)
+    let noTextError: NSError = NSError(domain: ErrorDomain.noText.rawValue, code: ErrorCode.noText.rawValue)
 
     // MARK: - Fact Generation
     
@@ -228,10 +231,11 @@ struct FactGenerator {
         // 3. Set the timeout interval for the URL request, after which an error will be thrown if the request can't complete.
         request.timeoutInterval = urlRequestTimeoutInterval
         // 4. Specify the data model to send.
-        let body = ["content": fact]
+        let body = [factJSONPropertyName : fact]
+        let jsonWritingOptions: JSONSerialization.WritingOptions = [.fragmentsAllowed]
         // 5. Try to convert body to JSON data and return the created request. If conversion fails, log an error.
         do {
-            let jsonData = try JSONSerialization.data(withJSONObject: body, options: [.fragmentsAllowed])
+            let jsonData = try JSONSerialization.data(withJSONObject: body, options: jsonWritingOptions)
             request.httpBody = jsonData
             return .success(request)
         } catch {

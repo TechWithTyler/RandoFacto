@@ -160,11 +160,7 @@ class AuthenticationManager: ObservableObject {
             // 3. Update user's password to the new password. If unsuccessful, show an error.
             user.updatePassword(to: newPassword) { [self] error in
                 isAuthenticating = false
-                if let error = error {
-                    completionHandler(error)
-                } else {
-                    completionHandler(nil)
-                }
+                completionHandler(error)
             }
         }
     }
@@ -261,11 +257,7 @@ class AuthenticationManager: ObservableObject {
         // 1. Create the block which will add the missing user reference if needed.
         let addReferenceBlock: ((() -> Void)) = { [self] in
             addUserReference(email: email, id: id) { error in
-                if let error = error {
-                    completionHandler(error)
-                } else {
-                    completionHandler(nil)
-                }
+                completionHandler(error)
             }
         }
         // 2. Check if the current user has a reference.

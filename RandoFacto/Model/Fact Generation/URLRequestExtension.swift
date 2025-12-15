@@ -17,12 +17,12 @@ extension URLRequest {
     // HTTP methods for a URL request.
     struct HTTPMethod {
 
-        // The GET HTTP method.
+        // The GET HTTP method, used to get data from an HTTP request.
         static let get: String = "GET"
 
-        // The POST HTTP method.
+        // The POST HTTP method, used to send data via an HTTP request.
         static let post: String = "POST"
-        
+
     }
 
     // MARK: - HTTP Header Fields

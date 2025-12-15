@@ -26,6 +26,7 @@ class FavoriteFactsDatabase: ObservableObject {
     // MARK: - Properties - Favorite Facts Array
     
     // The current user's favorite facts loaded from the Firestore database. Storing the data in this array makes getting favorite facts easier than getting the corresponding Firestore data each time, which could cause errors.
+    // Early builds of the initial release, 2023.12, stored strings instead of favorite fact objects. This had to be changed to add a user field to each favorite fact.
     @Published var favoriteFacts: [FavoriteFact] = []
     
     // MARK: - Properties - Favorite Facts Listener
@@ -112,7 +113,7 @@ class FavoriteFactsDatabase: ObservableObject {
         guard let userEmail = authenticationManager?.firebaseAuthentication.currentUser?.email else { return }
         // 2. Create a FavoriteFact object with the fact text and the current user's email.
         let fact = FavoriteFact(text: factText, user: userEmail)
-        // 3. Make sure the favorite fact doesn't already exist.
+        // 3. Make sure the favorite fact doesn't already exist. This is done by checking its text, not its document ID.
         guard !favoriteFacts.contains(fact) else { return }
         // 4. Try to create a new document with that data in the favorite facts Firestore collection
         do {
@@ -151,11 +152,7 @@ class FavoriteFactsDatabase: ObservableObject {
                 document.reference.delete {
                     error in
                     // 3. Log an error if deletion fails.
-                    if let error = error {
-                        completionHandler(error)
-                    } else {
-                        completionHandler(nil)
-                    }
+                    completionHandler(error)
                 }
             } else {
                 // 4. If we can't get the snapshot or corresponding data, log an error.
