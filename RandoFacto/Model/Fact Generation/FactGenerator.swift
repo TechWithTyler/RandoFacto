@@ -17,7 +17,7 @@ struct FactGenerator {
     
     // A Result is made up of 2 types: Success (can be anything) and Error (must conform to Error). These type aliases simplify the type names.
 
-    // The type of fact generator JSON parsing results. Success is a String containing the fact.
+    // The type of fact generator JSON (JavaScript Object Notation) parsing results. Success is a String containing the fact.
     typealias FactGeneratorJSONParsingResult = Result<String, Error>
 
     // The type of inappropriate words checker JSON parsing results. Success is a Bool indicating whether the fact contains inappropriate words.
@@ -48,10 +48,10 @@ struct FactGenerator {
         HTTPS is on layer 7 of the OSI (Open Systems Interconnection) model, the application layer, which is the topmost layer. The OSI model is a conceptual framework used to understand how different networking protocols interact with each other. The OSI model consists of 7 layers:
          1. Physical: Hardware and transmission of raw bits (e.g., cables, switches, Wi-Fi radio hardware).
          2. Data Link: Node-to-node data transfer, framing, and error detection/correction (e.g., Ethernet, Wi-Fi protocol).
-         3. Network: Routing and forwarding of data between devices (e.g., IP - Internet Protocol).
+         3. Network: Routing and forwarding of data between devices (e.g., IP).
          4. Transport: Reliable or unreliable data transfer, segmentation, and flow control (e.g., TCP, UDP).
          5. Session: Establishment, management, and termination of connections (e.g., session tokens, RPC (Remote Procedure Call), NetBIOS (Network Basic Input/Output System).
-         6. Presentation: Translation, encryption, and compression of data (e.g., SSL (Secure Sockets Layer)/TLS (Transport Layer Security), MIME (Multipurpose Internet Mail Extensions) types, character encoding).
+         6. Presentation: Translation, encryption, and compression of data (e.g., SSL/TLS, MIME (Multipurpose Internet Mail Extensions) types, character encoding).
          7. Application: Application-specific protocols and interface for end-users (e.g., HTTP/HTTPS, SMTP (Simple Mail Transfer Protocol), FTP (File Transfer Protocol)).
         Layer 2 is the physical layer, the hardware which connects the device running RandoFacto to the internet (e.g., the Wi-Fi radio in a MacBook or iPhone), and layer 1 is how the data is transmitted over the internet (usually very fast pulses of light through fiber optic cables).
         */
@@ -70,7 +70,7 @@ struct FactGenerator {
 
     // The URL of the inappropriate words checker API.
     var inappropriateWordsCheckerURLString: String {
-        // This URL is much simpler than the fact generator one above.
+        // This URL is much simpler than the fact generator one above since it doesn't need query parameters.
         let scheme = "https"
         let subdomainAndDomain = "language-checker.vercel.app"
         let languageCheckerPath = "api/check-language"
@@ -97,8 +97,8 @@ struct FactGenerator {
     var urlRequestTimeoutInterval: TimeInterval = defaultURLRequestTimeoutInterval
     
     // MARK: - Properties - Errors
-    
-    // The error logged when a Result returns a Failure.
+
+    // The error logged when fact data can't be retrieved or decoded (e.g. a Result returns a Failure).
     let factDataError: NSError = NSError(domain: FactGenerator.ErrorDomain.failedToGetData.rawValue, code: FactGenerator.ErrorCode.failedToGetData.rawValue)
 
     // The error logged when a fact doesn't contain text.
@@ -107,9 +107,9 @@ struct FactGenerator {
     // MARK: - Fact Generation
     
     // This method uses a random facts web API which returns JSON data to generate a random fact.
-    func generateRandomFact(didBeginHandler: @escaping (() -> Void), completionHandler: @escaping ((String?, Error?) -> Void)) {
+    func generateRandomFact(factGenerationDidBeginHandler: @escaping (() -> Void), completionHandler: @escaping ((String?, Error?) -> Void)) {
         // 1. Call the "did begin" handler.
-        didBeginHandler()
+        factGenerationDidBeginHandler()
         // 2. Create the URL, URL request, and URL session.
         guard let url = URL(string: factURLString) else {
             completionHandler(nil, factDataError)
@@ -119,7 +119,7 @@ struct FactGenerator {
         let urlSession = URLSession(configuration: .default)
         // 3. Create the data task with the fact URL and handle the request.
         let dataTask = urlSession.dataTask(with: urlRequest) { [self] data, response, error in
-            handleFactGenerationDataTaskResult(didBeginHandler: didBeginHandler, data: data, response: response, error: error, completionHandler: completionHandler)
+            handleFactGenerationDataTaskResult(factGenerationDidBeginHandler: factGenerationDidBeginHandler, data: data, response: response, error: error, completionHandler: completionHandler)
         }
         // 4. To start a URLSessionDataTask, we resume it.
         dataTask.resume()
@@ -160,7 +160,7 @@ struct FactGenerator {
     }
 
     // This method handles the fact generation data task result.
-    func handleFactGenerationDataTaskResult(didBeginHandler: @escaping (() -> Void), data: Data?, response: URLResponse?, error: Error?, completionHandler: @escaping ((String?, Error?) -> Void)) {
+    func handleFactGenerationDataTaskResult(factGenerationDidBeginHandler: @escaping (() -> Void), data: Data?, response: URLResponse?, error: Error?, completionHandler: @escaping ((String?, Error?) -> Void)) {
         // 1. If an HTTP response is returned and its code isn't within the 2xx (success) range, log it as an error.
         if let httpResponse = response as? HTTPURLResponse, let httpResponseError = httpResponse.error {
                 completionHandler(nil, httpResponseError)
@@ -176,17 +176,7 @@ struct FactGenerator {
             case .success(let factText):
                 // 4. Screen the fact to make sure it doesn't contain inappropriate words. If we get an error or an HTTP response with a code that's not in the 2xx range, log an error. If we get a fact, we know the fact is safe and we can display it. If we get nothing, keep trying to generate a fact until we get a safe one. Once a safe fact is generated, pass it to the completion handler.
                 screenFact(fact: factText) { fact, error in
-                    if let error = error {
-                        completionHandler(nil, error)
-                    } else if let fact = fact {
-                        if fact.isEmpty {
-                           completionHandler(nil, noTextError)
-                        } else {
-                            completionHandler(fact, nil)
-                        }
-                    } else {
-                        generateRandomFact(didBeginHandler: didBeginHandler, completionHandler: completionHandler)
-                    }
+                    handleFactScreeningResult(factGenerationDidBeginHandler: factGenerationDidBeginHandler, fact: fact, error: error, completionHandler: completionHandler)
                 }
             case .failure(let error):
                 completionHandler(nil, error)
@@ -241,7 +231,7 @@ struct FactGenerator {
         let httpRequestResult = createInappropriateWordsCheckerHTTPRequest(with: url, toScreenFact: fact)
         switch httpRequestResult {
         case .success(let request):
-            // 3. Create the data task with the inappropriate words checker URL, handling errors and HTTP responses just as we did in generateRandomFact(didBeginHandler:completionHandler:) above.
+            // 3. Create the data task with the inappropriate words checker URL, handling errors and HTTP responses just as we did in generateRandomFact(factGenerationDidBeginHandler:completionHandler:) above.
             let dataTask = urlSession.dataTask(with: request) { [self] data, response, error in
                 handleInappropriateWordsCheckerDataTaskResult(fact: fact, data: data, response: response, error: error, completionHandler: completionHandler)
             }
@@ -276,12 +266,15 @@ struct FactGenerator {
 
     // This method handles the inappropriate words checker HTTP request for the given fact.
     func handleInappropriateWordsCheckerDataTaskResult(fact: String, data: Data?, response: URLResponse?, error: Error?, completionHandler: ((String?, Error?) -> Void)) {
+        // 1. If an HTTP response is returned and its code isn't within the 2xx (success) range, log it as an error.
         if let httpResponse = response as? HTTPURLResponse, let httpResponseError = httpResponse.error {
             completionHandler(nil, httpResponseError)
         } else
+        // 2. Log any errors.
         if let error = error {
             completionHandler(nil, error)
         } else {
+            // 3. Make sure we can get whether the fact contains inappropriate words. If we can't, an error is logged.
             let jsonParsingResult = parseInappropriateWordsCheckerJSON(data: data)
             switch jsonParsingResult {
             case .success(let factIsInappropriate):
@@ -311,5 +304,23 @@ struct FactGenerator {
             return .failure(error)
         }
     }
-    
+
+    // This method handles the fact screening result.
+    func handleFactScreeningResult(factGenerationDidBeginHandler: @escaping (() -> Void), fact: String?, error: Error?, completionHandler: @escaping ((String?, Error?) -> Void)) {
+        // 1. If an error occurs during screening, log it.
+        if let error = error {
+            completionHandler(nil, error)
+        } else if let fact = fact {
+            // 2. If a fact is returned, pass it to the completion handler. If it doesn't contain text, log an error.
+            if fact.isEmpty {
+               completionHandler(nil, noTextError)
+            } else {
+                completionHandler(fact, nil)
+            }
+        } else {
+            // 3. If no fact or error was passed to this method (a fact was screened and found to be inappropriate), retry fact generation.
+            generateRandomFact(factGenerationDidBeginHandler: factGenerationDidBeginHandler, completionHandler: completionHandler)
+        }
+    }
+
 }
