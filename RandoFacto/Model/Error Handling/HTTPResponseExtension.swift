@@ -44,7 +44,7 @@ extension HTTPURLResponse {
 
 	// MARK: - Unsuccessful HTTP Response Code As Error
 
-	// This method creates an error from the given HTTP response's code and logs it.
+	// Returns an error from the given HTTP response's code and logs it.
     var error: Error? {
         // 1. Get the error domain and response code.
         guard isUnsuccessful else { return nil }
