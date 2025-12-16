@@ -10,24 +10,32 @@
 
 import SwiftUI
 
+// Handles HTTP requests to get random facts and screen them for inappropriate words via web APIs.
 struct FactGenerator {
     
     // MARK: - Properties - Result Type Aliases
     
     // A Result is made up of 2 types: Success (can be anything) and Error (must conform to Error). These type aliases simplify the type names.
 
-    // The type of fact generator JSON parsing results.
+    // The type of fact generator JSON parsing results. Success is a String containing the fact.
     typealias FactGeneratorJSONParsingResult = Result<String, Error>
 
-    // The type of inappropriate words checker JSON parsing results.
+    // The type of inappropriate words checker JSON parsing results. Success is a Bool indicating whether the fact contains inappropriate words.
     typealias InappropriateWordsCheckerJSONParsingResult = Result<Bool, Error>
 
-    // The type of inappropriate words checker HTTP request results.
+    // The type of inappropriate words checker HTTP request results. Success is the URL request.
     typealias InappropriateWordsCheckerHTTPRequestResult = Result<URLRequest, Error>
     
     // MARK: - Properties - Strings
 
     // Specifies that the fact generator and inappropriate words checker APIs should return JSON data.
+    /* Common HTTP Content Types include:
+    * application/json (JSON data)
+    * text/plain (plain text)
+    * application/xml (XML data)
+    * application/x-www-form-urlencoded (form data)
+    * multipart/form-data (for file uploads)
+     */
     let httpRequestContentType: String = "application/json"
 
     // The name of the random facts API, which is its base URL.
@@ -36,16 +44,17 @@ struct FactGenerator {
     // The URL of the random facts API.
     var factURLString: String {
         // 1. The scheme specifies the application layer protocol used to access the resource. In this case, it's "https" (HyperText Transfer Protocol Secure), used for web traffic. The "s" in HTTPS indicates that the data transferred between the app (client) and the web API (server) is encrypted for security. This is not to be confused with presentation layer protocols like SSL (Secure Sockets Layer) or TLS (Transport Layer Security), which are used to secure the connection between the client and server, transport layer protocols like TCP (Transmission Control Protocol) or UDP (User Datagram Protocol), which are used to transmit data over the network, or network layer protocols like IP (Internet Protocol), which are used to route data between devices on a network. The API requests in this app use some of these protocols under the hood.
-        /* HTTPS is on layer 7 of the OSI (Open Systems Interconnection) model, the application layer, which is the topmost layer. The OSI model is a conceptual framework used to understand how different networking protocols interact with each other. The OSI model consists of 7 layers, each representing a different aspect of network communication. The layers are:
-         1. Physical
-         2. Data Link
-         3. Network
-         4. Transport
-         5. Session
-         6. Presentation
-         7. Application
-         Layer 2 is the physical layer, the hardware which connects the device running RandoFacto to the internet (e.g., the Wi-Fi radio in a MacBook or iPhone), and layer 1 is how the data is transmitted over the internet (usually very fast pulses of light through fiber optic cables).
-         */
+        /*
+        HTTPS is on layer 7 of the OSI (Open Systems Interconnection) model, the application layer, which is the topmost layer. The OSI model is a conceptual framework used to understand how different networking protocols interact with each other. The OSI model consists of 7 layers:
+         1. Physical: Hardware and transmission of raw bits (e.g., cables, switches, Wi-Fi radio hardware).
+         2. Data Link: Node-to-node data transfer, framing, and error detection/correction (e.g., Ethernet, Wi-Fi protocol).
+         3. Network: Routing and forwarding of data between devices (e.g., IP - Internet Protocol).
+         4. Transport: Reliable or unreliable data transfer, segmentation, and flow control (e.g., TCP, UDP).
+         5. Session: Establishment, management, and termination of connections (e.g., session tokens, RPC (Remote Procedure Call), NetBIOS (Network Basic Input/Output System).
+         6. Presentation: Translation, encryption, and compression of data (e.g., SSL (Secure Sockets Layer)/TLS (Transport Layer Security), MIME (Multipurpose Internet Mail Extensions) types, character encoding).
+         7. Application: Application-specific protocols and interface for end-users (e.g., HTTP/HTTPS, SMTP (Simple Mail Transfer Protocol), FTP (File Transfer Protocol)).
+        Layer 2 is the physical layer, the hardware which connects the device running RandoFacto to the internet (e.g., the Wi-Fi radio in a MacBook or iPhone), and layer 1 is how the data is transmitted over the internet (usually very fast pulses of light through fiber optic cables).
+        */
         let scheme = "https"
         // 2. The domain and subdomain are the main parts of the URL that identify the server where the resource is located. In this case, the domain is "jsph.pl" and the subdomain is "uselessfacts". "jsph.pl" in this case stands for Joseph Paul, the creator of this API and others (usually "pl" refers to a website in Poland). Each of his API URLs has a different subdomain in the same "jsph.pl" domain.
         let subdomainAndDomain = randomFactsAPIName
@@ -121,7 +130,28 @@ struct FactGenerator {
         // 1. Create the URL request.
         var request = URLRequest(url: url)
         // 2. Specify the HTTP method and the type of content to give back. For this HTTP request, it's optional.
+        /*
+        Common HTTP methods include:
+        * GET: Retrieve data from the server (reads, does not modify).
+        * POST: Submit new data to the server (creates new resources, can have a body).
+        * PUT: Replace an existing resource with new data (full update, idempotent).
+        * PATCH: Partially update an existing resource (partial update, idempotent).
+        * DELETE: Remove a resource from the server.
+        * HEAD: Same as GET but returns only headers, not the body.
+        * OPTIONS: Describe the communication options for the resource.
+        * TRACE: Echoes the received request for diagnostic purposes.
+        * CONNECT: Establish a tunnel to the server (usually for SSL/TLS).
+        GET is used here to request data from the server.
+        */
         request.httpMethod = URLRequest.HTTPMethod.get
+        /* Common HTTP header fields include:
+        * Accept: Media types the client is willing to receive.
+        * Content-Type: Media type of the body sent to the server.
+        * Authorization: Credentials for authentication.
+        * User-Agent: Information about the client software.
+        * Cache-Control: Options to control how long resources are cached (stored on the device) and whether they need to be validated with the server before using the cached copy, and whether to store it only in memory, or to prevent caching.
+         * Cookie: Whether to send stored cookies (website data) with an HTTP request.
+         */
         request.setValue(httpRequestContentType, forHTTPHeaderField: URLRequest.HTTPHeaderField.accept)
         // 3. Set the timeout interval for the URL request, after which an error will be thrown if the request can't complete.
         request.timeoutInterval = urlRequestTimeoutInterval
@@ -221,11 +251,12 @@ struct FactGenerator {
         }
     }
     
-    // This method creates the inappropriate words checker HTTP request.
+    // This method creates the inappropriate words checker HTTP request. Unlike the fact generator HTTP request, this one can potentially fail since it involves converting data to JSON to send to a server.
     func createInappropriateWordsCheckerHTTPRequest(with url: URL, toScreenFact fact: String) -> InappropriateWordsCheckerHTTPRequestResult {
         // 1. Create the URL request.
         var request = URLRequest(url: url)
-        // 2. Specify the HTTP method and the type of content to give back. For this HTTP request, it's required.
+        // 2. Specify the HTTP method and the type of content to send (POST). For this HTTP request, it's required.
+        // POST is used here to send data to the server. In this case, data isn't stored on the server as POST might imply.
         request.httpMethod = URLRequest.HTTPMethod.post
         request.setValue(httpRequestContentType, forHTTPHeaderField: URLRequest.HTTPHeaderField.contentType)
         // 3. Set the timeout interval for the URL request, after which an error will be thrown if the request can't complete.
