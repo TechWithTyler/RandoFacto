@@ -67,17 +67,17 @@ class AuthenticationManager: ObservableObject {
     init(firebaseAuthentication: Authentication, networkConnectionManager: NetworkConnectionManager) {
         self.firebaseAuthentication = firebaseAuthentication
         self.networkConnectionManager = networkConnectionManager
-        addRegisteredUsersHandler { error in
+        addUserReferenceHandler { error in
             if let error = error {
                 fatalError("Failed to load registered user references: \(error)")
             }
         }
     }
 
-    // MARK: - Registered Users Handler
+    // MARK: - User Reference Handler
 
     // This method sets up the app to listen for changes to the current user's reference (i.e. if it goes missing). The email addresses and IDs of registered users get added to a Firestore collection called "users" when they signup, because Firebase doesn't yet have an ability to immediately notify the app of creations/deletions of accounts or checking whether they exist.
-    func addRegisteredUsersHandler(completionHandler: @escaping ((Error?) -> Void)) {
+    func addUserReferenceHandler(completionHandler: @escaping ((Error?) -> Void)) {
         // 1. Make sure the current user is logged in.
         guard let currentUser = firebaseAuthentication.currentUser, let email = currentUser.email else {
             logoutCurrentUser(completionHandler: completionHandler)
@@ -94,24 +94,32 @@ class AuthenticationManager: ObservableObject {
                     completionHandler(error)
                 } else {
                     // 6. Logout the user if they've been deleted from another device. We need to make sure the snapshot is from the server, not the cache, to prevent the detection of a missing user reference when logging in on a new device for the first time. We also need to make sure a user isn't currently being logged in or deleted on this device, otherwise a missing user would be detected and logged out, causing the operation to never complete, or a new user might be logged out immediately after signup. This was one of the big bugs during development of the initial release (2023.12).
-                    guard !isDeletingAccount && !isAuthenticating else { return }
-                    /*
-                     A user reference is considered "missing"/the user is considered "deleted" if any of the following are true:
-                     * The snapshot or its documents collection is empty.
-                     * The snapshot's documents collection doesn't contain the current user's ID.
-                     * The snapshot is nil.
-                     */
-                    if let snapshot = documentSnapshot, !snapshot.metadata.isFromCache, (snapshot.isEmpty || snapshot.documents.isEmpty), !snapshot.documents.contains(where: { document in
-                        return document.documentID == currentUser.uid
-                    }) {
-                        logoutCurrentUser(completionHandler: completionHandler)
-                    } else if documentSnapshot == nil {
-                        logoutCurrentUser(completionHandler: completionHandler)
-                    } else {
-                        completionHandler(nil)
-                    }
+                    logoutMissingUser(snapshot: documentSnapshot, currentUser: currentUser, completionHandler: completionHandler)
                 }
             }
+    }
+
+    // This method logs out the current user if their user reference is missing.
+    func logoutMissingUser(snapshot: QuerySnapshot?, currentUser: User, completionHandler: @escaping ((Error?) -> Void)) {
+        // 1. Return if the account is being deleted or authentication is in progress. These are cases where a missing user reference on the device can be falsely detected.
+        guard !isDeletingAccount && !isAuthenticating else { return }
+        // 2. If the user reference or snapshot are nil, logout the current user.
+        /*
+         A user reference is considered "missing"/the user is considered "deleted" if any of the following are true:
+         * The snapshot or its documents collection is empty.
+         * The snapshot's documents collection doesn't contain the current user's ID.
+         * The snapshot is nil.
+         */
+        if let snapshot = snapshot, !snapshot.metadata.isFromCache, (snapshot.isEmpty || snapshot.documents.isEmpty), !snapshot.documents.contains(where: { document in
+            return document.documentID == currentUser.uid
+        }) {
+            logoutCurrentUser(completionHandler: completionHandler)
+        } else if snapshot == nil {
+            logoutCurrentUser(completionHandler: completionHandler)
+        } else {
+            // 3. Otherwise, the user is present and can be safely considered logged in.
+            completionHandler(nil)
+        }
     }
 
     // MARK: - Signup
@@ -183,7 +191,7 @@ class AuthenticationManager: ObservableObject {
         // 1. Create the block which will be performed if authentication is successful. This block adds the registered users handler, loads the user's favorite facts, and calls the completion handler.
         let successBlock: (() -> Void) = { [self] in
             isAuthenticating = false
-            addRegisteredUsersHandler { [self] error in
+            addUserReferenceHandler { [self] error in
                 if let error = error {
                     completionHandler(error)
                 } else {
