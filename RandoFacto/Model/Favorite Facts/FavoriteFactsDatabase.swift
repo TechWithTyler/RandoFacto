@@ -129,7 +129,6 @@ class FavoriteFactsDatabase: ObservableObject {
     // This method finds a favorite fact in the database and deletes it if its text matches factText.
     func unfavoriteFact(_ factText: String, completionHandler: @escaping ((Error?) -> Void)) {
         // 1. Get facts with text that matches the given fact text (there should only be 1).
-        DispatchQueue.main.async { [self] in
             firestore.collection(Firestore.CollectionName.favoriteFacts)
                 .whereField(Firestore.KeyName.factText, isEqualTo: factText)
                 .getDocuments(source: .cache) { [self] snapshot, error in
@@ -140,7 +139,6 @@ class FavoriteFactsDatabase: ObservableObject {
                         // 3. Or if we're error-free, get the snapshot and delete.
                         getFavoriteFactSnapshotAndDelete(snapshot, completionHandler: completionHandler)
                     }
-                }
         }
     }
     
