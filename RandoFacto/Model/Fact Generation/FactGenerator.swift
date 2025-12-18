@@ -46,14 +46,14 @@ struct FactGenerator {
         // 1. The scheme specifies the application layer protocol used to access the resource. In this case, it's "https" (HyperText Transfer Protocol Secure), used for web traffic. The "s" in HTTPS indicates that the data transferred between the app (client) and the web API (server) is encrypted for security. This is not to be confused with presentation layer protocols like SSL (Secure Sockets Layer) or TLS (Transport Layer Security), which are used to secure the connection between the client and server, transport layer protocols like TCP (Transmission Control Protocol) or UDP (User Datagram Protocol), which are used to transmit data over the network, or network layer protocols like IP (Internet Protocol), which are used to route data between devices on a network. The API requests in this app use some of these protocols under the hood.
         /*
         HTTPS is on layer 7 of the OSI (Open Systems Interconnection) model, the application layer, which is the topmost layer. The OSI model is a conceptual framework used to understand how different networking protocols interact with each other. The OSI model consists of 7 layers:
-         1. Physical: Hardware and transmission of raw bits (e.g., cables, switches, Wi-Fi radio hardware).
-         2. Data Link: Node-to-node data transfer, framing, and error detection/correction (e.g., Ethernet, Wi-Fi protocol).
-         3. Network: Routing and forwarding of data between devices (e.g., IP).
-         4. Transport: Reliable or unreliable data transfer, segmentation, and flow control (e.g., TCP, UDP).
-         5. Session: Establishment, management, and termination of connections (e.g., session tokens, RPC (Remote Procedure Call), NetBIOS (Network Basic Input/Output System).
-         6. Presentation: Translation, encryption, and compression of data (e.g., SSL/TLS, MIME (Multipurpose Internet Mail Extensions) types, character encoding).
-         7. Application: Application-specific protocols and interface for end-users (e.g., HTTP/HTTPS, SMTP (Simple Mail Transfer Protocol), FTP (File Transfer Protocol)).
-        Layer 2 is the physical layer, the hardware which connects the device running RandoFacto to the internet (e.g., the Wi-Fi radio in a MacBook or iPhone), and layer 1 is how the data is transmitted over the internet (usually very fast pulses of light through fiber optic cables).
+         1. Physical: Hardware and transmission of raw bits (e.g., cables, switches, Wi-Fi radio hardware). In RandoFacto, this is the device’s antennas, radios, and cabling that carry the bits used by your URLSession requests.
+         2. Data Link: Node-to-node data transfer, framing, and error detection/correction (e.g., Ethernet, Wi‑Fi protocol). In RandoFacto, this is the Wi‑Fi or cellular link layer that frames packets for the local network your device is on.
+         3. Network: Routing and forwarding of data between devices (e.g., IP). In RandoFacto, IP routes your requests to the random fact and inappropriate words checker servers across the internet and returns responses.
+         4. Transport: Reliable or unreliable data transfer, segmentation, and flow control (e.g., TCP, UDP). In RandoFacto, TCP provides reliable delivery for HTTPS requests made by URLSession.
+         5. Session: Establishment, management, and termination of connections (e.g., session tokens, RPC, NetBIOS). In RandoFacto, TLS sessions are negotiated and maintained so the app can securely exchange HTTP messages.
+         6. Presentation: Translation, encryption, and compression (e.g., SSL/TLS, MIME types, character encoding). In RandoFacto, TLS handles encryption/decryption, and Content-Type and Accept headers describe JSON encoding for request/response bodies.
+         7. Application: Application-specific protocols and interface for end-users (e.g., HTTP/HTTPS, SMTP, FTP). In RandoFacto, URLSession performs HTTPS GET/POST requests, sends/receives JSON, and FactGenerator's code parses it into Swift types.
+        Layer 2 is the physical layer, the hardware which connects the device running RandoFacto to the internet (e.g., the Wi‑Fi radio in a MacBook or iPhone), and layer 1 is how the data is transmitted over the internet (usually very fast pulses of light through fiber optic cables).
         */
         let scheme = "https"
         // 2. The domain and subdomain are the main parts of the URL that identify the server where the resource is located. In this case, the domain is "jsph.pl" and the subdomain is "uselessfacts". "jsph.pl" in this case stands for Joseph Paul, the creator of this API and others (usually "pl" refers to a website in Poland). Each of his API URLs has a different subdomain in the same "jsph.pl" domain.
@@ -145,12 +145,12 @@ struct FactGenerator {
         */
         request.httpMethod = URLRequest.HTTPMethod.get
         /* Common HTTP header fields include:
-        * Accept: Media types the client is willing to receive.
-        * Content-Type: Media type of the body sent to the server.
-        * Authorization: Credentials for authentication.
-        * User-Agent: Information about the client software.
-        * Cache-Control: Options to control how long resources are cached (stored on the device) and whether they need to be validated with the server before using the cached copy, and whether to store it only in memory, or to prevent caching.
-         * Cookie: Whether to send stored cookies (website data) with an HTTP request.
+        * Accept: Media types the client is willing to receive. In RandoFacto, the fact generation URL request uses this to tell the random facts server that the app (client) can accept JSON data.
+        * Content-Type: Media type of the body sent to the server. In RandoFacto, the inappropriate words checker URL request uses this to tell the inappropriate words checker server to receive JSON data.
+        * Authorization: Credentials for authentication. This isn't used in fact generation.
+        * User-Agent: Information about the client software. This isn't used in fact generation.
+        * Cache-Control: Options to control how long resources are cached (stored on the device) and whether they need to be validated with the server before using the cached copy, and whether to store it only in memory, or to prevent caching. This isn't used in fact generation.
+         * Cookie: Whether to send stored cookies (website data) with an HTTP request. This isn't used in fact generation.
          */
         request.setValue(httpRequestContentType, forHTTPHeaderField: URLRequest.HTTPHeaderField.accept)
         // 3. Set the timeout interval for the URL request, after which an error will be thrown if the request can't complete.
@@ -161,11 +161,11 @@ struct FactGenerator {
 
     // This method handles the fact generation data task result.
     func handleFactGenerationDataTaskResult(factGenerationDidBeginHandler: @escaping (() -> Void), data: Data?, response: URLResponse?, error: Error?, completionHandler: @escaping ((String?, Error?) -> Void)) {
-        // 1. If an HTTP response is returned and its code isn't within the 2xx (success) range, log it as an error.
+        // 1. If an HTTP response is returned and its code isn't within the 2xx (success) range, it's an error, so log it.
         if let httpResponse = response as? HTTPURLResponse, let httpResponseError = httpResponse.error {
                 completionHandler(nil, httpResponseError)
         }
-        // 2. Log any errors.
+        // 2. If an error that isn't an HTTP response code occurs, log it.
         else if let error = error {
             completionHandler(nil, error)
         } else {
@@ -241,7 +241,7 @@ struct FactGenerator {
         }
     }
     
-    // This method creates the inappropriate words checker HTTP request. Unlike the fact generator HTTP request, this one can potentially fail since it involves converting data to JSON to send to a server.
+    // This method creates the inappropriate words checker HTTP request. Unlike the fact generator HTTP request, this one can potentially fail since it involves converting data to JSON to send to a server, so we don't simply return a URLRequest.
     func createInappropriateWordsCheckerHTTPRequest(with url: URL, toScreenFact fact: String) -> InappropriateWordsCheckerHTTPRequestResult {
         // 1. Create the URL request.
         var request = URLRequest(url: url)
@@ -266,11 +266,11 @@ struct FactGenerator {
 
     // This method handles the inappropriate words checker HTTP request for the given fact.
     func handleInappropriateWordsCheckerDataTaskResult(fact: String, data: Data?, response: URLResponse?, error: Error?, completionHandler: ((String?, Error?) -> Void)) {
-        // 1. If an HTTP response is returned and its code isn't within the 2xx (success) range, log it as an error.
+        // 1. If an HTTP response is returned and its code isn't within the 2xx (success) range, it's an error, so log it.
         if let httpResponse = response as? HTTPURLResponse, let httpResponseError = httpResponse.error {
             completionHandler(nil, httpResponseError)
         } else
-        // 2. Log any errors.
+        // 2. If an error that isn't an HTTP response code occurs, log it.
         if let error = error {
             completionHandler(nil, error)
         } else {

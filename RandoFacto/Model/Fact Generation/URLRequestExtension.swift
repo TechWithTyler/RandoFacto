@@ -30,10 +30,10 @@ extension URLRequest {
     // HTTP header fields for a URL request.
     struct HTTPHeaderField {
 
-        // The Content-Type HTTP header field.
+        // The Content-Type HTTP header field, which determines the type of data to send to a server.
         static let contentType: String = "Content-Type"
 
-        // The Accept HTTP header field.
+        // The Accept HTTP header field, which determines the type of data the client should accept.
         static let accept: String = "Accept"
         
     }
