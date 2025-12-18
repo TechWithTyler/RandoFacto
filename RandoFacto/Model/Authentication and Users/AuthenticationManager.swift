@@ -87,20 +87,20 @@ class AuthenticationManager: ObservableObject {
         registeredUsersListener = favoriteFactsDatabase?.firestore.collection(Firestore.CollectionName.users)
         // 3. Filter the results to include only the current user.
             .whereField(Firestore.KeyName.email, isEqualTo: email)
-        // 4. Listen for any changes made to the "users" collection.
+        // 4. Listen for any changes made to the current user.
             .addSnapshotListener(includeMetadataChanges: true) { [self] documentSnapshot, error in
                 if let error = error {
                     // 5. If that fails, log an error.
                     completionHandler(error)
                 } else {
                     // 6. Logout the user if they've been deleted from another device. We need to make sure the snapshot is from the server, not the cache, to prevent the detection of a missing user reference when logging in on a new device for the first time. We also need to make sure a user isn't currently being logged in or deleted on this device, otherwise a missing user would be detected and logged out, causing the operation to never complete, or a new user might be logged out immediately after signup. This was one of the big bugs during development of the initial release (2023.12).
-                    logoutMissingUser(snapshot: documentSnapshot, currentUser: currentUser, completionHandler: completionHandler)
+                    checkForUserReference(currentUser, from: documentSnapshot, completionHandler: completionHandler)
                 }
             }
     }
 
     // This method logs out the current user if their user reference is missing.
-    func logoutMissingUser(snapshot: QuerySnapshot?, currentUser: User, completionHandler: @escaping ((Error?) -> Void)) {
+    func checkForUserReference(_ currentUser: User, from snapshot: QuerySnapshot?, completionHandler: @escaping ((Error?) -> Void)) {
         // 1. Return if the account is being deleted or authentication is in progress. These are cases where a missing user reference on the device can be falsely detected.
         guard !isDeletingAccount && !isAuthenticating else { return }
         // 2. If the user reference or snapshot are nil, logout the current user.
@@ -226,7 +226,7 @@ class AuthenticationManager: ObservableObject {
                 }
             } else {
                 if let email = result?.user.email, let id = result?.user.uid {
-                    addMissingUserReferenceForLogin(email: email, id: id) { [self] error in
+                    checkForUserReference(email: email, id: id) { [self] error in
                         if let error = error {
                             isAuthenticating = false
                             completionHandler(error)
@@ -261,7 +261,7 @@ class AuthenticationManager: ObservableObject {
     }
 
     // This method checks for the current user's reference upon logging in and adds it if it doesn't exist.
-    func addMissingUserReferenceForLogin(email: String, id: String, completionHandler: @escaping ((Error?) -> Void)) {
+    func checkForUserReference(email: String, id: String, completionHandler: @escaping ((Error?) -> Void)) {
         // 1. Create the block which will add the missing user reference if needed.
         let addReferenceBlock: ((() -> Void)) = { [self] in
             addUserReference(email: email, id: id) { error in
