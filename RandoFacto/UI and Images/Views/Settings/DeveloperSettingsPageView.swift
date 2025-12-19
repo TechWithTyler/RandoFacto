@@ -13,7 +13,7 @@ struct DeveloperSettingsPageView: View {
 
     // MARK: - Properties - Objects
 
-    @EnvironmentObject var windowStateManager: WindowStateManager
+    @EnvironmentObject var settingsManager: SettingsManager
 
     @EnvironmentObject var networkConnectionManager: NetworkConnectionManager
 
@@ -31,21 +31,21 @@ struct DeveloperSettingsPageView: View {
             Label("This page is available in internal builds only. No traces of this page can be found in release builds.", systemImage: "hammer")
             Section {
                 Button("Reset Onboarding") {
-                    windowStateManager.shouldOnboard = true
+                    settingsManager.shouldOnboard = true
                 }
             }
             Section(header: Text("Fact Generation"), footer: Text("If a URL request doesn't succeed before the selected number of seconds passes since it started, a \"request timed out\" error is thrown.")) {
                 HStack {
                     Text("Fact Generator URL")
                     Spacer()
-                    Link(windowStateManager.factGenerator.factURLString, destination: URL(string: windowStateManager.factGenerator.factURLString)!)
+                    Link(settingsManager.factGenerator.factURLString, destination: URL(string: settingsManager.factGenerator.factURLString)!)
                 }
                 HStack {
                     Text("Inappropriate Words Checker URL")
                     Spacer()
-                    Link(windowStateManager.factGenerator.inappropriateWordsCheckerURLString, destination: URL(string: windowStateManager.factGenerator.inappropriateWordsCheckerURLString)!)
+                    Link(settingsManager.factGenerator.inappropriateWordsCheckerURLString, destination: URL(string: settingsManager.factGenerator.inappropriateWordsCheckerURLString)!)
                 }
-                Picker("Timeout Interval (in seconds)", selection: $windowStateManager.factGenerator.urlRequestTimeoutInterval) {
+                Picker("Timeout Interval (in seconds)", selection: $settingsManager.factGenerator.urlRequestTimeoutInterval) {
                     Text("0.25").tag(0.25)
                     Text("2").tag(2.0)
                     Text("10 (shipping build)").tag(10.0)

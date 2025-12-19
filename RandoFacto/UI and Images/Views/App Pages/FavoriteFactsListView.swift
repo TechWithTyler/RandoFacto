@@ -209,7 +209,7 @@ struct FavoriteFactsListView: View {
     FavoriteFactsListView()
         #if DEBUG
         .withPreviewData {
-            windowStateManager, _, _, _, _, _, _, _ in
+            windowStateManager, _, _, _, _, _, _, _, _ in
             windowStateManager.factText = loadingString
         }
     #endif
@@ -222,7 +222,7 @@ struct FavoriteFactsListView: View {
     FavoriteFactsListView()
         #if DEBUG
         .withPreviewData {
-            windowStateManager, _, _, _, _, _, _, _ in
+            windowStateManager, _, _, _, _, _, _, _, _ in
             windowStateManager.factText = sampleFact
         }
     #endif

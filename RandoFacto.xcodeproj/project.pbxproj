@@ -21,6 +21,7 @@
 		8D2A7B302B5B277300142BDA /* SpeakButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2A7B2F2B5B277300142BDA /* SpeakButton.swift */; };
 		8D2A7B362B5B48A400142BDA /* FirestoreNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2A7B352B5B48A400142BDA /* FirestoreNames.swift */; };
 		8D31D8532B27B759009F29EE /* APIKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D31D8522B27B758009F29EE /* APIKeys.swift */; };
+		8D37CB3F2EF5FE9500E078F1 /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D37CB3E2EF5FE9500E078F1 /* SettingsManager.swift */; };
 		8D53C3892CDEF2120091B474 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 8D53C3882CDEF2120091B474 /* FirebaseAuth */; };
 		8D53C38B2CDEF2120091B474 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 8D53C38A2CDEF2120091B474 /* FirebaseCrashlytics */; };
 		8D53C38D2CDEF2120091B474 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 8D53C38C2CDEF2120091B474 /* FirebaseFirestore */; };
@@ -111,6 +112,7 @@
 		8D2A7B2F2B5B277300142BDA /* SpeakButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeakButton.swift; sourceTree = "<group>"; };
 		8D2A7B352B5B48A400142BDA /* FirestoreNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreNames.swift; sourceTree = "<group>"; };
 		8D31D8522B27B758009F29EE /* APIKeys.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIKeys.swift; sourceTree = "<group>"; };
+		8D37CB3E2EF5FE9500E078F1 /* SettingsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsManager.swift; sourceTree = "<group>"; };
 		8D55113F2B059B3D00BB61D4 /* FactGeneratorErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactGeneratorErrors.swift; sourceTree = "<group>"; };
 		8D5E25042B5B8EFF00B51730 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		8D5E25082B5DAD0A00B51730 /* AuthenticationFormField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationFormField.swift; sourceTree = "<group>"; };
@@ -383,6 +385,7 @@
 				8D63D5F72AFEBBE90084BACF /* Authentication and Users */,
 				8D55113E2B05976800BB61D4 /* Error Handling */,
 				8D1CD2CE2EE25239001B6AD0 /* Key and Collection Names */,
+				8D37CB3E2EF5FE9500E078F1 /* SettingsManager.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -543,6 +546,7 @@
 				8D1CD2D22EE7776A001B6AD0 /* AuthenticationDialogManager.swift in Sources */,
 				8DCE5DE92B084F6000DD3CE7 /* UnfavoriteAllButton.swift in Sources */,
 				8D1EE3192EE8D0370064997F /* PasswordStrengthMeter.swift in Sources */,
+				8D37CB3F2EF5FE9500E078F1 /* SettingsManager.swift in Sources */,
 				8D2A7B302B5B277300142BDA /* SpeakButton.swift in Sources */,
 				8DFEB0A32AFAF64800F57DB1 /* SettingsView.swift in Sources */,
 				8DF48E312936A80700152681 /* WindowStateManager.swift in Sources */,

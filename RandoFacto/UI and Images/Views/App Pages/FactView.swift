@@ -216,7 +216,7 @@ struct FactView: View {
 #Preview("Loading") {
     FactView()
         #if DEBUG
-        .withPreviewData { windowStateManager, _, _, _, _, _, _, _ in
+        .withPreviewData { windowStateManager, _, _, _, _, _, _, _, _ in
             windowStateManager.factText = loadingString
         }
     #endif
@@ -225,7 +225,7 @@ struct FactView: View {
 #Preview("Loaded") {
     FactView()
         #if DEBUG
-        .withPreviewData { windowStateManager, _, _, _, _, _, _, _ in
+        .withPreviewData { windowStateManager, _, _, _, _, _, _, _, _ in
             windowStateManager.factText = sampleFact
         }
     #endif
@@ -234,7 +234,7 @@ struct FactView: View {
 #Preview("Generating") {
     FactView()
         #if DEBUG
-        .withPreviewData { windowStateManager, _, _, _, _, _, _, _ in
+        .withPreviewData { windowStateManager, _, _, _, _, _, _, _, _ in
             windowStateManager.factText = generatingRandomFactString
         }
     #endif

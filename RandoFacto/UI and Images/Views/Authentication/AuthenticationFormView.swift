@@ -234,7 +234,7 @@ struct AuthenticationFormView: View {
 #Preview("Login (Empty)") {
     AuthenticationFormView()
         #if DEBUG
-        .withPreviewData { _, _, _, authenticationDialogManager, _, _, _, _ in
+        .withPreviewData { _, _, _, _, authenticationDialogManager, _, _, _, _ in
             authenticationDialogManager.formType = .login
         }
     #endif
@@ -243,7 +243,7 @@ struct AuthenticationFormView: View {
 #Preview("Login (Forgot Password Button)") {
     AuthenticationFormView()
         #if DEBUG
-        .withPreviewData { _, _, _, authenticationDialogManager, _, _, _, _ in
+        .withPreviewData { _, _, _, _, authenticationDialogManager, _, _, _, _ in
             authenticationDialogManager.formType = .login
             authenticationDialogManager.emailFieldText = "someone@example.com"
         }
@@ -253,7 +253,7 @@ struct AuthenticationFormView: View {
 #Preview("Login (Forgot Password Sent)") {
     AuthenticationFormView()
         #if DEBUG
-        .withPreviewData { _, _, _, authenticationDialogManager, _, _, _, _ in
+        .withPreviewData { _, _, _, _, authenticationDialogManager, _, _, _, _ in
             authenticationDialogManager.formType = .login
             authenticationDialogManager.emailFieldText = "someone@example.com"
             authenticationDialogManager.showingResetPasswordEmailSent = true
@@ -264,7 +264,7 @@ struct AuthenticationFormView: View {
 #Preview("Signup") {
     AuthenticationFormView()
         #if DEBUG
-        .withPreviewData { _, _, _, authenticationDialogManager, _, _, _, _ in
+        .withPreviewData { _, _, _, _, authenticationDialogManager, _, _, _, _ in
             authenticationDialogManager.formType = .signup
         }
     #endif
@@ -273,7 +273,7 @@ struct AuthenticationFormView: View {
 #Preview("Change Password") {
     AuthenticationFormView()
         #if DEBUG
-        .withPreviewData { _, _, _, authenticationDialogManager, _, _, authenticationManager, _ in
+        .withPreviewData { _, _, _, _, authenticationDialogManager, _, _, authenticationManager, _ in
             if !authenticationManager.userLoggedIn {
                 authenticationDialogManager.formType = .login
                 authenticationDialogManager.formErrorText = "Change Password preview requires you to be logged in. You can login here using Live Preview mode and try again."

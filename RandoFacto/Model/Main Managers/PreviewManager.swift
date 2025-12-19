@@ -20,6 +20,8 @@ class PreviewManager: ObservableObject {
 
     var windowStateManager: WindowStateManager
 
+    var settingsManager: SettingsManager
+
     var speechManager: SpeechManager
 
     var errorManager: ErrorManager
@@ -36,7 +38,7 @@ class PreviewManager: ObservableObject {
 
     // MARK: - Initialization
 
-    init(prepBlock: ((WindowStateManager, SpeechManager, ErrorManager, AuthenticationDialogManager, NetworkConnectionManager, FavoriteFactsDatabase, AuthenticationManager, FavoriteFactsDisplayManager) -> Void)? = nil) {
+    init(prepBlock: ((WindowStateManager, SettingsManager, SpeechManager, ErrorManager, AuthenticationDialogManager, NetworkConnectionManager, FavoriteFactsDatabase, AuthenticationManager, FavoriteFactsDisplayManager) -> Void)? = nil) {
         let speechManager = SpeechManager()
         let errorManager = ErrorManager()
         let firestore = Firestore.firestore()
@@ -47,8 +49,10 @@ class PreviewManager: ObservableObject {
         let favoriteFactsDatabase = FavoriteFactsDatabase(firestore: firestore, networkConnectionManager: networkConnectionManager)
         let favoriteFactsDisplayManager = FavoriteFactsDisplayManager(favoriteFactsDatabase: favoriteFactsDatabase)
         let windowStateManager = WindowStateManager(speechManager: speechManager, errorManager: errorManager, favoriteFactsDatabase: favoriteFactsDatabase, favoriteFactsDisplayManager: favoriteFactsDisplayManager, authenticationManager: authenticationManager)
-        prepBlock?(windowStateManager, speechManager, errorManager, authenticationDialogManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsDisplayManager)
+        let settingsManager = SettingsManager(favoriteFactsDisplayManager: favoriteFactsDisplayManager, authenticationManager: authenticationManager, errorManager: errorManager, speechManager: speechManager)
+        prepBlock?(windowStateManager, settingsManager, speechManager, errorManager, authenticationDialogManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsDisplayManager)
         self.windowStateManager = windowStateManager
+        self.settingsManager = settingsManager
         self.speechManager = speechManager
         self.errorManager = errorManager
         self.authenticationDialogManager = authenticationDialogManager

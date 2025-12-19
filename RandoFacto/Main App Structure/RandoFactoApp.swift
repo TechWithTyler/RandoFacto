@@ -89,12 +89,14 @@ struct RandoFactoApp: App {
             let favoriteFactsDisplayManager = FavoriteFactsDisplayManager(favoriteFactsDatabase: favoriteFactsDatabase)
             let windowStateManager = WindowStateManager(speechManager: speechManager, errorManager: errorManager, favoriteFactsDatabase: favoriteFactsDatabase, favoriteFactsDisplayManager: favoriteFactsDisplayManager, authenticationManager: authenticationManager)
             let authenticationDialogManager = AuthenticationDialogManager(authenticationManager: authenticationManager, errorManager: errorManager)
+            let settingsManager = SettingsManager(favoriteFactsDisplayManager: favoriteFactsDisplayManager, authenticationManager: authenticationManager, errorManager: errorManager, speechManager: speechManager)
             ContentView()
                 .ignoresSafeArea(edges: .all)
                 .environmentObject(networkConnectionManager)
                 .environmentObject(favoriteFactsDatabase)
                 .environmentObject(authenticationManager)
                 .environmentObject(windowStateManager)
+                .environmentObject(settingsManager)
                 .environmentObject(speechManager)
                 .environmentObject(authenticationDialogManager)
                 .environmentObject(favoriteFactsDisplayManager)
@@ -106,18 +108,17 @@ struct RandoFactoApp: App {
         #if os(macOS)
         // Settings window scene
         // On macOS, Settings are presented as a window instead of as one of the app's pages.
-		Settings {
+        Settings {
             let speechManager = SpeechManager()
             let errorManager = ErrorManager()
             let favoriteFactsDisplayManager = FavoriteFactsDisplayManager(favoriteFactsDatabase: favoriteFactsDatabase)
-            let windowStateManager = WindowStateManager(speechManager: speechManager, errorManager: errorManager, favoriteFactsDatabase: favoriteFactsDatabase, favoriteFactsDisplayManager: favoriteFactsDisplayManager, authenticationManager: authenticationManager
-            )
             let authenticationDialogManager = AuthenticationDialogManager(authenticationManager: authenticationManager, errorManager: errorManager)
+            let settingsManager = SettingsManager(favoriteFactsDisplayManager: favoriteFactsDisplayManager, authenticationManager: authenticationManager, errorManager: errorManager, speechManager: speechManager)
 			SettingsView()
                 .environmentObject(networkConnectionManager)
                 .environmentObject(favoriteFactsDatabase)
                 .environmentObject(authenticationManager)
-                .environmentObject(windowStateManager)
+                .environmentObject(settingsManager)
                 .environmentObject(speechManager)
                 .environmentObject(authenticationDialogManager)
                 .environmentObject(favoriteFactsDisplayManager)

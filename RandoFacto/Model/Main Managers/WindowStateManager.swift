@@ -54,13 +54,6 @@ class WindowStateManager: NSObject, ObservableObject {
     // The text size for facts.
     @AppStorage(UserDefaults.KeyNames.factTextSize) var factTextSize: Double = SATextViewMinFontSize
 
-    // MARK: - Properties - Integers
-
-    // The current fact text size as an Int.
-    var factTextSizeAsInt: Int {
-        return Int(factTextSize)
-    }
-
     // MARK: - Properties - Pages
 
     // The page currently selected in the sidebar/top-level view. On macOS, the settings view is accessed by the Settings menu item in the app menu instead of as a page.
@@ -82,9 +75,6 @@ class WindowStateManager: NSObject, ObservableObject {
 
     // Whether the onboarding sheet should be/is being displayed.
     @Published var showingOnboarding: Bool = false
-
-    // Whether the reset alert should be/is being displayed.
-    @Published var showingResetAlert: Bool = false
 
     // Whether favorite facts are available to be displayed.
     var favoriteFactsAvailable: Bool {
@@ -248,35 +238,6 @@ extension WindowStateManager {
                 selectedPage = .randomFact
             }
         }
-    }
-
-}
-
-extension WindowStateManager {
-
-    // MARK: - Reset
-
-    // This method resets all settings to default and logs out the current user.
-    func resetApp() {
-        // 1. Logout the current user, which will reset all login-required settings to default.
-        authenticationManager.logoutCurrentUser { [self] error in
-            if let error = error {
-                errorManager.showError(error)
-            }
-        }
-        // 2. Reset all in-app/non-accessibility settings.
-        factTextSize = SATextViewMinFontSize
-        selectedPage = .randomFact
-        favoriteFactsDisplayManager.favoriteFactsRandomizerClick = true
-        favoriteFactsDisplayManager.searchText.removeAll()
-        favoriteFactsDisplayManager.sortFavoriteFactsAscending = false
-        selectedVoiceID = SADefaultVoiceID
-        // 3. Reset the selected settings page on macOS.
-        #if os(macOS)
-        selectedSettingsPage = .facts
-        #endif
-        // 4. Set the onboarding sheet to show on the next launch.
-        shouldOnboard = true
     }
 
 }

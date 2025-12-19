@@ -23,6 +23,10 @@ struct FactSettingsPageView: View {
 
     @EnvironmentObject var favoriteFactsDisplayManager: FavoriteFactsDisplayManager
 
+    // MARK: - Properties - Floats
+
+    @AppStorage(UserDefaults.KeyNames.factTextSize) var factTextSize: Double = SATextViewMinFontSize
+
     // MARK: - Properties - Booleans
 
     @AppStorage(UserDefaults.KeyNames.favoriteFactsRandomizerEffect) var favoriteFactsRandomizerEffect: Bool = false
@@ -31,14 +35,16 @@ struct FactSettingsPageView: View {
 
     @AppStorage(UserDefaults.KeyNames.skipFavoritesOnFactGeneration) var skipFavoritesOnFactGeneration: Bool = false
 
+    @AppStorage(UserDefaults.KeyNames.shouldOnboard) var shouldOnboard: Bool = true
+
     // MARK: - Body
 
     var body: some View {
         Form {
             Section {
-                TextSizeSlider(labelText: "Text Size", textSize: $windowStateManager.factTextSize, previewText: sampleFact)
+                TextSizeSlider(labelText: "Text Size", textSize: $factTextSize, previewText: sampleFact)
             }
-            .animation(.default, value: windowStateManager.factTextSize)
+            .animation(.default, value: factTextSize)
             if authenticationManager.userLoggedIn {
                 Section {
                     Picker("Initial Display", selection: $favoriteFactsDatabase.initialFact) {

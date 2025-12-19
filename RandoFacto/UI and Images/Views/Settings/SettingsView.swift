@@ -15,28 +15,23 @@ struct SettingsView: View {
 
     // MARK: - Properties - Objects
 
-    @EnvironmentObject var windowStateManager: WindowStateManager
-
     @EnvironmentObject var authenticationManager: AuthenticationManager
 
     @EnvironmentObject var errorManager: ErrorManager
 
+    // MARK: - Properties - Selected Settings Page
+
+#if os(macOS)
+    // The page currently selected in the Settings window on macOS.
+    @AppStorage(UserDefaults.KeyNames.selectedSettingsPage) var selectedSettingsPage: SettingsPage = .facts
+#endif
+
     // MARK: - Body
 
     var body: some View {
-        if windowStateManager.isLoading {
-#if os(macOS)
-            SAMVisualEffectViewSwiftUIRepresentable(activeState: .active) {
-                loadingDisplay
-                    .frame(width: 400, height: 280)
-            }
-#else
-            loadingDisplay
-#endif
-        } else {
 #if os(macOS)
             // macOS settings window
-            TabView(selection: $windowStateManager.selectedSettingsPage) {
+            TabView(selection: $selectedSettingsPage) {
                 SAMVisualEffectViewSwiftUIRepresentable(activeState: .active) {
                     FactSettingsPageView()
                 }
@@ -145,7 +140,6 @@ struct SettingsView: View {
             .navigationBarTitleDisplayMode(.automatic)
             .formStyle(.grouped)
 #endif
-        }
     }
 
     // MARK: - Loading Display
@@ -161,19 +155,11 @@ struct SettingsView: View {
 
 // MARK: - Preview
 
-#Preview("Loaded") {
+#Preview {
     NavigationStack {
         SettingsView()
     }
 #if DEBUG
-    .withPreviewData { windowStateManager, _, _, _, _, _, _, _ in
-        windowStateManager.factText = sampleFact
-    }
+    .withPreviewData()
 #endif
-}
-
-#Preview("Loading") {
-    NavigationStack {
-        SettingsView().loadingDisplay
-    }
 }
