@@ -176,8 +176,13 @@ class AuthenticationManager: ObservableObject {
     // This method sends a password reset email to the specified email address.
     func sendPasswordResetLink(to email: String, completionHandler: @escaping ((Error?) -> Void)) {
         DispatchQueue.main.async { [self] in
+            // 1. Tell the app that an authentication request is in progress.
             isAuthenticating = true
-            firebaseAuthentication.sendPasswordReset(withEmail: email.lowercased(), actionCodeSettings: ActionCodeSettings(), completion: { [self] error in
+            // 2. Convert the email to lowercase.
+            let lowercaseEmail = email.lowercased()
+            // 3. Send a password reset link.
+            firebaseAuthentication.sendPasswordReset(withEmail: lowercaseEmail, actionCodeSettings: ActionCodeSettings(), completion: { [self] error in
+                // 4. Handle the success or error.
                 isAuthenticating = false
                 completionHandler(error)
             })
