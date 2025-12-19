@@ -16,8 +16,6 @@ struct AuthenticationFormView: View {
     
     // MARK: - Properties - Objects
     
-    @EnvironmentObject var windowStateManager: WindowStateManager
-    
     @EnvironmentObject var authenticationManager: AuthenticationManager
     
     @EnvironmentObject var networkConnectionManager: NetworkConnectionManager

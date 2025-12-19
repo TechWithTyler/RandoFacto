@@ -116,7 +116,6 @@ struct AccountSettingsPageView: View {
         // Authentication form
         .sheet(item: $authenticationDialogManager.formType) { _ in
             AuthenticationFormView()
-                .environmentObject(windowStateManager)
                 .environmentObject(networkConnectionManager)
                 .environmentObject(authenticationManager)
                 .environmentObject(errorManager)
