@@ -34,6 +34,9 @@ struct DeveloperSettingsPageView: View {
                     settingsManager.shouldOnboard = true
                 }
             }
+            Section {
+                Text("Device Online: \(networkConnectionManager.deviceIsOnline ? "Yes" : "No")")
+            }
             Section(header: Text("Fact Generation"), footer: Text("If a URL request doesn't succeed before the selected number of seconds passes since it started, a \"request timed out\" error is thrown.")) {
                 HStack {
                     Text("Fact Generator URL")
