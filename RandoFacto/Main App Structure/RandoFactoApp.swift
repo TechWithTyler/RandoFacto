@@ -110,9 +110,7 @@ struct RandoFactoApp: App {
             let speechManager = SpeechManager()
             let errorManager = ErrorManager()
             let favoriteFactsDisplayManager = FavoriteFactsDisplayManager(favoriteFactsDatabase: favoriteFactsDatabase)
-            let windowStateManager = WindowStateManager(speechManager: speechManager, errorManager: errorManager, favoriteFactsDatabase: favoriteFactsDatabase,
-                favoriteFactsDisplayManager: favoriteFactsDisplayManager,
-                authenticationManager: authenticationManager
+            let windowStateManager = WindowStateManager(speechManager: speechManager, errorManager: errorManager, favoriteFactsDatabase: favoriteFactsDatabase, favoriteFactsDisplayManager: favoriteFactsDisplayManager, authenticationManager: authenticationManager
             )
             let authenticationDialogManager = AuthenticationDialogManager(authenticationManager: authenticationManager, errorManager: errorManager)
 			SettingsView()

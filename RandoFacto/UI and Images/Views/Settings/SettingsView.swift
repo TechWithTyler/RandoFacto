@@ -49,7 +49,7 @@ struct SettingsView: View {
                 SAMVisualEffectViewSwiftUIRepresentable(activeState: .active) {
                     SpeechSettingsPageView()
                 }
-                .frame(width: 400, height: 150)
+                .frame(width: 400, height: 200)
                 .formStyle(.grouped)
                 .tabItem {
                     Label(SettingsPage.speech.title, systemImage: SettingsPage.Icons.speech.rawValue)

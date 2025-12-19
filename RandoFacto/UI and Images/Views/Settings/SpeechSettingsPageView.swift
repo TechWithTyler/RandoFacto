@@ -21,7 +21,7 @@ struct SpeechSettingsPageView: View {
 
     var body: some View {
         Form {
-            Section(footer: Text("This is the voice \(appName!) will use to read facts aloud.")) {
+            Section {
                 VoicePicker(selectedVoiceID: $speechManager.selectedVoiceID, voices: speechManager.voices) { voice in
                     speechManager.speakFact(fact: sampleFact, forSettingsPreview: true)
                     }
@@ -35,6 +35,9 @@ struct SpeechSettingsPageView: View {
             }
             .onAppear {
                 speechManager.loadVoices()
+            }
+            Section(footer: Text("Turn this on to have \(appName!) speak displayed facts.")) {
+                Toggle("Speak on Fact Display", isOn: $speechManager.speakOnFactDisplay)
             }
         }
         .formStyle(.grouped)

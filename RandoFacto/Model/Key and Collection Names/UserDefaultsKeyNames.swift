@@ -22,6 +22,8 @@ extension UserDefaults {
 
         static let selectedVoiceID: String = "selectedVoiceID"
 
+        static let speakOnFactDisplay: String = "speakOnFactDisplay"
+
         static let initialFact: String = "initialFact"
 
         static let favoriteFactsRandomizerEffect: String = "favoriteFactsRandomizerEffect"

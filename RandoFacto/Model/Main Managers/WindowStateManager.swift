@@ -169,7 +169,12 @@ class WindowStateManager: NSObject, ObservableObject {
 
     // This method sets factText to fact.
     func displayFact(_ fact: String) {
+        // 1. Set factText to the fact.
         factText = fact
+        // 2. If the option to speak on fact display is enabled, speak the fact.
+        if speechManager.speakOnFactDisplay && !favoriteFactsDisplayManager.randomizerRunning {
+            speechManager.speakFact(fact: fact)
+        }
     }
 
 }

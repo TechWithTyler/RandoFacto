@@ -16,6 +16,8 @@ class SpeechManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
 
     @AppStorage(UserDefaults.KeyNames.selectedVoiceID) var selectedVoiceID: String = SADefaultVoiceID
 
+    @AppStorage(UserDefaults.KeyNames.speakOnFactDisplay) var speakOnFactDisplay: Bool = false
+
     @Published var factBeingSpoken: String = String()
 
     // MARK: - Properties - Speech
