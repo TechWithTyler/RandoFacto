@@ -200,7 +200,7 @@ extension WindowStateManager {
         // 1. Create the block that will be performed for each randomizer iteration if the randomizer effect is turned on, or just once if it's turned off.
         let block: (() -> Void) = { [self] in
             let favoriteFact = favoriteFactsDatabase.favoriteFacts.randomElement()?.text ?? factUnavailableString
-            factText = favoriteFact
+            displayFact(favoriteFact)
         }
         DispatchQueue.main.async { [self] in
             // 2. Dismiss the favorite facts list and stop speaking.

@@ -20,6 +20,8 @@ class PreviewManager: ObservableObject {
 
     var windowStateManager: WindowStateManager
 
+    var speechManager: SpeechManager
+
     var errorManager: ErrorManager
 
     var authenticationDialogManager: AuthenticationDialogManager
@@ -34,7 +36,7 @@ class PreviewManager: ObservableObject {
 
     // MARK: - Initialization
 
-    init(prepBlock: ((WindowStateManager, ErrorManager, AuthenticationDialogManager, NetworkConnectionManager, FavoriteFactsDatabase, AuthenticationManager, FavoriteFactsDisplayManager) -> Void)? = nil) {
+    init(prepBlock: ((WindowStateManager, SpeechManager, ErrorManager, AuthenticationDialogManager, NetworkConnectionManager, FavoriteFactsDatabase, AuthenticationManager, FavoriteFactsDisplayManager) -> Void)? = nil) {
         let speechManager = SpeechManager()
         let errorManager = ErrorManager()
         let firestore = Firestore.firestore()
@@ -45,8 +47,9 @@ class PreviewManager: ObservableObject {
         let favoriteFactsDatabase = FavoriteFactsDatabase(firestore: firestore, networkConnectionManager: networkConnectionManager)
         let favoriteFactsDisplayManager = FavoriteFactsDisplayManager(favoriteFactsDatabase: favoriteFactsDatabase)
         let windowStateManager = WindowStateManager(speechManager: speechManager, errorManager: errorManager, favoriteFactsDatabase: favoriteFactsDatabase, favoriteFactsDisplayManager: favoriteFactsDisplayManager, authenticationManager: authenticationManager)
-        prepBlock?(windowStateManager, errorManager, authenticationDialogManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsDisplayManager)
+        prepBlock?(windowStateManager, speechManager, errorManager, authenticationDialogManager, networkConnectionManager, favoriteFactsDatabase, authenticationManager, favoriteFactsDisplayManager)
         self.windowStateManager = windowStateManager
+        self.speechManager = speechManager
         self.errorManager = errorManager
         self.authenticationDialogManager = authenticationDialogManager
         self.networkConnectionManager = networkConnectionManager

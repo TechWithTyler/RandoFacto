@@ -73,6 +73,22 @@ struct PasswordStrengthMeter: View {
 
 // MARK: - Preview
 
-#Preview {
-    PasswordStrengthMeter(password: .constant("ExamplePassword123!"))
+#Preview("Very Weak") {
+    PasswordStrengthMeter(password: .constant("123"))
+}
+
+#Preview("Weak") {
+    PasswordStrengthMeter(password: .constant("1Rj4z"))
+}
+
+#Preview("Medium") {
+    PasswordStrengthMeter(password: .constant("1R4*2zt"))
+}
+
+#Preview("Strong") {
+    PasswordStrengthMeter(password: .constant("1Rj4*23!qRz"))
+}
+
+#Preview("Very Strong") {
+    PasswordStrengthMeter(password: .constant("1Rj4*23!qRzt"))
 }

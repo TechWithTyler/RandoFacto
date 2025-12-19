@@ -166,7 +166,9 @@ struct SettingsView: View {
         SettingsView()
     }
 #if DEBUG
-.withPreviewData()
+    .withPreviewData { windowStateManager, _, _, _, _, _, _, _ in
+        windowStateManager.factText = sampleFact
+    }
 #endif
 }
 
