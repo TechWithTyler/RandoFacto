@@ -156,7 +156,7 @@ class WindowStateManager: NSObject, ObservableObject {
                     if favoriteFactsDatabase.favoriteFacts.contains(where: {$0.text == fact}) && favoriteFactsDisplayManager.skipFavoritesOnFactGeneration {
                         generateRandomFact()
                     } else {
-                        factText = fact
+                        displayFact(fact)
                     }
                 } else if let error = error {
                     // 4. If an error occurs, log it.
@@ -165,6 +165,11 @@ class WindowStateManager: NSObject, ObservableObject {
                 }
             }
         }
+    }
+
+    // This method sets factText to fact.
+    func displayFact(_ fact: String) {
+        factText = fact
     }
 
 }
@@ -221,8 +226,8 @@ extension WindowStateManager {
     // This method displays favorite and switches to the "Random Fact" page.
     func displayFavoriteFact(_ favorite: String, forInitialization: Bool = false) {
         DispatchQueue.main.async { [self] in
-            factText = favorite
             speechManager.speechSynthesizer.stopSpeaking(at: .immediate)
+            displayFact(favorite)
             if !forInitialization {
                 dismissFavoriteFacts()
             }
