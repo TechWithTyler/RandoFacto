@@ -96,6 +96,13 @@ class WindowStateManager: NSObject, ObservableObject {
         return !favoriteFactsDatabase.favoriteFacts.filter({$0.text == factText}).isEmpty
     }
 
+    // MARK: - Properties - Integers
+
+    // The current fact text size as an Int.
+    var factTextSizeAsInt: Int {
+        return Int(factTextSize)
+    }
+
     // MARK: - Initialization
 
     init(speechManager: SpeechManager, errorManager: ErrorManager, favoriteFactsDatabase: FavoriteFactsDatabase, favoriteFactsDisplayManager: FavoriteFactsDisplayManager, authenticationManager: AuthenticationManager) {

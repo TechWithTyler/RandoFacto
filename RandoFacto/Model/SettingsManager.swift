@@ -6,8 +6,11 @@
 //  Copyright © 2022-2026 SheftApps. All rights reserved.
 //
 
+// MARK: - Imports
+
 import SheftAppsStylishUI
 
+// Manages settings window state.
 class SettingsManager: NSObject, ObservableObject {
 
     // MARK: - Properties - Objects
@@ -53,12 +56,7 @@ class SettingsManager: NSObject, ObservableObject {
     // Whether the onboarding sheet should appear on the next app launch (i.e., the first launch of version 2024.2 or later, or after resetting the app).
     @AppStorage(UserDefaults.KeyNames.shouldOnboard) var shouldOnboard: Bool = true
 
-    // MARK: - Properties - Integers
-
-    // The current fact text size as an Int.
-    var factTextSizeAsInt: Int {
-        return Int(factTextSize)
-    }
+    // MARK: - Initialization
 
     init(favoriteFactsDisplayManager: FavoriteFactsDisplayManager, authenticationManager: AuthenticationManager, errorManager: ErrorManager, speechManager: SpeechManager) {
         self.favoriteFactsDisplayManager = favoriteFactsDisplayManager
