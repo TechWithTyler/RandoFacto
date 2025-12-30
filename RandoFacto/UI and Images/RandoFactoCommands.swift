@@ -42,7 +42,7 @@ struct RandoFactoCommands: Commands {
                 .environmentObject(speechManager)
         }
         CommandGroup(replacing: .help) {
-            Button("\(appName!) Help") {
+            Button("\(SAAppName) Help") {
                 showHelp()
             }
             .keyboardShortcut(KeyEquivalent("?"), modifiers: [.command])

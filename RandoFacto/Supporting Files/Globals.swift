@@ -10,15 +10,13 @@
 
 import SwiftUI
 import FirebaseAuth
+import SheftAppsStylishUI
 
 // MARK: - Type Aliases
 
 typealias Authentication = Auth
 
 // MARK: - Properties - Strings
-
-// The application name.
-let appName: String? = (Bundle.main.infoDictionary?[String(kCFBundleNameKey)] as? String)!
 
 // Displayed while the app is loading.
 let loadingString = "Loading…"
@@ -54,7 +52,7 @@ let errorSymbolName = "exclamationmark.circle.fill"
 let speechSymbolName = "speaker.wave.2.bubble.left"
 
 // The fact displayed in the settings window to preview the fact text size setting.
-let sampleFact = "\(appName!) was coded in Swift!"
+let sampleFact = "\(SAAppName) was coded in Swift!"
 
 // MARK: - Properties - Time Intervals
 
@@ -74,7 +72,7 @@ let initializationTime: Int = 2
 // MARK: - Functions
 
 func showHelp() {
-    let helpURL = URL(string: "https://techwithtyler20.weebly.com/\((appName?.lowercased())!)help")!
+    let helpURL = SAAppHelpURL
     #if os(macOS)
     NSWorkspace.shared.open(helpURL)
     #else

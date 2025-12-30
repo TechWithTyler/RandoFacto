@@ -48,7 +48,7 @@ struct AdvancedSettingsPageView: View {
         }
         .formStyle(.grouped)
         // Reset alert
-        .alert("Are you sure you REALLY want to reset \(appName!)?", isPresented: $settingsManager.showingResetAlert) {
+        .alert("Are you sure you REALLY want to reset \(SAAppName)?", isPresented: $settingsManager.showingResetAlert) {
             Button("Cancel", role: .cancel) {
                 settingsManager.showingResetAlert = false
             }

@@ -20,7 +20,7 @@ struct OnboardingView: View {
 
     var body: some View {
         VStack {
-            Text("Welcome to \(appName!)!")
+            Text("Welcome to \(SAAppName)!")
                 .font(.largeTitle)
                 .fontWeight(.bold)
                 .multilineTextAlignment(.center)
@@ -28,9 +28,9 @@ struct OnboardingView: View {
             Spacer()
             ScrollView {
             VStack(alignment: .leading, spacing: 10) {
-                    Text("\(appName!) is a random facts app that gets random facts from \(windowStateManager.factGenerator.randomFactsAPIName).")
+                    Text("\(SAAppName) is a random facts app that gets random facts from \(windowStateManager.factGenerator.randomFactsAPIName).")
                     Text("Press the speech bubble \(Image(systemName: speechSymbolName)) to have displayed facts read out loud!")
-                    Text("Create a \(appName!) account in \(Text("Settings>Account").bold()) to save your favorite facts to view offline on all your devices.")
+                    Text("Create a \(SAAppName) account in \(Text("Settings>Account").bold()) to save your favorite facts to view offline on all your devices.")
                     Text("You can change the fact text size in \(Text("Settings>Display").bold()).")
                 }
             }

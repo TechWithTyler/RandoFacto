@@ -58,13 +58,13 @@ struct DeveloperSettingsPageView: View {
                 }
             }
             Section("Firebase/Backend") {
-                Link("Open \(appName!) Firebase Console…", destination: URL(string: "https://console.firebase.google.com/u/0/project/randofacto-2b730/overview")!)
+                Link("Open \(SAAppName) Firebase Console…", destination: URL(string: "https://console.firebase.google.com/u/0/project/randofacto-2b730/overview")!)
                 Button("Crash Test!", systemImage: "exclamationmark.triangle") {
 #if os(macOS)
                     NSSound.beep()
                     Thread.sleep(forTimeInterval: 1)
 #endif
-                    fatalError("This is a test of \(appName!)'s Firebase Crashlytics mechanism on \(DateFormatter.localizedString(from: Date(), dateStyle: .full, timeStyle: .full)). The button that triggered this crash won't be seen in release builds. Build and run the app via Xcode to upload this crash to Crashlytics.")
+                    fatalError("This is a test of \(SAAppName)'s Firebase Crashlytics mechanism on \(DateFormatter.localizedString(from: Date(), dateStyle: .full, timeStyle: .full)). The button that triggered this crash won't be seen in release builds. Build and run the app via Xcode to upload this crash to Crashlytics.")
                 }
             }
         }
