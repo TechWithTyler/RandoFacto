@@ -8,6 +8,7 @@
 
 #if(DEBUG)
 import SwiftUI
+import SheftAppsInternals
 
 struct DeveloperSettingsPageView: View {
 

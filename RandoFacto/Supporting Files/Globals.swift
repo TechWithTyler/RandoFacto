@@ -11,6 +11,7 @@
 import SwiftUI
 import FirebaseAuth
 import SheftAppsStylishUI
+import SheftAppsInternals
 
 // MARK: - Type Aliases
 

@@ -10,6 +10,7 @@
 
 import SwiftUI
 import SheftAppsStylishUI
+import SheftAppsInternals
 import Firebase
 
 struct AuthenticationFormView: View {

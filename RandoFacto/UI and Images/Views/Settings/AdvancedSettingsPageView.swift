@@ -9,6 +9,7 @@
 // MARK: - Imports
 
 import SwiftUI
+import SheftAppsInternals
 
 struct AdvancedSettingsPageView: View {
 

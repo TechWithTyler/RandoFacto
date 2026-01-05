@@ -10,6 +10,7 @@
 
 import SwiftUI
 import SheftAppsStylishUI
+import SheftAppsInternals
 
 struct RandoFactoCommands: Commands {
 
