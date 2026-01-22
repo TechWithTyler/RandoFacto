@@ -24,11 +24,11 @@ struct RandoFactoCommands: Commands {
 
     @EnvironmentObject var errorManager: ErrorManager
     
-    @ObservedObject var networkConnectionManager: NetworkConnectionManager
+    @StateObject var networkConnectionManager: NetworkConnectionManager
     
-    @ObservedObject var authenticationManager: AuthenticationManager
+    @StateObject var authenticationManager: AuthenticationManager
     
-    @ObservedObject var favoriteFactsDatabase: FavoriteFactsDatabase
+    @StateObject var favoriteFactsDatabase: FavoriteFactsDatabase
     
     // MARK: - Menu Commands
     
