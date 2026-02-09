@@ -86,5 +86,5 @@ class ErrorManager: ObservableObject {
             showingErrorAlert = true
         }
     }
-    
+
 }

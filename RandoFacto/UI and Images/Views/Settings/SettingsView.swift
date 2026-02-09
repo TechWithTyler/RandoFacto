@@ -83,7 +83,6 @@ struct SettingsView: View {
             // Error alert
             .alert(isPresented: $errorManager.showingErrorAlert, error: errorManager.errorToShow) {
                 Button {
-                    errorManager.showingErrorAlert = false
                     errorManager.errorToShow = nil
                 } label: {
                     Text("OK")

@@ -31,12 +31,12 @@ struct RandoFactoCommands: Commands {
     @StateObject var favoriteFactsDatabase: FavoriteFactsDatabase
     
     // MARK: - Menu Commands
-    
-    @CommandsBuilder var body: some Commands {
+
+    var body: some Commands {
         CommandGroup(replacing: .undoRedo) {}
         CommandGroup(replacing: .importExport) {}
         CommandGroup(replacing: .printItem) {}
-        if let windowStateManager = windowStateManager, let speechManager = speechManager, let favoriteFactsDisplayManager = favoriteFactsDisplayManager {
+        if let windowStateManager = windowStateManager, let speechManager = speechManager {
         CommandGroup(replacing: .textEditing) {
             SpeakButton(for: windowStateManager.factText, useShortTitle: false)
                 .disabled(windowStateManager.factTextDisplayingMessage || windowStateManager.selectedPage != .randomFact)
@@ -65,47 +65,54 @@ struct RandoFactoCommands: Commands {
             }
         }
             CommandMenu("Fact") {
-                Section {
-                    Button(generateRandomFactButtonTitle) {
-                        windowStateManager.generateRandomFact()
-                    }
-                    .disabled(!networkConnectionManager.deviceIsOnline || windowStateManager.factTextDisplayingMessage)
-                    .keyboardShortcut(KeyboardShortcut(KeyEquivalent("g"), modifiers: [.command, .control]))
-                    Button(getRandomFavoriteFactButtonTitle) {
-                        windowStateManager.getRandomFavoriteFact()
-                    }
-                    .keyboardShortcut(KeyboardShortcut(KeyEquivalent("g"), modifiers: [.command, .control, .shift]))
-                    .disabled(!windowStateManager.favoriteFactsAvailable || windowStateManager.factTextDisplayingMessage)
+                factMenu
+            }
+        }
+    }
+
+    @ViewBuilder
+    var factMenu: some View {
+        if let windowStateManager = windowStateManager, let speechManager = speechManager, let favoriteFactsDisplayManager = favoriteFactsDisplayManager {
+        Section {
+            Button(generateRandomFactButtonTitle) {
+                windowStateManager.generateRandomFact()
+            }
+            .disabled(!networkConnectionManager.deviceIsOnline || windowStateManager.factTextDisplayingMessage)
+            .keyboardShortcut(KeyboardShortcut(KeyEquivalent("g"), modifiers: [.command, .control]))
+            Button(getRandomFavoriteFactButtonTitle) {
+                windowStateManager.getRandomFavoriteFact()
+            }
+            .keyboardShortcut(KeyboardShortcut(KeyEquivalent("g"), modifiers: [.command, .control, .shift]))
+            .disabled(!windowStateManager.favoriteFactsAvailable || windowStateManager.factTextDisplayingMessage)
+        }
+        .disabled(windowStateManager.selectedPage != .randomFact)
+        Section {
+            if !windowStateManager.factTextDisplayingMessage && authenticationManager.userLoggedIn && windowStateManager.displayedFactIsSaved {
+                Button("Unfavorite Current Fact…") {
+                    favoriteFactsDisplayManager.favoriteFactToDelete = windowStateManager.factText
+                    favoriteFactsDisplayManager.showingDeleteFavoriteFact = true
                 }
-                .disabled(windowStateManager.selectedPage != .randomFact)
-                Section {
-                    if !windowStateManager.factTextDisplayingMessage && authenticationManager.userLoggedIn && windowStateManager.displayedFactIsSaved {
-                        Button("Unfavorite Current Fact…") {
-                            favoriteFactsDisplayManager.favoriteFactToDelete = windowStateManager.factText
-                            favoriteFactsDisplayManager.showingDeleteFavoriteFact = true
+                .keyboardShortcut(KeyboardShortcut(KeyEquivalent("f"), modifiers: [.command, .shift]))
+            } else {
+                Button("Favorite Current Fact") {
+                    favoriteFactsDatabase.saveFactToFavorites(windowStateManager.factText) { [self] error in
+                        if let error = error {
+                            errorManager.showError(error)
                         }
-                        .keyboardShortcut(KeyboardShortcut(KeyEquivalent("f"), modifiers: [.command, .shift]))
-                    } else {
-                        Button("Favorite Current Fact") {
-                            favoriteFactsDatabase.saveFactToFavorites(windowStateManager.factText) { [self] error in
-                                if let error = error {
-                                    errorManager.showError(error)
-                                }
-                            }
-                        }
-                        .keyboardShortcut(KeyboardShortcut(KeyEquivalent("f"), modifiers: [.command, .shift]))
-                        .disabled(windowStateManager.factTextDisplayingMessage || windowStateManager.factText == factUnavailableString || !authenticationManager.userLoggedIn)
                     }
                 }
-                .disabled(windowStateManager.selectedPage != .randomFact)
-                if authenticationManager.userLoggedIn {
-                    Section {
-                        UnfavoriteAllButton()
-                            .environmentObject(favoriteFactsDatabase)
-                    }
+                .keyboardShortcut(KeyboardShortcut(KeyEquivalent("f"), modifiers: [.command, .shift]))
+                .disabled(windowStateManager.factTextDisplayingMessage || windowStateManager.factText == factUnavailableString || !authenticationManager.userLoggedIn)
+            }
+        }
+        .disabled(windowStateManager.selectedPage != .randomFact)
+            if authenticationManager.userLoggedIn {
+                Section {
+                    UnfavoriteAllButton()
+                        .environmentObject(favoriteFactsDatabase)
                 }
             }
         }
     }
-    
+
 }
