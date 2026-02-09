@@ -59,7 +59,7 @@ struct FactSettingsPageView: View {
                 Section {
                     Toggle("Skip Favorites On Fact Generation", isOn: $skipFavoritesOnFactGeneration)
                 } footer: {
-                    Text("Turn this on if you want \(SAAppName) to skip your favorite facts when generating random facts.\nThis setting will reset to off when you logout or delete your account.\nNote: If this setting is on, fact generation may take longer than usual.")
+                    Text("Turn this on if you want \(SABundleName) to skip your favorite facts when generating random facts.\nThis setting will reset to off when you logout or delete your account.\nNote: If this setting is on, fact generation may take longer than usual.")
                 }
                 Section {
                     Toggle("Favorite Fact Randomizer Effect", isOn: $favoriteFactsRandomizerEffect)
@@ -75,7 +75,7 @@ struct FactSettingsPageView: View {
                         InfoText("The randomizer effect only works if you have at least 5 favorite facts (you currently have \(favoriteFactsDatabase.favoriteFacts.count)).")
                     }
                 } footer: {
-                    Text("Turn this on if you want \(SAAppName) to \"spin through\" several random favorite facts instead of simply displaying a random favorite fact.\nThis setting will reset to off when you logout or delete your account.")
+                    Text("Turn this on if you want \(SABundleName) to \"spin through\" several random favorite facts instead of simply displaying a random favorite fact.\nThis setting will reset to off when you logout or delete your account.")
                 }
             }
         }

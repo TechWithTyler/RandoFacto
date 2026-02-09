@@ -37,7 +37,7 @@ struct SpeechSettingsPageView: View {
             .onAppear {
                 speechManager.loadVoices()
             }
-            Section(footer: Text("Turn this on to have \(SAAppName) speak displayed facts.")) {
+            Section(footer: Text("Turn this on to have \(SABundleName) speak displayed facts.")) {
                 Toggle("Speak on Fact Display", isOn: $speechManager.speakOnFactDisplay)
             }
         }

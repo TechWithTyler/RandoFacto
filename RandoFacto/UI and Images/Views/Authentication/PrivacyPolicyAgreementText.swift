@@ -16,7 +16,7 @@ struct PrivacyPolicyAgreementText: View {
     // MARK: - Body
 
     var body: some View {
-        Text("By creating a \(SAAppName) account, you agree to our [privacy policy](https://techwithtyler20.weebly.com/randofactoprivacypolicy.html).")
+        Text("By creating a \(SABundleName) account, you agree to our [privacy policy](https://techwithtyler20.weebly.com/randofactoprivacypolicy.html).")
             .font(.footnote)
             .foregroundStyle(.secondary)
             .multilineTextAlignment(.center)

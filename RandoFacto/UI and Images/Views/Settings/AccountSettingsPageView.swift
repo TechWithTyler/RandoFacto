@@ -72,7 +72,7 @@ struct AccountSettingsPageView: View {
                 }
             } else {
                 if networkConnectionManager.deviceIsOnline {
-                    Text("Login to your \(SAAppName) account to save favorite facts to view on all your devices, even while offline.")
+                    Text("Login to your \(SABundleName) account to save favorite facts to view on all your devices, even while offline.")
                         .font(.system(size: 24))
                     Button(loginText, systemImage: "entry.lever.keypad") {
                         authenticationDialogManager.formType = .login
@@ -90,7 +90,7 @@ struct AccountSettingsPageView: View {
         }
         .formStyle(.grouped)
         // Delete account alert
-        .alert("Are you sure you REALLY want to delete your \(SAAppName) account?", isPresented: $authenticationDialogManager.showingDeleteAccount) {
+        .alert("Are you sure you REALLY want to delete your \(SABundleName) account?", isPresented: $authenticationDialogManager.showingDeleteAccount) {
             Button("Cancel", role: .cancel) {
                 authenticationDialogManager.showingDeleteAccount = false
             }
@@ -104,7 +104,7 @@ struct AccountSettingsPageView: View {
         .dialogSeverity(.critical)
 #endif
         // Logout alert
-        .alert("Logout of your \(SAAppName) account?", isPresented: $authenticationDialogManager.showingLogout) {
+        .alert("Logout of your \(SABundleName) account?", isPresented: $authenticationDialogManager.showingLogout) {
             Button("Cancel", role: .cancel) {
                 authenticationDialogManager.showingLogout = false
             }

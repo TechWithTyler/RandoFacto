@@ -179,7 +179,7 @@ struct ContentView: View {
             }
 #endif
         }
-        .navigationTitle("\(SAAppName)")
+        .navigationTitle("\(SABundleName)")
 #if os(iOS)
         .navigationBarTitleDisplayMode(.automatic)
 #endif
