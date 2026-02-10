@@ -13,9 +13,9 @@ import SwiftUI
 // Handles HTTP requests to get random facts and screen them for inappropriate words via web APIs.
 struct FactGenerator {
     
-    // MARK: - Properties - Result Type Aliases
+    // MARK: - Result Type Aliases
     
-    // A Result is made up of 2 types: Success (can be anything) and Error (must conform to Error). These type aliases simplify the type names.
+    // A Result is made up of 2 types: Success (can be anything) and Error (must conform to Error). Result is used in asynchronous functions since they often return before asynchronous operations complete, making it impossible to throw errors from them. These type aliases simplify the type names.
 
     // The type of fact generator JSON (JavaScript Object Notation) parsing results. Success is a String containing the fact.
     typealias FactGeneratorJSONParsingResult = Result<String, Error>
