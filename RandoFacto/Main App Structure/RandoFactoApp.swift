@@ -133,6 +133,7 @@ struct RandoFactoApp: App {
         let firebaseConfigurationFilename = "GoogleService-Info"
         let firebaseConfigurationFileExtension = "plist"
         guard let googleServicePlist = Bundle.main.url(forResource: firebaseConfigurationFilename, withExtension: firebaseConfigurationFileExtension) else {
+            // fatalError(_:) has a special return type called Never, which is a type applied to functions that never return. Never can be assigned as the value of anything and can be used instead of return or throw in a guard statement. fatalError(_:) never returns since it crashes the running app.
             fatalError("Firebase configuration file \(firebaseConfigurationFilename).\(firebaseConfigurationFileExtension) not found in app bundle.")
         }
         let firebaseConfigurationFilePath = googleServicePlist.path
