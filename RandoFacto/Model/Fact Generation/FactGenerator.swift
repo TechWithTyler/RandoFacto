@@ -110,7 +110,7 @@ struct FactGenerator {
     func generateRandomFact(factGenerationDidBeginHandler: @escaping (() -> Void), completionHandler: @escaping ((String?, Error?) -> Void)) {
         // 1. Call the "did begin" handler.
         factGenerationDidBeginHandler()
-        // 2. Create the URL, URL request, and URL session.
+        // 2. Create the URL, URL request, and URL session. This URL request is simple to create since we're not converting data to send, so there are no errors to catch.
         guard let url = URL(string: factURLString) else {
             completionHandler(nil, factDataError)
             return
@@ -169,7 +169,7 @@ struct FactGenerator {
         else if let error = error {
             completionHandler(nil, error)
         } else {
-            // 3. Make sure we can get the fact text. If we can't, an error is logged.
+            // 3. Make sure we can get the fact text. If we can't, log an error.
             let jsonParsingResult = parseFactDataJSON(data: data)
             // With the Result generic type, we can use a switch statement to handle the result based on whether it's a success (of the desired type) or a failure (of any type that conforms to the Error protocol, including Error itself).
             switch jsonParsingResult {
@@ -190,11 +190,13 @@ struct FactGenerator {
         guard let data = data else {
             return .failure(factDataError)
         }
-        // 2. Try to decode the JSON data to create a GeneratedFact object, and get the text from it, correcting punctuation as necessary. If decoding fails, log an error.
+        // 2. Try to decode the JSON data to create a GeneratedFact object, and get the text from it, correcting punctuation as necessary. If successful, return .success, passing the fact text. If not, return .failure with the catch block's error.
         let decoder = JSONDecoder()
         do {
+            // Do-catch statements are used to run code that may "throw" an error, and the catch block "catches" the error. A function that can throw an error is marked with the throws keyword, and a call to it must be preceded by the try keyword. Think of the try expression as one person, the caller of this method as another person, and a potential error as a ball. The first person (the try expression) throws the ball (the error) to the second person (the caller of this method) if the try expression produces an error.
             // Since we're using a type name, not an instance of that type, we use TypeName.self instead of TypeName().
-            let factObject = try decoder.decode(GeneratedFact.self, from: data)
+            let typeToDecode = GeneratedFact.self
+            let factObject = try decoder.decode(typeToDecode, from: data)
             return .success(correctedFactText(factObject.text))
         } catch {
             return .failure(error)
@@ -224,14 +226,14 @@ struct FactGenerator {
     func screenFact(fact: String, completionHandler: @escaping ((String?, Error?) -> Void)) {
         // 1. Create the URL and URL session.
         guard let url = URL(string: inappropriateWordsCheckerURLString) else {
-            completionHandler(nil, nil)
+            completionHandler(nil, factDataError)
             return }
         let urlSession = URLSession(configuration: .default)
-        // 2. Create the URL request.
+        // 2. Create the URL request. This URL request is more complex, since we're converting and sending data to it and therefore it can fail.
         let httpRequestResult = createInappropriateWordsCheckerHTTPRequest(with: url, toScreenFact: fact)
         switch httpRequestResult {
         case .success(let request):
-            // 3. Create the data task with the inappropriate words checker URL, handling errors and HTTP responses just as we did in generateRandomFact(factGenerationDidBeginHandler:completionHandler:) above.
+            // 3. If the URL request is succcessful, create the data task with the inappropriate words checker URL, handling errors and HTTP responses just as we did in generateRandomFact(factGenerationDidBeginHandler:completionHandler:) above.
             let dataTask = urlSession.dataTask(with: request) { [self] data, response, error in
                 handleInappropriateWordsCheckerDataTaskResult(fact: fact, data: data, response: response, error: error, completionHandler: completionHandler)
             }
@@ -246,7 +248,7 @@ struct FactGenerator {
         // 1. Create the URL request.
         var request = URLRequest(url: url)
         // 2. Specify the HTTP method and the type of content to send (POST). For this HTTP request, it's required.
-        // POST is used here to send data to the server. In this case, data isn't stored on the server as POST might imply.
+        // POST is used here to send data to the server. In this case, data isn't stored on the server as POST might imply, though it may be stored temporarily.
         request.httpMethod = URLRequest.HTTPMethod.post
         request.setValue(httpRequestContentType, forHTTPHeaderField: URLRequest.HTTPHeaderField.contentType)
         // 3. Set the timeout interval for the URL request, after which an error will be thrown if the request can't complete.
@@ -274,7 +276,7 @@ struct FactGenerator {
         if let error = error {
             completionHandler(nil, error)
         } else {
-            // 3. Make sure we can get whether the fact contains inappropriate words. If we can't, an error is logged.
+            // 3. Make sure we can get whether the fact contains inappropriate words. If we can't, log an error.
             let jsonParsingResult = parseInappropriateWordsCheckerJSON(data: data)
             switch jsonParsingResult {
             case .success(let factIsInappropriate):
@@ -298,8 +300,9 @@ struct FactGenerator {
         // 2. Try to decode the JSON data to create an InappropriateWordsCheckerData object, and get whether the fact is inappropriate from it, returning the fact if it's appropriate. If decoding fails, log an error.
         let decoder = JSONDecoder()
         do {
-            let factObject = try decoder.decode(InappropriateWordsCheckerData.self, from: data)
-            return .success(factObject.containsInappropriateWords)
+            let typeToDecode = InappropriateWordsCheckerData.self
+            let checkerObject = try decoder.decode(typeToDecode, from: data)
+            return .success(checkerObject.containsInappropriateWords)
         } catch {
             return .failure(error)
         }
