@@ -52,7 +52,7 @@ class WindowStateManager: NSObject, ObservableObject {
     // MARK: - Properties - Doubles
 
     // The text size for facts.
-    @AppStorage(UserDefaults.KeyNames.factTextSize) var factTextSize: Double = SATextViewMinFontSize
+    @AppStorage(UserDefaults.KeyNames.factTextSize) var factTextSize: Double = SATextViewIdealMinFontSize
 
     // MARK: - Properties - Pages
 

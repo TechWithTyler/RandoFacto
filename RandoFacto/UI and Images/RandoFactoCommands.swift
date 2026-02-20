@@ -55,12 +55,12 @@ struct RandoFactoCommands: Commands {
                 Button("Increase Fact Text Size") {
                     windowStateManager.factTextSize += 1
                 }
-                .disabled(windowStateManager.factTextSize == SATextViewMaxFontSize)
+                .disabled(windowStateManager.factTextSize == SATextViewIdealMaxFontSize)
                 .keyboardShortcut(KeyEquivalent("+"), modifiers: .command)
                 Button("Decrease Fact Text Size") {
                     windowStateManager.factTextSize -= 1
                 }
-                .disabled(windowStateManager.factTextSize == SATextViewMinFontSize)
+                .disabled(windowStateManager.factTextSize == SATextViewIdealMinFontSize)
                 .keyboardShortcut(KeyEquivalent("-"), modifiers: .command)
             }
         }
@@ -72,7 +72,7 @@ struct RandoFactoCommands: Commands {
 
     @ViewBuilder
     var factMenu: some View {
-        if let windowStateManager = windowStateManager, let speechManager = speechManager, let favoriteFactsDisplayManager = favoriteFactsDisplayManager {
+        if let windowStateManager = windowStateManager, let favoriteFactsDisplayManager = favoriteFactsDisplayManager {
         Section {
             Button(generateRandomFactButtonTitle) {
                 windowStateManager.generateRandomFact()

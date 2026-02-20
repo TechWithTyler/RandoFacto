@@ -26,7 +26,7 @@ struct FactSettingsPageView: View {
 
     // MARK: - Properties - Floats
 
-    @AppStorage(UserDefaults.KeyNames.factTextSize) var factTextSize: Double = SATextViewMinFontSize
+    @AppStorage(UserDefaults.KeyNames.factTextSize) var factTextSize: Double = SATextViewIdealMinFontSize
 
     // MARK: - Properties - Booleans
 
