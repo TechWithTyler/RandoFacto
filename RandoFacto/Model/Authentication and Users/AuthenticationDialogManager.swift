@@ -9,6 +9,7 @@
 // MARK: - Imports
 
 import SwiftUI
+import Firebase
 
 // Manages authentication dialog state.
 class AuthenticationDialogManager: ObservableObject {
@@ -29,7 +30,16 @@ class AuthenticationDialogManager: ObservableObject {
     
     // The text to display when a RandoFactoError occurs in the authentication dialog.
     @Published var formErrorText: String? = nil
-    
+
+    // The email address that password reset requests come from. It's in the format noreply@project-id.firebaseapp.com, where project-id is the Firebase app's project ID. In this case, the project ID is randofacto-2b730.
+    var passwordResetEmailAddress: String {
+        guard let app = FirebaseApp.app(), let projectID = app.options.projectID else {
+            fatalError("Can't get project ID")
+        }
+        let address = "noreply@\(projectID).firebaseapp.com"
+        return address
+    }
+
     // MARK: - Properties - Authentication Form Type
     
     // The type of authentication form to be displayed.

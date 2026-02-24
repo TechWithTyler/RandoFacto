@@ -165,7 +165,7 @@ struct AuthenticationFormView: View {
             haveAnAccountView
         }
         if authenticationDialogManager.showingResetPasswordEmailSent {
-            AuthenticationMessageView(text: "A password reset email has been sent to \"\(authenticationDialogManager.emailFieldText)\". Follow the instructions in the email to reset your password. If you don't see the email from \(SABundleName), check your spam folder.", type: .confirmation)
+            AuthenticationMessageView(text: "A password reset email has been sent to \"\(authenticationDialogManager.emailFieldText)\" from \(SABundleName) (\(authenticationDialogManager.passwordResetEmailAddress)). Follow the instructions in the email to reset your password. If you don't see the email, check your spam folder.", type: .confirmation)
         }
         if let errorText = authenticationDialogManager.formErrorText {
             AuthenticationMessageView(text: errorText, type: .error)
