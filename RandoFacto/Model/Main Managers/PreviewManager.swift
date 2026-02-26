@@ -16,6 +16,10 @@ import Firebase
 // An object that encapsulates all model objects for use in Xcode previews.
 class PreviewManager: ObservableObject {
 
+    // MARK: - Type Aliases
+
+    typealias PreviewDataObjects = (WindowStateManager, SettingsManager, SpeechManager, ErrorManager, AuthenticationDialogManager, NetworkConnectionManager, FavoriteFactsDatabase, AuthenticationManager, FavoriteFactsDisplayManager) -> Void
+
     // MARK: - Properties - Objects
 
     var windowStateManager: WindowStateManager
@@ -38,7 +42,7 @@ class PreviewManager: ObservableObject {
 
     // MARK: - Initialization
 
-    init(prepBlock: ((WindowStateManager, SettingsManager, SpeechManager, ErrorManager, AuthenticationDialogManager, NetworkConnectionManager, FavoriteFactsDatabase, AuthenticationManager, FavoriteFactsDisplayManager) -> Void)? = nil) {
+    init(prepBlock: PreviewDataObjects? = nil) {
         let speechManager = SpeechManager()
         let errorManager = ErrorManager()
         let firestore = Firestore.firestore()

@@ -9,7 +9,7 @@
 // MARK: - Imports
 
 import SwiftUI
-import Firebase
+import FirebaseFirestore
 
 // The favorite facts Firestore database.
 class FavoriteFactsDatabase: ObservableObject {

@@ -9,6 +9,7 @@
 // MARK: - Imports
 
 import SwiftUI
+import Firebase
 import FirebaseAuth
 import FirebaseFirestore
 
@@ -23,6 +24,19 @@ class AuthenticationManager: ObservableObject {
 
     var networkConnectionManager: NetworkConnectionManager
 
+    // MARK: - Properties - Strings
+
+    // The email address that password reset requests come from. It's in the format noreply@project-id.firebaseapp.com, where project-id is the Firebase app's project ID. In this case, the project ID is randofacto-2b730, so the email address is noreply@randofacto-2b730.firebaseapp.com.
+    var passwordResetEmailAddress: String {
+        guard let app = FirebaseApp.app(), let projectID = app.options.projectID else {
+            fatalError("Can't get project ID")
+        }
+        let address = "noreply@\(projectID).firebaseapp.com"
+        return address
+    }
+
+    // MARK: - Properties - Booleans
+
     // Whether an authentication request (login, signup, password change, password reset email send) is in progress.
     @Published var isAuthenticating: Bool = false
 
@@ -31,7 +45,7 @@ class AuthenticationManager: ObservableObject {
         return firebaseAuthentication.currentUser != nil
     }
 
-    // Whether user account deletion is in progress (accountDeletionStage is not nil).
+    // Whether user account deletion is in progress (accountDeletionStage isn't nil).
     var isDeletingAccount: Bool {
         return accountDeletionStage != nil
     }
@@ -49,10 +63,10 @@ class AuthenticationManager: ObservableObject {
     // The current stage of user deletion. Deleting a user deletes their favorite facts and reference first, then their actual account. If the user is still able to login after deletion, the actual account failed to be deleted, so the user reference will be put back.
     @Published var accountDeletionStage: User.AccountDeletionStage? = nil
 
-    // MARK: - Properties - Registered Users Listener
+    // MARK: - Properties - User Reference Listener
 
-    // Listens for changes to the references for registered users.
-    var registeredUsersListener: ListenerRegistration? = nil
+    // Listens for changes to the references for the logged in user.
+    var userReferenceListener: ListenerRegistration? = nil
 
     // MARK: - Properties - Errors
 
@@ -84,7 +98,7 @@ class AuthenticationManager: ObservableObject {
             return
         }
         // 2. Get all registered users.
-        registeredUsersListener = favoriteFactsDatabase?.firestore.collection(Firestore.CollectionName.users)
+        userReferenceListener = favoriteFactsDatabase?.firestore.collection(Firestore.CollectionName.users)
         // 3. Filter the results to include only the current user.
             .whereField(Firestore.KeyName.email, isEqualTo: email)
         // 4. Listen for any changes made to the current user.
@@ -336,8 +350,8 @@ class AuthenticationManager: ObservableObject {
 
     // This method removes all Firestore listeners from the app when logging out.
     func removeFirestoreListeners() {
-        registeredUsersListener?.remove()
-        registeredUsersListener = nil
+        userReferenceListener?.remove()
+        userReferenceListener = nil
         favoriteFactsDatabase?.favoriteFactsListener?.remove()
         favoriteFactsDatabase?.favoriteFactsListener = nil
     }

@@ -9,7 +9,6 @@
 // MARK: - Imports
 
 import SwiftUI
-import Firebase
 import SheftAppsStylishUI
 
 // Manages the fact generation/display and pages.

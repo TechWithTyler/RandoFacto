@@ -10,7 +10,7 @@
 
 import SwiftUI
 import Network
-import Firebase
+import FirebaseFirestore
 
 // Handles network connection.
 class NetworkConnectionManager: ObservableObject {

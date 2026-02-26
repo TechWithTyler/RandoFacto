@@ -8,7 +8,7 @@
 
 // MARK: - Imports
 
-import Firebase
+import FirebaseFirestore
 
 extension Firestore {
     
