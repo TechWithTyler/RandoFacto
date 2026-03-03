@@ -17,11 +17,11 @@ struct FactGenerator {
     
     // A Result is made up of 2 types: Success (can be anything) and Error (must conform to Error). Result is used in asynchronous functions since they often return before asynchronous operations complete, making it impossible to throw errors from them. These type aliases simplify the type names.
 
-    // The type of fact generator JSON (JavaScript Object Notation) parsing results. Success is a String containing the fact.
-    typealias FactGeneratorJSONParsingResult = Result<String, Error>
+    // The type of fact generator JSON (JavaScript Object Notation) decoding results. Success is a String containing the fact.
+    typealias FactGeneratorJSONDecodingResult = Result<String, Error>
 
-    // The type of inappropriate words checker JSON parsing results. Success is a Bool indicating whether the fact contains inappropriate words.
-    typealias InappropriateWordsCheckerJSONParsingResult = Result<Bool, Error>
+    // The type of inappropriate words checker JSON decoding results. Success is a Bool indicating whether the fact contains inappropriate words.
+    typealias InappropriateWordsCheckerJSONDecodingResult = Result<Bool, Error>
 
     // The type of inappropriate words checker HTTP request results. Success is the URL request.
     typealias InappropriateWordsCheckerHTTPRequestResult = Result<URLRequest, Error>
@@ -170,9 +170,9 @@ struct FactGenerator {
             completionHandler(nil, error)
         } else {
             // 3. Make sure we can get the fact text. If we can't, log an error.
-            let jsonParsingResult = parseFactDataJSON(data: data)
+            let jsonDecodingResult = decodeFact(from: data)
             // With the Result generic type, we can use a switch statement to handle the result based on whether it's a success (of the desired type) or a failure (of any type that conforms to the Error protocol, including Error itself).
-            switch jsonParsingResult {
+            switch jsonDecodingResult {
             case .success(let factText):
                 // 4. Screen the fact to make sure it doesn't contain inappropriate words. If we get an error or an HTTP response with a code that's not in the 2xx range, log an error. If we get a fact, we know the fact is safe and we can display it. If we get nothing, keep trying to generate a fact until we get a safe one. Once a safe fact is generated, pass it to the completion handler.
                 screenFact(fact: factText) { fact, error in
@@ -184,8 +184,8 @@ struct FactGenerator {
         }
     }
     
-    // This method parses the JSON data returned by the fact generator web API and creates a GeneratedFact object from it, returning the resulting fact text String if successful or an Error if unsuccessful.
-    func parseFactDataJSON(data: Data?) -> FactGeneratorJSONParsingResult {
+    // This method decodes the JSON data returned by the fact generator web API and creates a GeneratedFact object from it, returning the resulting fact text String if successful or an Error if unsuccessful.
+    func decodeFact(from data: Data?) -> FactGeneratorJSONDecodingResult {
         // 1. If data is nil, log an error.
         guard let data = data else {
             return .failure(factDataError)
@@ -277,8 +277,8 @@ struct FactGenerator {
             completionHandler(nil, error)
         } else {
             // 3. Make sure we can get whether the fact contains inappropriate words. If we can't, log an error.
-            let jsonParsingResult = parseInappropriateWordsCheckerJSON(data: data)
-            switch jsonParsingResult {
+            let jsonDecodingResult = decodeInappropriateWordsCheckerResult(from: data)
+            switch jsonDecodingResult {
             case .success(let factIsInappropriate):
                 if !factIsInappropriate {
                     completionHandler(fact, nil)
@@ -291,8 +291,8 @@ struct FactGenerator {
         }
     }
 
-    // This method parses the JSON data returned by the inappropriate words checker web API and creates an InappropriateWordsCheckerData object from it, returning the resulting Bool indicating whether the fact contains inappropriate words.
-    func parseInappropriateWordsCheckerJSON(data: Data?) -> InappropriateWordsCheckerJSONParsingResult {
+    // This method decodes the JSON data returned by the inappropriate words checker web API and creates an InappropriateWordsCheckerData object from it, returning the resulting Bool indicating whether the fact contains inappropriate words.
+    func decodeInappropriateWordsCheckerResult(from data: Data?) -> InappropriateWordsCheckerJSONDecodingResult {
         // 1. If data is nil, log an error.
         guard let data = data else {
             return .failure(factDataError)
@@ -300,7 +300,7 @@ struct FactGenerator {
         // 2. Try to decode the JSON data to create an InappropriateWordsCheckerData object, and get whether the fact is inappropriate from it, returning the fact if it's appropriate. If decoding fails, log an error.
         let decoder = JSONDecoder()
         do {
-            let typeToDecode = InappropriateWordsCheckerData.self
+            let typeToDecode = InappropriateWordsCheckerResult.self
             let checkerObject = try decoder.decode(typeToDecode, from: data)
             return .success(checkerObject.containsInappropriateWords)
         } catch {

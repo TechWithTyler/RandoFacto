@@ -49,7 +49,7 @@
 		8D87C83B2B02FEEA009BBE56 /* SheftAppsStylishUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8D87C8392B02FEEA009BBE56 /* SheftAppsStylishUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8D87C83E2B0306A7009BBE56 /* FavoriteFact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D87C83D2B0306A7009BBE56 /* FavoriteFact.swift */; };
 		8D87C8402B030890009BBE56 /* UserReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D87C83F2B030890009BBE56 /* UserReference.swift */; };
-		8D8899DC2AFDF39900BDDDFD /* InappropriateWordsCheckerData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8899DA2AFDF39900BDDDFD /* InappropriateWordsCheckerData.swift */; };
+		8D8899DC2AFDF39900BDDDFD /* InappropriateWordsCheckerResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8899DA2AFDF39900BDDDFD /* InappropriateWordsCheckerResult.swift */; };
 		8D8899DD2AFDF39900BDDDFD /* GeneratedFact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8899DB2AFDF39900BDDDFD /* GeneratedFact.swift */; };
 		8D8899E02AFDF3D100BDDDFD /* AuthenticationMessageType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8899DF2AFDF3D100BDDDFD /* AuthenticationMessageType.swift */; };
 		8D8899E22AFDF80300BDDDFD /* ViewablePasswordField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8899E12AFDF80300BDDDFD /* ViewablePasswordField.swift */; };
@@ -132,7 +132,7 @@
 		8D87C8392B02FEEA009BBE56 /* SheftAppsStylishUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SheftAppsStylishUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D87C83D2B0306A7009BBE56 /* FavoriteFact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteFact.swift; sourceTree = "<group>"; };
 		8D87C83F2B030890009BBE56 /* UserReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserReference.swift; sourceTree = "<group>"; };
-		8D8899DA2AFDF39900BDDDFD /* InappropriateWordsCheckerData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InappropriateWordsCheckerData.swift; sourceTree = "<group>"; };
+		8D8899DA2AFDF39900BDDDFD /* InappropriateWordsCheckerResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InappropriateWordsCheckerResult.swift; sourceTree = "<group>"; };
 		8D8899DB2AFDF39900BDDDFD /* GeneratedFact.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeneratedFact.swift; sourceTree = "<group>"; };
 		8D8899DF2AFDF3D100BDDDFD /* AuthenticationMessageType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationMessageType.swift; sourceTree = "<group>"; };
 		8D8899E12AFDF80300BDDDFD /* ViewablePasswordField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewablePasswordField.swift; sourceTree = "<group>"; };
@@ -301,7 +301,7 @@
 			children = (
 				8DA2C420292C1E6000705A2F /* FactGenerator.swift */,
 				8D8899DB2AFDF39900BDDDFD /* GeneratedFact.swift */,
-				8D8899DA2AFDF39900BDDDFD /* InappropriateWordsCheckerData.swift */,
+				8D8899DA2AFDF39900BDDDFD /* InappropriateWordsCheckerResult.swift */,
 				8D5E25122B6198B500B51730 /* URLRequestExtension.swift */,
 			);
 			path = "Fact Generation";
@@ -574,7 +574,7 @@
 				8D8F1AF82AFDF25600DB9B7D /* AuthenticationMessageView.swift in Sources */,
 				8DEB53222BBB54E600788A04 /* PreviewDataModifier.swift in Sources */,
 				8D95DD2A2BDAF8C3006FAE63 /* AdvancedSettingsPageView.swift in Sources */,
-				8D8899DC2AFDF39900BDDDFD /* InappropriateWordsCheckerData.swift in Sources */,
+				8D8899DC2AFDF39900BDDDFD /* InappropriateWordsCheckerResult.swift in Sources */,
 				8D8F92B32B393D8A001A9B5B /* AuthenticationManagerErrors.swift in Sources */,
 				8D86FF052AF56CA600239DEE /* HTTPResponseExtension.swift in Sources */,
 				8DC867D22BC4866300A51787 /* PrivacyPolicyButton.swift in Sources */,
