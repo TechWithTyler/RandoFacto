@@ -8,7 +8,6 @@
 
 // MARK: - Imports
 
-import SwiftUI
 import SheftAppsStylishUI
 import SheftAppsInternals
 import FirebaseAuth

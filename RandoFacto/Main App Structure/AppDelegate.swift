@@ -10,7 +10,7 @@
 
 // MARK: - Imports
 
-import Cocoa
+import SheftAppsStylishUI
 
 // Unlike in AppKit or UIKit apps, the app delegate in SwiftUI App-based apps isn't the main entry point. The main App struct is instead, and it has a property for the AppDelegate.
 class AppDelegate: NSObject, NSApplicationDelegate {
