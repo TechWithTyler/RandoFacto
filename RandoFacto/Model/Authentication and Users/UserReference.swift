@@ -13,9 +13,9 @@ import FirebaseAuth
 
 // MARK: - Registered User Reference Data
 
-// Represents a registered user.
 extension User {
 
+    // Represents a registered user.
 	struct Reference: Codable {
 
         // The email of the user.

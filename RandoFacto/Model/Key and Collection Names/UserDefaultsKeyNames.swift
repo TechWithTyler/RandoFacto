@@ -12,6 +12,7 @@ import Foundation
 
 extension UserDefaults {
 
+    // Names of UserDefaults keys.
     struct KeyNames {
 
         // MARK: - UserDefaults Key Names

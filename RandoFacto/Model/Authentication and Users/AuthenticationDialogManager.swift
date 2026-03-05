@@ -9,6 +9,7 @@
 // MARK: - Imports
 
 import SwiftUI
+import FirebaseAuth
 
 // Manages authentication form/dialog state.
 class AuthenticationDialogManager: ObservableObject {
@@ -89,25 +90,36 @@ class AuthenticationDialogManager: ObservableObject {
             authenticationManager.signup(email: emailFieldText, password: passwordFieldText) { [self] error in
                 if let error = error {
                     showErrorInline(error: error)
-                } else { formType = nil }
+                } else { handleAuthenticationActionCompletion() }
             }
         case .login:
             authenticationManager.login(email: emailFieldText, password: passwordFieldText) { [self] error in
                 if let error = error {
                     showErrorInline(error: error)
-                } else { formType = nil }
+                } else { handleAuthenticationActionCompletion() }
             }
         case .passwordChange:
             authenticationManager.changePasswordForCurrentUser(newPassword: passwordFieldText) { [self] error in
                 if let error = error {
                     showErrorInline(error: error)
-                } else { formType = nil }
+                } else {
+                    handleAuthenticationActionCompletion()
+                }
             }
         case .none:
             break
         }
     }
-    
+
+    // This method handles login completion.
+    func handleAuthenticationActionCompletion() {
+        if !authenticationManager.userLoggedIn {
+            showErrorInline(error: User.Errors.authenticationActionFailed)
+        } else {
+            formType = nil
+        }
+    }
+
     // This method tells AuthenticationManager to send a password reset link to the entered email address.
     func sendPasswordResetLink() {
         authenticationManager.sendPasswordResetLink(to: emailFieldText) { [self] error in

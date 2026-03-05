@@ -68,14 +68,6 @@ class AuthenticationManager: ObservableObject {
     // Listens for changes to the references for the logged in user.
     var userReferenceListener: ListenerRegistration? = nil
 
-    // MARK: - Properties - Errors
-
-    // The error thrown when a user account can't be found.
-    let userNotFoundError = NSError(domain: ErrorDomain.userAccountNotFound.rawValue, code: ErrorCode.userAccountNotFound.rawValue)
-
-    // The error thrown when a user's reference can't be found.
-    let userReferenceError = NSError(domain: ErrorDomain.userReferenceNotFound.rawValue, code: ErrorCode.userReferenceNotFound.rawValue)
-
     // MARK: - Initialization
 
     init(firebaseAuthentication: Authentication, networkConnectionManager: NetworkConnectionManager) {
@@ -124,7 +116,7 @@ class AuthenticationManager: ObservableObject {
          * The snapshot's documents collection doesn't contain the current user's ID.
          * The snapshot is nil.
          */
-        if let snapshot = snapshot, !snapshot.metadata.isFromCache, (snapshot.isEmpty || snapshot.documents.isEmpty), !snapshot.documents.contains(where: { document in
+        if let snapshot = snapshot, !snapshot.metadata.isFromCache, snapshotIsEmpty(snapshot), !snapshot.documents.contains(where: { document in
             return document.documentID == currentUser.uid
         }) {
             logoutCurrentUser(completionHandler: completionHandler)
@@ -134,6 +126,13 @@ class AuthenticationManager: ObservableObject {
             // 3. Otherwise, the user is present and can be safely considered logged in.
             completionHandler(nil)
         }
+    }
+
+    // MARK: - Check For Empty Snapshot
+
+    // This method returns whether snapshot is empty or has no documents.
+    func snapshotIsEmpty(_ snapshot: QuerySnapshot) -> Bool {
+        return snapshot.isEmpty || snapshot.documents.isEmpty
     }
 
     // MARK: - Signup
@@ -212,7 +211,7 @@ class AuthenticationManager: ObservableObject {
             isAuthenticating = false
             addUserReferenceHandler { [self] error in
                 if let error = error {
-                    completionHandler(error)
+                    handleLoginFailure(error: error, errorHandler: completionHandler)
                 } else {
                     favoriteFactsDatabase?.loadFavoriteFactsForCurrentUser(completionHandler: completionHandler)
                 }
@@ -228,13 +227,7 @@ class AuthenticationManager: ObservableObject {
                 if let email = result?.user.email, let id = result?.user.uid {
                     addUserReference(email: email, id: id) { [self] error in
                         if let error = error {
-                            logoutCurrentUser { logoutError in
-                                if let logoutError = logoutError {
-                                    completionHandler(logoutError)
-                                } else {
-                                    completionHandler(error)
-                                }
-                            }
+                            handleLoginFailure(error: error, errorHandler: completionHandler)
                         } else {
                             successBlock()
                         }
@@ -248,7 +241,7 @@ class AuthenticationManager: ObservableObject {
                     checkForUserReference(email: email, id: id) { [self] error in
                         if let error = error {
                             isAuthenticating = false
-                            completionHandler(error)
+                            handleLoginFailure(error: error, errorHandler: completionHandler)
                         } else {
                             successBlock()
                         }
@@ -257,6 +250,19 @@ class AuthenticationManager: ObservableObject {
                     isAuthenticating = false
                     logoutCurrentUser(completionHandler: completionHandler)
                 }
+            }
+        }
+    }
+
+    // MARK: - Login Failure Handler
+
+    // This method tries to log the user out if login fails.
+    func handleLoginFailure(error: Error, errorHandler: @escaping ((Error) -> Void)) {
+        logoutCurrentUser { logoutError in
+            if let logoutError = logoutError {
+                errorHandler(logoutError)
+            } else {
+                errorHandler(error)
             }
         }
     }
@@ -290,13 +296,13 @@ class AuthenticationManager: ObservableObject {
         // 2. Check if the current user has a reference.
         favoriteFactsDatabase?.firestore.collection(Firestore.CollectionName.users)
             .whereField(Firestore.KeyName.email, isEqualTo: email)
-            .getDocuments(source: .server) { snapshot, error in
+            .getDocuments(source: .server) { [self] snapshot, error in
                 // 3. If that fails, log an error.
                 if let error = error {
                     completionHandler(error)
                 } else {
                     // 4. If the reference doesn't exist, call the add reference block, which will call the completion handler.
-                    if let snapshot = snapshot, (snapshot.isEmpty || snapshot.documents.isEmpty) {
+                    if let snapshot = snapshot, snapshotIsEmpty(snapshot) {
                         addReferenceBlock()
                     } else if snapshot == nil {
                         addReferenceBlock()
@@ -362,7 +368,7 @@ class AuthenticationManager: ObservableObject {
     func deleteCurrentUser(completionHandler: @escaping (Error?) -> Void) {
         // 1. Make sure we can get the current user.
         guard let user = firebaseAuthentication.currentUser else {
-            completionHandler(userNotFoundError)
+            completionHandler(User.Errors.accountNotFound)
             return
         }
         // 2. Delete all their favorite facts, getting data from the server instead of the cache to ensure proper deletion.
@@ -400,7 +406,7 @@ class AuthenticationManager: ObservableObject {
         let group = DispatchGroup()
         favoriteFactsDatabase?.firestore.collection(Firestore.CollectionName.users)
             .whereField(Firestore.KeyName.email, isEqualTo: userEmail)
-            .getDocuments(source: .server) { [self] (snapshot, error) in
+            .getDocuments(source: .server) { (snapshot, error) in
                 if let error = error {
                     deletionError = error
                 } else {
@@ -413,7 +419,7 @@ class AuthenticationManager: ObservableObject {
                             group.leave()
                         }
                     } else {
-                        deletionError = userReferenceError
+                        deletionError = User.Errors.referenceNotFound
                     }
                 }
                 group.notify(queue: .main) {
