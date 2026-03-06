@@ -126,7 +126,8 @@ class WindowStateManager: NSObject, ObservableObject {
             if favoriteFactsDatabase.initialFact == 0 || favoriteFactsDatabase.favoriteFacts.isEmpty || !authenticationManager.userLoggedIn {
                 generateRandomFact()
             } else if favoriteFactsDatabase.initialFact == 2 {
-                displayFavoriteFact((favoriteFactsDatabase.favoriteFacts.randomElement()?.text)!, forInitialization: true)
+                guard let favoriteFact = favoriteFactsDatabase.favoriteFacts.randomElement()?.text else { return }
+                displayFavoriteFact(favoriteFact, forInitialization: true)
                 selectedPage = .favoriteFacts
             } else {
                 getRandomFavoriteFact()
