@@ -148,8 +148,10 @@ class FavoriteFactsDisplayManager: ObservableObject {
 
     func playRandomizerClick() {
         // 1. Make sure the audio file is present in the app bundle.
-        guard let url = Bundle.main.url(forResource: "click", withExtension: "wav") else {
-            fatalError("Failed to find click.wav in bundle")
+        let filename = "click"
+        let fileExtension = "wav"
+        guard let url = Bundle.main.url(forResource: filename, withExtension: fileExtension) else {
+            fatalError("Failed to find \(filename).\(fileExtension) in bundle")
         }
         // 2. Try to load the file into the player and play it.
         do {
