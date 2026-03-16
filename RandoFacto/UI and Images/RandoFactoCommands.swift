@@ -89,8 +89,7 @@ struct RandoFactoCommands: Commands {
         Section {
             if !windowStateManager.factTextDisplayingMessage && authenticationManager.userLoggedIn && windowStateManager.displayedFactIsSaved {
                 Button("Unfavorite Current Fact…") {
-                    favoriteFactsDisplayManager.favoriteFactToDelete = windowStateManager.factText
-                    favoriteFactsDisplayManager.showingDeleteFavoriteFact = true
+                    favoriteFactsDisplayManager.showDeleteFavoriteFact(fact: windowStateManager.factText)
                 }
                 .keyboardShortcut(KeyboardShortcut(KeyEquivalent("f"), modifiers: [.command, .shift]))
             } else {

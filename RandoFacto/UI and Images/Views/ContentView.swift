@@ -73,8 +73,7 @@ struct ContentView: View {
                 }
             }
             Button("Cancel", role: .cancel) {
-                favoriteFactsDisplayManager.showingDeleteFavoriteFact = false
-                favoriteFactsDisplayManager.favoriteFactToDelete = nil
+                favoriteFactsDisplayManager.dismissDeleteFavoriteFact()
             }
         } message: { factText in
             if windowStateManager.selectedPage == .randomFact || windowStateManager.factText == factText.wrappedValue {

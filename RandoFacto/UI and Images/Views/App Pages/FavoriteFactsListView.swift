@@ -108,7 +108,7 @@ struct FavoriteFactsListView: View {
             .listRowSeparator(.hidden)
             .listRowBackground(Color.clear)
             Section {
-                ForEach(favoriteFactsDisplayManager.sortedFavoriteFacts, id: \.self) {
+                ForEach(favoriteFactsDisplayManager.sortedFavoriteFacts) {
                     favorite in
                     HStack {
                         Button {
@@ -116,7 +116,7 @@ struct FavoriteFactsListView: View {
                         } label: {
                             Image(systemName: "star.fill")
                                 .symbolRenderingMode(.multicolor)
-                            Text(favoriteFactsDisplayManager.favoriteFactWithColoredMatchingTerms(favorite))
+                            Text(favoriteFactsDisplayManager.favoriteFactWithColoredMatchingTerms(favorite.text))
                                 .font(.system(size: CGFloat(windowStateManager.factTextSize)))
                                 .multilineTextAlignment(.leading)
                                 .tint(.primary)
@@ -124,7 +124,7 @@ struct FavoriteFactsListView: View {
                                 .padding(.vertical)
                         }
                         Divider()
-                        SpeakButton(for: favorite)
+                        SpeakButton(for: favorite.text)
                             .labelStyle(.topIconBottomTitle)
                             .imageScale(.large)
                             .padding(.horizontal)
@@ -172,10 +172,9 @@ struct FavoriteFactsListView: View {
     // MARK: - Unfavorite Action
     
     @ViewBuilder
-    func unfavoriteAction(for favorite: String, inMenu: Bool = false) -> some View {
+    func unfavoriteAction(for favorite: FavoriteFact, inMenu: Bool = false) -> some View {
         Button(role: .destructive) {
-            favoriteFactsDisplayManager.favoriteFactToDelete = favorite
-            favoriteFactsDisplayManager.showingDeleteFavoriteFact = true
+            favoriteFactsDisplayManager.showDeleteFavoriteFact(fact: favorite.text)
         } label: {
             Label(inMenu ? "Unfavorite…" : "Unfavorite", systemImage: "star.slash")
         }

@@ -73,9 +73,12 @@ class AuthenticationManager: ObservableObject {
     init(firebaseAuthentication: Authentication, networkConnectionManager: NetworkConnectionManager) {
         self.firebaseAuthentication = firebaseAuthentication
         self.networkConnectionManager = networkConnectionManager
+    }
+
+    func setupListener() {
         addUserReferenceHandler { error in
             if let error = error {
-                fatalError("Failed to load registered user references: \(error)")
+                fatalError("Failed to load/update registered user references: \(error)")
             }
         }
     }
@@ -209,13 +212,9 @@ class AuthenticationManager: ObservableObject {
         // 1. Create the block which will be performed if authentication is successful. This block adds the registered users handler, loads the user's favorite facts, and calls the completion handler.
         let successBlock: (() -> Void) = { [self] in
             isAuthenticating = false
-            addUserReferenceHandler { [self] error in
-                if let error = error {
-                    handleLoginFailure(error: error, errorHandler: completionHandler)
-                } else {
-                    favoriteFactsDatabase?.loadFavoriteFactsForCurrentUser(completionHandler: completionHandler)
-                }
-            }
+            setupListener()
+            favoriteFactsDatabase?.setupListener()
+            completionHandler(nil)
         }
         // 2. Log an error if unsuccessful.
         if let error = error {

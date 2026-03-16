@@ -126,7 +126,7 @@ class WindowStateManager: NSObject, ObservableObject {
             if favoriteFactsDatabase.initialFact == 0 || favoriteFactsDatabase.favoriteFacts.isEmpty || !authenticationManager.userLoggedIn {
                 generateRandomFact()
             } else if favoriteFactsDatabase.initialFact == 2 {
-                guard let favoriteFact = favoriteFactsDatabase.favoriteFacts.randomElement()?.text else { return }
+                guard let favoriteFact = favoriteFactsDatabase.favoriteFacts.randomElement() else { return }
                 displayFavoriteFact(favoriteFact, forInitialization: true)
                 selectedPage = .favoriteFacts
             } else {
@@ -183,8 +183,7 @@ extension WindowStateManager {
     func toggleFavoriteFact() {
         DispatchQueue.main.async { [self] in
             if displayedFactIsSaved {
-                favoriteFactsDisplayManager.favoriteFactToDelete = factText
-                favoriteFactsDisplayManager.showingDeleteFavoriteFact = true
+                favoriteFactsDisplayManager.showDeleteFavoriteFact(fact: factText)
             } else {
                 favoriteFactsDatabase.saveFactToFavorites(factText) { [self] error in
                     if let error = error {
@@ -226,10 +225,10 @@ extension WindowStateManager {
     // MARK: - Favorite Facts - Display Favorite Fact
 
     // This method displays favorite and switches to the "Random Fact" page.
-    func displayFavoriteFact(_ favorite: String, forInitialization: Bool = false) {
+    func displayFavoriteFact(_ favorite: FavoriteFact, forInitialization: Bool = false) {
         DispatchQueue.main.async { [self] in
             speechManager.speechSynthesizer.stopSpeaking(at: .immediate)
-            displayFact(favorite)
+            displayFact(favorite.text)
             if !forInitialization {
                 dismissFavoriteFacts()
             }

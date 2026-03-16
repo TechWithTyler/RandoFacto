@@ -113,6 +113,7 @@ class AuthenticationDialogManager: ObservableObject {
 
     // This method handles login completion.
     func handleAuthenticationActionCompletion() {
+        print(authenticationManager.firebaseAuthentication.currentUser?.email ?? "Logged out")
         if !authenticationManager.userLoggedIn {
             showErrorInline(error: User.Errors.authenticationActionFailed)
         } else {

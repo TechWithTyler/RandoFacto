@@ -49,9 +49,13 @@ class FavoriteFactsDatabase: ObservableObject {
     init(firestore: Firestore, networkConnectionManager: NetworkConnectionManager) {
         self.firestore = firestore
         self.networkConnectionManager = networkConnectionManager
+        setupListener()
+    }
+
+    func setupListener() {
         loadFavoriteFactsForCurrentUser { error in
             if let error = error {
-                fatalError("Failed to load favorite facts: \(error)")
+                fatalError("Failed to load/update favorite facts: \(error)")
             }
         }
     }
@@ -137,15 +141,18 @@ class FavoriteFactsDatabase: ObservableObject {
 
     // This method finds a favorite fact in the database and deletes it if its text matches factText.
     func unfavoriteFact(_ factText: String, completionHandler: @escaping ((Error?) -> Void)) {
-        // 1. Get facts with text that matches the given fact text (there should only be 1).
+        // 1. Make sure we can get the current user.
+        guard let userEmail = authenticationManager?.firebaseAuthentication.currentUser?.email else { return }
+        // 2. Get facts with text that matches the given fact text (there should only be 1).
         firestore.collection(Firestore.CollectionName.favoriteFacts)
+            .whereField(Firestore.KeyName.user, isEqualTo: userEmail)
             .whereField(Firestore.KeyName.factText, isEqualTo: factText)
             .getDocuments(source: .cache) { [self] snapshot, error in
-                // 2. If that fails, log an error.
+                // 3. If that fails, log an error.
                 if let error = error {
                     completionHandler(error)
                 } else {
-                    // 3. Or if we're error-free, get the snapshot and delete.
+                    // 4. Or if we're error-free, get the snapshot and delete.
                     getFavoriteFactSnapshotAndDelete(snapshot, completionHandler: completionHandler)
                 }
             }

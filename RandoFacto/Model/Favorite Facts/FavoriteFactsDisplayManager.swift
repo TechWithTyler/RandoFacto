@@ -24,18 +24,16 @@ class FavoriteFactsDisplayManager: ObservableObject {
     @Published var searchText = String()
 
     // The favorite facts that match searchText, or all favorite facts if searchText is empty.
-    var searchResults: [String] {
-        // 1. Define the content being searched.
+    var searchResults: [FavoriteFact] {
+        // 1. Specify the content to search.
         let content = favoriteFactsDatabase.favoriteFacts
-        // 2. Get the text from each FavoriteFact object.
-        let facts = content.map { $0.text }
-        // 3. If searchText is empty, return all facts.
+        // 2. If searchText is empty, return all favorite facts.
         if searchText.isEmpty {
-            return facts
+            return content
         } else {
-            // 4. If searchText contains text, return facts that contain all or part of the search text.
-            return facts.filter { fact in
-                let range = fact.range(of: searchText, options: .caseInsensitive)
+            // 3. Return favorite facts with text that contains all or part of the search text.
+            return content.filter { fact in
+                let range = fact.text.range(of: searchText, options: .caseInsensitive)
                 let textMatchesSearchTerm = range != nil
                 return textMatchesSearchTerm
             }
@@ -43,7 +41,7 @@ class FavoriteFactsDisplayManager: ObservableObject {
     }
 
     // The favorite facts list/search results, sorted in either ascending (A-Z) or descending (Z-A) order.
-    var sortedFavoriteFacts: [String] {
+    var sortedFavoriteFacts: [FavoriteFact] {
         return searchResults.sorted { a, z in
             let sortCondition = sortFavoriteFactsAscending ? a < z : z < a
             return sortCondition
@@ -180,12 +178,12 @@ class FavoriteFactsDisplayManager: ObservableObject {
     // MARK: - Favorite Facts List - Copy Fact
 
     // Copies favorite to the device's clipboard using the platform-specific copy implementation.
-    func copyFact(_ favorite: String) {
+    func copyFact(_ favorite: FavoriteFact) {
 #if os(macOS)
         NSPasteboard.general.declareTypes([.string], owner: self)
-        NSPasteboard.general.setString(favorite, forType: .string)
+        NSPasteboard.general.setString(favorite.text, forType: .string)
 #else
-        UIPasteboard.general.string = favorite
+        UIPasteboard.general.string = favorite.text
 #endif
     }
 
@@ -193,6 +191,20 @@ class FavoriteFactsDisplayManager: ObservableObject {
 
     func clearSearchText() {
         searchText.removeAll()
+    }
+
+    // MARK: - Show Dialog
+
+    func showDeleteFavoriteFact(fact: String) {
+        favoriteFactToDelete = fact
+        showingDeleteFavoriteFact = true
+    }
+
+    // MARK: - Dismiss Dialog
+
+    func dismissDeleteFavoriteFact() {
+        showingDeleteFavoriteFact = false
+        favoriteFactToDelete = nil
     }
 
 }

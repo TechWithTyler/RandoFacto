@@ -14,7 +14,7 @@ import FirebaseFirestore
 // MARK: - Favorite Fact Data
 
 // We need to represent favorite facts as a separate object from facts returned by the fact generator API, because having more properties than the JSON data has will result in the object not decoding properly.
-struct FavoriteFact: Codable, Equatable {
+struct FavoriteFact: Codable, Comparable, Identifiable {
 
     // The ID which identifies this favorite fact. The @DocumentID property wrapper is provided by Firebase.
 	@DocumentID var id: String?
@@ -29,5 +29,9 @@ struct FavoriteFact: Codable, Equatable {
 	static func ==(lFact: FavoriteFact, rFact: FavoriteFact) -> Bool {
 		return lFact.text == rFact.text
 	}
+
+    static func <(lFact: FavoriteFact, rFact: FavoriteFact) -> Bool {
+        return lFact.text < rFact.text
+    }
 
 }
