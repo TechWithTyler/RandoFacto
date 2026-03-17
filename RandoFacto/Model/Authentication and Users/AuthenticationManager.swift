@@ -209,7 +209,7 @@ class AuthenticationManager: ObservableObject {
 
     // This method loads the user's favorite facts if authentication is successful. Otherwise, it logs an error.
     func handleAuthenticationRequestResult(_ result: AuthDataResult?, error: Error?, isSignup: Bool, completionHandler: @escaping ((Error?) -> Void)) {
-        // 1. Create the block which will be performed if authentication is successful. This block adds the registered users handler, loads the user's favorite facts, and calls the completion handler.
+        // 1. Create the block which will be performed if authentication is successful. This block adds the user reference handler, loads the user's favorite facts, and calls the completion handler.
         let successBlock: (() -> Void) = { [self] in
             isAuthenticating = false
             setupListener()
