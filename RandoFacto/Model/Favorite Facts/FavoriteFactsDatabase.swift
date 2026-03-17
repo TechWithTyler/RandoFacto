@@ -55,7 +55,7 @@ class FavoriteFactsDatabase: ObservableObject {
     func setupListener() {
         loadFavoriteFactsForCurrentUser { error in
             if let error = error {
-                fatalError("Failed to load/update favorite facts: \(error)")
+                fatalError("Failed to load/update favorite facts: \(error.localizedDescription)")
             }
         }
     }

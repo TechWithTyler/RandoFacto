@@ -78,7 +78,7 @@ class AuthenticationManager: ObservableObject {
     func setupListener() {
         addUserReferenceHandler { error in
             if let error = error {
-                fatalError("Failed to load/update registered user references: \(error)")
+                fatalError("Failed to load/update registered user references: \(error.localizedDescription)")
             }
         }
     }
