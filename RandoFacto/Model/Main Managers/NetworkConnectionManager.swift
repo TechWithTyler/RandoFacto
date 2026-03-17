@@ -69,7 +69,7 @@ class NetworkConnectionManager: ObservableObject {
         firestore.enableNetwork { error in
             // 2. If that fails, throw a fatal error.
             if let error = error {
-                fatalError("Failed to enable online mode: \(error)")
+                fatalError("Failed to enable online mode: \(error.localizedDescription)")
             } else {
                 // 3. If successful, tell the app that the device is online.
                 // Updating a published property must be done on the main thread, so we use DispatchQueue.main.async to run any code that sets such properties.
@@ -89,7 +89,7 @@ class NetworkConnectionManager: ObservableObject {
             error in
             // 2. If that fails, throw a fatal error.
             if let error = error {
-                fatalError("Failed to enable offline mode: \(error)")
+                fatalError("Failed to enable offline mode: \(error.localizedDescription)")
             } else {
                 // 3. If successful, tell the app that the device is offline.
                 DispatchQueue.main.async {
