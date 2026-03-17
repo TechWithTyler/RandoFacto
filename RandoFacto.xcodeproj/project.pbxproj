@@ -62,6 +62,7 @@
 		8D95DD262BDAF899006FAE63 /* AccountSettingsPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D95DD252BDAF899006FAE63 /* AccountSettingsPageView.swift */; };
 		8D95DD282BDAF8B0006FAE63 /* SpeechSettingsPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D95DD272BDAF8B0006FAE63 /* SpeechSettingsPageView.swift */; };
 		8D95DD2A2BDAF8C3006FAE63 /* AdvancedSettingsPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D95DD292BDAF8C3006FAE63 /* AdvancedSettingsPageView.swift */; };
+		8DA03DCC2F69EDDD00DC41A9 /* UserQueryExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA03DCB2F69EDDD00DC41A9 /* UserQueryExtension.swift */; };
 		8DA2C412292C1E1100705A2F /* RandoFactoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA2C411292C1E1100705A2F /* RandoFactoApp.swift */; };
 		8DA2C416292C1E1200705A2F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8DA2C415292C1E1200705A2F /* Assets.xcassets */; };
 		8DA2C41A292C1E1200705A2F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8DA2C419292C1E1200705A2F /* Preview Assets.xcassets */; };
@@ -147,6 +148,7 @@
 		8D95DD272BDAF8B0006FAE63 /* SpeechSettingsPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechSettingsPageView.swift; sourceTree = "<group>"; };
 		8D95DD292BDAF8C3006FAE63 /* AdvancedSettingsPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSettingsPageView.swift; sourceTree = "<group>"; };
 		8D992FB22B0737BA004AF5CB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8DA03DCB2F69EDDD00DC41A9 /* UserQueryExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserQueryExtension.swift; sourceTree = "<group>"; };
 		8DA2C40E292C1E1100705A2F /* RandoFacto.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RandoFacto.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8DA2C411292C1E1100705A2F /* RandoFactoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandoFactoApp.swift; sourceTree = "<group>"; };
 		8DA2C415292C1E1200705A2F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -257,6 +259,7 @@
 				8D63D5F82AFF1D470084BACF /* UserDeletionStage.swift */,
 				8D87C83F2B030890009BBE56 /* UserReference.swift */,
 				8D1EE31A2EE8D0DE0064997F /* PasswordEvaluator.swift */,
+				8DA03DCB2F69EDDD00DC41A9 /* UserQueryExtension.swift */,
 			);
 			path = "Authentication and Users";
 			sourceTree = "<group>";
@@ -553,6 +556,7 @@
 				8DCE5DE92B084F6000DD3CE7 /* UnfavoriteAllButton.swift in Sources */,
 				8D1EE3192EE8D0370064997F /* PasswordStrengthMeter.swift in Sources */,
 				8D37CB3F2EF5FE9500E078F1 /* SettingsManager.swift in Sources */,
+				8DA03DCC2F69EDDD00DC41A9 /* UserQueryExtension.swift in Sources */,
 				8D2A7B302B5B277300142BDA /* SpeakButton.swift in Sources */,
 				8DFEB0A32AFAF64800F57DB1 /* SettingsView.swift in Sources */,
 				8DF48E312936A80700152681 /* WindowStateManager.swift in Sources */,

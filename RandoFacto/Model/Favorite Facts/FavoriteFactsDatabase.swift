@@ -73,7 +73,7 @@ class FavoriteFactsDatabase: ObservableObject {
             // Just like with SwiftUI view modifiers, common convention is to have each Firebase method call on its own line.
             favoriteFactsListener = firestore.collection(Firestore.CollectionName.favoriteFacts)
             // 3. Filter the result to include only the current user's favorite facts.
-                .whereField(Firestore.KeyName.user, isEqualTo: userEmail)
+                .forUser(userEmail)
             // 4. Listen for any changes made to the favorite facts list, whether it's on this device, another device, or the Firebase console. The result of steps 2-4 is the value of favoriteFactsListener. It isn't necessary to assign the result of this method call to a QuerySnapshotListener object unless you want to be able to remove the listener later.
                 .addSnapshotListener(includeMetadataChanges: true) {
                     [self] snapshot, error in
@@ -145,7 +145,7 @@ class FavoriteFactsDatabase: ObservableObject {
         guard let userEmail = authenticationManager?.firebaseAuthentication.currentUser?.email else { return }
         // 2. Get facts with text that matches the given fact text (there should only be 1).
         firestore.collection(Firestore.CollectionName.favoriteFacts)
-            .whereField(Firestore.KeyName.user, isEqualTo: userEmail)
+            .forUser(userEmail)
             .whereField(Firestore.KeyName.factText, isEqualTo: factText)
             .getDocuments(source: .cache) { [self] snapshot, error in
                 // 3. If that fails, log an error.
@@ -184,7 +184,7 @@ class FavoriteFactsDatabase: ObservableObject {
         let group = DispatchGroup()
         // 3. Get all favorite facts associated with the current user. If deleting their account, get from the server instead of the cache to ensure the server data is wiped before deletion continues.
         firestore.collection(Firestore.CollectionName.favoriteFacts)
-            .whereField(Firestore.KeyName.user, isEqualTo: userEmail)
+            .forUser(userEmail)
             .getDocuments(source: factStorageSource) { [self] (snapshot, error) in
                 // 4. If that fails, log an error.
                 if let error = error {
