@@ -14,7 +14,7 @@ import FirebaseFirestore
 
 // Handles network connection.
 class NetworkConnectionManager: ObservableObject {
-    
+
     // MARK: - Properties - Objects
 
     // Observes changes to the device's network connection to tell the app whether it should run in online or offline mode.
@@ -31,7 +31,7 @@ class NetworkConnectionManager: ObservableObject {
         self.firestore = firestore
         configureNetworkPathMonitor()
     }
-    
+
     // MARK: - Network Path Monitor - Configuration
 
     // This method configures the network path monitor's path update handler, which tells the app to enable or disable online mode, showing or hiding internet-connection-required UI based on network connection.
@@ -40,7 +40,7 @@ class NetworkConnectionManager: ObservableObject {
         networkPathMonitor.pathUpdateHandler = {
             [self] path in
             // 2. Check the network status when it changes.
-                networkStatusChanged(status: path.status)
+            networkStatusChanged(status: path.status)
         }
         // 2. Start the network path monitor, using a separate DispatchQueue for it.
         let dispatchQueue = DispatchQueue(label: "Network Path Monitor", qos: .utility)
@@ -62,7 +62,7 @@ class NetworkConnectionManager: ObservableObject {
     }
 
     // MARK: - Online
-    
+
     // This method enables online mode.
     func goOnline() {
         // 1. Try to enable Firestore's network features.
@@ -79,9 +79,9 @@ class NetworkConnectionManager: ObservableObject {
             }
         }
     }
-    
+
     // MARK: - Offline
-    
+
     // This method enables offline mode.
     func goOffline() {
         // 1. Try to disable Firestore's network features.
@@ -98,5 +98,5 @@ class NetworkConnectionManager: ObservableObject {
             }
         }
     }
-    
+
 }
