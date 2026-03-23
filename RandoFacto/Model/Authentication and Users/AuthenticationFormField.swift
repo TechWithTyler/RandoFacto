@@ -3,7 +3,7 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 1/21/24.
-//  Copyright © 2022-2025 SheftApps. All rights reserved.
+//  Copyright © 2022-2026 SheftApps. All rights reserved.
 //
 
 // MARK: - Imports
@@ -12,11 +12,10 @@ import Foundation
 
 extension Authentication {
     
-    // A field in the authentication form.
-
+    // A field in the authentication form to set focus to or to indicate if invalid.
     enum FormField {
 
-        // MARK: - Authentication Field Cases
+        // MARK: - Authentication Form Field Cases
 
         // The email field.
         case email

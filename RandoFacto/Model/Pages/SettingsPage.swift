@@ -3,7 +3,7 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 11/17/23.
-//  Copyright © 2022-2025 SheftApps. All rights reserved.
+//  Copyright © 2022-2026 SheftApps. All rights reserved.
 //
 
 // MARK: - Imports
@@ -19,7 +19,7 @@ enum SettingsPage : String {
 
     enum Icons: String {
 
-        case display = "textformat.size"
+        case facts = "questionmark.circle"
 
         case speech = "speaker.wave.2.bubble.left"
 
@@ -35,7 +35,7 @@ enum SettingsPage : String {
 
     // MARK: - Settings Page Enum Cases
 
-    case display
+    case facts
 
     case speech
 
@@ -46,5 +46,11 @@ enum SettingsPage : String {
     #if(DEBUG)
     case developer
     #endif
+
+    // MARK: - Settings Page Title
+
+    var title: String {
+        return rawValue.capitalized
+    }
 
 }

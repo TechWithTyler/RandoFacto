@@ -3,18 +3,19 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 4/25/24.
-//  Copyright © 2022-2025 SheftApps. All rights reserved.
+//  Copyright © 2022-2026 SheftApps. All rights reserved.
 //
 
 // MARK: - Imports
 
 import SwiftUI
+import SheftAppsInternals
 
 struct AdvancedSettingsPageView: View {
 
     // MARK: - Properties - Objects
 
-    @EnvironmentObject var appStateManager: AppStateManager
+    @EnvironmentObject var settingsManager: SettingsManager
 
     @EnvironmentObject var networkConnectionManager: NetworkConnectionManager
 
@@ -36,7 +37,7 @@ struct AdvancedSettingsPageView: View {
             }
             Section {
                 Button(role: .destructive) {
-                    appStateManager.showingResetAlert = true
+                    settingsManager.showingResetAlert = true
                 } label: {
                     Label("RESET ALL SETTINGS…", systemImage: "trash.fill")
 #if !os(macOS)
@@ -48,12 +49,12 @@ struct AdvancedSettingsPageView: View {
         }
         .formStyle(.grouped)
         // Reset alert
-        .alert("Are you sure you REALLY want to reset \(appName!)?", isPresented: $appStateManager.showingResetAlert) {
+        .alert("Are you sure you REALLY want to reset \(SABundleName)?", isPresented: $settingsManager.showingResetAlert) {
             Button("Cancel", role: .cancel) {
-                appStateManager.showingResetAlert = false
+                settingsManager.showingResetAlert = false
             }
             Button("Reset", role: .destructive) {
-                appStateManager.resetApp()
+                settingsManager.resetApp()
             }
         } message: {
             Text("This will reset all settings to default\(authenticationManager.userLoggedIn ? " and log you out of your account" : String()). This can't be undone!")

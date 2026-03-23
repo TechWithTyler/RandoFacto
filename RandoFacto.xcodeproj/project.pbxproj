@@ -10,10 +10,20 @@
 		8D012F7D2C0E5D3100A6254B /* PrivacyPolicyAgreementText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D012F7C2C0E5D3100A6254B /* PrivacyPolicyAgreementText.swift */; };
 		8D0312222AF995AF00DBB2B2 /* AuthenticationFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0312212AF995AF00DBB2B2 /* AuthenticationFormView.swift */; };
 		8D051C5E2AFB15590064E90E /* AppPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D051C5D2AFB15590064E90E /* AppPage.swift */; };
-		8D0A3C3F2B1FA6F500B7345D /* FavoriteFactsListDisplayManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0A3C3E2B1FA6F500B7345D /* FavoriteFactsListDisplayManager.swift */; };
+		8D0A3C3F2B1FA6F500B7345D /* FavoriteFactsDisplayManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0A3C3E2B1FA6F500B7345D /* FavoriteFactsDisplayManager.swift */; };
+		8D1CD2D02EE2525A001B6AD0 /* UserDefaultsKeyNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1CD2CF2EE2525A001B6AD0 /* UserDefaultsKeyNames.swift */; };
+		8D1CD2D22EE7776A001B6AD0 /* AuthenticationDialogManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1CD2D12EE7776A001B6AD0 /* AuthenticationDialogManager.swift */; };
+		8D1EE3192EE8D0370064997F /* PasswordStrengthMeter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1EE3182EE8D0370064997F /* PasswordStrengthMeter.swift */; };
+		8D1EE31B2EE8D0DE0064997F /* PasswordEvaluator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1EE31A2EE8D0DE0064997F /* PasswordEvaluator.swift */; };
+		8D1EE31D2EE8D43D0064997F /* PasswordStrengthBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1EE31C2EE8D43D0064997F /* PasswordStrengthBar.swift */; };
+		8D1EE31F2EEB6EE60064997F /* click.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8D1EE31E2EEB6EE60064997F /* click.wav */; };
+		8D1EE3212EECC3660064997F /* SpeechManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1EE3202EECC3660064997F /* SpeechManager.swift */; };
+		8D1F3D8F2F0C401800FA12FE /* SheftAppsInternals.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D1F3D8E2F0C401800FA12FE /* SheftAppsInternals.framework */; };
+		8D1F3D902F0C401800FA12FE /* SheftAppsInternals.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8D1F3D8E2F0C401800FA12FE /* SheftAppsInternals.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8D2A7B302B5B277300142BDA /* SpeakButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2A7B2F2B5B277300142BDA /* SpeakButton.swift */; };
 		8D2A7B362B5B48A400142BDA /* FirestoreNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2A7B352B5B48A400142BDA /* FirestoreNames.swift */; };
 		8D31D8532B27B759009F29EE /* APIKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D31D8522B27B758009F29EE /* APIKeys.swift */; };
+		8D37CB3F2EF5FE9500E078F1 /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D37CB3E2EF5FE9500E078F1 /* SettingsManager.swift */; };
 		8D53C3892CDEF2120091B474 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 8D53C3882CDEF2120091B474 /* FirebaseAuth */; };
 		8D53C38B2CDEF2120091B474 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 8D53C38A2CDEF2120091B474 /* FirebaseCrashlytics */; };
 		8D53C38D2CDEF2120091B474 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 8D53C38C2CDEF2120091B474 /* FirebaseFirestore */; };
@@ -39,19 +49,20 @@
 		8D87C83B2B02FEEA009BBE56 /* SheftAppsStylishUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8D87C8392B02FEEA009BBE56 /* SheftAppsStylishUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8D87C83E2B0306A7009BBE56 /* FavoriteFact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D87C83D2B0306A7009BBE56 /* FavoriteFact.swift */; };
 		8D87C8402B030890009BBE56 /* UserReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D87C83F2B030890009BBE56 /* UserReference.swift */; };
-		8D8899DC2AFDF39900BDDDFD /* InappropriateWordsCheckerData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8899DA2AFDF39900BDDDFD /* InappropriateWordsCheckerData.swift */; };
+		8D8899DC2AFDF39900BDDDFD /* InappropriateWordsCheckerResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8899DA2AFDF39900BDDDFD /* InappropriateWordsCheckerResult.swift */; };
 		8D8899DD2AFDF39900BDDDFD /* GeneratedFact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8899DB2AFDF39900BDDDFD /* GeneratedFact.swift */; };
 		8D8899E02AFDF3D100BDDDFD /* AuthenticationMessageType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8899DF2AFDF3D100BDDDFD /* AuthenticationMessageType.swift */; };
 		8D8899E22AFDF80300BDDDFD /* ViewablePasswordField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8899E12AFDF80300BDDDFD /* ViewablePasswordField.swift */; };
 		8D8899E42AFE095200BDDDFD /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8899E32AFE095200BDDDFD /* Globals.swift */; };
 		8D8F1AF82AFDF25600DB9B7D /* AuthenticationMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8F1AF72AFDF25600DB9B7D /* AuthenticationMessageView.swift */; };
-		8D8F92B32B393D8A001A9B5B /* AuthenticationManagerErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8F92B22B393D8A001A9B5B /* AuthenticationManagerErrors.swift */; };
+		8D8F92B32B393D8A001A9B5B /* UserErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8F92B22B393D8A001A9B5B /* UserErrors.swift */; };
 		8D8F92B52B393DA0001A9B5B /* FavoriteFactsDatabaseErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8F92B42B393DA0001A9B5B /* FavoriteFactsDatabaseErrors.swift */; };
 		8D95DD212BDAF0C1006FAE63 /* DeveloperSettingsPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D95DD202BDAF0C1006FAE63 /* DeveloperSettingsPageView.swift */; };
-		8D95DD242BDAF888006FAE63 /* DisplaySettingsPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D95DD232BDAF888006FAE63 /* DisplaySettingsPageView.swift */; };
+		8D95DD242BDAF888006FAE63 /* FactSettingsPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D95DD232BDAF888006FAE63 /* FactSettingsPageView.swift */; };
 		8D95DD262BDAF899006FAE63 /* AccountSettingsPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D95DD252BDAF899006FAE63 /* AccountSettingsPageView.swift */; };
 		8D95DD282BDAF8B0006FAE63 /* SpeechSettingsPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D95DD272BDAF8B0006FAE63 /* SpeechSettingsPageView.swift */; };
 		8D95DD2A2BDAF8C3006FAE63 /* AdvancedSettingsPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D95DD292BDAF8C3006FAE63 /* AdvancedSettingsPageView.swift */; };
+		8DA03DCC2F69EDDD00DC41A9 /* UserQueryExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA03DCB2F69EDDD00DC41A9 /* UserQueryExtension.swift */; };
 		8DA2C412292C1E1100705A2F /* RandoFactoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA2C411292C1E1100705A2F /* RandoFactoApp.swift */; };
 		8DA2C416292C1E1200705A2F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8DA2C415292C1E1200705A2F /* Assets.xcassets */; };
 		8DA2C41A292C1E1200705A2F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8DA2C419292C1E1200705A2F /* Preview Assets.xcassets */; };
@@ -66,7 +77,7 @@
 		8DEB53222BBB54E600788A04 /* PreviewDataModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEB53212BBB54E600788A04 /* PreviewDataModifier.swift */; };
 		8DEF074C2B241D5B00F0375F /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEF074B2B241D5B00F0375F /* AuthenticationManager.swift */; };
 		8DEF074E2B241DBA00F0375F /* FavoriteFactsDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEF074D2B241DBA00F0375F /* FavoriteFactsDatabase.swift */; };
-		8DF48E312936A80700152681 /* AppStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF48E302936A80700152681 /* AppStateManager.swift */; };
+		8DF48E312936A80700152681 /* WindowStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF48E302936A80700152681 /* WindowStateManager.swift */; };
 		8DF48E392936B02900152681 /* RandoFactoError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF48E382936B02900152681 /* RandoFactoError.swift */; };
 		8DF8D9DF2A27DDA700874AFC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8DF48E2E2936A62900152681 /* GoogleService-Info.plist */; };
 		8DFEB0A32AFAF64800F57DB1 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DFEB0A22AFAF64800F57DB1 /* SettingsView.swift */; };
@@ -81,6 +92,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				8D1F3D902F0C401800FA12FE /* SheftAppsInternals.framework in Embed Frameworks */,
 				8D87C83B2B02FEEA009BBE56 /* SheftAppsStylishUI.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -92,11 +104,20 @@
 		8D012F7C2C0E5D3100A6254B /* PrivacyPolicyAgreementText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyAgreementText.swift; sourceTree = "<group>"; };
 		8D0312212AF995AF00DBB2B2 /* AuthenticationFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationFormView.swift; sourceTree = "<group>"; };
 		8D051C5D2AFB15590064E90E /* AppPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPage.swift; sourceTree = "<group>"; };
-		8D0A3C3E2B1FA6F500B7345D /* FavoriteFactsListDisplayManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteFactsListDisplayManager.swift; sourceTree = "<group>"; };
+		8D0A3C3E2B1FA6F500B7345D /* FavoriteFactsDisplayManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteFactsDisplayManager.swift; sourceTree = "<group>"; };
 		8D0C38D52ADDC9AB00EBB03A /* SheftAppsStylishUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SheftAppsStylishUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D1CD2CF2EE2525A001B6AD0 /* UserDefaultsKeyNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsKeyNames.swift; sourceTree = "<group>"; };
+		8D1CD2D12EE7776A001B6AD0 /* AuthenticationDialogManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationDialogManager.swift; sourceTree = "<group>"; };
+		8D1EE3182EE8D0370064997F /* PasswordStrengthMeter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordStrengthMeter.swift; sourceTree = "<group>"; };
+		8D1EE31A2EE8D0DE0064997F /* PasswordEvaluator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordEvaluator.swift; sourceTree = "<group>"; };
+		8D1EE31C2EE8D43D0064997F /* PasswordStrengthBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordStrengthBar.swift; sourceTree = "<group>"; };
+		8D1EE31E2EEB6EE60064997F /* click.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = click.wav; sourceTree = "<group>"; };
+		8D1EE3202EECC3660064997F /* SpeechManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechManager.swift; sourceTree = "<group>"; };
+		8D1F3D8E2F0C401800FA12FE /* SheftAppsInternals.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SheftAppsInternals.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D2A7B2F2B5B277300142BDA /* SpeakButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeakButton.swift; sourceTree = "<group>"; };
 		8D2A7B352B5B48A400142BDA /* FirestoreNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreNames.swift; sourceTree = "<group>"; };
 		8D31D8522B27B758009F29EE /* APIKeys.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIKeys.swift; sourceTree = "<group>"; };
+		8D37CB3E2EF5FE9500E078F1 /* SettingsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsManager.swift; sourceTree = "<group>"; };
 		8D55113F2B059B3D00BB61D4 /* FactGeneratorErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactGeneratorErrors.swift; sourceTree = "<group>"; };
 		8D5E25042B5B8EFF00B51730 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		8D5E25082B5DAD0A00B51730 /* AuthenticationFormField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationFormField.swift; sourceTree = "<group>"; };
@@ -112,21 +133,22 @@
 		8D87C8392B02FEEA009BBE56 /* SheftAppsStylishUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SheftAppsStylishUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D87C83D2B0306A7009BBE56 /* FavoriteFact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteFact.swift; sourceTree = "<group>"; };
 		8D87C83F2B030890009BBE56 /* UserReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserReference.swift; sourceTree = "<group>"; };
-		8D8899DA2AFDF39900BDDDFD /* InappropriateWordsCheckerData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InappropriateWordsCheckerData.swift; sourceTree = "<group>"; };
+		8D8899DA2AFDF39900BDDDFD /* InappropriateWordsCheckerResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InappropriateWordsCheckerResult.swift; sourceTree = "<group>"; };
 		8D8899DB2AFDF39900BDDDFD /* GeneratedFact.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeneratedFact.swift; sourceTree = "<group>"; };
 		8D8899DF2AFDF3D100BDDDFD /* AuthenticationMessageType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationMessageType.swift; sourceTree = "<group>"; };
 		8D8899E12AFDF80300BDDDFD /* ViewablePasswordField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewablePasswordField.swift; sourceTree = "<group>"; };
 		8D8899E32AFE095200BDDDFD /* Globals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Globals.swift; sourceTree = "<group>"; };
 		8D8F1AF72AFDF25600DB9B7D /* AuthenticationMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationMessageView.swift; sourceTree = "<group>"; };
 		8D8F41C42B15486400550899 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		8D8F92B22B393D8A001A9B5B /* AuthenticationManagerErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManagerErrors.swift; sourceTree = "<group>"; };
+		8D8F92B22B393D8A001A9B5B /* UserErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserErrors.swift; sourceTree = "<group>"; };
 		8D8F92B42B393DA0001A9B5B /* FavoriteFactsDatabaseErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteFactsDatabaseErrors.swift; sourceTree = "<group>"; };
 		8D95DD202BDAF0C1006FAE63 /* DeveloperSettingsPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperSettingsPageView.swift; sourceTree = "<group>"; };
-		8D95DD232BDAF888006FAE63 /* DisplaySettingsPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplaySettingsPageView.swift; sourceTree = "<group>"; };
+		8D95DD232BDAF888006FAE63 /* FactSettingsPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactSettingsPageView.swift; sourceTree = "<group>"; };
 		8D95DD252BDAF899006FAE63 /* AccountSettingsPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSettingsPageView.swift; sourceTree = "<group>"; };
 		8D95DD272BDAF8B0006FAE63 /* SpeechSettingsPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechSettingsPageView.swift; sourceTree = "<group>"; };
 		8D95DD292BDAF8C3006FAE63 /* AdvancedSettingsPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSettingsPageView.swift; sourceTree = "<group>"; };
 		8D992FB22B0737BA004AF5CB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8DA03DCB2F69EDDD00DC41A9 /* UserQueryExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserQueryExtension.swift; sourceTree = "<group>"; };
 		8DA2C40E292C1E1100705A2F /* RandoFacto.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RandoFacto.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8DA2C411292C1E1100705A2F /* RandoFactoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandoFactoApp.swift; sourceTree = "<group>"; };
 		8DA2C415292C1E1200705A2F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -144,7 +166,7 @@
 		8DEF074B2B241D5B00F0375F /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
 		8DEF074D2B241DBA00F0375F /* FavoriteFactsDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteFactsDatabase.swift; sourceTree = "<group>"; };
 		8DF48E2E2936A62900152681 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		8DF48E302936A80700152681 /* AppStateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStateManager.swift; sourceTree = "<group>"; };
+		8DF48E302936A80700152681 /* WindowStateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowStateManager.swift; sourceTree = "<group>"; };
 		8DF48E382936B02900152681 /* RandoFactoError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandoFactoError.swift; sourceTree = "<group>"; };
 		8DFEB0A22AFAF64800F57DB1 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		8DFEB0A42AFAF6FD00F57DB1 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -164,6 +186,7 @@
 				8D87C8222B02FBA7009BBE56 /* FirebaseFunctions in Frameworks */,
 				8D87C8122B02FBA7009BBE56 /* FirebaseAuthCombine-Community in Frameworks */,
 				8D53C38B2CDEF2120091B474 /* FirebaseCrashlytics in Frameworks */,
+				8D1F3D8F2F0C401800FA12FE /* SheftAppsInternals.framework in Frameworks */,
 				8D87C81E2B02FBA7009BBE56 /* FirebaseFirestoreCombine-Community in Frameworks */,
 				8D53C3892CDEF2120091B474 /* FirebaseAuth in Frameworks */,
 			);
@@ -172,6 +195,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8D1CD2CE2EE25239001B6AD0 /* Key and Collection Names */ = {
+			isa = PBXGroup;
+			children = (
+				8D2A7B352B5B48A400142BDA /* FirestoreNames.swift */,
+				8D1CD2CF2EE2525A001B6AD0 /* UserDefaultsKeyNames.swift */,
+			);
+			path = "Key and Collection Names";
+			sourceTree = "<group>";
+		};
 		8D31D8542B27C0C0009F29EE /* App Pages */ = {
 			isa = PBXGroup;
 			children = (
@@ -198,52 +230,46 @@
 				8DF48E382936B02900152681 /* RandoFactoError.swift */,
 				8D55113F2B059B3D00BB61D4 /* FactGeneratorErrors.swift */,
 				8D86FF042AF56CA600239DEE /* HTTPResponseExtension.swift */,
-				8D8F92B22B393D8A001A9B5B /* AuthenticationManagerErrors.swift */,
+				8D8F92B22B393D8A001A9B5B /* UserErrors.swift */,
 				8D8F92B42B393DA0001A9B5B /* FavoriteFactsDatabaseErrors.swift */,
 			);
 			path = "Error Handling";
 			sourceTree = "<group>";
 		};
-		8D5E25112B606AC400B51730 /* Main Model Objects */ = {
+		8D5E25112B606AC400B51730 /* Main Managers */ = {
 			isa = PBXGroup;
 			children = (
-				8DF48E302936A80700152681 /* AppStateManager.swift */,
-				8DA2C420292C1E6000705A2F /* FactGenerator.swift */,
+				8DF48E302936A80700152681 /* WindowStateManager.swift */,
 				8D5E9A292B226DE800C261B8 /* NetworkConnectionManager.swift */,
 				8DEB531E2BBB4E5400788A04 /* PreviewManager.swift */,
+				8D1EE3202EECC3660064997F /* SpeechManager.swift */,
 			);
-			path = "Main Model Objects";
+			path = "Main Managers";
 			sourceTree = "<group>";
 		};
-		8D63D5F72AFEBBE90084BACF /* Authentication */ = {
+		8D63D5F72AFEBBE90084BACF /* Authentication and Users */ = {
 			isa = PBXGroup;
 			children = (
 				8DEF074B2B241D5B00F0375F /* AuthenticationManager.swift */,
+				8D1CD2D12EE7776A001B6AD0 /* AuthenticationDialogManager.swift */,
 				8D86430D2AEC594F0084C772 /* AuthenticationFormType.swift */,
 				8D5E25082B5DAD0A00B51730 /* AuthenticationFormField.swift */,
 				8D8899DF2AFDF3D100BDDDFD /* AuthenticationMessageType.swift */,
 				8D63D5FC2AFF4A180084BACF /* StringEmojiChecker.swift */,
 				8D63D5F82AFF1D470084BACF /* UserDeletionStage.swift */,
-			);
-			path = Authentication;
-			sourceTree = "<group>";
-		};
-		8D8899D92AFDF39900BDDDFD /* Decodable Data */ = {
-			isa = PBXGroup;
-			children = (
-				8D8899DB2AFDF39900BDDDFD /* GeneratedFact.swift */,
-				8D87C83D2B0306A7009BBE56 /* FavoriteFact.swift */,
-				8D8899DA2AFDF39900BDDDFD /* InappropriateWordsCheckerData.swift */,
 				8D87C83F2B030890009BBE56 /* UserReference.swift */,
+				8D1EE31A2EE8D0DE0064997F /* PasswordEvaluator.swift */,
+				8DA03DCB2F69EDDD00DC41A9 /* UserQueryExtension.swift */,
 			);
-			path = "Decodable Data";
+			path = "Authentication and Users";
 			sourceTree = "<group>";
 		};
 		8D8899DE2AFDF3B100BDDDFD /* Favorite Facts */ = {
 			isa = PBXGroup;
 			children = (
 				8DEF074D2B241DBA00F0375F /* FavoriteFactsDatabase.swift */,
-				8D0A3C3E2B1FA6F500B7345D /* FavoriteFactsListDisplayManager.swift */,
+				8D87C83D2B0306A7009BBE56 /* FavoriteFact.swift */,
+				8D0A3C3E2B1FA6F500B7345D /* FavoriteFactsDisplayManager.swift */,
 			);
 			path = "Favorite Facts";
 			sourceTree = "<group>";
@@ -273,11 +299,22 @@
 			path = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		8D94AA922EF08F6500F23F14 /* Fact Generation */ = {
+			isa = PBXGroup;
+			children = (
+				8DA2C420292C1E6000705A2F /* FactGenerator.swift */,
+				8D8899DB2AFDF39900BDDDFD /* GeneratedFact.swift */,
+				8D8899DA2AFDF39900BDDDFD /* InappropriateWordsCheckerResult.swift */,
+				8D5E25122B6198B500B51730 /* URLRequestExtension.swift */,
+			);
+			path = "Fact Generation";
+			sourceTree = "<group>";
+		};
 		8D95DD222BDAF86C006FAE63 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
 				8DFEB0A22AFAF64800F57DB1 /* SettingsView.swift */,
-				8D95DD232BDAF888006FAE63 /* DisplaySettingsPageView.swift */,
+				8D95DD232BDAF888006FAE63 /* FactSettingsPageView.swift */,
 				8D95DD272BDAF8B0006FAE63 /* SpeechSettingsPageView.swift */,
 				8D95DD252BDAF899006FAE63 /* AccountSettingsPageView.swift */,
 				8D95DD292BDAF8C3006FAE63 /* AdvancedSettingsPageView.swift */,
@@ -317,6 +354,7 @@
 			children = (
 				8D992FB12B073549004AF5CB /* Main App Structure */,
 				8D91FEA02AE22C8C00ACB743 /* UI and Images */,
+				8D1EE31E2EEB6EE60064997F /* click.wav */,
 				8DA2F333296E38C40068F761 /* Model */,
 				8D91FEA12AE22CB600ACB743 /* Supporting Files */,
 			);
@@ -348,14 +386,14 @@
 		8DA2F333296E38C40068F761 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				8D5E25112B606AC400B51730 /* Main Model Objects */,
-				8D8899D92AFDF39900BDDDFD /* Decodable Data */,
+				8D94AA922EF08F6500F23F14 /* Fact Generation */,
+				8D5E25112B606AC400B51730 /* Main Managers */,
 				8D8899DE2AFDF3B100BDDDFD /* Favorite Facts */,
 				8DCE5DE32B080A8C00DD3CE7 /* Pages */,
-				8D63D5F72AFEBBE90084BACF /* Authentication */,
+				8D63D5F72AFEBBE90084BACF /* Authentication and Users */,
 				8D55113E2B05976800BB61D4 /* Error Handling */,
-				8D2A7B352B5B48A400142BDA /* FirestoreNames.swift */,
-				8D5E25122B6198B500B51730 /* URLRequestExtension.swift */,
+				8D1CD2CE2EE25239001B6AD0 /* Key and Collection Names */,
+				8D37CB3E2EF5FE9500E078F1 /* SettingsManager.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -368,6 +406,8 @@
 				8D8899E12AFDF80300BDDDFD /* ViewablePasswordField.swift */,
 				8DAFBC832B1AB52400C0907F /* FieldNeedsAttentionView.swift */,
 				8D012F7C2C0E5D3100A6254B /* PrivacyPolicyAgreementText.swift */,
+				8D1EE3182EE8D0370064997F /* PasswordStrengthMeter.swift */,
+				8D1EE31C2EE8D43D0064997F /* PasswordStrengthBar.swift */,
 			);
 			path = Authentication;
 			sourceTree = "<group>";
@@ -384,6 +424,7 @@
 		8DF48E332936A9E000152681 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8D1F3D8E2F0C401800FA12FE /* SheftAppsInternals.framework */,
 				8D87C8392B02FEEA009BBE56 /* SheftAppsStylishUI.framework */,
 				8D0C38D52ADDC9AB00EBB03A /* SheftAppsStylishUI.framework */,
 			);
@@ -466,6 +507,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8DF8D9DF2A27DDA700874AFC /* GoogleService-Info.plist in Resources */,
+				8D1EE31F2EEB6EE60064997F /* click.wav in Resources */,
 				8DA2C41A292C1E1200705A2F /* Preview Assets.xcassets in Resources */,
 				8DA2C416292C1E1200705A2F /* Assets.xcassets in Resources */,
 				8D6541E22DFB79870001914E /* AppIcon.icon in Resources */,
@@ -510,10 +552,14 @@
 				8DF48E392936B02900152681 /* RandoFactoError.swift in Sources */,
 				8DFEB0A52AFAF6FD00F57DB1 /* ContentView.swift in Sources */,
 				8D63D5F92AFF1D470084BACF /* UserDeletionStage.swift in Sources */,
+				8D1CD2D22EE7776A001B6AD0 /* AuthenticationDialogManager.swift in Sources */,
 				8DCE5DE92B084F6000DD3CE7 /* UnfavoriteAllButton.swift in Sources */,
+				8D1EE3192EE8D0370064997F /* PasswordStrengthMeter.swift in Sources */,
+				8D37CB3F2EF5FE9500E078F1 /* SettingsManager.swift in Sources */,
+				8DA03DCC2F69EDDD00DC41A9 /* UserQueryExtension.swift in Sources */,
 				8D2A7B302B5B277300142BDA /* SpeakButton.swift in Sources */,
 				8DFEB0A32AFAF64800F57DB1 /* SettingsView.swift in Sources */,
-				8DF48E312936A80700152681 /* AppStateManager.swift in Sources */,
+				8DF48E312936A80700152681 /* WindowStateManager.swift in Sources */,
 				8DFEB0A72AFAF77800F57DB1 /* FactView.swift in Sources */,
 				8DEB531F2BBB4E5400788A04 /* PreviewManager.swift in Sources */,
 				8DCE5DE52B080AA200DD3CE7 /* SettingsPage.swift in Sources */,
@@ -527,12 +573,13 @@
 				8D69ADEA2B1FCC20002BA65E /* ErrorManager.swift in Sources */,
 				8D31D8532B27B759009F29EE /* APIKeys.swift in Sources */,
 				8D5E25092B5DAD0A00B51730 /* AuthenticationFormField.swift in Sources */,
+				8D1EE31D2EE8D43D0064997F /* PasswordStrengthBar.swift in Sources */,
 				8D0312222AF995AF00DBB2B2 /* AuthenticationFormView.swift in Sources */,
 				8D8F1AF82AFDF25600DB9B7D /* AuthenticationMessageView.swift in Sources */,
 				8DEB53222BBB54E600788A04 /* PreviewDataModifier.swift in Sources */,
 				8D95DD2A2BDAF8C3006FAE63 /* AdvancedSettingsPageView.swift in Sources */,
-				8D8899DC2AFDF39900BDDDFD /* InappropriateWordsCheckerData.swift in Sources */,
-				8D8F92B32B393D8A001A9B5B /* AuthenticationManagerErrors.swift in Sources */,
+				8D8899DC2AFDF39900BDDDFD /* InappropriateWordsCheckerResult.swift in Sources */,
+				8D8F92B32B393D8A001A9B5B /* UserErrors.swift in Sources */,
 				8D86FF052AF56CA600239DEE /* HTTPResponseExtension.swift in Sources */,
 				8DC867D22BC4866300A51787 /* PrivacyPolicyButton.swift in Sources */,
 				8D051C5E2AFB15590064E90E /* AppPage.swift in Sources */,
@@ -543,12 +590,15 @@
 				8DEF074E2B241DBA00F0375F /* FavoriteFactsDatabase.swift in Sources */,
 				8D95DD282BDAF8B0006FAE63 /* SpeechSettingsPageView.swift in Sources */,
 				8D86430E2AEC594F0084C772 /* AuthenticationFormType.swift in Sources */,
+				8D1EE3212EECC3660064997F /* SpeechManager.swift in Sources */,
 				8D87C83E2B0306A7009BBE56 /* FavoriteFact.swift in Sources */,
 				8D87C8402B030890009BBE56 /* UserReference.swift in Sources */,
+				8D1CD2D02EE2525A001B6AD0 /* UserDefaultsKeyNames.swift in Sources */,
 				8DEF074C2B241D5B00F0375F /* AuthenticationManager.swift in Sources */,
-				8D95DD242BDAF888006FAE63 /* DisplaySettingsPageView.swift in Sources */,
+				8D1EE31B2EE8D0DE0064997F /* PasswordEvaluator.swift in Sources */,
+				8D95DD242BDAF888006FAE63 /* FactSettingsPageView.swift in Sources */,
 				8D8899E02AFDF3D100BDDDFD /* AuthenticationMessageType.swift in Sources */,
-				8D0A3C3F2B1FA6F500B7345D /* FavoriteFactsListDisplayManager.swift in Sources */,
+				8D0A3C3F2B1FA6F500B7345D /* FavoriteFactsDisplayManager.swift in Sources */,
 				8DA2C412292C1E1100705A2F /* RandoFactoApp.swift in Sources */,
 				8DCF671F297F58B7006DE41E /* FavoriteFactsListView.swift in Sources */,
 				8DCE5DE72B08272B00DD3CE7 /* RandoFactoCommands.swift in Sources */,
@@ -692,7 +742,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 950;
+				CURRENT_PROJECT_VERSION = 1000;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"RandoFacto/UI and Images/Preview Content\"";
@@ -705,6 +755,7 @@
 				ENABLE_USER_SELECTED_FILES = readwrite;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "RandoFacto/Supporting Files/Info.plist";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022-2025 SheftApps. All rights reserved.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -724,7 +775,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 2025.11;
+				MARKETING_VERSION = 2026.3;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.tylersheft.RandoFacto;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -749,7 +800,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 950;
+				CURRENT_PROJECT_VERSION = 1000;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"RandoFacto/UI and Images/Preview Content\"";
 				ENABLE_APP_SANDBOX = YES;
@@ -761,6 +812,7 @@
 				ENABLE_USER_SELECTED_FILES = readwrite;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "RandoFacto/Supporting Files/Info.plist";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022-2025 SheftApps. All rights reserved.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -780,7 +832,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 2025.11;
+				MARKETING_VERSION = 2026.3;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.tylersheft.RandoFacto;
 				PRODUCT_NAME = "$(TARGET_NAME)";

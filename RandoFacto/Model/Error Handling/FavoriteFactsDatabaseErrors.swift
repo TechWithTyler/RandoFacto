@@ -3,7 +3,7 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 12/24/23.
-//  Copyright © 2022-2025 SheftApps. All rights reserved.
+//  Copyright © 2022-2026 SheftApps. All rights reserved.
 //
 
 // MARK: - Imports
@@ -17,7 +17,7 @@ extension FavoriteFactsDatabase {
     enum ErrorDomain: String {
         
         case favoriteFactReferenceNotFound = "Favorite fact reference not found."
-        
+
     }
     
     // MARK: - Favorite Facts Database Error Codes
@@ -25,7 +25,7 @@ extension FavoriteFactsDatabase {
     enum ErrorCode: Int {
         
         case favoriteFactReferenceNotFound = 144
-        
+
     }
     
 }

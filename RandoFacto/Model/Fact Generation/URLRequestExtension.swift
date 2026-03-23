@@ -3,7 +3,7 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 1/24/24.
-//  Copyright © 2022-2025 SheftApps. All rights reserved.
+//  Copyright © 2022-2026 SheftApps. All rights reserved.
 //
 
 // MARK: - Imports
@@ -17,12 +17,12 @@ extension URLRequest {
     // HTTP methods for a URL request.
     struct HTTPMethod {
 
-        // The GET HTTP method.
+        // The GET HTTP method, used to get data from an HTTP request.
         static let get: String = "GET"
 
-        // The POST HTTP method.
+        // The POST HTTP method, used to send data via an HTTP request.
         static let post: String = "POST"
-        
+
     }
 
     // MARK: - HTTP Header Fields
@@ -30,10 +30,10 @@ extension URLRequest {
     // HTTP header fields for a URL request.
     struct HTTPHeaderField {
 
-        // The Content-Type HTTP header field.
+        // The Content-Type HTTP header field, which determines the type of data to send to a server.
         static let contentType: String = "Content-Type"
 
-        // The Accept HTTP header field.
+        // The Accept HTTP header field, which determines the type of data the client should accept.
         static let accept: String = "Accept"
         
     }

@@ -3,7 +3,7 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 4/1/24.
-//  Copyright © 2022-2025 SheftApps. All rights reserved.
+//  Copyright © 2022-2026 SheftApps. All rights reserved.
 //
 
 // MARK: - Imports
@@ -18,7 +18,7 @@ struct PreviewDataModifier: ViewModifier {
 
     // MARK: - Initialization
 
-    init(prepBlock: ((AppStateManager, ErrorManager, NetworkConnectionManager, FavoriteFactsDatabase, AuthenticationManager, FavoriteFactsListDisplayManager) -> Void)? = nil) {
+    init(prepBlock: PreviewManager.PreviewDataObjects? = nil) {
         self.previewManager = PreviewManager(prepBlock: prepBlock)
     }
 
@@ -26,12 +26,15 @@ struct PreviewDataModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .environmentObject(previewManager.appStateManager)
+            .environmentObject(previewManager.windowStateManager)
+            .environmentObject(previewManager.settingsManager)
+            .environmentObject(previewManager.speechManager)
             .environmentObject(previewManager.errorManager)
             .environmentObject(previewManager.networkConnectionManager)
             .environmentObject(previewManager.favoriteFactsDatabase)
             .environmentObject(previewManager.authenticationManager)
-            .environmentObject(previewManager.favoriteFactsListDisplayManager)
+            .environmentObject(previewManager.authenticationDialogManager)
+            .environmentObject(previewManager.favoriteFactsDisplayManager)
     }
 
 }
@@ -41,7 +44,7 @@ struct PreviewDataModifier: ViewModifier {
 extension View {
 
     // Injects the app's model objects into Xcode Previews and allows access to them.
-    func withPreviewData(prepBlock: ((AppStateManager, ErrorManager, NetworkConnectionManager, FavoriteFactsDatabase, AuthenticationManager, FavoriteFactsListDisplayManager) -> Void)? = nil) -> some View {
+    func withPreviewData(prepBlock: PreviewManager.PreviewDataObjects? = nil) -> some View {
         modifier(PreviewDataModifier(prepBlock: prepBlock))
     }
 

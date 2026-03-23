@@ -3,7 +3,7 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 12/5/23.
-//  Copyright © 2022-2025 SheftApps. All rights reserved.
+//  Copyright © 2022-2026 SheftApps. All rights reserved.
 //
 
 // MARK: - Imports
@@ -27,7 +27,7 @@ class ErrorManager: ObservableObject {
     // MARK: - Error Handling
     
     // This method shows error's localizedDescription as an alert or in the authentication form.
-    func showError(_ error: Error, completionHandler: ((RandoFactoError) -> Void)? = nil) {
+    func showError(_ error: Error, externalPresentationHandler: ((RandoFactoError) -> Void)? = nil) {
         // 1. Convert the error to NSError, and print it in internal builds.
         let nsError = error as NSError
 #if DEBUG
@@ -79,12 +79,12 @@ class ErrorManager: ObservableObject {
             let reason = nsError.localizedDescription
             errorToShow = .unknown(reason: reason)
         }
-        // 3. Show the error in the authentication dialog if it's open, otherwise show it as an alert.
-        if let completionHandler = completionHandler, let errorToShow = errorToShow {
-            completionHandler(errorToShow)
+        // 3. Show the error as an alert unless an external presentation handler is provided.
+        if let externalPresentationHandler = externalPresentationHandler, let errorToShow = errorToShow {
+            externalPresentationHandler(errorToShow)
         } else {
             showingErrorAlert = true
         }
     }
-    
+
 }

@@ -3,14 +3,14 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 11/13/23.
-//  Copyright © 2022-2025 SheftApps. All rights reserved.
+//  Copyright © 2022-2026 SheftApps. All rights reserved.
 //
 
 #if os(macOS)
 
 // MARK: - Imports
 
-import Cocoa
+import SheftAppsStylishUI
 
 // Unlike in AppKit or UIKit apps, the app delegate in SwiftUI App-based apps isn't the main entry point. The main App struct is instead, and it has a property for the AppDelegate.
 class AppDelegate: NSObject, NSApplicationDelegate {

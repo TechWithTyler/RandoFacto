@@ -3,19 +3,20 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 4/25/24.
-//  Copyright © 2022-2025 SheftApps. All rights reserved.
+//  Copyright © 2022-2026 SheftApps. All rights reserved.
 //
 
 // MARK: - Imports
 
 import SwiftUI
 import SheftAppsStylishUI
+import SheftAppsInternals
 
 struct AccountSettingsPageView: View {
 
     // MARK: - Properties - Objects
 
-    @EnvironmentObject var appStateManager: AppStateManager
+    @EnvironmentObject var windowStateManager: WindowStateManager
 
     @EnvironmentObject var networkConnectionManager: NetworkConnectionManager
 
@@ -23,11 +24,15 @@ struct AccountSettingsPageView: View {
 
     @EnvironmentObject var errorManager: ErrorManager
 
+    @EnvironmentObject var authenticationDialogManager: AuthenticationDialogManager
+
     // MARK: - Body
 
     var body: some View {
         Form {
-            if let email = authenticationManager.firebaseAuthentication.currentUser?.email {
+            if let deletionStage = authenticationManager.accountDeletionStage {
+                LoadingIndicator(message: "Deleting \(deletionStage)…")
+            } else if let email = authenticationManager.firebaseAuthentication.currentUser?.email {
                 HStack {
                     Spacer()
                     Image(systemName: "person.circle.fill")
@@ -43,26 +48,19 @@ struct AccountSettingsPageView: View {
                     }
                     Spacer()
                 }
-            } else {
-                Text("Login to your \(appName!) account to save favorite facts to view on all your devices, even while offline.")
-                    .font(.system(size: 24))
-            }
-            if let deletionStage = authenticationManager.accountDeletionStage {
-                LoadingIndicator(message: "Deleting \(deletionStage)…")
-            } else if authenticationManager.userLoggedIn {
                 if networkConnectionManager.deviceIsOnline {
                         Button("Change Password…", systemImage: "key") {
-                            authenticationManager.formType = .passwordChange
+                            authenticationDialogManager.formType = .passwordChange
                         }
                     .controlSize(.large)
                 }
                     Button("Logout…", systemImage: "door.left.hand.open") {
-                        authenticationManager.showingLogout = true
+                        authenticationDialogManager.showingLogout = true
                     }
                     .controlSize(.large)
                 if networkConnectionManager.deviceIsOnline {
                         Button(role: .destructive) {
-                            authenticationManager.showingDeleteAccount = true
+                            authenticationDialogManager.showingDeleteAccount = true
                         } label: {
                             Label("DELETE ACCOUNT…", systemImage: "person.crop.circle.fill.badge.minus")
 #if !os(macOS)
@@ -74,12 +72,14 @@ struct AccountSettingsPageView: View {
                 }
             } else {
                 if networkConnectionManager.deviceIsOnline {
+                    Text("Login to your \(SABundleName) account to save favorite facts to view on all your devices, even while offline.")
+                        .font(.system(size: 24))
                     Button(loginText, systemImage: "entry.lever.keypad") {
-                        authenticationManager.formType = .login
+                        authenticationDialogManager.formType = .login
                     }
                     .controlSize(.large)
                     Button(signupText, systemImage: "person.crop.circle.fill.badge.plus") {
-                        authenticationManager.formType = .signup
+                        authenticationDialogManager.formType = .signup
                     }
                     .controlSize(.large)
                 } else {
@@ -90,29 +90,12 @@ struct AccountSettingsPageView: View {
         }
         .formStyle(.grouped)
         // Delete account alert
-        .alert("Are you sure you REALLY want to delete your \(appName!) account?", isPresented: $authenticationManager.showingDeleteAccount) {
+        .alert("Are you sure you REALLY want to delete your \(SABundleName) account?", isPresented: $authenticationDialogManager.showingDeleteAccount) {
             Button("Cancel", role: .cancel) {
-                authenticationManager.showingDeleteAccount = false
+                authenticationDialogManager.showingDeleteAccount = false
             }
             Button("Delete", role: .destructive) {
-                authenticationManager.deleteCurrentUser {
-                    [self] error in
-                    if let error = error {
-                        DispatchQueue.main.async { [self] in
-                            errorManager.showError(error) {
-                                randoFactoError in
-                                if randoFactoError == .tooLongSinceLastLogin {
-                                    authenticationManager.formType = nil
-                                    authenticationManager.logoutCurrentUser()
-                                    errorManager.showingErrorAlert = true
-                                } else {
-                                    errorManager.showingErrorAlert = true
-                                }
-                            }
-                        }
-                    }
-                    authenticationManager.showingDeleteAccount = false
-                }
+                authenticationDialogManager.deleteCurrentUser()
             }
         } message: {
             Text("You won't be able to save favorite facts to view offline! This can't be undone!")
@@ -121,21 +104,19 @@ struct AccountSettingsPageView: View {
         .dialogSeverity(.critical)
 #endif
         // Logout alert
-        .alert("Logout of your \(appName!) account?", isPresented: $authenticationManager.showingLogout) {
+        .alert("Logout of your \(SABundleName) account?", isPresented: $authenticationDialogManager.showingLogout) {
             Button("Cancel", role: .cancel) {
-                authenticationManager.showingLogout = false
+                authenticationDialogManager.showingLogout = false
             }
             Button("Logout") {
-                authenticationManager.logoutCurrentUser()
-                authenticationManager.showingLogout = false
+                authenticationDialogManager.logoutCurrentUser()
             }
         } message: {
-            Text("You won't be able to save favorite facts to view offline until you login again!")
+            Text("All favorite fact-related settings will be reset. You won't be able to save favorite facts to view offline until you login again!")
         }
         // Authentication form
-        .sheet(item: $authenticationManager.formType) { _ in
+        .sheet(item: $authenticationDialogManager.formType) { _ in
             AuthenticationFormView()
-                .environmentObject(appStateManager)
                 .environmentObject(networkConnectionManager)
                 .environmentObject(authenticationManager)
                 .environmentObject(errorManager)

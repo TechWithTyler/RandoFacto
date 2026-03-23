@@ -3,7 +3,7 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 1/19/24.
-//  Copyright © 2022-2025 SheftApps. All rights reserved.
+//  Copyright © 2022-2026 SheftApps. All rights reserved.
 //
 
 // MARK: - Imports
@@ -12,9 +12,9 @@ import SwiftUI
 
 struct SpeakButton: View {
 
-    // MARK: - Properties - App State Manager
+    // MARK: - Properties - Speech Manager
 
-    @EnvironmentObject var appStateManager: AppStateManager
+    @EnvironmentObject var speechManager: SpeechManager
 
     // MARK: - Properties - Strings
 
@@ -35,9 +35,9 @@ struct SpeakButton: View {
 
     var body: some View {
         Button {
-            appStateManager.speakFact(fact: fact)
+            speechManager.speakFact(fact: fact)
         } label: {
-            Label(appStateManager.factBeingSpoken == fact ? (useShortTitle ? "Stop" : "Stop Speaking") : (useShortTitle ? "Speak" : "Speak Fact"), systemImage: appStateManager.factBeingSpoken == fact ? "stop" : speechSymbolName)
+            Label(speechManager.factBeingSpoken == fact ? (useShortTitle ? "Stop" : "Stop Speaking") : (useShortTitle ? "Speak" : "Speak Fact"), systemImage: speechManager.factBeingSpoken == fact ? "stop" : speechSymbolName)
                 .frame(width: 30)
                 .animatedSymbolReplacement()
         }

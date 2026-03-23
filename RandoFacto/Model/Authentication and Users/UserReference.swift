@@ -3,7 +3,7 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 11/13/23.
-//  Copyright © 2022-2025 SheftApps. All rights reserved.
+//  Copyright © 2022-2026 SheftApps. All rights reserved.
 //
 
 // MARK: - Imports
@@ -13,9 +13,9 @@ import FirebaseAuth
 
 // MARK: - Registered User Reference Data
 
-// Represents a registered user.
 extension User {
 
+    // Represents a registered user.
 	struct Reference: Codable {
 
         // The email of the user.

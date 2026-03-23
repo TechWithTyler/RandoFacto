@@ -3,7 +3,7 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 11/21/22.
-//  Copyright © 2022-2025 SheftApps. All rights reserved.
+//  Copyright © 2022-2026 SheftApps. All rights reserved.
 //
 
 // MARK: - Imports
@@ -33,30 +33,16 @@ struct RandoFactoApp: App {
     // Handles Firebase authentication/user-related tasks.
     var firebaseAuthentication: Authentication
     
-    // MARK: - Properties - Model Objects
+    // MARK: - Shared Services
     
-    // Due to some model objects relying on one another (also known as circular dependencies), managers are declared without their initial values here and initialized in init().
-    
-    // Manages the app state (e.g. the fact to display, the page to display, the Settings page to display on macOS).
-    // The @ObservedObject property wrapper and ObservableObject protocol conformance allows SwiftUI views to update whenever any @Published property of an object changes. These objects are passed to SwiftUI views with the @EnvironmentObject property wrapper and the .environmentObject(_:) modifier, and to RandoFactoCommands and model objects with the @ObservedObject property wrapper.
-	@ObservedObject var appStateManager: AppStateManager
-    
-    // Manages the app's network status.
-    @ObservedObject var networkConnectionManager: NetworkConnectionManager
-    
-    // Manages authentication/user accounts.
-    @ObservedObject var authenticationManager: AuthenticationManager
-    
-    // The favorite facts database.
-    @ObservedObject var favoriteFactsDatabase: FavoriteFactsDatabase
-    
-    // Handles searching and sorting of the favorite facts list.
-    @ObservedObject var favoriteFactsListDisplayManager: FavoriteFactsListDisplayManager
-    
-    // Handles errors.
-    @ObservedObject var errorManager: ErrorManager
+    // Services that can be shared across windows (stateless or externally synchronized).
+    let networkConnectionManager: NetworkConnectionManager
 
-    // MARK: - Initiailization
+    let authenticationManager: AuthenticationManager
+
+    let favoriteFactsDatabase: FavoriteFactsDatabase
+
+    // MARK: - Initialization
 
     // This initializer configures Firebase and all the model objects for this app.
     init() {
@@ -77,21 +63,15 @@ struct RandoFactoApp: App {
         firestoreSettings.isSSLEnabled = true
         firestoreSettings.dispatchQueue = .main
         firestore.settings = firestoreSettings
-        // 5. Configure the managers after having set Firestore's settings (you must set all desired Firestore settings BEFORE calling any other methods on the Firestore object).
-        let errorManager = ErrorManager()
-        let networkConnectionManager = NetworkConnectionManager(errorManager: errorManager, firestore: firestore)
-        let authenticationManager = AuthenticationManager(firebaseAuthentication: firebaseAuthentication, networkConnectionManager: networkConnectionManager, errorManager: errorManager)
-        let favoriteFactsDatabase = FavoriteFactsDatabase(firestore: firestore, networkConnectionManager: networkConnectionManager, errorManager: errorManager)
-        let favoriteFactsListDisplayManager = FavoriteFactsListDisplayManager(favoriteFactsDatabase: favoriteFactsDatabase)
-        let appStateManager = AppStateManager(errorManager: errorManager, favoriteFactsDatabase: favoriteFactsDatabase, favoriteFactsListDisplayManager: favoriteFactsListDisplayManager, authenticationManager: authenticationManager)
+        // 5. Configure the shared services after having set Firestore's settings (you must set all desired Firestore settings BEFORE calling any other methods on the Firestore object).
+        let networkConnectionManager = NetworkConnectionManager(firestore: firestore)
+        let authenticationManager = AuthenticationManager(firebaseAuthentication: firebaseAuthentication, networkConnectionManager: networkConnectionManager)
+        let favoriteFactsDatabase = FavoriteFactsDatabase(firestore: firestore, networkConnectionManager: networkConnectionManager)
         self.firebaseAuthentication = firebaseAuthentication
         self.authenticationManager = authenticationManager
         self.firestore = firestore
         self.favoriteFactsDatabase = favoriteFactsDatabase
-        self.appStateManager = appStateManager
-        self.errorManager = errorManager
         self.networkConnectionManager = networkConnectionManager
-        self.favoriteFactsListDisplayManager = favoriteFactsListDisplayManager
         // 6. Link the FavoriteFactsDatabase and AuthenticationManager to each other. This can't be done at initialization time, so these properties are optional, allowing them to be nil until after initialization, where they're then set to their proper values here.
         self.favoriteFactsDatabase.authenticationManager = authenticationManager
         self.authenticationManager.favoriteFactsDatabase = favoriteFactsDatabase
@@ -102,61 +82,58 @@ struct RandoFactoApp: App {
 	// The windows and views in the app.
     var body: some Scene {
         // Main window scene
-        #if os(macOS)
-        Window("RandoFacto", id: "main") {
-            mainWindow
-        }
-        .commands {
-            // Menu/keyboard commands for the scene
-            RandoFactoCommands(appStateManager: appStateManager, networkConnectionManager: networkConnectionManager, errorManager: errorManager, authenticationManager: authenticationManager, favoriteFactsDatabase: favoriteFactsDatabase)
-        }
-        #else
         WindowGroup {
-            mainWindow
+            // Per-window objects
+            let speechManager = SpeechManager()
+            let errorManager = ErrorManager()
+            let favoriteFactsDisplayManager = FavoriteFactsDisplayManager(favoriteFactsDatabase: favoriteFactsDatabase)
+            let windowStateManager = WindowStateManager(speechManager: speechManager, errorManager: errorManager, favoriteFactsDatabase: favoriteFactsDatabase, favoriteFactsDisplayManager: favoriteFactsDisplayManager, authenticationManager: authenticationManager)
+            let authenticationDialogManager = AuthenticationDialogManager(authenticationManager: authenticationManager, errorManager: errorManager)
+            let settingsManager = SettingsManager(favoriteFactsDisplayManager: favoriteFactsDisplayManager, authenticationManager: authenticationManager, errorManager: errorManager, speechManager: speechManager)
+            ContentView()
+                .ignoresSafeArea(edges: .all)
+                .environmentObject(networkConnectionManager)
+                .environmentObject(favoriteFactsDatabase)
+                .environmentObject(authenticationManager)
+                .environmentObject(windowStateManager)
+                .environmentObject(settingsManager)
+                .environmentObject(speechManager)
+                .environmentObject(authenticationDialogManager)
+                .environmentObject(favoriteFactsDisplayManager)
+                .environmentObject(errorManager)
         }
         .commands {
-            RandoFactoCommands(appStateManager: appStateManager, networkConnectionManager: networkConnectionManager, errorManager: errorManager, authenticationManager: authenticationManager, favoriteFactsDatabase: favoriteFactsDatabase)
+            RandoFactoCommands(networkConnectionManager: networkConnectionManager, authenticationManager: authenticationManager, favoriteFactsDatabase: favoriteFactsDatabase)
         }
-        #endif
         #if os(macOS)
         // Settings window scene
         // On macOS, Settings are presented as a window instead of as one of the app's pages.
-		Settings {
+        Settings {
+            let speechManager = SpeechManager()
+            let errorManager = ErrorManager()
+            let favoriteFactsDisplayManager = FavoriteFactsDisplayManager(favoriteFactsDatabase: favoriteFactsDatabase)
+            let authenticationDialogManager = AuthenticationDialogManager(authenticationManager: authenticationManager, errorManager: errorManager)
+            let settingsManager = SettingsManager(favoriteFactsDisplayManager: favoriteFactsDisplayManager, authenticationManager: authenticationManager, errorManager: errorManager, speechManager: speechManager)
 			SettingsView()
-                .environmentObject(appStateManager)
                 .environmentObject(networkConnectionManager)
-                .environmentObject(errorManager)
                 .environmentObject(favoriteFactsDatabase)
                 .environmentObject(authenticationManager)
+                .environmentObject(settingsManager)
+                .environmentObject(speechManager)
+                .environmentObject(authenticationDialogManager)
+                .environmentObject(favoriteFactsDisplayManager)
+                .environmentObject(errorManager)
 		}
 		#endif
 	}
 
-    @ViewBuilder
-    var mainWindow: some View {
-        ContentView()
-        // Pass model objects to views using .environmentObject(<#object#>). You don't need to pass them to each child view--just pass them once and all child views have access.
-            .environmentObject(appStateManager)
-            .environmentObject(networkConnectionManager)
-            .environmentObject(errorManager)
-            .environmentObject(favoriteFactsDatabase)
-            .environmentObject(authenticationManager)
-            .environmentObject(favoriteFactsListDisplayManager)
-        #if os(macOS)
-            .frame(minWidth: 800, minHeight: 300, alignment: .center)
-        #endif
-        #if os(iOS)
-            .pickerStyle(.navigationLink)
-        #endif
-            .ignoresSafeArea(edges: .all)
-    }
-    
     // This method sets up the app's Firebase configuration.
     static func setupFirebaseConfiguration() {
         // 1. Make sure the GoogleService-Info.plist file is present in the app bundle.
         let firebaseConfigurationFilename = "GoogleService-Info"
         let firebaseConfigurationFileExtension = "plist"
         guard let googleServicePlist = Bundle.main.url(forResource: firebaseConfigurationFilename, withExtension: firebaseConfigurationFileExtension) else {
+            // fatalError(_:) has a special return type called Never, which is a type applied to functions that never return. Never can be assigned as the value of anything and can be used instead of return or throw in a guard statement. fatalError(_:) never returns since it crashes the running app.
             fatalError("Firebase configuration file \(firebaseConfigurationFilename).\(firebaseConfigurationFileExtension) not found in app bundle.")
         }
         let firebaseConfigurationFilePath = googleServicePlist.path
@@ -164,7 +141,8 @@ struct RandoFactoApp: App {
         guard let options = FirebaseOptions(contentsOfFile: firebaseConfigurationFilePath) else {
             fatalError("Failed to load options from Firebase configuration file \(firebaseConfigurationFilename).\(firebaseConfigurationFileExtension).")
         }
-        // Create a separate Swift file to hold a constant called firebaseAPIKey, and include its path in your git repository's .gitignore file to make sure it doesn't get committed. We set up the API key here, instead of in GoogleService-Info.plist, so anyone looking at that file in the app bundle's Contents/Resources directory on macOS won't be able to see the API key.
+        // Create a separate Swift file to hold a constant called firebaseAPIKey, and include its path in your git repository's .gitignore file to make sure it doesn't get committed. We set up the API key here, instead of in GoogleService-Info.plist, so anyone looking at that file in the app bundle's Contents/Resources directory on macOS won't be able to see the API key. This isn't absolutely necessary for Firebase API keys since they're intentionally non-secret, but this prevents tools like GitGuardian from flagging it.
+        // Firebase API keys must start with "AIza". The rest of the API key is random.
         options.apiKey = firebaseAPIKey
         // 3. Initialize Firebase with the custom options. This must be done before the Firestore and Auth objects can be initialized.
         // Since we declare the API key outside GoogleService-Info.plist, we need to use configure(options:) instead of configure().

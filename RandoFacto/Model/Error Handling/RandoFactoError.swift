@@ -3,7 +3,7 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 11/29/22.
-//  Copyright © 2022-2025 SheftApps. All rights reserved.
+//  Copyright © 2022-2026 SheftApps. All rights reserved.
 //
 
 // MARK: - Imports
@@ -93,7 +93,7 @@ enum RandoFactoError: LocalizedError, Equatable, Identifiable {
         case .noInternetAuthentication:
             return "Please check your internet connection and try again."
         case .networkConnectionLost:
-            return "Internet connection lost."
+            return "Internet connection lost. Please try again later."
         case .secureConnectionFailed:
             return "Secure connection failed. If using a public Wi-Fi network, make sure you've activated your internet access."
         case .factGeneratorURLNotFound:

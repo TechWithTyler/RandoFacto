@@ -3,24 +3,25 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 1/19/24.
-//  Copyright © 2022-2025 SheftApps. All rights reserved.
+//  Copyright © 2022-2026 SheftApps. All rights reserved.
 //
 
 // MARK: - Imports
 
 import SwiftUI
+import SheftAppsInternals
 
 struct OnboardingView: View {
 
     // MARK: - Properties - App State Manager
 
-    @EnvironmentObject var appStateManager: AppStateManager
+    @EnvironmentObject var windowStateManager: WindowStateManager
 
     // MARK: - Body
 
     var body: some View {
         VStack {
-            Text("Welcome to \(appName!)!")
+            Text("Welcome to \(SABundleName)!")
                 .font(.largeTitle)
                 .fontWeight(.bold)
                 .multilineTextAlignment(.center)
@@ -28,9 +29,9 @@ struct OnboardingView: View {
             Spacer()
             ScrollView {
             VStack(alignment: .leading, spacing: 10) {
-                    Text("\(appName!) is a random facts app that gets random facts from \(appStateManager.factGenerator.randomFactsAPIName).")
+                    Text("\(SABundleName) is a random facts app that gets random facts from \(windowStateManager.factGenerator.randomFactsAPIName).")
                     Text("Press the speech bubble \(Image(systemName: speechSymbolName)) to have displayed facts read out loud!")
-                    Text("Create a \(appName!) account in \(Text("Settings>Account").bold()) to save your favorite facts to view offline on all your devices.")
+                    Text("Create a \(SABundleName) account in \(Text("Settings>Account").bold()) to save your favorite facts to view offline on all your devices.")
                     Text("You can change the fact text size in \(Text("Settings>Display").bold()).")
                 }
             }
@@ -40,8 +41,8 @@ struct OnboardingView: View {
             PrivacyPolicyAgreementText()
             Divider()
             Button {
-                appStateManager.shouldOnboard = false
-                appStateManager.showingOnboarding = false
+                windowStateManager.shouldOnboard = false
+                windowStateManager.showingOnboarding = false
             } label: {
                 Text("Continue")
                     .frame(width: 300)

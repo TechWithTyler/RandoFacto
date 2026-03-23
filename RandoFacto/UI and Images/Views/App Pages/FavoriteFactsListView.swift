@@ -3,7 +3,7 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 1/23/23.
-//  Copyright © 2022-2025 SheftApps. All rights reserved.
+//  Copyright © 2022-2026 SheftApps. All rights reserved.
 //
 
 // MARK: - Imports
@@ -15,11 +15,11 @@ struct FavoriteFactsListView: View {
     
     // MARK: - Properties - Objects
     
-    @EnvironmentObject var appStateManager: AppStateManager
+    @EnvironmentObject var windowStateManager: WindowStateManager
     
     @EnvironmentObject var favoriteFactsDatabase: FavoriteFactsDatabase
     
-    @EnvironmentObject var favoriteFactsListDisplayManager: FavoriteFactsListDisplayManager
+    @EnvironmentObject var favoriteFactsDisplayManager: FavoriteFactsDisplayManager
     
     @EnvironmentObject var networkConnectionManager: NetworkConnectionManager
     
@@ -29,21 +29,21 @@ struct FavoriteFactsListView: View {
     
     var body: some View {
         ZStack {
-            if appStateManager.isLoading {
+            if windowStateManager.isLoading {
                 loadingDisplay
             } else {
                 VStack {
                     if favoriteFactsDatabase.favoriteFacts.isEmpty {
                        favoriteFactsEmptyDisplay
-                    } else if favoriteFactsListDisplayManager.searchResults.isEmpty {
+                    } else if favoriteFactsDisplayManager.searchResults.isEmpty {
                         noMatchesDisplay
                     } else {
                         favoriteFactsList
                     }
                 }
-                .animation(.default, value: favoriteFactsListDisplayManager.sortedFavoriteFacts)
+                .animation(.default, value: favoriteFactsDisplayManager.sortedFavoriteFacts)
                 // The searchable(text:placement:prompt:) modifier adds a search box with the given search text String binding, placement, and placeholder text prompt. The list contains everything in the FavoriteFactListDisplayManager's sortedFavoriteFacts array, which returns all favorite facts if the search box is empty or only favorite facts matching search terms if the search box contains text. The sortedFavoriteFacts array is a computed property whose value depends on the search text.
-                .searchable(text: $favoriteFactsListDisplayManager.searchText, placement: .toolbar, prompt: "Search Favorite Facts")
+                .searchable(text: $favoriteFactsDisplayManager.searchText, placement: .toolbar, prompt: "Search Favorite Facts")
                 // Toolbar
                 // The search box is placed in the toolbar by the modifier above.
                 .toolbar {
@@ -53,7 +53,7 @@ struct FavoriteFactsListView: View {
         }
         .navigationTitle("Favorite Facts List")
         .onDisappear {
-            favoriteFactsListDisplayManager.clearSearchText()
+            favoriteFactsDisplayManager.clearSearchText()
         }
     }
     
@@ -87,7 +87,7 @@ struct FavoriteFactsListView: View {
     @ViewBuilder
     var noMatchesDisplay: some View {
         VStack {
-            Text("No favorite facts containing \"\(favoriteFactsListDisplayManager.searchText)\"")
+            Text("No favorite facts containing \"\(favoriteFactsDisplayManager.searchText)\"")
                 .font(.largeTitle)
                 .foregroundStyle(.secondary)
             Text("Please check your search terms.")
@@ -108,23 +108,23 @@ struct FavoriteFactsListView: View {
             .listRowSeparator(.hidden)
             .listRowBackground(Color.clear)
             Section {
-                ForEach(favoriteFactsListDisplayManager.sortedFavoriteFacts, id: \.self) {
+                ForEach(favoriteFactsDisplayManager.sortedFavoriteFacts) {
                     favorite in
                     HStack {
                         Button {
-                            appStateManager.displayFavoriteFact(favorite)
+                            windowStateManager.displayFavoriteFact(favorite)
                         } label: {
                             Image(systemName: "star.fill")
                                 .symbolRenderingMode(.multicolor)
-                            Text(favoriteFactsListDisplayManager.favoriteFactWithColoredMatchingTerms(favorite))
-                                .font(.system(size: CGFloat(appStateManager.factTextSize)))
+                            Text(favoriteFactsDisplayManager.favoriteFactWithColoredMatchingTerms(favorite.text))
+                                .font(.system(size: CGFloat(windowStateManager.factTextSize)))
                                 .multilineTextAlignment(.leading)
                                 .tint(.primary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.vertical)
                         }
                         Divider()
-                        SpeakButton(for: favorite)
+                        SpeakButton(for: favorite.text)
                             .labelStyle(.topIconBottomTitle)
                             .imageScale(.large)
                             .padding(.horizontal)
@@ -135,7 +135,7 @@ struct FavoriteFactsListView: View {
                     .buttonStyle(.borderless)
                     .contextMenu {
                         Button {
-                            favoriteFactsListDisplayManager.copyFact(favorite)
+                            favoriteFactsDisplayManager.copyFact(favorite)
                         } label: {
                             Label("Copy", systemImage: "doc.on.doc")
                         }
@@ -157,7 +157,7 @@ struct FavoriteFactsListView: View {
         HStack {
             Spacer()
             VStack(alignment: .center) {
-                Text("\(favoriteFactsListDisplayManager.searchText.isEmpty ? "Favorite facts" : "Search results"): \(favoriteFactsListDisplayManager.sortedFavoriteFacts.count)")
+                Text("\(favoriteFactsDisplayManager.searchText.isEmpty ? "Favorite facts" : "Search results"): \(favoriteFactsDisplayManager.sortedFavoriteFacts.count)")
                     .multilineTextAlignment(.center)
                     .font(.title)
                 Text("Select a favorite fact to display it.")
@@ -172,10 +172,9 @@ struct FavoriteFactsListView: View {
     // MARK: - Unfavorite Action
     
     @ViewBuilder
-    func unfavoriteAction(for favorite: String, inMenu: Bool = false) -> some View {
+    func unfavoriteAction(for favorite: FavoriteFact, inMenu: Bool = false) -> some View {
         Button(role: .destructive) {
-            favoriteFactsDatabase.favoriteFactToDelete = favorite
-            favoriteFactsDatabase.showingDeleteFavoriteFact = true
+            favoriteFactsDisplayManager.showDeleteFavoriteFact(fact: favorite.text)
         } label: {
             Label(inMenu ? "Unfavorite…" : "Unfavorite", systemImage: "star.slash")
         }
@@ -187,7 +186,7 @@ struct FavoriteFactsListView: View {
     var toolbarContent: some ToolbarContent {
         ToolbarItem(placement: .automatic) {
             OptionsMenu(title: .menu) {
-                Picker(selection: $favoriteFactsListDisplayManager.sortFavoriteFactsAscending) {
+                Picker(selection: $favoriteFactsDisplayManager.sortFavoriteFactsAscending) {
                     Text("Ascending (A-Z)").tag(true)
                     Text("Descending (Z-A)").tag(false)
                 } label: {
@@ -209,8 +208,8 @@ struct FavoriteFactsListView: View {
     FavoriteFactsListView()
         #if DEBUG
         .withPreviewData {
-            appStateManager, _, _, _, _, _ in
-            appStateManager.factText = loadingString
+            windowStateManager, _, _, _, _, _, _, _, _ in
+            windowStateManager.factText = loadingString
         }
     #endif
     #if os(macOS)
@@ -222,8 +221,8 @@ struct FavoriteFactsListView: View {
     FavoriteFactsListView()
         #if DEBUG
         .withPreviewData {
-            appStateManager, _, _, _, _, _ in
-            appStateManager.factText = sampleFact
+            windowStateManager, _, _, _, _, _, _, _, _ in
+            windowStateManager.factText = sampleFact
         }
     #endif
     #if os(macOS)

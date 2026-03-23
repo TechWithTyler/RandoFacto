@@ -3,17 +3,18 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 1/19/24.
-//  Copyright © 2022-2025 SheftApps. All rights reserved.
+//  Copyright © 2022-2026 SheftApps. All rights reserved.
 //
 
 // MARK: - Imports
 
-import Firebase
+import FirebaseFirestore
 
 extension Firestore {
     
     // MARK - RandoFacto Firestore Collection Names
 
+    // Names of Firestore collections.
     struct CollectionName {
         
         // The name of the collection containing registered users in the Firestore database.
@@ -25,7 +26,8 @@ extension Firestore {
     }
     
     // MARK: - RandoFacto Firestore Key Names
-    
+
+    // Names of Firestore keys.
     struct KeyName {
         
         // The key name of a fact's text in the Firestore database.

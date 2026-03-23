@@ -3,24 +3,22 @@
 //  RandoFacto
 //
 //  Created by Tyler Sheft on 12/7/23.
-//  Copyright © 2022-2025 SheftApps. All rights reserved.
+//  Copyright © 2022-2026 SheftApps. All rights reserved.
 //
 
 // MARK: - Imports
 
 import SwiftUI
 import Network
-import Firebase
+import FirebaseFirestore
 
 // Handles network connection.
 class NetworkConnectionManager: ObservableObject {
-    
+
     // MARK: - Properties - Objects
 
     // Observes changes to the device's network connection to tell the app whether it should run in online or offline mode.
     var networkPathMonitor = NWPathMonitor()
-    
-    var errorManager: ErrorManager
 
     var firestore: Firestore
 
@@ -29,12 +27,11 @@ class NetworkConnectionManager: ObservableObject {
 
     // MARK: - Initialization
 
-    init(errorManager: ErrorManager, firestore: Firestore) {
-        self.errorManager = errorManager
+    init(firestore: Firestore) {
         self.firestore = firestore
         configureNetworkPathMonitor()
     }
-    
+
     // MARK: - Network Path Monitor - Configuration
 
     // This method configures the network path monitor's path update handler, which tells the app to enable or disable online mode, showing or hiding internet-connection-required UI based on network connection.
@@ -43,7 +40,7 @@ class NetworkConnectionManager: ObservableObject {
         networkPathMonitor.pathUpdateHandler = {
             [self] path in
             // 2. Check the network status when it changes.
-                networkStatusChanged(status: path.status)
+            networkStatusChanged(status: path.status)
         }
         // 2. Start the network path monitor, using a separate DispatchQueue for it.
         let dispatchQueue = DispatchQueue(label: "Network Path Monitor", qos: .utility)
@@ -65,16 +62,14 @@ class NetworkConnectionManager: ObservableObject {
     }
 
     // MARK: - Online
-    
+
     // This method enables online mode.
     func goOnline() {
         // 1. Try to enable Firestore's network features.
         firestore.enableNetwork { error in
-            // 2. If that fails, log an error.
+            // 2. If that fails, throw a fatal error.
             if let error = error {
-                DispatchQueue.main.async {
-                    self.errorManager.showError(error)
-                }
+                fatalError("Failed to enable online mode: \(error.localizedDescription)")
             } else {
                 // 3. If successful, tell the app that the device is online.
                 // Updating a published property must be done on the main thread, so we use DispatchQueue.main.async to run any code that sets such properties.
@@ -84,19 +79,17 @@ class NetworkConnectionManager: ObservableObject {
             }
         }
     }
-    
+
     // MARK: - Offline
-    
+
     // This method enables offline mode.
     func goOffline() {
         // 1. Try to disable Firestore's network features.
         firestore.disableNetwork {
             error in
-            // 2. If that fails, log an error.
+            // 2. If that fails, throw a fatal error.
             if let error = error {
-                DispatchQueue.main.async {
-                    self.errorManager.showError(error)
-                }
+                fatalError("Failed to enable offline mode: \(error.localizedDescription)")
             } else {
                 // 3. If successful, tell the app that the device is offline.
                 DispatchQueue.main.async {
@@ -105,5 +98,5 @@ class NetworkConnectionManager: ObservableObject {
             }
         }
     }
-    
+
 }
