@@ -103,7 +103,7 @@ struct FactView: View {
                         .frame(width: 105, height: 20)
                 }
                 .hoverEffect(.highlight)
-                .disabled(windowStateManager.factTextSize == SATextViewMinFontSize)
+                .disabled(windowStateManager.factTextSize == SATextViewIdealMinFontSize)
                 Button {
                     windowStateManager.factTextSize += 1
                 } label: {
@@ -111,7 +111,7 @@ struct FactView: View {
                         .frame(width: 105, height: 20)
                 }
                 .hoverEffect(.highlight)
-                .disabled(windowStateManager.factTextSize == SATextViewMaxFontSize)
+                .disabled(windowStateManager.factTextSize == SATextViewIdealMaxFontSize)
             }
             .font(.system(size: 25))
             .labelStyle(.iconOnly)
