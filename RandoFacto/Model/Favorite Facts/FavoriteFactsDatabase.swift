@@ -109,7 +109,7 @@ class FavoriteFactsDatabase: ObservableObject {
         }
     }
 
-    // This method decodes document to a FavoriteFact object.
+    // This method decodes document to a FavoriteFact object (QueryDocumentSnapshot > FavoriteFact).
     func decodeFavoriteFact(from document: QueryDocumentSnapshot) throws -> FavoriteFact {
         // 1. Try to decode the document's data to a FavoriteFact object.
         // data(as:) handles the decoding of the data, so we don't need to use a Decoder object.

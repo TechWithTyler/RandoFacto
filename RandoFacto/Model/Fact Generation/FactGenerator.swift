@@ -184,7 +184,7 @@ struct FactGenerator {
         }
     }
     
-    // This method decodes the JSON data returned by the fact generator web API and creates a GeneratedFact object from it, returning the resulting fact text String if successful or an Error if unsuccessful.
+    // This method decodes the JSON data returned by the fact generator web API and creates a GeneratedFact object from it (Data > GeneratedFact), returning the resulting fact text String if successful or an Error if unsuccessful.
     func decodeFact(from data: Data?) -> FactGeneratorJSONDecodingResult {
         // 1. If data is nil, log an error.
         guard let data = data else {
@@ -291,7 +291,7 @@ struct FactGenerator {
         }
     }
 
-    // This method decodes the JSON data returned by the inappropriate words checker web API and creates an InappropriateWordsCheckerData object from it, returning the resulting Bool indicating whether the fact contains inappropriate words.
+    // This method decodes the JSON data returned by the inappropriate words checker web API and creates an InappropriateWordsCheckerResult object from it (Data > InappropriateWordsCheckerResult), returning the resulting Bool indicating whether the fact contains inappropriate words.
     func decodeInappropriateWordsCheckerResult(from data: Data?) -> InappropriateWordsCheckerJSONDecodingResult {
         // 1. If data is nil, log an error.
         guard let data = data else {
