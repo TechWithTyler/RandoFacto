@@ -35,22 +35,17 @@ class WindowStateManager: NSObject, ObservableObject {
     // MARK: - Properties - Strings
 
     // The text to display in the fact text view.
-    // Properties with the @Published property wrapper will trigger updates to SwiftUI views when they're changed. Their values must be value types (i.e. structs), not reference types (i.e. classes).
+    // Properties with the @Published property wrapper will trigger updates to SwiftUI views when they're changed. Their values must be value types (i.e. structs like String, Int, or Bool), not reference types (i.e. classes like FavoriteFactsDatabase).
     @Published var factText: String = loadingString
 
     // The fact currently being spoken.
     @Published var factBeingSpoken: String = String()
 
-    // The @AppStorage property wrapper binds a property to the given UserDefaults key name. Such properties behave the same as UserDefaults get/set properties such as the "5- or 10-frame" setting in SkippyNums, but with the added benefit of automatic UI refreshing.
-    // The ID string of the currently selected voice.
-    @AppStorage(UserDefaults.KeyNames.selectedVoiceID) var selectedVoiceID: String = SADefaultVoiceID
-
-    // The voices that are currently available on the device.
-    @Published var voices: [AVSpeechSynthesisVoice] = []
 
     // MARK: - Properties - Doubles
 
     // The text size for facts.
+    // The @AppStorage property wrapper binds a property to the given UserDefaults key name. Such properties behave the same as UserDefaults get/set properties such as the "5- or 10-frame" setting in SkippyNums, but with the added benefit of automatic UI refreshing.
     @AppStorage(UserDefaults.KeyNames.factTextSize) var factTextSize: Double = SATextViewIdealMinFontSize
 
     // MARK: - Properties - Pages
