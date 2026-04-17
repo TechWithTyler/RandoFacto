@@ -22,15 +22,19 @@ class SpeechManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
 
     // MARK: - Properties - Speech
 
+    // The voices that are currently available on the device.
     @Published var voices: [AVSpeechSynthesisVoice] = []
 
+    // The speech synthesizer.
     var speechSynthesizer = AVSpeechSynthesizer()
 
     // MARK: - Initialization
 
     override init() {
+        // 1. Load the available voices into the app.
         super.init()
         loadVoices()
+        // 2. Set the speech synthesizer delegate.
         speechSynthesizer.delegate = self
     }
 
@@ -39,7 +43,7 @@ class SpeechManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     // This method loads all installed voices into the manager.
     func loadVoices() {
             AVSpeechSynthesizer.requestPersonalVoiceAuthorization { [self] status in
-                voices = AVSpeechSynthesisVoice.speechVoices().filter({$0.language == "en-US"})
+                voices = AVSpeechSynthesisVoice.speechVoices().filter({$0.language.hasPrefix(SAEnglishLanguageCodePrefix)})
                 if voices.filter({$0.identifier == selectedVoiceID}).isEmpty {
                     // If the selected voice ID is not available, set it to the default voice ID.
                     selectedVoiceID = SADefaultVoiceID
