@@ -43,7 +43,7 @@ struct FactSettingsPageView: View {
     var body: some View {
         Form {
             Section {
-                TextSizeSlider(labelText: "Text Size", textSize: $factTextSize, previewText: sampleFact)
+                TextSizeSlider("Fact Text Size", textSize: $factTextSize, previewText: sampleFact)
             }
             .animation(.default, value: factTextSize)
             if authenticationManager.userLoggedIn {
