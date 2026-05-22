@@ -20,7 +20,7 @@ class WindowStateManager: NSObject, ObservableObject {
 #if(DEBUG)
     @Published
 #endif
-    var factGenerator = FactGenerator()
+    var factGenerator: FactGenerator = .shared
 
     var speechManager: SpeechManager
 

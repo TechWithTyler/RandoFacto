@@ -25,7 +25,12 @@ struct FactGenerator {
 
     // The type of inappropriate words checker HTTP request results. Success is the URL request.
     typealias InappropriateWordsCheckerHTTPRequestResult = Result<URLRequest, Error>
-    
+
+    // MARK: - Properties - Shared FactGenerator Instance
+
+    // A shared instance of FactGenerator.
+    static var shared = FactGenerator()
+
     // MARK: - Properties - Strings
 
     // Specifies that the fact generator and inappropriate words checker APIs should return JSON data.
@@ -93,7 +98,7 @@ struct FactGenerator {
     // Allow this to be changed in in-development (internal) builds…
     @AppStorage(UserDefaults.KeyNames.urlRequestTimeoutInterval)
     #endif
-    // …but not final (release) builds.
+    // …but not final (release) builds. The @AppStorage property wrapper is wrapped in a #if(DEBUG) block, but the property itself isn't. This makes the property, but not the ability to store it to UserDefaults, available in release builds.
     var urlRequestTimeoutInterval: TimeInterval = defaultURLRequestTimeoutInterval
     
     // MARK: - Properties - Errors
