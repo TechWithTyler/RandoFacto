@@ -57,7 +57,7 @@ struct AdvancedSettingsPageView: View {
                 settingsManager.resetApp()
             }
         } message: {
-            Text("This will reset all settings to default\(authenticationManager.userLoggedIn ? " and log you out of your account" : String()). This can't be undone!")
+            Text("This will reset all settings to default\(authenticationManager.userLoggedIn ? " and log you out of your account" : String()) on this device. This can't be undone!")
         }
 #if os(macOS)
         .dialogSeverity(.critical)

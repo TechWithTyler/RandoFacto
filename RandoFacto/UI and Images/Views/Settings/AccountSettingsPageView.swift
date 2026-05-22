@@ -33,59 +33,9 @@ struct AccountSettingsPageView: View {
             if let deletionStage = authenticationManager.accountDeletionStage {
                 LoadingIndicator(message: "Deleting \(deletionStage)…")
             } else if let email = authenticationManager.firebaseAuthentication.currentUser?.email {
-                HStack {
-                    Spacer()
-                    Image(systemName: "person.circle.fill")
-                        .foregroundStyle(.secondary)
-                        .font(.system(size: 24))
-                        .fontWeight(.bold)
-                        .accessibilityLabel(email)
-                    VStack(alignment: .center) {
-                        Text("Logged in as")
-                        Text(email)
-                            .font(.system(size: 24))
-                            .fontWeight(.bold)
-                    }
-                    Spacer()
-                }
-                if networkConnectionManager.deviceIsOnline {
-                        Button("Change Password…", systemImage: "key") {
-                            authenticationDialogManager.formType = .passwordChange
-                        }
-                    .controlSize(.large)
-                }
-                    Button("Logout…", systemImage: "door.left.hand.open") {
-                        authenticationDialogManager.showingLogout = true
-                    }
-                    .controlSize(.large)
-                if networkConnectionManager.deviceIsOnline {
-                        Button(role: .destructive) {
-                            authenticationDialogManager.showingDeleteAccount = true
-                        } label: {
-                            Label("DELETE ACCOUNT…", systemImage: "person.crop.circle.fill.badge.minus")
-#if !os(macOS)
-                                .foregroundStyle(.red)
-#endif
-                        }
-
-                        .controlSize(.large)
-                }
+                loggedInGroup(email: email)
             } else {
-                if networkConnectionManager.deviceIsOnline {
-                    Text("Login to your \(SABundleName) account to save favorite facts to view on all your devices, even while offline.")
-                        .font(.system(size: 24))
-                    Button(loginText, systemImage: "entry.lever.keypad") {
-                        authenticationDialogManager.formType = .login
-                    }
-                    .controlSize(.large)
-                    Button(signupText, systemImage: "person.crop.circle.fill.badge.plus") {
-                        authenticationDialogManager.formType = .signup
-                    }
-                    .controlSize(.large)
-                } else {
-                    Text("Authentication unavailable. Please check your internet connection.")
-                        .font(.system(size: 24))
-                }
+                loggedOutGroup
             }
         }
         .formStyle(.grouped)
@@ -98,7 +48,7 @@ struct AccountSettingsPageView: View {
                 authenticationDialogManager.deleteCurrentUser()
             }
         } message: {
-            Text("You won't be able to save favorite facts to view offline! This can't be undone!")
+            Text("All favorite fact-related settings on all your devices will be reset and all favorite facts will be deleted from all your devices. You won't be able to save favorite facts to view offline! This can't be undone!")
         }
 #if os(macOS)
         .dialogSeverity(.critical)
@@ -112,7 +62,7 @@ struct AccountSettingsPageView: View {
                 authenticationDialogManager.logoutCurrentUser()
             }
         } message: {
-            Text("All favorite fact-related settings will be reset. You won't be able to save favorite facts to view offline until you login again!")
+            Text("All favorite fact-related settings on this device will be reset and all favorite facts will be deleted from this device. You won't be able to save favorite facts to view offline until you login again!")
         }
         // Authentication form
         .sheet(item: $authenticationDialogManager.formType) { _ in
@@ -120,6 +70,66 @@ struct AccountSettingsPageView: View {
                 .environmentObject(networkConnectionManager)
                 .environmentObject(authenticationManager)
                 .environmentObject(errorManager)
+        }
+    }
+
+    @ViewBuilder
+    func loggedInGroup(email: String) -> some View {
+        HStack {
+            Spacer()
+            Image(systemName: "person.circle.fill")
+                .foregroundStyle(.secondary)
+                .font(.system(size: 24))
+                .fontWeight(.bold)
+                .accessibilityLabel(email)
+            VStack(alignment: .center) {
+                Text("Logged in as")
+                Text(email)
+                    .font(.system(size: 24))
+                    .fontWeight(.bold)
+            }
+            Spacer()
+        }
+        if networkConnectionManager.deviceIsOnline {
+                Button("Change Password…", systemImage: "key") {
+                    authenticationDialogManager.formType = .passwordChange
+                }
+            .controlSize(.large)
+        }
+            Button("Logout…", systemImage: "door.left.hand.open") {
+                authenticationDialogManager.showingLogout = true
+            }
+            .controlSize(.large)
+        if networkConnectionManager.deviceIsOnline {
+                Button(role: .destructive) {
+                    authenticationDialogManager.showingDeleteAccount = true
+                } label: {
+                    Label("DELETE ACCOUNT…", systemImage: "person.crop.circle.fill.badge.minus")
+#if !os(macOS)
+                        .foregroundStyle(.red)
+#endif
+                }
+                .controlSize(.large)
+        }
+
+    }
+
+    @ViewBuilder
+    var loggedOutGroup: some View {
+        if networkConnectionManager.deviceIsOnline {
+            Text("Login to your \(SABundleName) account to save favorite facts to view on all your devices, even while offline.")
+                .font(.system(size: 24))
+            Button(loginText, systemImage: "entry.lever.keypad") {
+                authenticationDialogManager.formType = .login
+            }
+            .controlSize(.large)
+            Button(signupText, systemImage: "person.crop.circle.fill.badge.plus") {
+                authenticationDialogManager.formType = .signup
+            }
+            .controlSize(.large)
+        } else {
+            Text("Authentication unavailable. Please check your internet connection.")
+                .font(.system(size: 24))
         }
     }
 
