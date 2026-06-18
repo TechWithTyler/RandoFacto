@@ -37,7 +37,7 @@ struct FactView: View {
     // MARK: - Body
 
     var body: some View {
-        TranslucentFooterVStack {
+        TranslucentFooterVStack(liquidGlassInteractive: true) {
             // Main section
             factTextView
         } translucentFooterContent: {
@@ -103,7 +103,7 @@ struct FactView: View {
                         .frame(width: 105, height: 20)
                 }
                 .hoverEffect(.highlight)
-                .disabled(windowStateManager.factTextSize == SATextViewMinFontSize)
+                .disabled(windowStateManager.factTextSize == SATextViewIdealMinFontSize)
                 Button {
                     windowStateManager.factTextSize += 1
                 } label: {
@@ -111,7 +111,7 @@ struct FactView: View {
                         .frame(width: 105, height: 20)
                 }
                 .hoverEffect(.highlight)
-                .disabled(windowStateManager.factTextSize == SATextViewMaxFontSize)
+                .disabled(windowStateManager.factTextSize == SATextViewIdealMaxFontSize)
             }
             .font(.system(size: 25))
             .labelStyle(.iconOnly)
@@ -181,8 +181,7 @@ struct FactView: View {
 
     @ToolbarContentBuilder
     var toolbarContent: some ToolbarContent {
-        let shouldShowLoadingIndicator = windowStateManager.factText.last == "…" || windowStateManager.factText.isEmpty || favoriteFactsDisplayManager.randomizerRunning
-        if shouldShowLoadingIndicator {
+        if windowStateManager.shouldShowLoadingIndicator {
             ToolbarItem(placement: .automatic) {
                 LoadingIndicator()
             }
