@@ -29,7 +29,7 @@ struct FavoriteFactsListView: View {
     
     var body: some View {
         ZStack {
-            if windowStateManager.isLoading {
+            if windowStateManager.isInitialLoading {
                 loadingDisplay
             } else {
                 VStack {

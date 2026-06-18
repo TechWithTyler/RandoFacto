@@ -75,14 +75,19 @@ class WindowStateManager: NSObject, ObservableObject {
         return authenticationManager.userLoggedIn && !authenticationManager.isDeletingAccount && !favoriteFactsDatabase.favoriteFacts.isEmpty
     }
 
-    // Whether the window is loading.
-    var isLoading: Bool {
+    // Whether the window is perforing its initial loading.
+    var isInitialLoading: Bool {
         return factText == loadingString
+    }
+
+    // Whether the loading indicator should be displayed.
+    var shouldShowLoadingIndicator: Bool {
+        return factText.last == "…" || factText.isEmpty || favoriteFactsDisplayManager.randomizerRunning
     }
 
     // Whether the fact text view is displaying something other than a fact (i.e., a loading message).
     var factTextDisplayingMessage: Bool {
-        return isLoading || factText == generatingRandomFactString || favoriteFactsDisplayManager.randomizerRunning
+        return isInitialLoading || factText == generatingRandomFactString || favoriteFactsDisplayManager.randomizerRunning
     }
 
     // Whether the displayed fact is saved as a favorite.
@@ -113,7 +118,7 @@ class WindowStateManager: NSObject, ObservableObject {
 
     // MARK: - Fact Generation
 
-    // This method either generates a random fact or displays a random favorite fact to the user, based on authentication state, number of favorite facts, and settings.
+    // This method either generates a random fact, displays a random favorite fact to the user, or shows the favorite facts list, based on authentication state, number of favorite facts, and settings.
     func displayInitialFact() {
         // 1. Wait 2 seconds to give the network path monitor time to configure.
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(initializationTime)) { [self] in
@@ -175,6 +180,7 @@ extension WindowStateManager {
 
     // MARK: - Favorite Facts - Toggle Favorite
 
+    // This method favorites or unfavorites the displayed fact based on whether it's a favorite fact.
     func toggleFavoriteFact() {
         DispatchQueue.main.async { [self] in
             if displayedFactIsSaved {

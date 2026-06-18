@@ -15,6 +15,9 @@ class SettingsManager: NSObject, ObservableObject {
 
     // MARK: - Properties - Objects
 
+    #if(DEBUG)
+    @Published
+    #endif
     var factGenerator: FactGenerator = .shared
 
     var favoriteFactsDisplayManager: FavoriteFactsDisplayManager
