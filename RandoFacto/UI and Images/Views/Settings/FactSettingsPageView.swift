@@ -58,11 +58,13 @@ struct FactSettingsPageView: View {
                 }
                 Section {
                     Toggle("Skip Favorites On Fact Generation", isOn: $skipFavoritesOnFactGeneration)
+                        .toggleStyle(.stateLabelCheckbox(stateLabelPair: .yesNo))
                 } footer: {
                     Text("Turn this on if you want \(SABundleName) to skip your favorite facts when generating random facts.\nThis setting will reset to off when you logout or delete your account.\nNote: If this setting is on, fact generation may take longer than usual.")
                 }
                 Section {
                     Toggle("Favorite Fact Randomizer Effect", isOn: $favoriteFactsRandomizerEffect)
+                        .toggleStyle(.stateLabelCheckbox(stateLabelPair: .onOff))
                     if favoriteFactsRandomizerEffect {
                         Toggle("Click Sound", isOn: $favoriteFactsRandomizerClick)
                             .onChange(of: favoriteFactsRandomizerClick) { oldValue, newValue in
@@ -70,6 +72,7 @@ struct FactSettingsPageView: View {
                                     favoriteFactsDisplayManager.playRandomizerClick()
                                 }
                             }
+                            .toggleStyle(.stateLabelCheckbox(stateLabelPair: .onOff))
                     }
                     if favoriteFactsDatabase.favoriteFacts.count < 5 {
                         InfoText("The randomizer effect only works if you have at least 5 favorite facts (you currently have \(favoriteFactsDatabase.favoriteFacts.count)).")
