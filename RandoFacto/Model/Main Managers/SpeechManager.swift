@@ -31,7 +31,7 @@ class SpeechManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     // MARK: - Initialization
 
     override init() {
-        // 1. Load the available voices into the app.
+        // 1. Load the available voices into the manager.
         super.init()
         loadVoices()
         // 2. Set the speech synthesizer delegate.

@@ -19,7 +19,7 @@ struct RandoFactoApp: App {
 	// MARK: - Properties - macOS AppDelegate Adaptor
 
 	#if os(macOS)
-	// Sometimes you still need to use an app delegate in SwiftUI App-based apps. Here, we use the @NSApplicationDelegateAdaptor property wrapper with the AppDelegate class as an argument to supply an app delegate on macOS. In this app, it's used to quit the app when closing the last open window.
+	// Sometimes you still need to use an app delegate in SwiftUI App-based apps. Here, we use the @NSApplicationDelegateAdaptor property wrapper with the AppDelegate class as an argument to supply an app delegate on macOS. As with any app delegate, it must be a class that inherits from NSObject and conforms to the NSApplicationDelegate or UIApplicationDelegate protocol. In this app, it's used to quit the app when closing the last open window.
 	@NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 	#endif
     
@@ -33,9 +33,8 @@ struct RandoFactoApp: App {
     // Handles Firebase authentication/user-related tasks.
     var firebaseAuthentication: Authentication
     
-    // MARK: - Shared Services
-    
-    // Services that can be shared across windows (stateless or externally synchronized).
+    // MARK: - App-Level Model Objects
+
     let networkConnectionManager: NetworkConnectionManager
 
     let authenticationManager: AuthenticationManager
@@ -48,7 +47,7 @@ struct RandoFactoApp: App {
     init() {
         // 1. Configure Firebase.
         RandoFactoApp.setupFirebaseConfiguration()
-        // Firebase objects are initialized using Thing.thing(), with Thing being the class name and thing() being the same-name-but-lowercase singleton initializer method. Firebase objects can be initialized only once, and simply using Thing() won't compile.
+        // The main Firebase objects are initialized using Thing.thing(), with Thing being the class name and thing() being the same-name-but-lowercase singleton initializer method. Firebase objects can be initialized only once, and simply using Thing() won't compile. Thing() would create a new instance of the object, while Thing.thing() returns the already configured Thing instance.
         let firestore = Firestore.firestore()
         // To make the Firebase authentication object, Auth, easier to understand, we use a custom type alias called Authentication.
         let firebaseAuthentication = Authentication.auth()
@@ -83,7 +82,7 @@ struct RandoFactoApp: App {
     var body: some Scene {
         // Main window scene
         WindowGroup {
-            // Per-window objects
+            // Instances of per-window objects defined within a Scene are created for each instance of that Scene. In this case, each main window instance has its own instance of each per-window object.
             let speechManager = SpeechManager()
             let errorManager = ErrorManager()
             let favoriteFactsDisplayManager = FavoriteFactsDisplayManager(favoriteFactsDatabase: favoriteFactsDatabase)
@@ -107,7 +106,7 @@ struct RandoFactoApp: App {
         }
         #if os(macOS)
         // Settings window scene
-        // On macOS, Settings are presented as a window instead of as one of the app's pages.
+        // On macOS, Settings is presented as a window instead of as one of the app's pages. We need to create separate instances of the necessary per-window objects here.
         Settings {
             let speechManager = SpeechManager()
             let errorManager = ErrorManager()
@@ -127,6 +126,8 @@ struct RandoFactoApp: App {
 		#endif
 	}
 
+    // MARK: - Firebase Configuration
+
     // This method sets up the app's Firebase configuration.
     static func setupFirebaseConfiguration() {
         // 1. Make sure the GoogleService-Info.plist file is present in the app bundle.
@@ -137,14 +138,14 @@ struct RandoFactoApp: App {
             fatalError("Firebase configuration file \(firebaseConfigurationFilename).\(firebaseConfigurationFileExtension) not found in app bundle.")
         }
         let firebaseConfigurationFilePath = googleServicePlist.path
-        // 2. Create a FirebaseOptions object with the API key.
+        // 2. Create a FirebaseOptions object and set the API key. All other options are in the plist file.
         guard let options = FirebaseOptions(contentsOfFile: firebaseConfigurationFilePath) else {
             fatalError("Failed to load options from Firebase configuration file \(firebaseConfigurationFilename).\(firebaseConfigurationFileExtension).")
         }
         // Create a separate Swift file to hold a constant called firebaseAPIKey, and include its path in your git repository's .gitignore file to make sure it doesn't get committed. We set up the API key here, instead of in GoogleService-Info.plist, so anyone looking at that file in the app bundle's Contents/Resources directory on macOS won't be able to see the API key. This isn't absolutely necessary for Firebase API keys since they're intentionally non-secret, but this prevents tools like GitGuardian from flagging it.
         // Firebase API keys must start with "AIza". The rest of the API key is random.
         options.apiKey = firebaseAPIKey
-        // 3. Initialize Firebase with the custom options. This must be done before the Firestore and Auth objects can be initialized.
+        // 3. Initialize Firebase with the custom options. This must be done before the Firestore and Auth objects can be initialized, which is why a static method is the only possible way to separate this configuration from the rest of init() while keeping it in the app struct.
         // Since we declare the API key outside GoogleService-Info.plist, we need to use configure(options:) instead of configure().
         FirebaseApp.configure(options: options)
     }
