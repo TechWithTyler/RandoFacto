@@ -27,7 +27,11 @@ struct AuthenticationFormView: View {
     // MARK: - Properties - Dismiss Action
 
     @Environment(\.dismiss) var dismiss
-    
+
+    // MARK: - Properties - Booleans
+
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
+
     // MARK: - Body
 
     var body: some View {
@@ -42,7 +46,7 @@ struct AuthenticationFormView: View {
                     credentialFields
                     belowFieldUI
                 }
-                .animation(.linear, value: authenticationDialogManager.formType)
+                .animation(reduceMotion ? nil : .linear, value: authenticationDialogManager.formType)
             }
             .formStyle(.grouped)
             .navigationTitle(authenticationDialogManager.formType?.title ?? Authentication.FormType.login.title)

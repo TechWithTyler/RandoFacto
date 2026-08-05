@@ -16,6 +16,10 @@ struct PasswordStrengthBar: View {
 
     var fraction: Double // 0.0–1.0 strength fill
 
+    // MARK: - Properties - Booleans
+
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
+
     // MARK: - Properties - Colors
 
     var color: Color
@@ -30,7 +34,7 @@ struct PasswordStrengthBar: View {
                 RoundedRectangle(cornerRadius: 6)
                     .frame(width: max(1, CGFloat(fraction == 0 ? 0.05 : fraction) * geometry.size.width))
                     .foregroundStyle(color)
-                    .animation(.easeInOut(duration: 0.25), value: fraction)
+                    .animation(reduceMotion ? nil : .easeInOut(duration: 0.25), value: fraction)
             }
         }
     }

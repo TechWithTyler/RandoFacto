@@ -34,6 +34,10 @@ struct FactView: View {
     let randomizerHaptics = NSHapticFeedbackManager.defaultPerformer
 #endif
 
+    // MARK: - Properties - Booleans
+
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
+
     // MARK: - Body
 
     var body: some View {
@@ -80,7 +84,7 @@ struct FactView: View {
         ScrollableText(windowStateManager.factText)
             .multilineTextAlignment(.center)
             .font(.system(size: CGFloat(windowStateManager.factTextSize)))
-            .animation(.default, value: windowStateManager.factTextSize)
+            .animation(reduceMotion ? nil : .default, value: windowStateManager.factTextSize)
             .isTextSelectable(canSelectFactText)
             .blur(radius: favoriteFactsDisplayManager.randomizerRunning ? favoriteFactsDisplayManager.randomizerBlurRadius : 0)
             .accessibilityHidden(favoriteFactsDisplayManager.randomizerRunning)

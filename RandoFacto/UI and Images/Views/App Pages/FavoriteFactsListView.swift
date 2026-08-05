@@ -24,7 +24,9 @@ struct FavoriteFactsListView: View {
     @EnvironmentObject var networkConnectionManager: NetworkConnectionManager
     
     @EnvironmentObject var errorManager: ErrorManager
-    
+
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
+
     // MARK: - Body
     
     var body: some View {
@@ -41,7 +43,7 @@ struct FavoriteFactsListView: View {
                         favoriteFactsList
                     }
                 }
-                .animation(.default, value: favoriteFactsDisplayManager.sortedFavoriteFacts)
+                .animation(reduceMotion ? nil : .default, value: favoriteFactsDisplayManager.sortedFavoriteFacts)
                 // The searchable(text:placement:prompt:) modifier adds a search box with the given search text String binding, placement, and placeholder text prompt. The list contains everything in the FavoriteFactListDisplayManager's sortedFavoriteFacts array, which returns all favorite facts if the search box is empty or only favorite facts matching search terms if the search box contains text. The sortedFavoriteFacts array is a computed property whose value depends on the search text.
                 .searchable(text: $favoriteFactsDisplayManager.searchText, placement: .toolbar, prompt: "Search Favorite Facts")
                 // Toolbar

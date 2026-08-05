@@ -16,6 +16,10 @@ struct PasswordStrengthMeter: View {
 
     @Binding var password: String
 
+    // MARK: - Properties - Booleans
+
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
+
     // MARK: - Properties - Evaluation
 
     private var evaluation: PasswordEvaluator.Evaluation {
@@ -36,7 +40,7 @@ struct PasswordStrengthMeter: View {
                         .font(.subheadline).bold()
                         .foregroundStyle(evaluation.strength == .veryStrong ? .black : .primary)
                         .padding(.horizontal)
-                        .animation(.easeInOut(duration: 0.25), value: evaluation.strength)
+                        .animation(reduceMotion ? nil : .easeInOut(duration: 0.25), value: evaluation.strength)
                         .accessibilityHidden(true)
                 }
             }

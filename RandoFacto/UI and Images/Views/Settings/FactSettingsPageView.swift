@@ -45,7 +45,6 @@ struct FactSettingsPageView: View {
             Section {
                 TextSizeSlider("Fact Text Size", textSize: $factTextSize, previewText: sampleFact)
             }
-            .animation(.default, value: factTextSize)
             if authenticationManager.userLoggedIn {
                 Section {
                     Picker("Initial Display", selection: $favoriteFactsDatabase.initialFact) {
