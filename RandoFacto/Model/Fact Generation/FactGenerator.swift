@@ -201,8 +201,11 @@ struct FactGenerator {
             // Do-catch statements are used to run code that may "throw" an error, and the catch block "catches" the error. A function that can throw an error is marked with the throws keyword, and a call to it must be preceded by the try keyword. Think of the try expression as one person, the caller of this method as another person, and a potential error as a ball. The first person (the try expression) throws the ball (the error) to the second person (the caller of this method) if the try expression produces an error.
             // Since we're using a type name, not an instance of that type, we use TypeName.self instead of TypeName().
             let typeToDecode = GeneratedFact.self
+            // If the following line throws an error, the rest of the do block is skipped and the catch block runs instead.
             let factObject = try decoder.decode(typeToDecode, from: data)
-            return .success(correctedFactText(factObject.text))
+            let factText = factObject.text
+            let correctedText = correctedFactText(factText)
+            return .success(correctedText)
         } catch {
             return .failure(error)
         }
@@ -238,7 +241,7 @@ struct FactGenerator {
         let httpRequestResult = createInappropriateWordsCheckerHTTPRequest(with: url, toScreenFact: fact)
         switch httpRequestResult {
         case .success(let request):
-            // 3. If the URL request is succcessful, create the data task with the inappropriate words checker URL, handling errors and HTTP responses just as we did in generateRandomFact(factGenerationDidBeginHandler:completionHandler:) above.
+            // 3. If the URL request is successful, create the data task with the inappropriate words checker URL, handling errors and HTTP responses just as we did in generateRandomFact(factGenerationDidBeginHandler:completionHandler:) above.
             let dataTask = urlSession.dataTask(with: request) { [self] data, response, error in
                 handleInappropriateWordsCheckerDataTaskResult(fact: fact, data: data, response: response, error: error, completionHandler: completionHandler)
             }
@@ -263,6 +266,7 @@ struct FactGenerator {
         let jsonWritingOptions: JSONSerialization.WritingOptions = [.fragmentsAllowed]
         // 5. Try to convert body to JSON data and return the created request. If conversion fails, log an error.
         do {
+            // Anything can be passed to the first parameter of data(withJsonObject:options:). In this case, we pass a [String : String] dictionary, as that's what the inappropriate words checker server gives back.
             let jsonData = try JSONSerialization.data(withJSONObject: body, options: jsonWritingOptions)
             request.httpBody = jsonData
             return .success(request)
@@ -319,7 +323,7 @@ struct FactGenerator {
         if let error = error {
             completionHandler(nil, error)
         } else if let fact = fact {
-            // 2. If a fact is returned, pass it to the completion handler. If it doesn't contain text, log an error.
+            // 2. If a fact is returned, we know it's safe to pass to the completion handler. If it doesn't contain text, log an error.
             if fact.isEmpty {
                completionHandler(nil, noTextError)
             } else {
