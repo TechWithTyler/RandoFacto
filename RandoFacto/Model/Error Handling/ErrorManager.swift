@@ -79,7 +79,7 @@ class ErrorManager: ObservableObject {
             let reason = nsError.localizedDescription
             errorToShow = .unknown(reason: reason)
         }
-        // 3. Show the error as an alert unless an external presentation handler is provided.
+        // 3. If an external presentation handler is provided, pass the error to it. This is used to show errors in the authentication dialog inline. Otherwise, show it as an alert.
         if let externalPresentationHandler = externalPresentationHandler, let errorToShow = errorToShow {
             externalPresentationHandler(errorToShow)
         } else {

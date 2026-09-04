@@ -189,7 +189,7 @@ class AuthenticationDialogManager: ObservableObject {
 
     // MARK: - Show Error Inline
 
-    // This method shows error in the authentication dialog.
+    // This method shows error in the authentication dialog by using an external presentation handler.
     func showErrorInline(error: Error) {
         errorManager.showError(error) { [self] randoFactoError in
             formErrorText = randoFactoError.localizedDescription
