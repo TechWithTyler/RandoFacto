@@ -41,6 +41,9 @@ class FavoriteFactsDatabase: ObservableObject {
 
     // MARK: - Properties - Errors
 
+    // The error to show on the "Random Fact" page if loading of a user's favorite facts database fails.
+    var favoriteFactsLoadError: Error? = nil
+
     // The error thrown when a favorite fact's reference can't be found.
     let favoriteFactReferenceError = NSError(domain: ErrorDomain.favoriteFactReferenceNotFound.rawValue, code: ErrorCode.favoriteFactReferenceNotFound.rawValue)
 
@@ -53,9 +56,10 @@ class FavoriteFactsDatabase: ObservableObject {
     }
 
     func setupListener() {
-        loadFavoriteFactsForCurrentUser { error in
+        favoriteFactsLoadError = nil
+        loadFavoriteFactsForCurrentUser { [self] error in
             if let error = error {
-                fatalError("Failed to load/update favorite facts: \(error.localizedDescription)")
+                favoriteFactsLoadError = error
             }
         }
     }

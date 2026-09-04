@@ -68,6 +68,11 @@ class AuthenticationManager: ObservableObject {
     // Listens for changes to the references for the logged in user.
     var userReferenceListener: ListenerRegistration? = nil
 
+    // MARK: - Properties - Errors
+
+    // The error to show on the "Random Fact" page if user reference loading fails.
+    var userReferenceLoadError: Error? = nil
+
     // MARK: - Initialization
 
     init(firebaseAuthentication: Authentication, networkConnectionManager: NetworkConnectionManager) {
@@ -76,9 +81,10 @@ class AuthenticationManager: ObservableObject {
     }
 
     func setupListener() {
-        addUserReferenceHandler { error in
+        userReferenceLoadError = nil
+        addUserReferenceHandler { [self] error in
             if let error = error {
-                fatalError("Failed to load/update registered user references: \(error.localizedDescription)")
+                userReferenceLoadError = error
             }
         }
     }
@@ -322,6 +328,8 @@ class AuthenticationManager: ObservableObject {
             try firebaseAuthentication.signOut()
             // 2. If successful, reset the app's local Firestore data and related settings.
             resetLocalFirestoreData()
+            userReferenceLoadError = nil
+            favoriteFactsDatabase?.favoriteFactsLoadError = nil
             completionHandler(nil)
         } catch {
             // 3. If unsuccessful, log an error.

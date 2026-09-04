@@ -46,6 +46,9 @@ struct FactView: View {
             factTextView
         } translucentFooterContent: {
             // Footer section
+            if authenticationManager.userLoggedIn && (authenticationManager.userReferenceLoadError != nil || favoriteFactsDatabase.favoriteFactsLoadError != nil) {
+                loadingErrorSection
+            }
             factGenerationButtons
             Divider()
             #if !os(macOS)
@@ -74,6 +77,28 @@ struct FactView: View {
 #endif
         }
 #endif
+    }
+
+    // MARK: - Loading Error Section
+
+    @ViewBuilder
+    var loadingErrorSection: some View {
+        HStack {
+            Image(systemName: errorSymbolName)
+                .symbolRenderingMode(.multicolor)
+            VStack {
+                if let favoriteFactsLoadError = favoriteFactsDatabase.favoriteFactsLoadError {
+                    Text("Failed to load/update favorite facts: \(favoriteFactsLoadError.localizedDescription)")
+                }
+                if let favoriteFactsLoadError = favoriteFactsDatabase.favoriteFactsLoadError {
+                    Text("Failed to load/update favorite facts: \(favoriteFactsLoadError.localizedDescription)")
+                }
+            }
+            Button("Retry") {
+                authenticationManager.setupListener()
+                favoriteFactsDatabase.setupListener()
+            }
+        }
     }
 
     // MARK: - Fact Text View
