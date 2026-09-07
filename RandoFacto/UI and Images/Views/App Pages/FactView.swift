@@ -87,8 +87,8 @@ struct FactView: View {
             Image(systemName: errorSymbolName)
                 .symbolRenderingMode(.multicolor)
             VStack {
-                if let favoriteFactsLoadError = favoriteFactsDatabase.favoriteFactsLoadError {
-                    Text("Failed to load/update favorite facts: \(favoriteFactsLoadError.localizedDescription)")
+                if let userReferenceLoadError = authenticationManager.userReferenceLoadError {
+                    Text("Failed to load/update user reference: \(userReferenceLoadError.localizedDescription)")
                 }
                 if let favoriteFactsLoadError = favoriteFactsDatabase.favoriteFactsLoadError {
                     Text("Failed to load/update favorite facts: \(favoriteFactsLoadError.localizedDescription)")
