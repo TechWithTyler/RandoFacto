@@ -28,7 +28,7 @@ struct FactView: View {
     @EnvironmentObject var errorManager: ErrorManager
 
 #if os(iOS)
-    // Gives a MacBook, 2015-present Magic Trackpad, or iPhone user ultra-slick haptic taps for each favorite fact randomizer iteration (like the clicks of a spinner).
+    // Gives a MacBook (except MacBook Neo), 2015-present Magic Trackpad, or iPhone user ultra-slick haptic taps for each favorite fact randomizer iteration (like the clicks of a spinner).
     let randomizerHaptics = UIImpactFeedbackGenerator(style: .light)
 #elseif os(macOS)
     let randomizerHaptics = NSHapticFeedbackManager.defaultPerformer
@@ -72,7 +72,7 @@ struct FactView: View {
             // iPhone supports a wide range of intensities for its haptics.
             randomizerHaptics.impactOccurred(intensity: 0.5)
 #else
-            // The Force Touch Trackpad on a MacBook or 2015-present Magic Trackpad, on the other hand, only supports 3 types of haptics. We use the generic haptic pattern here.
+            // The Force Touch Trackpad on a MacBook (except MacBook Neo) or 2015-present Magic Trackpad, on the other hand, only supports 3 types of haptics. We use the generic haptic pattern here.
             randomizerHaptics.perform(.generic, performanceTime: .default)
 #endif
         }
