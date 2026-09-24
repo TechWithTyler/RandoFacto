@@ -47,7 +47,7 @@ class WindowStateManager: NSObject, ObservableObject {
     // MARK: - Properties - Doubles
 
     // The text size for facts.
-    // The @AppStorage property wrapper binds a property to the given UserDefaults key name. Such properties behave the same as UserDefaults get/set properties such as the "5- or 10-frame" setting in SkippyNums, but with the added benefit of automatic UI refreshing.
+    // The @AppStorage property wrapper binds a property to the given UserDefaults key name. Such properties behave the same as UserDefaults get/set properties such as the "5- or 10-frame" setting in SkippyNums (which started development 84 days later than RandoFacto but was publicly released before RandoFacto), but with the added benefit of automatic UI refreshing.
     @AppStorage(UserDefaults.KeyNames.factTextSize) var factTextSize: Double = SATextViewIdealMinFontSize
 
     // MARK: - Properties - Pages

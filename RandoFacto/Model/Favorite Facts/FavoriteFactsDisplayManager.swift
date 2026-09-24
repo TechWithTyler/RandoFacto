@@ -111,7 +111,7 @@ class FavoriteFactsDisplayManager: ObservableObject {
     func setupRandomizerTimer(block: @escaping (() -> Void)) {
         // 1. Start the randomizerTimer without repeat, since the timer's interval increases as randomizerIterations increases and the time interval of running Timers can't be changed directly.
         let randomizerTimeInterval = TimeInterval(randomizerIterations) / TimeInterval(maxRandomizerIterations * 4)
-        randomizerTimer = Timer.scheduledTimer(withTimeInterval: randomizerTimeInterval, repeats: false, block: { [self] timer in
+        randomizerTimer = Timer.scheduledTimer(withTimeInterval: randomizerTimeInterval, repeats: false) { [self] timer in
             // 2. Play a click sound if enabled.
             if favoriteFactsRandomizerClick {
                 playRandomizerClick()
@@ -125,12 +125,10 @@ class FavoriteFactsDisplayManager: ObservableObject {
                 // 4. Otherwise, increase the count and restart the timer.
                 randomizerIterations += 1
                 timer.invalidate()
-                setupRandomizerTimer {
-                    block()
-                }
+                setupRandomizerTimer(block: block)
             }
             block()
-        })
+        }
     }
 
     // MARK: - Randomizer Timer - Stop
@@ -144,6 +142,7 @@ class FavoriteFactsDisplayManager: ObservableObject {
 
     // MARK: - Randomizer Click
 
+    // This method plays a click sound with each randomizer iteration.
     func playRandomizerClick() {
         // 1. Make sure the audio file is present in the app bundle.
         let filename = "click"
@@ -177,7 +176,7 @@ class FavoriteFactsDisplayManager: ObservableObject {
 
     // MARK: - Favorite Facts List - Copy Fact
 
-    // Copies favorite to the device's clipboard using the platform-specific copy implementation.
+    // This method copies favorite to the device's clipboard using the platform-specific copy implementation.
     func copyFact(_ favorite: FavoriteFact) {
 #if os(macOS)
         NSPasteboard.general.declareTypes([.string], owner: self)
@@ -189,12 +188,14 @@ class FavoriteFactsDisplayManager: ObservableObject {
 
     // MARK: - Favorite Facts List - Clear Search Text
 
+    // This method clears searchText.
     func clearSearchText() {
         searchText.removeAll()
     }
 
     // MARK: - Show Dialog
 
+    // This method shows the "delete favorite fact?" alert.
     func showDeleteFavoriteFact(fact: String) {
         favoriteFactToDelete = fact
         showingDeleteFavoriteFact = true
@@ -202,6 +203,7 @@ class FavoriteFactsDisplayManager: ObservableObject {
 
     // MARK: - Dismiss Dialog
 
+    // This method dismisses the "delete favorite fact?" alert.
     func dismissDeleteFavoriteFact() {
         showingDeleteFavoriteFact = false
         favoriteFactToDelete = nil
