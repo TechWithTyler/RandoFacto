@@ -157,7 +157,7 @@ class FavoriteFactsDisplayManager: ObservableObject {
             audioPlayer?.stop()
             audioPlayer?.play()
         } catch {
-            fatalError("Error playing audio file click.wav: \(error.localizedDescription)")
+            fatalError("Error playing audio file \(filename).\(fileExtension): \(error.localizedDescription)")
         }
     }
 
