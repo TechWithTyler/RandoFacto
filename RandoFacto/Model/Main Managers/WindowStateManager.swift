@@ -41,6 +41,8 @@ class WindowStateManager: NSObject, ObservableObject {
     // The fact currently being spoken.
     @Published var factBeingSpoken: String = String()
 
+    // The previous fact that was displayed, which prevents the same one from appearing when generating a random fact or getting a random favorite fact.
+    var previousFact: String = String()
 
     // MARK: - Properties - Doubles
 
@@ -86,7 +88,7 @@ class WindowStateManager: NSObject, ObservableObject {
     }
 
     // Whether the fact text view is displaying something other than a fact (i.e., a loading message).
-    var factTextDisplayingMessage: Bool {
+    var isBusy: Bool {
         return isInitialLoading || factText == generatingRandomFactString || favoriteFactsDisplayManager.randomizerRunning
     }
 
@@ -150,15 +152,19 @@ class WindowStateManager: NSObject, ObservableObject {
             DispatchQueue.main.async { [self] in
                 if let fact = fact {
                     // 3. If we get a fact, display it. If it matches a favorite fact and "Skip Favorites On Fact Generation" is enabled, generate a new random fact until we get a non-favorite.
-                    if favoriteFactsDatabase.favoriteFacts.contains(where: {$0.text == fact}) && favoriteFactsDisplayManager.skipFavoritesOnFactGeneration {
-                        generateRandomFact()
+                    if fact != previousFact {
+                        if favoriteFactsDatabase.favoriteFacts.contains(where: {$0.text == fact}) && favoriteFactsDisplayManager.skipFavoritesOnFactGeneration {
+                            generateRandomFact()
+                        } else {
+                            displayFact(fact)
+                        }
                     } else {
-                        displayFact(fact)
+                        generateRandomFact()
                     }
                 } else if let error = error {
                     // 4. If an error occurs, log it.
                     factText = factUnavailableString
-                        errorManager.showError(error)
+                    errorManager.showError(error)
                 }
             }
         }
@@ -168,9 +174,16 @@ class WindowStateManager: NSObject, ObservableObject {
     func displayFact(_ fact: String) {
         // 1. Set factText to the fact.
         factText = fact
-        // 2. If the option to speak on fact display is enabled, speak the fact.
-        if speechManager.speakOnFactDisplay && !favoriteFactsDisplayManager.randomizerRunning {
-            speechManager.speakFact(fact: fact)
+        guard factText != factUnavailableString else { return }
+        // 2. Prevent this fact from being presented the next time a random fact is generated.
+        if !favoriteFactsDisplayManager.randomizerRunning {
+            if previousFact != fact {
+                previousFact = fact
+            }
+            // 3. If the option to speak on fact display is enabled, speak the fact.
+            if speechManager.speakOnFactDisplay {
+                speechManager.speakFact(fact: fact)
+            }
         }
     }
 
@@ -201,8 +214,11 @@ extension WindowStateManager {
     func getRandomFavoriteFact() {
         // 1. Create the block that will be performed for each randomizer iteration if the randomizer effect is turned on, or just once if it's turned off.
         let block: (() -> Void) = { [self] in
-            let favoriteFact = favoriteFactsDatabase.favoriteFacts.randomElement()?.text ?? factUnavailableString
-            displayFact(favoriteFact)
+            var favoriteFact = favoriteFactsDatabase.favoriteFacts.randomElement()?.text ?? factUnavailableString
+            if favoriteFact == previousFact {
+                favoriteFact = favoriteFactsDatabase.favoriteFacts.randomElement()?.text ?? factUnavailableString
+            }
+                displayFact(favoriteFact)
         }
         DispatchQueue.main.async { [self] in
             // 2. Dismiss the favorite facts list and stop speaking.

@@ -39,7 +39,7 @@ struct RandoFactoCommands: Commands {
         if let windowStateManager = windowStateManager, let speechManager = speechManager {
         CommandGroup(replacing: .textEditing) {
             SpeakButton(for: windowStateManager.factText, useShortTitle: false)
-                .disabled(windowStateManager.factTextDisplayingMessage || windowStateManager.selectedPage != .randomFact)
+                .disabled(windowStateManager.isBusy || windowStateManager.selectedPage != .randomFact)
                 .environmentObject(speechManager)
         }
         CommandGroup(replacing: .help) {
@@ -77,17 +77,17 @@ struct RandoFactoCommands: Commands {
             Button(generateRandomFactButtonTitle) {
                 windowStateManager.generateRandomFact()
             }
-            .disabled(!networkConnectionManager.deviceIsOnline || windowStateManager.factTextDisplayingMessage)
+            .disabled(!networkConnectionManager.deviceIsOnline || windowStateManager.isBusy)
             .keyboardShortcut(KeyboardShortcut(KeyEquivalent("g"), modifiers: [.command, .control]))
             Button(getRandomFavoriteFactButtonTitle) {
                 windowStateManager.getRandomFavoriteFact()
             }
             .keyboardShortcut(KeyboardShortcut(KeyEquivalent("g"), modifiers: [.command, .control, .shift]))
-            .disabled(!windowStateManager.favoriteFactsAvailable || windowStateManager.factTextDisplayingMessage)
+            .disabled(!windowStateManager.favoriteFactsAvailable || windowStateManager.isBusy)
         }
         .disabled(windowStateManager.selectedPage != .randomFact)
         Section {
-            if !windowStateManager.factTextDisplayingMessage && authenticationManager.userLoggedIn && windowStateManager.displayedFactIsSaved {
+            if !windowStateManager.isBusy && authenticationManager.userLoggedIn && windowStateManager.displayedFactIsSaved {
                 Button("Unfavorite Current Fact…") {
                     favoriteFactsDisplayManager.showDeleteFavoriteFact(fact: windowStateManager.factText)
                 }
@@ -101,7 +101,7 @@ struct RandoFactoCommands: Commands {
                     }
                 }
                 .keyboardShortcut(KeyboardShortcut(KeyEquivalent("f"), modifiers: [.command, .shift]))
-                .disabled(windowStateManager.factTextDisplayingMessage || windowStateManager.factText == factUnavailableString || !authenticationManager.userLoggedIn)
+                .disabled(windowStateManager.isBusy || windowStateManager.factText == factUnavailableString || !authenticationManager.userLoggedIn)
             }
         }
         .disabled(windowStateManager.selectedPage != .randomFact)

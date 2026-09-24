@@ -105,7 +105,7 @@ struct FactView: View {
 
     @ViewBuilder
     var factTextView: some View {
-        let canSelectFactText = !(windowStateManager.factTextDisplayingMessage || windowStateManager.factText == factUnavailableString || favoriteFactsDisplayManager.randomizerRunning)
+        let canSelectFactText = !(windowStateManager.isBusy || windowStateManager.factText == factUnavailableString || favoriteFactsDisplayManager.randomizerRunning)
         ScrollableText(windowStateManager.factText)
             .multilineTextAlignment(.center)
             .font(.system(size: CGFloat(windowStateManager.factTextSize)))
@@ -144,7 +144,6 @@ struct FactView: View {
             }
             .font(.system(size: 25))
             .labelStyle(.iconOnly)
-            .buttonStyle(.bordered)
         }
         .padding(10)
     }
@@ -162,7 +161,6 @@ struct FactView: View {
                     Label(getRandomFavoriteFactButtonTitle, systemImage: "star")
                         .frame(width: factGenerationButtonWidth)
                 }
-                .buttonStyle(.bordered)
 #if os(iOS)
                 .padding(2.5)
                 .hoverEffect(.highlight)
@@ -175,7 +173,6 @@ struct FactView: View {
                     Label(generateRandomFactButtonTitle, systemImage: "dice")
                         .frame(width: factGenerationButtonWidth)
                 }
-                .buttonStyle(.bordered)
 #if os(iOS)
                 .padding(2.5)
                 .hoverEffect(.highlight)
@@ -186,7 +183,7 @@ struct FactView: View {
         // Sometimes, while a section of code can be used on multiple platforms, you may not want to compile it for all of them. In this case, the large control size is just right for this app on macOS, but not for iOS (bordered buttons on iOS are already large by default because of its touch-first UI), so we use the large control size on macOS but leave it as is on the other platforms.
         .controlSize(.large)
 #endif
-        .disabled(windowStateManager.factTextDisplayingMessage)
+        .disabled(windowStateManager.isBusy)
     }
 
     // MARK: - Footer
@@ -215,7 +212,7 @@ struct FactView: View {
                 LoadingIndicator()
             }
         } else {
-            if !windowStateManager.factTextDisplayingMessage && windowStateManager.factText != factUnavailableString {
+            if !windowStateManager.isBusy && windowStateManager.factText != factUnavailableString {
                 ToolbarItem(placement: .automatic) {
                     SpeakButton(for: windowStateManager.factText)
                         .help(windowStateManager.factBeingSpoken.isEmpty ? "Speak fact" : "Stop speaking")
@@ -262,7 +259,8 @@ struct FactView: View {
 #Preview("Generating") {
     FactView()
         #if DEBUG
-        .withPreviewData { windowStateManager, _, _, _, _, _, _, _, _ in
+        .withPreviewData { windowStateManager, _, _, _, _, networkConnectionManager, _, _, _ in
+            networkConnectionManager.deviceIsOnline = true
             windowStateManager.factText = generatingRandomFactString
         }
     #endif
