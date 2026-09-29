@@ -18,6 +18,7 @@ class SpeechManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
 
     @AppStorage(UserDefaults.KeyNames.speakOnFactDisplay) var speakOnFactDisplay: Bool = false
 
+    // The fact currently being spoken in this window.
     @Published var factBeingSpoken: String = String()
 
     // MARK: - Properties - Speech
@@ -25,7 +26,7 @@ class SpeechManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     // The voices that are currently available on the device.
     @Published var voices: [AVSpeechSynthesisVoice] = []
 
-    // The speech synthesizer.
+    // The speech synthesizer for this window.
     var speechSynthesizer = AVSpeechSynthesizer()
 
     // MARK: - Initialization
@@ -45,7 +46,7 @@ class SpeechManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
             AVSpeechSynthesizer.requestPersonalVoiceAuthorization { [self] status in
                 voices = AVSpeechSynthesisVoice.speechVoices().filter({$0.language.hasPrefix(SAEnglishLanguageCodePrefix)})
                 if voices.filter({$0.identifier == selectedVoiceID}).isEmpty {
-                    // If the selected voice ID is not available, set it to the default voice ID.
+                    // If the selected voice ID isn't available, set it to the default voice ID.
                     selectedVoiceID = SADefaultVoiceID
                 }
             }
@@ -86,10 +87,8 @@ class SpeechManager: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
         }
     }
 
-    func speechSynthesizer(
-        _ synthesizer: AVSpeechSynthesizer,
-        didCancel utterance: AVSpeechUtterance
-    ) {
+    // This method resets factBeingSpoken to an empty String if speech is canceled.
+    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) {
         DispatchQueue.main.async { [self] in
             factBeingSpoken = String()
         }

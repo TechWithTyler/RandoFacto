@@ -63,9 +63,9 @@ class NetworkConnectionManager: ObservableObject {
 
     // MARK: - Online
 
-    // This method enables online mode.
+    // This method tries to enable online mode. Failure to enable Firestore's network features will result in a runtime error.
     func goOnline() {
-        // 1. Try to enable Firestore's network features.
+        // 1. Try to enable Firestore's network features. This allows Firestore to access data on the server.
         firestore.enableNetwork { error in
             // 2. If that fails, throw a fatal error.
             if let error = error {
@@ -82,9 +82,9 @@ class NetworkConnectionManager: ObservableObject {
 
     // MARK: - Offline
 
-    // This method enables offline mode.
+    // This method tries to enable offline mode. Failure to disable Firestore's network features will result in a runtime error.
     func goOffline() {
-        // 1. Try to disable Firestore's network features.
+        // 1. Try to disable Firestore's network features. This forces Firestore to only access cached (local) data, and attempts to explicitly access data on the server (e.g. when deleting all favorite facts for account deletion to make sure the server data is wiped) will result in an error.
         firestore.disableNetwork {
             error in
             // 2. If that fails, throw a fatal error.

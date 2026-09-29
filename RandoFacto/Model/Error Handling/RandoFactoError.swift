@@ -26,7 +26,7 @@ enum RandoFactoError: LocalizedError, Equatable, Identifiable {
 
     // MARK: - Error Case Definitions - Fact Generation
 
-    // The fact generation URL wasn't found.
+    // The fact generation URL wasn't found or access isn't allowed on the current network.
     case factGeneratorURLNotFound
 
     // Fact generation/screening timed out.
@@ -44,10 +44,7 @@ enum RandoFactoError: LocalizedError, Equatable, Identifiable {
 
     // MARK: - Error Case Definitions - Favorite Facts Database/Authentication
 
-    // Too many favorite facts database requests.
-    case favoriteFactsDatabaseQuotaExceeded
-
-    // Favorite fact no longer exists.
+    // Favorite fact to be deleted no longer exists.
     case favoriteFactNoLongerExists
 
     // Couldn't get data from server.
@@ -65,7 +62,7 @@ enum RandoFactoError: LocalizedError, Equatable, Identifiable {
     // The email address wasn't in the format email@example.xyz.
     case invalidEmailFormat
 
-    // Password change or account deletion failed due to the user having logged into this device more than 5 minutes ago.
+    // Password change or account deletion failed due to the user having logged into this device more than 5 minutes ago. This is a Firebase security measure and can't be overridden on an app-by-app basis.
     case tooLongSinceLastLogin
 
     // MARK: - Error Case Definitions - Unknown
@@ -104,11 +101,9 @@ enum RandoFactoError: LocalizedError, Equatable, Identifiable {
         case let .badHTTPResponse(domain):
             return domain
         case .noFactText:
-            return "Generated fact doesn't appear to contain text."
+            return "Generated fact doesn't contain text."
         case .factDataError:
             return "Failed to retrieve or decode fact data."
-        case .favoriteFactsDatabaseQuotaExceeded:
-            return "Too many favorite fact database requests at once. Please try again later."
         case .favoriteFactsDatabaseServerDataRetrievalError:
             return "Failed to download data from server."
         case .favoriteFactNoLongerExists:

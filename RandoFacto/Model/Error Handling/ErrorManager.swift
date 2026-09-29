@@ -26,7 +26,7 @@ class ErrorManager: ObservableObject {
     
     // MARK: - Error Handling
     
-    // This method shows error's localizedDescription as an alert or in the authentication form.
+    // This method shows error's localizedDescription as an alert or in the authentication dialog.
     func showError(_ error: Error, externalPresentationHandler: ((RandoFactoError) -> Void)? = nil) {
         // 1. Convert the error to NSError, and print it in internal builds.
         let nsError = error as NSError
@@ -71,8 +71,6 @@ class ErrorManager: ObservableObject {
             errorToShow = .invalidEmailFormat
         case AuthErrorCode.requiresRecentLogin.rawValue:
             errorToShow = .tooLongSinceLastLogin
-        case AuthErrorCode.quotaExceeded.rawValue:
-            errorToShow = .favoriteFactsDatabaseQuotaExceeded
         default:
             // Other errors
             // If we get an error that hasn't been customized with a friendly message, log the localized description as is. Only errors with messages that aren't understandable by the average user are customized above.

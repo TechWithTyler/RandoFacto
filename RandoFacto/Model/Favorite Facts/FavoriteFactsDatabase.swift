@@ -55,8 +55,11 @@ class FavoriteFactsDatabase: ObservableObject {
         setupListener()
     }
 
+    // This method sets up the favorite facts listener upon launch or login/signup and shows an inline error if it fails.
     func setupListener() {
+        // 1. Clear the previous error.
         favoriteFactsLoadError = nil
+        // 2. Try to add the listener.
         loadFavoriteFactsForCurrentUser { [self] error in
             if let error = error {
                 favoriteFactsLoadError = error

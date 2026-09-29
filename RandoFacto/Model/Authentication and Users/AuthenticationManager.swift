@@ -28,9 +28,11 @@ class AuthenticationManager: ObservableObject {
 
     // The email address that password reset requests come from. It's in the format noreply@project-id.firebaseapp.com, where project-id is the Firebase app's project ID. In this case, the project ID is randofacto-2b730, so the email address is noreply@randofacto-2b730.firebaseapp.com.
     var passwordResetEmailAddress: String {
+        // 1. Make sure we can get the FirebaseApp instance and its project ID. If we can't, throw a fatal error.
         guard let app = FirebaseApp.app(), let projectID = app.options.projectID else {
-            fatalError("Can't get project ID")
+            fatalError("Can't get project ID to construct password reset email address for display.")
         }
+        // 2. Construct the password reset email address, which is shown in the "password reset email sent" confirmation.
         let address = "noreply@\(projectID).firebaseapp.com"
         return address
     }
@@ -80,8 +82,11 @@ class AuthenticationManager: ObservableObject {
         self.networkConnectionManager = networkConnectionManager
     }
 
+    // This method sets up the user reference listener upon launch or login/signup and shows an inline error if it fails.
     func setupListener() {
+        // 1. Clear the previous error.
         userReferenceLoadError = nil
+        // 2. Try to add the listener.
         addUserReferenceHandler { [self] error in
             if let error = error {
                 userReferenceLoadError = error
