@@ -9,6 +9,7 @@
 // MARK: - Imports
 
 import SheftAppsStylishUI
+import SheftAppsInternals
 
 // Manages settings window state.
 class SettingsManager: NSObject, ObservableObject {
@@ -59,6 +60,11 @@ class SettingsManager: NSObject, ObservableObject {
     // Whether the onboarding sheet should appear on the next app launch (i.e., the first launch of version 2024.2 or later, or after resetting the app).
     @AppStorage(UserDefaults.KeyNames.shouldOnboard) var shouldOnboard: Bool = true
 
+    #if(DEBUG)
+    // Whether the crash test alert should be/is being displayed (internal builds only).
+    @Published var showingCrashTestAlert: Bool = false
+    #endif
+
     // MARK: - Initialization
 
     init(favoriteFactsDisplayManager: FavoriteFactsDisplayManager, authenticationManager: AuthenticationManager, errorManager: ErrorManager, speechManager: SpeechManager) {
@@ -96,5 +102,18 @@ class SettingsManager: NSObject, ObservableObject {
         factGenerator.urlRequestTimeoutInterval = defaultURLRequestTimeoutInterval
         #endif
     }
+
+    // MARK: - Crash Test (Internal Builds Only)
+
+    #if(DEBUG)
+    // This method crashes the app to perform a test run of the Firebase Crashlytics mechanism used in this app. The crash log is uploaded when launching the app again.
+    func performCrashTest() {
+#if os(macOS)
+        NSSound.beep()
+        Thread.sleep(forTimeInterval: 1)
+#endif
+        fatalError("This is a test of \(SABundleName)'s Firebase Crashlytics mechanism on \(DateFormatter.localizedString(from: Date(), dateStyle: .full, timeStyle: .full)). The button that triggered this crash won't be seen in release builds. This crash will be uploaded to Crashlytics on the next app launch.")
+    }
+    #endif
 
 }
